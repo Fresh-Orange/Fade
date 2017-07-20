@@ -8,7 +8,9 @@ import android.os.Bundle;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.utils.Const;
-
+/*
+app启动时的欢迎界面
+ */
 public class WelcomeActivity extends AppCompatActivity {
 
     @Override

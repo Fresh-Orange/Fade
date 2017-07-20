@@ -3,22 +3,31 @@ package com.sysu.pro.fade.tool;
 import android.os.Handler;
 import android.os.Message;
 
+import com.sysu.pro.fade.utils.Const;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,6 +42,7 @@ public class RegisterTool {
 
     }
 
+    //用户名密码注册
     public static void sendToRegister(final String ip, final Handler handler, final String nickname, final String password, final String sex,final String user_id){
         new Thread(){
             @Override
@@ -65,6 +75,7 @@ public class RegisterTool {
     }
 
 
+    //发送图片类
     public static void sendImage(final String ip, final Handler handler, final String imageType, final String path, final String id){
         new Thread(){
             @Override
@@ -171,4 +182,72 @@ public class RegisterTool {
             }
         }.start();
     }
+
+    //短信发送验证码
+    public static void sendIdentifyCode(final Handler handler, final String tel){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpPost = new HttpPost(Const.SEND_SMS_URL);
+                //添加请求头
+                httpPost.addHeader("X-LC-Id",Const.X_LC_ID);
+                httpPost.addHeader("X-LC-Key",Const.X_LC_KEY);
+                httpPost.setHeader("Content-Type","application/json");
+
+                //实体内容加入参数 注意json格式
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("mobilePhoneNumber",tel);
+                    jsonObject.put("op","注册");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    httpPost.setEntity(new StringEntity(jsonObject.toString(),"utf-8"));
+                    HttpResponse httpResponse = httpClient.execute(httpPost);
+                    HttpEntity entity1 = httpResponse.getEntity();
+                    String ans = EntityUtils.toString(entity1,"utf-8");
+                    Message msg = new Message();
+                    msg.what = 1;
+                    msg.obj = ans;
+                    handler.sendMessage(msg);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //短信核验验证码
+    public static void toCheck(final Handler handler, final String mobilePhoneNumber, final String checkNum){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpPost = new HttpPost(Const.CHECK_SMS_URL+checkNum+"?mobilePhoneNumber="+mobilePhoneNumber);
+                //添加请求头
+                httpPost.addHeader("X-LC-Id",Const.X_LC_ID);
+                httpPost.addHeader("X-LC-Key",Const.X_LC_KEY);
+                httpPost.setHeader("Content-Type","application/json");
+                try {
+                       HttpResponse httpResponse = httpClient.execute(httpPost);
+                        HttpEntity entity1 = httpResponse.getEntity();
+                        String ans = EntityUtils.toString(entity1,"utf-8");
+                        Message msg = new Message();
+                        msg.what = 1;
+                        msg.obj = ans;
+                        handler.sendMessage(msg);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+            }
+        }).start();
+
+    }
+
+
 }

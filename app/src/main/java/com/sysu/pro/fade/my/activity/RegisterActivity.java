@@ -30,6 +30,9 @@ import com.sysu.pro.fade.utils.PhotoUtils;
 import java.io.File;
 import java.util.UUID;
 
+/*
+用户名+密码的注册界面
+ */
 
 public class RegisterActivity extends AppCompatActivity {
 

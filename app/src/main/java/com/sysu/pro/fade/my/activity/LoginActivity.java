@@ -20,6 +20,9 @@ import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.utils.Const;
 import com.sysu.pro.fade.tool.LoginTool;
 
+/*
+用户名密码方式的登录界面
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private ImageView iv_personal_icon;
