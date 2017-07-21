@@ -19,15 +19,16 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
-        String nickname = sharedPreferences.getString("nickname","");
-        if(nickname == ""){
-            startActivity(new Intent(WelcomeActivity.this,LoginActivity.class));
+        String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
+
+        if(login_type == ""){
+            startActivity(new Intent(WelcomeActivity.this,GuideActivity.class));
             finish();
         }else{
             startActivity(new Intent(WelcomeActivity.this,MainActivity.class));

@@ -12,9 +12,13 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.tool.RegisterTool;
+import com.sysu.pro.fade.utils.Const;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /*
-验证手机号码的登录界面
+验证手机号码界面
  */
 public class RegisterBySMSActivity extends AppCompatActivity {
 
@@ -24,10 +28,24 @@ public class RegisterBySMSActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            if(msg.what == 2){
+                String ans_str = (String) msg.obj;
+                try {
+                    JSONObject jsonObject = new JSONObject(ans_str);
+                    String ans = jsonObject.getString("ans");
+                    Toast.makeText(RegisterBySMSActivity.this,ans,Toast.LENGTH_SHORT).show();
+                    if(ans.equals("没有注册")){
+                        RegisterTool.sendIdentifyCode(handler,edTelphone.getText().toString());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
             if(msg.what == 1){
-                String ans = (String) msg.obj;
-                Toast.makeText(RegisterBySMSActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                String ans_str = (String) msg.obj;
+                Toast.makeText(RegisterBySMSActivity.this,ans_str,Toast.LENGTH_SHORT).show();
+                if(ans_str.equals("{}")){
                     Intent intent = new Intent(RegisterBySMSActivity.this,CheckTelActivity.class);
                     intent.putExtra("mobilePhoneNumber",edTelphone.getText().toString());
                     startActivity(intent);
@@ -47,7 +65,8 @@ public class RegisterBySMSActivity extends AppCompatActivity {
         btnSubmitTel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RegisterTool.sendIdentifyCode(handler,edTelphone.getText().toString());
+                //先校验该手机号是否已经被注册
+                RegisterTool.checkTel(Const.IP,handler,edTelphone.getText().toString());
             }
         });
 
