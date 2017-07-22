@@ -10,7 +10,7 @@ import com.avos.avoscloud.AVOSCloud;
 public class MyLeanCloudApp extends Application {
     @Override
     public void onCreate() {
-        AVOSCloud.initialize(this,Const.APP_ID,Const.APP_ID);
+        AVOSCloud.initialize(this,Const.APP_ID,Const.APP_KEY);
         super.onCreate();
     }
 }

@@ -13,5 +13,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnToCheckNum"
-        android:text="提交"/>
+        android:text="下一步"/>
 </LinearLayout>

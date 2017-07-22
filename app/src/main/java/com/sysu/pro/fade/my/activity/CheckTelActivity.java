@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.tool.RegisterTool;
+import com.sysu.pro.fade.utils.Const;
 
 /*
 短信发出后输入验证码的界面
@@ -30,7 +31,12 @@ public class CheckTelActivity extends AppCompatActivity {
                 String ans = (String) msg.obj;
                 Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
                 if(ans.equals("{}")){
-                    startActivity(new Intent(CheckTelActivity.this,RegisterActivity.class));
+
+                    //验证成功，跳转到输入密码界面
+                    Intent intent = new Intent(CheckTelActivity.this,AddPasswordActivity.class);
+                    intent.putExtra(Const.TELEPHONE,mobilePhoneNumber);
+                    startActivity(intent);
+
                     finish();
                 }
             }

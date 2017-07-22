@@ -43,16 +43,17 @@ public class RegisterTool {
     }
 
     //用户名密码注册
-    public static void sendToRegister(final String ip, final Handler handler, final String nickname, final String password, final String sex,final String user_id){
+    public static void sendToRegister(final String ip, final Handler handler, final String nickname, final String password, final String sex,final String telephone){
         new Thread(){
             @Override
             public void run() {
 
                 List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair("nickname",nickname));
-                list.add(new BasicNameValuePair("password",password));
-                list.add(new BasicNameValuePair("sex",sex));
-                list.add(new BasicNameValuePair("user_id",user_id));
+                list.add(new BasicNameValuePair(Const.NICKNAME,nickname));
+                list.add(new BasicNameValuePair(Const.PASSWORD,password));
+                list.add(new BasicNameValuePair(Const.SEX,sex));
+                list.add(new BasicNameValuePair(Const.TELEPHONE,telephone));
+                list.add(new BasicNameValuePair("code","003"));
 
                 try {
                     HttpClient httpClient = new DefaultHttpClient();
@@ -247,6 +248,35 @@ public class RegisterTool {
             }
         }).start();
 
+    }
+    //校验手机号是否已被注册
+    public static void checkTel(final String ip, final Handler handler, final String telephone){
+        new Thread(){
+            @Override
+            public void run() {
+
+                List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
+                list.add(new BasicNameValuePair(Const.TELEPHONE,telephone));
+                list.add(new BasicNameValuePair("code","002"));
+
+                try {
+                    HttpClient httpClient = new DefaultHttpClient();
+                    String param = URLEncodedUtils.format(list, "UTF-8");
+                    HttpGet httpGet = new HttpGet("http://" +ip+"/Fade/register?"+param);
+                    HttpResponse response = httpClient.execute(httpGet);
+                    if(response.getStatusLine().getStatusCode() == 200){
+                        HttpEntity entity1 = response.getEntity();
+                        String ans = EntityUtils.toString(entity1,"utf-8");
+                        Message msg = new Message();
+                        msg.what = 2;
+                        msg.obj = ans;
+                        handler.sendMessage(msg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
 
