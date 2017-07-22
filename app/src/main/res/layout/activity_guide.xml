@@ -4,26 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="手机号"/>
-        <EditText
-            android:layout_width="0dp"
+            android:id="@+id/btnChooseLogin"
+            android:layout_gravity="left"
+            android:text="登录"
+            android:layout_margin="20dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:id="@+id/edTelphone"/>
+            android:id="@+id/btnChooseRegister"
+            android:layout_margin="20dp"
+            android:layout_gravity="right"
+            android:text="注册"/>
     </LinearLayout>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="下一步"
-        android:id="@+id/btnSubmitTel"/>
 
 </LinearLayout>
