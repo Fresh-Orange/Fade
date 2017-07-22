@@ -21,11 +21,15 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.utils.Const;
 import com.sysu.pro.fade.tool.RegisterTool;
 import com.sysu.pro.fade.utils.PhotoUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.UUID;
@@ -34,7 +38,7 @@ import java.util.UUID;
 用户名+密码的注册界面
  */
 
-public class RegisterActivity extends AppCompatActivity {
+public class AddContentActivity extends AppCompatActivity {
 
     protected static final int CHOOSE_PICTURE = 0;
     protected static final int TAKE_PICTURE = 1;
@@ -42,12 +46,14 @@ public class RegisterActivity extends AppCompatActivity {
     protected static Uri tempUri;
     private ImageView iv_personal_icon;
     private EditText edUserName;
-    private EditText edPassword;
     private Button btnRegister;
     private String   imagePath;
     private RadioGroup radioGroup;
     private String sex;
-    private String user_id;
+
+    private String password;
+    private String telephone;
+
     private int ifSucess = 0;
     private ProgressDialog progressDialog;
     private SharedPreferences sharedPreferences;
@@ -56,17 +62,34 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if(msg.what == 1){
-                String ans = (String) msg.obj;
-                Toast.makeText(RegisterActivity.this,ans,Toast.LENGTH_SHORT).show();
+                String ans_str = (String) msg.obj;
+                String fade_name = "";
+                String user_id = "";
+                String register_time = "";
+                String ans = "";
+                try {
+                    JSONObject jsonObject = new JSONObject(ans_str);
+                    fade_name = jsonObject.getString(Const.FADE_NAME);
+                    user_id = jsonObject.getString(Const.USER_ID);
+                    register_time = jsonObject.getString(Const.REGISTER_TIME);
+                    ans = jsonObject.getString("ans");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(AddContentActivity.this,ans,Toast.LENGTH_SHORT).show();
                 if(ans.equals("注册成功")){
-                    //成功则发送图片
+                    //成功则发送图片,并存储昵称  fade号  电话  性别  密码 user_id image_url 注册时间
                     RegisterTool.sendImage(Const.IP,handler,"head",imagePath,user_id);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("nickname",edUserName.getText().toString());
-                    editor.putString("user_id",user_id);
-                    editor.putString("sex",sex);
-                    editor.putString("password",edPassword.getText().toString());
-                    editor.putString("head_image",imagePath);
+                    editor.putString(Const.NICKNAME,edUserName.getText().toString());
+                    editor.putString(Const.USER_ID,user_id);
+                    editor.putString(Const.SEX,sex);
+                    editor.putString(Const.PASSWORD,password);
+                    editor.putString(Const.TELEPHONE,telephone);
+                    editor.putString(Const.FADE_NAME,fade_name);
+                    editor.putString(Const.REGISTER_TIME,register_time);
+                    //最后设置登陆类型 为账号密码登陆
+                    editor.putString(Const.LOGIN_TYPE,"0");
                     editor.commit();
                 }else{
                     progressDialog.dismiss();
@@ -74,9 +97,18 @@ public class RegisterActivity extends AppCompatActivity {
                 super.handleMessage(msg);
             }else{
                 String rsp = (String) msg.obj;
-                Log.d("image",rsp);
+                String image_url = "";
+                try {
+                    JSONObject jsonObject2 = new JSONObject(rsp);
+                    image_url = jsonObject2.getString(Const.IMAGE_URL);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SharedPreferences.Editor editor2 = sharedPreferences.edit();
+                editor2.putString(Const.IMAGE_URL,image_url);
+                editor2.commit();
                 progressDialog.dismiss();
-                startActivity(new Intent(RegisterActivity.this,MainActivity.class));
+                startActivity(new Intent(AddContentActivity.this,MainActivity.class));
                 finish();
             }
 
@@ -86,14 +118,16 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_add_content);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
-        progressDialog = new ProgressDialog(RegisterActivity.this);
+        progressDialog = new ProgressDialog(AddContentActivity.this);
         iv_personal_icon = (ImageView) findViewById(R.id.ivRegisterUserHead);
         edUserName = (EditText) findViewById(R.id.edRegisterNickname);
-        edPassword = (EditText) findViewById(R.id.edRegisterPassword);
         btnRegister = (Button) findViewById(R.id.btnRegister);
         radioGroup = (RadioGroup) findViewById(R.id.radioSex);
+
+        password = getIntent().getStringExtra(Const.PASSWORD);
+        telephone = getIntent().getStringExtra(Const.TELEPHONE);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -118,16 +152,10 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 progressDialog .show();
                 String nickname = edUserName.getText().toString();
-                String password = edPassword.getText().toString();
-                if(nickname.equals("") || password.equals("")){
-                    Toast.makeText(RegisterActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
+                if(nickname.equals("")){
+                    Toast.makeText(AddContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();
                 }else{
-                    user_id = UUID.randomUUID().toString();
-                    System.out.println(user_id);
-
-                    RegisterTool.sendToRegister(Const.IP,handler,nickname,password,sex,user_id);
-
-
+                    RegisterTool.sendToRegister(Const.IP,handler,nickname,password,sex,telephone);
                 }
             }
         });

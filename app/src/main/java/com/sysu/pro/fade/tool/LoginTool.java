@@ -3,6 +3,8 @@ package com.sysu.pro.fade.tool;
 import android.os.Handler;
 import android.os.Message;
 
+import com.sysu.pro.fade.utils.Const;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -24,13 +26,18 @@ public class LoginTool {
 
     }
 
-    public static void sendToLogin(final Handler handler,final String ip, final String nickname, final String password){
+    public static void sendToLogin(final Handler handler,final String ip, final String password,final String account,final String accountType){
         new Thread(){
             @Override
             public void run() {
                 List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair("nickname",nickname));
-                list.add(new BasicNameValuePair("password",password));
+
+                if(accountType.equals(Const.TELEPHONE))
+                    list.add(new BasicNameValuePair(Const.TELEPHONE,account));
+                else if(accountType.equals(Const.FADE_NAME))
+                    list.add(new BasicNameValuePair(Const.FADE_NAME,account));
+
+                list.add(new BasicNameValuePair(Const.PASSWORD,password));
                 String param = URLEncodedUtils.format(list, "UTF-8");
 
                 HttpClient httpClient = new DefaultHttpClient();
@@ -53,16 +60,22 @@ public class LoginTool {
         }.start();
     }
 
-    public static void getHeadImageUrl(final  Handler handler, final String ip,final String nickname){
+    public static void getHeadImageUrl(final  Handler handler, final String ip,final String account,final String accountType){
         new Thread(){
             @Override
             public void run() {
                 List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair("nickname",nickname));
+                if(accountType.equals(Const.TELEPHONE))
+                list.add(new BasicNameValuePair(Const.TELEPHONE,account));
+                else if(accountType.equals(Const.FADE_NAME))
+                list.add(new BasicNameValuePair(Const.FADE_NAME,account));
+
+                list.add(new BasicNameValuePair("imageType","head"));
+
                 String param = URLEncodedUtils.format(list, "UTF-8");
 
                 HttpClient httpClient = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet("http://" +ip+"/Fade/ImageUrl?"+param);
+                HttpGet httpGet = new HttpGet("http://" +ip+"/Fade/getImageUrl?"+param);
                 try {
                     HttpResponse response = httpClient.execute(httpGet);
                     HttpEntity httpEntity1 = response.getEntity();
