@@ -4,32 +4,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
- <ImageView
-     android:layout_margin="10dp"
-    android:layout_width="60dp"
-    android:layout_height="60dp"
-    android:layout_centerInParent="true"
-    android:src="@drawable/default_head"
-     android:id="@+id/ivRegisterUserHead"
-     android:layout_gravity="center"/>
+
+    <ImageView
+        android:layout_margin="10dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/default_head"
+        android:id="@+id/ivRegisterUserHead"
+        android:layout_gravity="center"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="点击图片设置头像"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
         <TextView
             android:layout_width="0dp"
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="用户名"/>
+            android:text="用户名"
+            android:textSize="16dp"/>
         <EditText
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="wrap_content"
-            android:id="@+id/edRegisterNickname"/>
+            android:id="@+id/edRegisterNickname"
+            android:hint="请输入您的用户名"
+            android:textSize="14dp"/>
     </LinearLayout>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,13 +49,15 @@
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="性别"/>
+            android:text="性别"
+            android:textSize="16dp"
+            android:layout_marginTop="5dp"/>
 
         <RadioGroup
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="left"
             android:orientation="horizontal"
             android:id="@+id/radioSex">
             <RadioButton
@@ -62,11 +73,18 @@
         </RadioGroup>
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="注册"
-        android:id="@+id/btnRegister"
-        android:layout_gravity="center"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="注册"
+            android:id="@+id/btnRegister"
+            android:textSize="20dp"
+            android:textColor="@color/White"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
 </LinearLayout>
