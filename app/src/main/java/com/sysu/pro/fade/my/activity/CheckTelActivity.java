@@ -29,7 +29,8 @@ public class CheckTelActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what == 1){
                 String ans = (String) msg.obj;
-                Toast.makeText
+                Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
+                if(ans.equals("{}")){
                     //验证成功，跳转到输入密码界面
                     Intent intent = new Intent(CheckTelActivity.this,AddPasswordActivity.class);
                     intent.putExtra(Const.TELEPHONE,mobilePhoneNumber);
