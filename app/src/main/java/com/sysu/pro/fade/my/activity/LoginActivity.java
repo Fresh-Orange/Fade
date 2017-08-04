@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.MainActivity;
@@ -23,6 +24,7 @@ import com.sysu.pro.fade.tool.LoginTool;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     //更新存储数据
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(Const.LOGIN_TYPE,"0");
+
                     if(accountType.equals(Const.TELEPHONE))
                         editor.putString(Const.TELEPHONE,edAccount.getText().toString());
                     if(accountType.equals(Const.FADE_NAME))

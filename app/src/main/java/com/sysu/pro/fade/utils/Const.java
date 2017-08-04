@@ -16,17 +16,37 @@ public class Const {
     public static final String FADE_NAME    = "fade_name";
     public static final String NICKNAME     = "nickname";
     public static final String PASSWORD     = "password";
-    public static final String SEX          = "sex";
-    public static final String MAIL         = "mail";
+    public static final String SEX           = "sex";
     public static final String IMAGE_URL    = "image_url";
     public static final String REGISTER_TIME= "register_time";
     public static final String SUMMARY      = "summary";
-
     public static final String WECHAT_ID    = "wechat_id";
     public static final String WEIBO_ID     = "weibo_id";
     public static final String QQ_ID        = "qq_id";
+    public static final String CONCERN_NUM  = "concern_num";
+    public static final String fANS_NUM     = "fans_num";
+    public static final String AREA          = "area";
+    public static final String WALLPAPER_URL = "wallpaper_url";
 
+    //Note字段常量（有与user部分重叠的）
+    public static final String NOTE_ID         = "note_id";
+    public static final String HEAD_IMAGE_URL  = "head_image_url";
+    public static final String NOTE_CONTENT    = "note_content";
+    public static final String POST_TIME       = "post_time";
+    public static final String ISDIE_FANS      = "isDie_fans";
+    public static final String ISDIE_STRANGER  = "isDie_stranger";
+    public static final String COMMENT_NUM     = "comment_num";
+    public static final String RELAY_NUM       = "relay_num";
+    public static final String GOOD_NUM        = "good_num";
+    public static final String ISRELAY         = "isRelay";
 
+    //note请求有关
+    public static final String START        = "start";
+    public static final String RESULT       = "result";
+    public static final String ANS          = "ans";
+    public static final String IMAGE_LIST   = "image_list";
+    public static final String TAG_LIST      = "tag_list";
+    public static final String RELAY_LIST    = "relay_list";
 
     public static final int PAGE_SIZE = 4; //页面数量
     public static final String IP = "sysufade.cn:8080"; //云服务器ip地址和端口号
@@ -43,4 +63,9 @@ public class Const {
     public static final String CHECK_SMS_URL = "https://api.leancloud.cn/1.1/verifySmsCode/";
     public static final String APP_ID = "flQyv4KhLIrCGcTQmKJTIigu-gzGzoHsz";
     public static final String APP_KEY = "2qHqzvu8oqNzlcpiPE2zsRQW";
+
+    //展示信息流用到的核心url
+    public static final String NOTE_URL = "https://sysufade.cn/Fade/note";;
+    public static final String LIST = "list";
+    public static final String CODE = "code";
 }
