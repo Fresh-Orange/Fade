@@ -1,25 +1,14 @@
 package com.sysu.pro.fade.tool;
 
-import android.app.backup.BackupDataInputStream;
-import android.content.SyncStatusObserver;
 import android.os.Handler;
-import android.util.Log;
 
 import com.sysu.pro.fade.utils.Const;
 import com.sysu.pro.fade.utils.HttpUtils;
 import com.sysu.pro.fade.utils.JsonUtil;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,10 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
