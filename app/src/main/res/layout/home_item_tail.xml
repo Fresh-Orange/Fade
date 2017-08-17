@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/tail_linear_layout"
+              android:layout_margin="@dimen/item_head_margin"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <!--此处动态添加转发的view-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_tail_size">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/life_hint"
+            android:textSize="15sp"
+            android:textColor="@color/dark_gray"
+            android:layout_marginRight="10dp"/>
+        <TextView
+            android:id="@+id/tv_life"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
+            android:layout_marginRight="150dp"
+            android:text="66s"/>
+
+
+        <ImageButton
+            android:id="@+id/ibtn_add_time"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:src="@drawable/plus_one"/>
+        <ImageButton
+            android:id="@+id/ibtn_comment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:src="@drawable/comment"/>
+        <ImageButton
+            android:id="@+id/ibtn_transmit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:src="@drawable/share"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/edit_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <EditText
+            android:id="@+id/comment_edit_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="5"/>
+        <Button
+            android:id="@+id/send_comment_button"
+            android:layout_margin="@dimen/item_head_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/send_button_text"
+            android:background="@color/light_blue"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>
