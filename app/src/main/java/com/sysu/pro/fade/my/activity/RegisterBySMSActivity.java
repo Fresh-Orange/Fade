@@ -32,10 +32,12 @@ public class RegisterBySMSActivity extends AppCompatActivity {
                 String ans_str = (String) msg.obj;
                 try {
                     JSONObject jsonObject = new JSONObject(ans_str);
-                    String ans = jsonObject.getString("ans");
-                    Toast.makeText(RegisterBySMSActivity.this,ans,Toast.LENGTH_SHORT).show();
-                    if(ans.equals("没有注册")){
+                    Integer ans = jsonObject.getInt("ans");
+                    if(ans == 0){
+                        Toast.makeText(RegisterBySMSActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
                         RegisterTool.sendIdentifyCode(handler,edTelphone.getText().toString());
+                    }else{
+                        Toast.makeText(RegisterBySMSActivity.this,"该手机号已经注册",Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

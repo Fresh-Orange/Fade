@@ -34,6 +34,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private List<ContentBean> data;
 
 
+
 	public RecycleAdapter(Context context, List<ContentBean> data) {
 		this.context = context;
 		this.data = data;

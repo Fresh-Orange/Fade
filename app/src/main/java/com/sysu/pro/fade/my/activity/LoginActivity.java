@@ -48,24 +48,40 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if(msg.what == 1){
                 String ans_str = (String) msg.obj;
-                String image_url = "";  String nickname = "";  String fade_name = "";
-                String telephone = "";  String sex = "";       String ans = "";      String user_id = "";
+                String image_url = "";  String nickname = "";   String fade_name = "";
+                String telephone = "";  String sex = "";        Integer ans = 0;
+                String mail = "";       String register_time="";String summary="";
+                String wallpaper_url = "";  String aera = "";
+                Integer user_id = 0;
+                Integer concern_num = 0; Integer fans_num = 0;
+                String wehcat_id = ""; String weibo_id = "";  String qq_id="";
+
                 try {
                     JSONObject jsonObject = new JSONObject(ans_str);
-                    ans = jsonObject.getString("ans");
+                    ans = jsonObject.getInt("ans");
                     image_url = jsonObject.getString(Const.IMAGE_URL);
                     nickname = jsonObject.getString(Const.NICKNAME);
                     fade_name = jsonObject.getString(Const.FADE_NAME);
                     telephone = jsonObject.getString(Const.TELEPHONE);
                     sex = jsonObject.getString(Const.SEX);
-                    user_id = jsonObject.getString(Const.USER_ID);
+                    user_id = jsonObject.getInt(Const.USER_ID);
+                    concern_num = jsonObject.getInt(Const.CONCERN_NUM);
+                    fans_num = jsonObject.getInt(Const.FANS_NUM);
+                    mail = jsonObject.getString(Const.MAIL);
+                    register_time = jsonObject.getString(Const.REGISTER_TIME);
+                    summary = jsonObject.getString(Const.SUMMARY);
+                    wallpaper_url = jsonObject.getString(Const.WALLPAPER_URL);
+                    wehcat_id = jsonObject.getString(Const.WECHAT_ID);
+                    weibo_id = jsonObject.getString(Const.WEIBO_ID);
+                    qq_id = jsonObject.getString(Const.QQ_ID);
+                    aera = jsonObject.getString(Const.AREA);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(LoginActivity.this,ans,Toast.LENGTH_SHORT).show();
 
-                if(ans.equals("登录成功")){
+                if(ans == 1){
+                    Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                     //更新存储数据
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(Const.LOGIN_TYPE,"0");
@@ -81,38 +97,50 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString(Const.FADE_NAME,fade_name);
                     editor.putString(Const.TELEPHONE,telephone);
                     editor.putString(Const.SEX,sex);
-                    editor.putString(Const.USER_ID,user_id);
+                    editor.putInt(Const.USER_ID,user_id);
+                    editor.putInt(Const.CONCERN_NUM,concern_num);
+                    editor.putInt(Const.FANS_NUM,fans_num);
+                    editor.putString(Const.MAIL,mail);
+                    editor.putString(Const.REGISTER_TIME,register_time);
+                    editor.putString(Const.SUMMARY,summary);
+                    editor.putString(Const.WALLPAPER_URL,wallpaper_url);
+                    editor.putString(Const.WECHAT_ID,wehcat_id);
+                    editor.putString(Const.WEIBO_ID,weibo_id);
+                    editor.putString(Const.QQ_ID,qq_id);
+                    editor.putString(Const.AREA,aera);
 
                     editor.commit();
                     startActivity(new Intent(LoginActivity.this,MainActivity.class));
                     progressDialog.dismiss();
                     finish();
                 }else{
+                    Toast.makeText(LoginActivity.this,"登录失败，账号密码错误",Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                 }
             }
             if(msg.what == 2){
                 String ans_str = (String) msg.obj;
-                String ans = "";  String image_url2 = "";
+                Integer ans = 0;  String image_url2 = "";
                 try {
                     JSONObject jsonObject2 = new JSONObject(ans_str);
                     image_url2 = jsonObject2.getString(Const.IMAGE_URL);
-                    ans = jsonObject2.getString("ans");
+                    ans = jsonObject2.getInt("ans");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(LoginActivity.this,ans,Toast.LENGTH_SHORT).show();
+
                 if(image_url2 != null){
-                     if(ans.equals("成功获取用户头像url") && (!image_url2.equals(""))){
+                     if(ans == 1 && (!image_url2.equals(""))){
+                         Toast.makeText(LoginActivity.this,"成功获取用户头像",Toast.LENGTH_SHORT).show();
                          Picasso.with(LoginActivity.this).load(image_url2).into(iv_personal_icon);
                      }else{
+                         Toast.makeText(LoginActivity.this,"使用默认头像",Toast.LENGTH_SHORT).show();
                          iv_personal_icon.setImageResource(R.drawable.default_head);
                      }
                 }else{
                     iv_personal_icon.setImageResource(R.drawable.default_head);
                 }
             }
-
             super.handleMessage(msg);
         }
     };

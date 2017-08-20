@@ -4,15 +4,18 @@ package com.sysu.pro.fade.utils;
  * json 简单操作的工具类
  *
  */
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -20,16 +23,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-public class JsonUtil {
+public class GsonUtil {
 
     private static Gson gson=null;
     static{
         if(gson==null){
-            gson=new Gson();
+            gson = new Gson();
         }
     }
-    private JsonUtil(){}
+
+    private GsonUtil(){}
     /**
      * 将对象转换成json格式
      * @param ts
@@ -73,19 +79,6 @@ public class JsonUtil {
             objList=gson.fromJson(jsonStr, type);
         }
         return objList;
-    }
-    /**
-     * 将json格式转换成map对象
-     * @param jsonStr
-     * @return
-     */
-    public static Map<?,?> jsonToMap(String jsonStr){
-        Map<?,?> objMap=null;
-        if(gson!=null){
-            Type type=new com.google.gson.reflect.TypeToken<Map<?,?>>(){}.getType();
-            objMap=gson.fromJson(jsonStr, type);
-        }
-        return objMap;
     }
     /**
      * 将json转换成bean对象
@@ -140,6 +133,11 @@ public class JsonUtil {
             rulsObj=rulsMap.get(key);
         }
         return rulsObj;
+    }
+
+    public static Map<String,Object> jsonToMap(String str){
+        //使用fastjson
+        return JSON.parseObject(str,Map.class);
     }
 
 }

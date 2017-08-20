@@ -1,7 +1,7 @@
 package com.sysu.pro.fade.domain;
 
 public class User {
-	private String user_id;
+	private Integer user_id;
 	private String nickname;
 	private String telephone;
 	private String password;
@@ -12,19 +12,26 @@ public class User {
 	private String image_url;
 	private String register_time;
 	private String summary;
-
+	//7月22日新增属性
+	private Integer concern_num;
+	private Integer fans_num;
+	private String aera;
+	private String wallpapaer_url;
 	//第三方提供的id
 	private String wechat_id;
-	public String getConcern_num() {
+	private String weibo_id;
+	private String qq_id;
+
+	public Integer getConcern_num() {
 		return concern_num;
 	}
-	public void setConcern_num(String concern_num) {
+	public void setConcern_num(Integer concern_num) {
 		this.concern_num = concern_num;
 	}
-	public String getFans_num() {
+	public Integer getFans_num() {
 		return fans_num;
 	}
-	public void setFans_num(String fans_num) {
+	public void setFans_num(Integer fans_num) {
 		this.fans_num = fans_num;
 	}
 	public String getAera() {
@@ -39,14 +46,6 @@ public class User {
 	public void setWallpapaer_url(String wallpapaer_url) {
 		this.wallpapaer_url = wallpapaer_url;
 	}
-	private String weibo_id;
-	private String qq_id;	
-	
-	//7月22日新增属性
-	private String concern_num;
-	private String fans_num;
-	private String aera;
-	private String wallpapaer_url;
 
 	public String getFade_name() {
 		return fade_name;
@@ -68,10 +67,10 @@ public class User {
 	}
 	
 	
-	public String getUser_id() {
+	public Integer getUser_id() {
 		return user_id;
 	}
-	public void setUser_id(String user_id) {
+	public void setUser_id(Integer user_id) {
 		this.user_id = user_id;
 	}
 	public String getNickname() {
