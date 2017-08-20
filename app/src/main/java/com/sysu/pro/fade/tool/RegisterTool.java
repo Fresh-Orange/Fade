@@ -77,7 +77,7 @@ public class RegisterTool {
 
 
     //发送图片类
-    public static void sendImage(final String ip, final Handler handler, final String imageType, final String path, final String id){
+    public static void sendImage(final String ip, final Handler handler, final String imageType, final String path, final Integer id){
         new Thread(){
             @Override
             public void run() {

@@ -18,10 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.discover.ContentDiscover;
+import com.sysu.pro.fade.domain.User;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private CustomViewPager mViewPager;
     private TabLayout mTabLayoutMenu;
     public Toolbar mToolbar;
+    private User user;
 
     /*
     上次back的时间，用于双击退出判断
@@ -44,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //初始化用户信息
+        user = new UserUtil(this).getUer();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         /*
@@ -174,18 +180,18 @@ public class MainActivity extends AppCompatActivity {
             //返回时重新加载数据
             super.onResume();
             if(contentHome != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.HOME){
-                contentHome.loadData();
+               // contentHome.loadData();
             }
             if(contentDiscover != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.DISCOVER){
-                contentDiscover.loadData();
+                //contentDiscover.loadData();
             }
 
             if(contentMessage != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MESSAGE){
-                contentMessage.loadData();
+                //contentMessage.loadData();
             }
 
             if(contentMy != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MY){
-                contentMy.loadData();
+                //contentMy.loadData();
             }
 
 
@@ -255,5 +261,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "双击 back 退出", Toast.LENGTH_SHORT).show();
         }
         lastBackTime = currentTime;
+    }
+
+    public User getCurrentUser(){
+        //用于在fragment中，获取当前的用户对象
+        return  user;
     }
 }

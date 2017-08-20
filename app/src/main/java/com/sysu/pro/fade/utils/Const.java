@@ -10,6 +10,7 @@ public class Const {
     public static final String USER_SHARE="login_user"; //存储登录后的用户信息sp数据库
 
     public static final String LOGIN_TYPE = "login_type";//登录类型  0：账号密码登录   1：第三方登录
+
     //User字段常量
     public static final String USER_ID      = "user_id";
     public static final String TELEPHONE    = "telephone";
@@ -24,9 +25,10 @@ public class Const {
     public static final String WEIBO_ID     = "weibo_id";
     public static final String QQ_ID        = "qq_id";
     public static final String CONCERN_NUM  = "concern_num";
-    public static final String fANS_NUM     = "fans_num";
+    public static final String FANS_NUM     = "fans_num";
     public static final String AREA          = "area";
     public static final String WALLPAPER_URL = "wallpaper_url";
+    public static final String MAIL           = "mail";
 
     //Note字段常量（有与user部分重叠的）
     public static final String NOTE_ID         = "note_id";
@@ -47,6 +49,10 @@ public class Const {
     public static final String IMAGE_LIST   = "image_list";
     public static final String TAG_LIST      = "tag_list";
     public static final String RELAY_LIST    = "relay_list";
+
+    //一个图片应该包括以下
+   // public static final String IMAGE_URL =  "image_url";
+    public static final String IMAGE_SIZE = "image_size";
 
     public static final int PAGE_SIZE = 4; //页面数量
     public static final String IP = "sysufade.cn:8080"; //云服务器ip地址和端口号

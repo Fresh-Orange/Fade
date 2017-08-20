@@ -64,25 +64,25 @@ public class AddContentActivity extends AppCompatActivity {
             if(msg.what == 1){
                 String ans_str = (String) msg.obj;
                 String fade_name = "";
-                String user_id = "";
+                Integer user_id = 0;
                 String register_time = "";
-                String ans = "";
+                Integer ans = 1;
                 try {
                     JSONObject jsonObject = new JSONObject(ans_str);
                     fade_name = jsonObject.getString(Const.FADE_NAME);
-                    user_id = jsonObject.getString(Const.USER_ID);
+                    user_id = jsonObject.getInt(Const.USER_ID);
                     register_time = jsonObject.getString(Const.REGISTER_TIME);
-                    ans = jsonObject.getString("ans");
+                    ans = jsonObject.getInt("ans");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(AddContentActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("注册成功")){
+                if(ans == 1){
+                    Toast.makeText(AddContentActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                     //成功则发送图片,并存储昵称  fade号  电话  性别  密码 user_id image_url 注册时间
                     RegisterTool.sendImage(Const.IP,handler,"head",imagePath,user_id);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(Const.NICKNAME,edUserName.getText().toString());
-                    editor.putString(Const.USER_ID,user_id);
+                    editor.putInt(Const.USER_ID,user_id);
                     editor.putString(Const.SEX,sex);
                     editor.putString(Const.PASSWORD,password);
                     editor.putString(Const.TELEPHONE,telephone);

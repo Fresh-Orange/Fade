@@ -1,10 +1,11 @@
 package com.sysu.pro.fade.tool;
 
 import android.os.Handler;
+import android.os.Message;
 
 import com.sysu.pro.fade.utils.Const;
 import com.sysu.pro.fade.utils.HttpUtils;
-import com.sysu.pro.fade.utils.JsonUtil;
+import com.sysu.pro.fade.utils.GsonUtil;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -46,12 +47,11 @@ public class NoteTool {
                     Response response = call.execute();
                     String ans_str = response.body().string();
                     //开始json解析
-                        Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
-                        String ans = (String) map.get(Const.ANS);
-                        List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
-                        System.out.println(result);
-                        List<String>list = (List<String>) map.get(Const.LIST);
-
+                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                    Message msg = new Message();
+                    msg.what = 0x1;
+                    msg.obj = map;
+                    handler.sendMessage(msg);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -76,9 +76,11 @@ public class NoteTool {
                     Response response = call.execute();
                     String ans_str = response.body().string();
                     //开始json解析
-                    Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
-                    String ans = (String) map.get(Const.ANS);
-                    List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
+                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                    Message msg = new Message();
+                    msg.what = 0x2;
+                    msg.obj = map;
+                    handler.sendMessage(msg);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -103,7 +105,7 @@ public class NoteTool {
                     Response response = call.execute();
                     String ans_str = response.body().string();
                     //开始json解析
-                    Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
+                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                     String ans = (String) map.get(Const.ANS);
                     List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
                     System.out.println(result);
@@ -134,7 +136,7 @@ public class NoteTool {
 
                 String ans_str = HttpUtils.getRequest(Const.NOTE_URL, list);
                 System.out.println(ans_str);
-                Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 String ans = (String) map.get(Const.ANS);
                 String note_id = (String) map.get(Const.NOTE_ID);
             }
@@ -153,7 +155,7 @@ public class NoteTool {
                 list.add(new BasicNameValuePair(Const.CODE,"07"));
 
                 String ans_str = HttpUtils.getRequest(Const.NOTE_URL,list);
-                Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 String ans = (String) map.get(Const.ANS);
                 String good_num = (String) map.get(Const.GOOD_NUM);
                 super.run();
@@ -174,7 +176,7 @@ public class NoteTool {
                 list.add(new BasicNameValuePair(Const.CODE,"09"));
 
                 String ans_str = HttpUtils.getRequest(Const.NOTE_URL,list);
-                Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
             }
         }.start();
     }
@@ -190,7 +192,7 @@ public class NoteTool {
                 list.add(new BasicNameValuePair(Const.START,start));
                 list.add(new BasicNameValuePair(Const.CODE,"10"));
                 String ans_str = HttpUtils.getRequest(Const.NOTE_URL,list);
-                Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 String ans = (String) map.get(Const.ANS);
                 List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
                 System.out.println(result);
@@ -209,7 +211,7 @@ public class NoteTool {
                 list.add(new BasicNameValuePair(Const.START,start));
                 list.add(new BasicNameValuePair(Const.CODE,"11"));
                 String ans_str = HttpUtils.getRequest(Const.NOTE_URL,list);
-                Map<String,Object>map = (Map<String, Object>) JsonUtil.jsonToMap(ans_str);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 String ans = (String) map.get(Const.ANS);
                 List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
                 System.out.println(result);
