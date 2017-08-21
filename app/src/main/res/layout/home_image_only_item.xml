@@ -17,7 +17,7 @@
 
 
         <!--图片以及图片下方点的封装-->
-        <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeLayout
+        <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
             android:id="@+id/image_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

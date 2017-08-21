@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.beans.ContentBean;
 import com.sysu.pro.fade.home.beans.RelayBean;
@@ -37,9 +39,11 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	Button sendCommentButton;    //发送评论按键
 	LinearLayout commentEdit;    //包裹评论输入框和发送键的布局
 	LinearLayout tailLinearLayout;    //item的尾部布局
+	private ImageView userAvatar;
 
 	public HomeBaseViewHolder(View itemView) {
 		super(itemView);
+		userAvatar = (ImageView) itemView.findViewById(R.id.civ_avatar);
 		tvName = (TextView) itemView.findViewById(R.id.tv_name);
 		tvBody = (TextView) itemView.findViewById(R.id.tv_title);
 		commentButton = (ImageButton) itemView.findViewById(R.id.ibtn_comment);
@@ -53,15 +57,23 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 	public void bindView(final Context context, List<ContentBean> data, int position) {
 		final ContentBean bean = data.get(position);
+		//设置头像
+		Glide.with(context).load(bean.getHead_image_url()).fitCenter().dontAnimate().into(userAvatar);
+
 		tvName.setText(bean.getName());
 		/*如果有转发信息，那么将正文界面隐藏起来（因为正文内容会在转发界面呈现）*/
 		if (!bean.getRelayBeans().isEmpty()) {
 			tvBody.setVisibility(View.GONE);
-			setRelayText(context, tailLinearLayout, bean);
+			addRelayText(context, tailLinearLayout, bean);
+		}else{
+			tvBody.setVisibility(View.VISIBLE);
+			removeRelayText(tailLinearLayout);
 		}
 
 		setCommentVisAndLis(context);
 	}
+
+
 
 	/**
 	 * 评论的相关监听以及可视设置
@@ -85,6 +97,15 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		});
 	}
 
+
+	private void removeRelayText(ViewGroup parentView) {
+		LinearLayout relayTextLayout;
+		relayTextLayout = (LinearLayout) parentView.findViewById(R.id.relay_linear_layout);
+		if (relayTextLayout != null) {
+			parentView.removeViewAt(0);
+		}
+	}
+
 	/**
 	 * 添加与设置转发文字
 	 *
@@ -92,7 +113,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 * @param parentView  转发布局的父布局
 	 * @param contentBean item的数据包
 	 */
-	private void setRelayText(final Context context, ViewGroup parentView, ContentBean contentBean) {
+	private void addRelayText(final Context context, ViewGroup parentView, ContentBean contentBean) {
 		List<RelayBean> relayBeans = contentBean.getRelayBeans();
 		LinearLayout relayTextLayout;
 		boolean noChild = false;
@@ -104,7 +125,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 		TextView originalTextView = (TextView) relayTextLayout.findViewById(R.id.tv_original_name_and_text);
 		TextView relayTextView = (TextView) relayTextLayout.findViewById(R.id.tv_relay_name_and_text);
-		/**
+		/*
 		 * 设置原贴的文字，以及原贴作者名点击事件
 		 */
 		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayBeans.get(0).getName() + "\n");
@@ -121,21 +142,28 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		//文字的点击事件要加上这一句，不然不会生效
 		originalTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
+		//设置转发链
 		SpannableStringBuilder spannableStringBuilderRelay = new SpannableStringBuilder("");
-		int lastIndex = 0;
-		for (int i = 1; i < relayBeans.size(); i++) {
-			spannableStringBuilderRelay.append(relayBeans.get(i).getName());
-			spannableStringBuilderRelay.append(relayBeans.get(i).getContent() + "\\\\");
+
+		//将当前用户(转发链的最后一个用户)单独设置，因为当前用户在转发链中不需要显示名字和冒号
+		spannableStringBuilderRelay.append(relayBeans.get(relayBeans.size() - 1).getContent() );
+		int lastIndex = relayBeans.get(relayBeans.size() - 1).getContent().length() + 2;
+
+		for (int i = relayBeans.size() - 2; i >= 1; i--) {
+			Log.d("relay1", relayBeans.get(i).getName()+" "+relayBeans.get(i).getContent());
+			spannableStringBuilderRelay.append("\\\\" + relayBeans.get(i).getName() + ":");
+
+			spannableStringBuilderRelay.append(relayBeans.get(i).getContent());
 		}
-		for (int i = 1; i < relayBeans.size(); i++) {
-			Log.d("span", "lastIndex=" + String.valueOf(lastIndex) + "  spanLength=" + String.valueOf(spannableStringBuilderRelay.length()));
+		for (int i = relayBeans.size() - 2; i >= 1; i--) {
+			final String name = relayBeans.get(i).getName();
 			spannableStringBuilderRelay.setSpan(new ClickableSpan() {
 				@Override
 				public void onClick(View widget) {
-					Toast.makeText(context, "点击了用户名", Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "点击了"+name, Toast.LENGTH_SHORT).show();
 				}
 			}, lastIndex, lastIndex + relayBeans.get(i).getName().length(), 0);
-			lastIndex += relayBeans.get(i).getName().length() + relayBeans.get(i).getContent().length() + 2;
+			lastIndex += relayBeans.get(i).getName().length() + relayBeans.get(i).getContent().length() + 3;
 		}
 		relayTextView.setText(spannableStringBuilderRelay);
 		//文字的点击事件要加上这一句，不然不会生效

@@ -58,7 +58,6 @@ public class FixBugViewpager extends ViewPager {
 	 **/
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		getParent().requestDisallowInterceptTouchEvent(true);
 		switch (ev.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				xDistance = yDistance = 0f;
@@ -76,11 +75,9 @@ public class FixBugViewpager extends ViewPager {
 					if (yDistance < xDistance * 0.5) {//小于30度都左右滑
 						mIsBeingDragged = true;
 						getParent().requestDisallowInterceptTouchEvent(true);
-						getParent().getParent().requestDisallowInterceptTouchEvent(true);
 					} else {
 						mIsBeingDragged = false;
 						getParent().requestDisallowInterceptTouchEvent(false);
-						getParent().getParent().requestDisallowInterceptTouchEvent(false);
 					}
 				}
 				break;

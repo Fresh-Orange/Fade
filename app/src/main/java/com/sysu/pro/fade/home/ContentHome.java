@@ -20,7 +20,6 @@ import com.sysu.pro.fade.home.beans.RelayBean;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.Const;
-import com.sysu.pro.fade.utils.GsonUtil;
 import com.sysu.pro.fade.utils.TimeUtil;
 
 import java.math.BigDecimal;
@@ -44,6 +43,8 @@ public class ContentHome {
     private SwipeRefreshLayout swipeRefresh;
     /*滑动监听*/
     private EndlessRecyclerOnScrollListener scrollListener;
+    /*列表*/
+    private RecyclerView recyclerView;
 
     private Activity activity;
     private Context context;
@@ -112,6 +113,7 @@ public class ContentHome {
                 Integer ans = (Integer) map.get(Const.ANS);
                 if(ans == 0){
                     Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                    setLoadingMore(false);
                     swipeRefresh.setRefreshing(false);
                     start = -1;
                 }
@@ -141,51 +143,12 @@ public class ContentHome {
      //   current_user_id = 8;   //user_id=8,测试用
         NoteTool.getBigSectionHome(handler,String.valueOf(current_user_id),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
         flag = 0;
-        // 代码转移到了handler里面
-//		initData();
-//   	initViews();
     }
 
-	/**
-	 * 初始化数据
-	 */
-	private void initData(){
-		contentBeans = new ArrayList<ContentBean>();
-		ArrayList<String> imgUrls3 = new ArrayList<String>();
-		ContentBean cb3;
 
-		int offset = (int)Math.round(Math.random()*200)*5;
-		for(int i = 0; i < 5; i++){
-			imgUrls3 = new ArrayList<String>();
-			int tempID = 2000 + offset + i;
-			String sId = String.valueOf(tempID);
-			for(int k = 1; k <= 6; k++){
-				imgUrls3.add("http://img1.mm131.com/pic/"+sId+"/"+String.valueOf(k)+".jpg");
-			}
-			cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈",imgUrls3,new ArrayList<RelayBean>());
-			contentBeans.add(cb3);
-		}
-
-		offset = (int)Math.round(Math.random()*200)*5;
-		for(int i = 0; i < 3; i++){
-			imgUrls3 = new ArrayList<String>();
-			int tempID = 2000 + offset + i;
-			String sId = String.valueOf(tempID);
-			for(int k = 1; k < i+2; k++){
-				imgUrls3.add("http://img1.mm131.com/pic/"+sId+"/"+String.valueOf(k)+".jpg");
-			}
-			cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈",imgUrls3,new ArrayList<RelayBean>());
-			contentBeans.add(cb3);
-		}
-		cb3 = new ContentBean(3,"刘德华","",imgUrls3,new ArrayList<RelayBean>());
-		contentBeans.add(cb3);
-		cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈",new ArrayList<String>(),new ArrayList<RelayBean>());
-		contentBeans.add(cb3);
-
-	}
 
     private void initViews(){
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecycleAdapter(context,contentBeans);
@@ -196,13 +159,13 @@ public class ContentHome {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshImage();
+                refreshItems();
             }
         });
         scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, contentBeans) {
             @Override
             public void onLoadMore(int currentPage) {
-                addImage();
+                addItems();
             }
         };
         recyclerView.setOnScrollListener(scrollListener);
@@ -211,7 +174,10 @@ public class ContentHome {
         recyclerView.setItemAnimator(fadeItemAnimator);
     }
 
-    private void addImage() {
+    /**
+     * 加载更多
+     */
+    private void addItems() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -227,6 +193,7 @@ public class ContentHome {
                         //小请求：一次拿20条note_id去请求帖子
                         if(start == -1 || id_list == null || id_list.size() == 0){
                             Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                            setLoadingMore(false);
                             swipeRefresh.setRefreshing(false);
                         }else{
                             if(flag*20 > id_list.size()){
@@ -259,7 +226,10 @@ public class ContentHome {
         }).start();
     }
 
-    private void refreshImage() {
+    /**
+     * 下拉刷新
+     */
+    private void refreshItems() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -285,80 +255,14 @@ public class ContentHome {
         }).start();
     }
 
-    private void changeData(){
-        contentBeans.clear();
-        ArrayList<String> imgUrls3;
-        ContentBean cb3;
-
-        int offset = (int)Math.round(Math.random()*200)*5;
-        for(int i = 0; i < 5; i++){
-            imgUrls3 = new ArrayList<>();
-            int tempID = 2000 + offset + i;
-            String sId = String.valueOf(tempID);
-            for(int k = 1; k <= 6; k++){
-                imgUrls3.add("http://img1.mm131.com/pic/"+sId+"/"+String.valueOf(k)+".jpg");
-            }
-            cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈",imgUrls3,new ArrayList<RelayBean>());
-            contentBeans.add(cb3);
-        }
-
-
+    /**
+     * 设置“正在加载”是否显示
+     * @param isShow 是否显示
+     */
+    private void setLoadingMore(boolean isShow){
+        adapter.setLoadingMore(isShow);
     }
 
-    private void addData(){
-        ArrayList<String> imgUrls3;
-        ContentBean cb3;
-        List<RelayBean> relayBeans = new ArrayList<RelayBean>();
-        RelayBean relayBean = new RelayBean("张艺兴","快看啊，好厉害");
-        relayBeans.add(relayBean);
-        relayBean = new RelayBean("","可不是嘛");
-        relayBeans.add(relayBean);
-        relayBean = new RelayBean("王迅",":渤哥就是厉害");
-        relayBeans.add(relayBean);
-        relayBean = new RelayBean("黄磊",":其实我早就看出来了");
-        relayBeans.add(relayBean);
-
-        int offset = (int)Math.round(Math.random()*200)*5;
-        for(int i = 0; i < 1; i++){
-            imgUrls3 = new ArrayList<>();
-            int tempID = 2000 + offset + i;
-            String sId = String.valueOf(tempID);
-            for(int k = 1; k < 16; k++){
-                imgUrls3.add("http://images11.app.happyjuzi.com/content/201707/31/00ab6c2d-5ca2-4db5-a88a-1a250e04676a.jpeg");
-            }
-            cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈"+sId,imgUrls3,relayBeans);
-            contentBeans.add(cb3);
-
-        }
-
-        offset = (int)Math.round(Math.random()*200)*5;
-        for(int i = 0; i < 10; i++){
-            imgUrls3 = new ArrayList<>();
-            int tempID = 2000 + offset + i;
-            String sId = String.valueOf(tempID);
-            for(int k = 1; k < 9; k++){
-                if (i == 3)
-                    imgUrls3.add("http://images11.app.happyjuzi.com/content/201707/31/00ab6c2d-5ca2-4db5-a88a-1a250e04676a.jpeg");
-                imgUrls3.add("http://img1.mm131.com/pic/"+sId+"/"+String.valueOf(k)+".jpg");
-            }
-            cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈"+sId,imgUrls3,relayBeans);
-            contentBeans.add(cb3);
-
-        }
-
-        offset = (int)Math.round(Math.random()*200)*5;
-        for(int i = 0; i < 2; i++){
-            imgUrls3 = new ArrayList<>();
-            int tempID = 2000 + offset + i;
-            String sId = String.valueOf(tempID);
-            for(int k = 1; k < 9; k++){
-                imgUrls3.add("http://img1.mm131.com/pic/"+sId+"/"+String.valueOf(k)+".jpg");
-            }
-            cb3 = new ContentBean(3,"刘德华","今天天气真好呀哈哈哈很好很好哈哈哈哈哈哈哈哈"+sId,imgUrls3,relayBeans);
-            contentBeans.add(cb3);
-
-        }
-    }
 
     public ContentBean convert2ContentBean(Map<String,Object> map ){
         int note_id = (Integer) map.get(Const.NOTE_ID);
