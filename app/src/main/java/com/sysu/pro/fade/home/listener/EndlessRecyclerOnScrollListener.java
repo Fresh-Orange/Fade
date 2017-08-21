@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.beans.ContentBean;
 
 import java.util.List;
@@ -140,7 +141,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 			if (totalItemCount > previousTotal) {
 				loading = false;
 				previousTotal = totalItemCount;
-				Log.d("loadMore", "load");
+				Log.d("loadNow", "load");
 			}
 
 		}
@@ -149,7 +150,11 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 			currentPage++;
 			onLoadMore(currentPage);
 			loading = true;
-			Log.d("loadMore", "unload");
+			Log.d("loadNow", "unload");
+		}else if ((totalItemCount - visibleItemCount) > firstVisibleItem){
+			loading = false;
+			RecycleAdapter recycleAdapter = (RecycleAdapter) recyclerView.getAdapter();
+			recycleAdapter.setLoadingMore(true);
 		}
 		Log.d("loadMoreVar", "visible = " + String.valueOf(visibleItemCount) + "  total = " + String.valueOf(totalItemCount)
 				+ "pre = " + String.valueOf(previousTotal) + " first = " + String.valueOf(firstVisibleItem));

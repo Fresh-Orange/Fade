@@ -2,6 +2,7 @@ package com.sysu.pro.fade.home.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,10 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	public static int viewPagerTag = 0;
 	private Context context;
 	private List<ContentBean> data;
+	private boolean showFootView = true;
 
 
+	private FootViewHolder footViewHolder;
 
 	public RecycleAdapter(Context context, List<ContentBean> data) {
 		this.context = context;
@@ -52,12 +55,13 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		/*
 		 * 如果最后一个，那么返回“正在加载”的布局类型
 		 */
-		if (getItemCount() == position + 1)
+		if (getItemCount() == position + 1 && showFootView)
 			return FOOT_ITEM;
 
 		/*
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
 		 */
+		Log.d("getType",String.valueOf(position));
 		ContentBean bean = data.get(position);
 		if (bean.getImgUrls().isEmpty()) {
 			return TEXT_ONLY_ITEM;
@@ -88,7 +92,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 			viewHolder = new ImageOnlyHolder(view);
 		} else {
 			view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_foot_view, parent, false);
-			viewHolder = new FootViewHolder(view);
+			footViewHolder = new FootViewHolder(view);
+			viewHolder = footViewHolder;
 		}
 		return viewHolder;
 	}
@@ -105,7 +110,12 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	 */
 	@Override
 	public int getItemCount() {
-		return data.size() + 1;
+		return showFootView ? data.size() + 1 : data.size();
+	}
+
+	public void setLoadingMore(boolean isShow){
+		showFootView = isShow;
+		notifyItemRemoved(getItemCount());
 	}
 
 

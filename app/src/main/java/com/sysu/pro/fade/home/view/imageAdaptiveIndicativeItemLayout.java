@@ -52,17 +52,17 @@ import static com.sysu.pro.fade.tool.Screen.getScreenWidth;
  * @author LaiXiancheng/(lxc.sysu@qq.com)/
  * @version 1.1 修复布局上顶问题
  */
-public class imageAdaptiveIndicativeLayout extends FrameLayout {
+public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	private int viewPagerMaxHeight = 400;
 	private ViewPager pager;
 	private LinearLayout dotLinearLayout;
 
-	public imageAdaptiveIndicativeLayout(@NonNull Context context) {
+	public imageAdaptiveIndicativeItemLayout(@NonNull Context context) {
 		super(context);
 		init();
 	}
 
-	public imageAdaptiveIndicativeLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+	public imageAdaptiveIndicativeItemLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
@@ -183,6 +183,7 @@ public class imageAdaptiveIndicativeLayout extends FrameLayout {
 			String imageUrl = urlList.get(position);
 			final Bundle args = new Bundle();
 			args.putString("url", imageUrl);
+			args.putInt("fragmentIndex", position);
 			args.putString("nextUrl", nextUrl);
 			f.urlList = urlList;
 			f.setArguments(args);
@@ -195,7 +196,7 @@ public class imageAdaptiveIndicativeLayout extends FrameLayout {
 			super.onCreate(savedInstanceState);
 			mImageUrl = getArguments() != null ? getArguments().getString("url") : null;
 			mNextUrl = getArguments() != null ? getArguments().getString("nextUrl") : null;
-
+			fragmentIndex = getArguments().getInt("fragmentIndex");
 		}
 
 		@Override
