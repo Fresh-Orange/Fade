@@ -137,7 +137,7 @@ public class ContentHome {
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
-
+        Toast.makeText(context,"首页",Toast.LENGTH_SHORT).show();
      //   current_user_id = 8;   //user_id=8,测试用
         NoteTool.getBigSectionHome(handler,String.valueOf(current_user_id),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
         flag = 0;

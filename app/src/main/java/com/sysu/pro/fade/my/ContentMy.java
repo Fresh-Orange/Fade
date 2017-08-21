@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.MainActivity;
@@ -33,6 +34,7 @@ public class ContentMy {
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
+        Toast.makeText(context,"我的",Toast.LENGTH_SHORT).show();
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
