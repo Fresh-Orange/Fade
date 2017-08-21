@@ -55,7 +55,7 @@ public class Const {
     public static final String IMAGE_SIZE = "image_size";
 
     public static final int PAGE_SIZE = 5  ; //页面数量
-    public static final String IP = "sysufade.cn"; //云服务器ip地址和端口号
+    public static final String IP = "sysufade.cn:8080"; //云服务器ip地址和端口号
 //    public static final String IP = "192.168.137.1:8080"; //本地ip地址和端口号
     public static final int HOME = 1;
     public static final int DISCOVER = 2;

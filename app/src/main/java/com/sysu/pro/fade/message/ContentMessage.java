@@ -17,7 +17,6 @@ public class ContentMessage {
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
-        Toast.makeText(context,"消息",Toast.LENGTH_SHORT).show();
         loadData();
     }
     public static void loadData(){

@@ -17,7 +17,6 @@ public class ContentDiscover {
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
-        Toast.makeText(context,"发现",Toast.LENGTH_SHORT).show();
         //初始化数据
         loadData();
     }

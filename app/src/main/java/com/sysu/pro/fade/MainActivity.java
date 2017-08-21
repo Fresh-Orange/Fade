@@ -65,7 +65,15 @@ public class MainActivity extends AppCompatActivity {
         mTabLayoutMenu = (TabLayout) findViewById(R.id.tab_layout_menu);
         bindPagerAndTab();
         setupTabIcon();
-
+        TabLayout.Tab publishTab = mTabLayoutMenu.getTabAt(2);
+        View publishTabView = publishTab.getCustomView();
+        publishTabView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,"点击啦发布按钮",Toast.LENGTH_SHORT).show();
+                //跳转到发布页
+            }
+        });
     }
 
     //设置底部导航栏图片
