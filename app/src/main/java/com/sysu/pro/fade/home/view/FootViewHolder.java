@@ -22,4 +22,5 @@ public class FootViewHolder extends HomeBaseViewHolder{
 	public void bindView(final Context context, List<ContentBean> data, int  position){
 		//empty
 	}
+
 }

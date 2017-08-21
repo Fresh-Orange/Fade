@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import com.sysu.pro.fade.R;
@@ -15,12 +16,12 @@ import java.util.List;
  */
 
 public class ImageOnlyHolder extends HomeBaseViewHolder{
-	FixBugViewpager pager;
-	private imageAdaptiveIndicativeLayout imageLayout;
+	ViewPager pager;
+	private imageAdaptiveIndicativeItemLayout imageLayout;
 	public ImageOnlyHolder(View itemView) {
 		super(itemView);
-		pager = (FixBugViewpager) itemView.findViewById(R.id.pager);
-		imageLayout = (imageAdaptiveIndicativeLayout)itemView.findViewById(R.id.image_layout);
+		pager = (ViewPager) itemView.findViewById(R.id.pager);
+		imageLayout = (imageAdaptiveIndicativeItemLayout)itemView.findViewById(R.id.image_layout);
 	}
 
 	@Override
@@ -36,10 +37,12 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			 */
 			pager.setId(++RecycleAdapter.viewPagerTag);
 
-			//TODO
-			float randomH = (float) (Math.random() + 0.8);
 			imageLayout.setViewPagerMaxHeight(500);
-			imageLayout.setHeightByRatio(randomH);
+			double RatioMax = 0;
+			for (double d:bean.getImgSizes()) {
+				RatioMax = RatioMax > d ? RatioMax : d;
+			}
+			imageLayout.setHeightByRatio(((float) RatioMax));
 			imageLayout.setPaths(bean.getImgUrls());
 		}
 	}
