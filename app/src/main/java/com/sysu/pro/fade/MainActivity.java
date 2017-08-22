@@ -65,7 +65,15 @@ public class MainActivity extends AppCompatActivity {
         mTabLayoutMenu = (TabLayout) findViewById(R.id.tab_layout_menu);
         bindPagerAndTab();
         setupTabIcon();
-
+        TabLayout.Tab publishTab = mTabLayoutMenu.getTabAt(2);
+        View publishTabView = publishTab.getCustomView();
+        publishTabView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,"点击啦发布按钮",Toast.LENGTH_SHORT).show();
+                //跳转到发布页
+            }
+        });
     }
 
     //设置底部导航栏图片
@@ -75,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 createView(res.getDrawable(R.drawable.scenery_normal), "首页")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.drawable.community_normal), "发现")));
+        mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
+                createView(res.getDrawable(R.drawable.add), "发布")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.drawable.route_normal), "消息")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
@@ -140,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         }else if (tab.getPosition() == Const.MESSAGE-1) {
             img_title.setImageDrawable(res.getDrawable(R.drawable.route_selected));
             mViewPager.setCurrentItem(Const.MESSAGE-1,false);
-        } else {
+        } else if(tab.getPosition() == Const.MY-1){
             img_title.setImageDrawable(res.getDrawable(R.drawable.my_selected));
             mViewPager.setCurrentItem(Const.MY-1,false);
         }
@@ -159,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             img_title.setImageDrawable(res.getDrawable(R.drawable.community_normal));
         }else if (tab.getPosition() == Const.MESSAGE-1) {
             img_title.setImageDrawable(res.getDrawable(R.drawable.route_normal));
-        }else {
+        }else if(tab.getPosition() == Const.MY-1){
             img_title.setImageDrawable(res.getDrawable(R.drawable.my_normal));
         }
     }
