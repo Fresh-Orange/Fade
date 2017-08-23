@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="White">#FFF</color>
+
+    <!--for Home fragment-->
+    <color name="light_blue">#3c7ce2</color>
+    <color name="very_light_gray">#ececec</color>
+    <color name="light_gray">#d6d6d6</color>
+    <color name="dark_gray">#565656</color>
+    <color name="name_color">#3088e6</color>
+
+</resources>

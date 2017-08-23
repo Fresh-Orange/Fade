@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_margin="@dimen/item_head_margin"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/avatar">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/civ_avatar"
+        android:layout_width="@dimen/avatar"
+        android:layout_height="@dimen/avatar"
+        android:src="@drawable/avatar"/>
+    <TextView
+        android:id="@+id/tv_name"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@id/civ_avatar"
+        android:layout_marginLeft="10dp"
+        android:textSize="@dimen/name_size"
+        android:text="刘德华"
+        android:textColor="@color/name_color"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+
+</RelativeLayout>
+
