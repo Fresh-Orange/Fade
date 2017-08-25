@@ -331,6 +331,7 @@ public class ContentHome {
         contentBean.setImgSizes(image_size);
         contentBean.setTag_list(tag_list);
         contentBean.setRelayBeans(relayBeans);
+        contentBean.setFetchTime(System.currentTimeMillis());
         System.out.println(contentBean);
         return  contentBean;
     }

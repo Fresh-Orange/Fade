@@ -1,7 +1,5 @@
 package com.sysu.pro.fade.home.beans;
 
-import android.provider.ContactsContract;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +27,26 @@ public class ContentBean implements Serializable {
     private List<Double> imgSizes;       //图片尺寸数组
 
     private List<String> tag_list;       //标签数组
+
+	private long fetchTime;				//从服务器拿到该node的时间点，这个不需要从服务器拿
+
+    private boolean isGood;
+
+    public boolean isGood() {
+        return isGood;
+    }
+
+    public void setGood(boolean good) {
+        isGood = good;
+    }
+
+	public long getFetchTime() {
+		return fetchTime;
+	}
+
+	public void setFetchTime(long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
 
     public List<String> getTag_list() {
         return tag_list;

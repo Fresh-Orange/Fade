@@ -199,6 +199,13 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			fragmentIndex = getArguments().getInt("fragmentIndex");
 		}
 
+		private void startPictureActivity(View transitView) {
+			Intent intent = new Intent(getActivity(), ImagePagerActivity.class);
+			intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, (Serializable)urlList);
+			intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, fragmentIndex);
+			getActivity().startActivity(intent);
+		}
+
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			final View v = inflater.inflate(R.layout.image_item_fragment, container, false);
@@ -206,10 +213,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			mImageView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent(getActivity(), ImagePagerActivity.class);
-					intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, (Serializable)urlList);
-					intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, fragmentIndex);
-					getActivity().startActivity(intent);
+					startPictureActivity(v);
 				}
 			});
 			return v;

@@ -4,6 +4,11 @@ package com.sysu.pro.fade.utils;
  * Created by road on 2017/7/10.
  */
 public class Const {
+    /*
+    信息流相关常量
+     */
+    public static final int HOME_NODE_DEFAULT_LIFE = 60;    //单位：分钟
+    public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
 
     /*登录注册 个人信息有关
      */
