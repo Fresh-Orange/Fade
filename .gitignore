@@ -10,4 +10,5 @@
 .idea/gradle.xml
 .idea/modules.xml
 app/build.gradle
-
+build.gradle
+gradle/wrapper/gradle-wrapper.properties

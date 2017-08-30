@@ -24,7 +24,7 @@ public class GuideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(GuideActivity.this,LoginActivity.class));
-                finish();
+                //finish();
             }
         });
 
@@ -32,7 +32,7 @@ public class GuideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(GuideActivity.this,RegisterBySMSActivity.class));
-                finish();
+                //finish();
             }
         });
 

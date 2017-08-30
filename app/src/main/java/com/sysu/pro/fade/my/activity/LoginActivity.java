@@ -36,10 +36,11 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView iv_personal_icon;
     private EditText edAccount;
     private EditText edPassword;
-    private Button btnLogin;
+    private TextView btnLogin;
     private TextView tvToRegister;
     private SharedPreferences sharedPreferences;
     private ProgressDialog progressDialog;
+    private ImageView backIcon1;    //登录界面的返回键
 
     private String accountType = Const.TELEPHONE;
 
@@ -106,10 +107,10 @@ public class LoginActivity extends AppCompatActivity {
                      if(ans.equals("成功获取用户头像url") && (!image_url2.equals(""))){
                          Picasso.with(LoginActivity.this).load(image_url2).into(iv_personal_icon);
                      }else{
-                         iv_personal_icon.setImageResource(R.drawable.default_head);
+                         iv_personal_icon.setImageResource(R.drawable.login_head_ic);
                      }
                 }else{
-                    iv_personal_icon.setImageResource(R.drawable.default_head);
+                    iv_personal_icon.setImageResource(R.drawable.login_head_ic);
                 }
             }
 
@@ -125,11 +126,11 @@ public class LoginActivity extends AppCompatActivity {
         iv_personal_icon = (ImageView) findViewById(R.id.ivLoginUserHead);
         edAccount = (EditText) findViewById(R.id.edAccount);
         edPassword = (EditText) findViewById(R.id.edPassword);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin = (TextView) findViewById(R.id.btnLogin);
         tvToRegister = (TextView) findViewById(R.id.tvToRegister);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
         progressDialog = new ProgressDialog(LoginActivity.this);
-
+        backIcon1 = (ImageView) findViewById(R.id.back_icon_1);
 
         edPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -167,6 +168,13 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        backIcon1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }
