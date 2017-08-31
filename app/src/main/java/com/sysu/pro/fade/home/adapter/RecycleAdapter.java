@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.home.beans.ContentBean;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.view.CompleteHolder;
 import com.sysu.pro.fade.home.view.FootViewHolder;
 import com.sysu.pro.fade.home.view.HomeBaseViewHolder;
@@ -32,13 +32,13 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private static final int FOOT_ITEM = 6;//最底部的“正在加载”
 	public static int viewPagerTag = 0;
 	private Context context;
-	private List<ContentBean> data;
+	private List<Note> data;
 	private boolean showFootView = true;
 
 
 	private FootViewHolder footViewHolder;
 
-	public RecycleAdapter(Context context, List<ContentBean> data) {
+	public RecycleAdapter(Context context, List<Note> data) {
 		this.context = context;
 		this.data = data;
 	}
@@ -62,7 +62,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
 		 */
 		Log.d("getType",String.valueOf(position));
-		ContentBean bean = data.get(position);
+		Note bean = data.get(position);
 		if (bean.getImgUrls().isEmpty()) {
 			return TEXT_ONLY_ITEM;
 		}

@@ -35,6 +35,9 @@
         <activity android:name=".my.activity.GuideActivity" />
         <activity android:name=".my.activity.AddPasswordActivity"></activity>
         <activity android:name=".home.activity.ImagePagerActivity" android:theme="@style/imagePagerTheme"/>
+        <activity android:name=".publish.PublishActivity"></activity>
+        <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
+        <activity android:name=".publish.imageselector.PreviewActivity"></activity>
     </application>
 
 </manifest>

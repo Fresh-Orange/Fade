@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.sysu.pro.fade.domain.User;
+import com.sysu.pro.fade.beans.User;
 
 import static com.sysu.pro.fade.utils.Const.USER_SHARE;
 
@@ -26,7 +26,7 @@ public class UserUtil {
         user.setConcern_num(sharedPreferences.getInt(Const.CONCERN_NUM,0));
         user.setFans_num(sharedPreferences.getInt(Const.FANS_NUM,0));
         user.setFade_name(sharedPreferences.getString(Const.FADE_NAME,""));
-        user.setImage_url(sharedPreferences.getString(Const.IMAGE_URL,""));
+        user.setHead_image_url(sharedPreferences.getString(Const.HEAD_IMAGE_URL,""));
         user.setMail(sharedPreferences.getString(Const.MAIL,""));
         user.setPassword(sharedPreferences.getString(Const.PASSWORD,""));
         user.setRegister_time(sharedPreferences.getString(Const.REGISTER_TIME,""));

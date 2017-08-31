@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.domain.User;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.utils.Const;
 
@@ -52,6 +52,7 @@ public class ContentMy {
                 editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
                 editor.commit();
                 activity.startActivity(new Intent(activity, GuideActivity.class));
+                activity.finish();
          }
         });
 
@@ -60,7 +61,7 @@ public class ContentMy {
     public  void loadData(){
         //获取本地用户信息举例
         String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
-        String image_url = user.getImage_url();
+        String image_url = user.getHead_image_url();
         String nickname = user.getNickname();
         if(login_type.equals("") || image_url == null || image_url.equals("")){
             ivShowHead.setImageResource(R.drawable.default_head);

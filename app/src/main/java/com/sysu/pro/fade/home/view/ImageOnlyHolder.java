@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
-import com.sysu.pro.fade.home.beans.ContentBean;
+import com.sysu.pro.fade.beans.Note;
 
 import java.util.List;
 
@@ -25,10 +25,10 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 	}
 
 	@Override
-	public void bindView(final Context context, List<ContentBean> data, int  position){
+	public void bindView(final Context context, List<Note> data, int  position){
 		super.bindView(context, data, position);
 
-		final ContentBean bean = data.get(position);
+		final Note bean = data.get(position);
 
 		if (data != null && data.size() > 0) {
 			/**
