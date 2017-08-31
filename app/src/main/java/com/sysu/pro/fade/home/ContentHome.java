@@ -12,11 +12,13 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.domain.User;
+import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.OriginComment;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
-import com.sysu.pro.fade.home.beans.ContentBean;
-import com.sysu.pro.fade.home.beans.RelayBean;
+import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.RelayNote;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.Const;
@@ -36,7 +38,7 @@ import static com.sysu.pro.fade.utils.Const.NICKNAME;
  */
 public class ContentHome {
     /*图片URL数组*/
-    private List<ContentBean> contentBeans;
+    private List<Note> notes;
     /*信息流适配器*/
     private RecycleAdapter adapter;
     /*刷新控件*/
@@ -66,25 +68,24 @@ public class ContentHome {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(msg.what == 0x1){
-                /**
-                 * 大请求测试
-                 */
+                //大请求，调用NoteTool的getBigSectionHome
                 Map<String,Object>map = (Map<String, Object>) msg.obj;
-                Integer ans = (Integer) map.get(Const.ANS);
-                if( start == -1 || ans == 0){
+                //Toast.makeText(context,map.toString(),Toast.LENGTH_SHORT).show();
+                String err = (String) map.get(Const.ERR);
+                if( start == -1 || err != null){
                     Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
                     swipeRefresh.setRefreshing(false);
                     start = -1;
                 }
                 else{
                     List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
-                    if(contentBeans == null)   contentBeans = new ArrayList<>();
+                    if(notes == null)   notes = new ArrayList<>();
                     id_list = (List<Integer>) map.get(Const.LIST);
                     if(start == 0){
                         Toast.makeText(context,"大请求：首次加载 或 顶部刷新加载数据",Toast.LENGTH_SHORT).show();
-                        contentBeans.clear();
+                        notes.clear();
                         for(Map<String,Object> one_note : result){
-                            contentBeans.add(convert2ContentBean(one_note));
+                            notes.add(convert2ContentBean(one_note));
                         }
                         initViews();
                         swipeRefresh.setRefreshing(false);
@@ -92,7 +93,7 @@ public class ContentHome {
                     }else {
                         Toast.makeText(context,"大请求：继续加载数据",Toast.LENGTH_SHORT).show();
                         for(Map<String,Object> one_note : result){
-                            contentBeans.add(convert2ContentBean(one_note));
+                            notes.add(convert2ContentBean(one_note));
                         }
                         adapter.notifyDataSetChanged();
                         swipeRefresh.setRefreshing(false);
@@ -106,12 +107,10 @@ public class ContentHome {
                 }
             }
             else if(msg.what == 0x2){
-                /**
-                 * 小请求测试
-                 */
+                //小请求，调用NoteTool的getSmallSectionHome
                 Map<String,Object>map = (Map<String, Object>) msg.obj;
-                Integer ans = (Integer) map.get(Const.ANS);
-                if(ans == 0){
+                String err = (String) map.get(Const.ERR);
+                if(err != null){
                     Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
                     setLoadingMore(false);
                     swipeRefresh.setRefreshing(false);
@@ -119,14 +118,30 @@ public class ContentHome {
                 }
                 else{
                     List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
-                    if(contentBeans == null)   contentBeans = new ArrayList<>();
+                    if(notes == null)   notes = new ArrayList<>();
                     for(Map<String,Object> one_note : result){
-                        contentBeans.add(convert2ContentBean(one_note));
+                        notes.add(convert2ContentBean(one_note));
                     }
                     adapter.notifyDataSetChanged();
                     Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                 }
             }
+            else if (msg.what == 0x3){
+                //续一秒，调用NoteTool的addSecond
+                Map<String,Object>map = (Map<String, Object>) msg.obj;
+                String err = (String) map.get(Const.ERR);
+                String good_num = (String) map.get(Const.GOOD_NUM);
+                if(err != null){
+                    //已经续过，不能再续
+                    Toast.makeText(context,err,Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(context,"成功续一秒",Toast.LENGTH_SHORT).show();
+                    //用返回的good_num更新帖子信息（可选）
+                    //...
+                }
+            }
+
+
         }
     };
 
@@ -139,19 +154,16 @@ public class ContentHome {
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
-
      //   current_user_id = 8;   //user_id=8,测试用
         NoteTool.getBigSectionHome(handler,String.valueOf(current_user_id),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
         flag = 0;
     }
 
-
-
     private void initViews(){
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new RecycleAdapter(context,contentBeans);
+        adapter = new RecycleAdapter(context, notes);
         recyclerView.setAdapter(adapter);
 
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
@@ -162,7 +174,7 @@ public class ContentHome {
                 refreshItems();
             }
         });
-        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, contentBeans) {
+        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, notes) {
             @Override
             public void onLoadMore(int currentPage) {
                 addItems();
@@ -263,8 +275,14 @@ public class ContentHome {
         adapter.setLoadingMore(isShow);
     }
 
+    //提供给MainActivity在发完帖子后OnResult的更新
+    public void reload(int user_id){
+        start = 0;
+        NoteTool.getBigSectionHome(handler,String.valueOf(user_id),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
+        flag = 0;
+    }
 
-    public ContentBean convert2ContentBean(Map<String,Object> map ){
+    public Note convert2ContentBean(Map<String,Object> map ){
         int note_id = (Integer) map.get(Const.NOTE_ID);
         int user_id = (Integer) map.get(Const.USER_ID);
         String name = (String) map.get(NICKNAME);
@@ -275,6 +293,7 @@ public class ContentHome {
         int relay_num = (Integer) map.get(Const.RELAY_NUM);
         int comment_num = (Integer) map.get(Const.COMMENT_NUM);
         int isRelay = (Integer) map.get(Const.ISRELAY);
+        String post_area = (String) map.get(Const.POST_AREA);
 
         //加入图片url和图片尺寸数组
         List<Map<String,Object>>image_url_size = (List<Map<String, Object>>) map.get(Const.IMAGE_LIST);
@@ -289,50 +308,77 @@ public class ContentHome {
         //加入标签数组
         List<String>tag_list = (List<String>) map.get(Const.TAG_LIST);
 
+        //加入评论数组
+        List<Comment>comment_list = new ArrayList<>();
+        List<Map<String,Object>>comment_list_map = (List<Map<String, Object>>) map.get(Const.COMMENT_LIST);
+        if(comment_list_map != null){
+            for(Map<String,Object> one_comment_map : comment_list_map){
+                Comment comment = new Comment();
+                comment.setComment_id((Integer) one_comment_map.get(Const.COMMENT_ID));
+                comment.setUser_id((Integer) one_comment_map.get(Const.USER_ID));
+                comment.setNickname((String) one_comment_map.get(Const.NICKNAME));
+                comment.setHead_image_url((String) one_comment_map.get(Const.HEAD_IMAGE_URL));
+                comment.setTo_comment_id((Integer) one_comment_map.get(Const.TO_COMMENT_ID));
+                comment.setNote_id((Integer) one_comment_map.get(Const.NOTE_ID));
+                comment.setComment_time(TimeUtil.getTimeDate((String) one_comment_map.get(Const.COMMENT_TIME)));
+                comment.setComment_content((String) one_comment_map.get(Const.COMMENT_CONTENT));
+                comment.setComment_good_num((Integer) one_comment_map.get(Const.COMMENT_GOOD_NUM));
+                if(comment.getTo_comment_id() != 0){
+                    //加入comment_origin
+                    Map<String,Object> origin_comment_map = (Map<String, Object>) one_comment_map.get(Const.ORIGIN_COMMENT);
+                    OriginComment originComment = new OriginComment();
+                    originComment.setComment_content((String) origin_comment_map.get(Const.COMMENT_CONTENT));
+                    originComment.setNickname((String) origin_comment_map.get(Const.NICKNAME));
+                    originComment.setUser_id((Integer) origin_comment_map.get(Const.USER_ID));
+                    comment.setOriginComment(originComment);
+                }
+            }
+        }
+
         //加入转发链
-       // List<RelayBean>relayBeans = null;
-        List<RelayBean> relayBeans = new ArrayList<>();
+        List<RelayNote> relayNotes = new ArrayList<>();
         if(isRelay != 0){
             List<Map<String,Object>>relay_list = (List<Map<String, Object>>) map.get(Const.RELAY_LIST);
-            relayBeans  = new ArrayList<>();
+            relayNotes = new ArrayList<>();
             //加入原贴
-            RelayBean origin_relayBean = new RelayBean();
-            origin_relayBean.setUser_id(user_id);
-            origin_relayBean.setContent(text);
-            origin_relayBean.setName(name);
-            relayBeans.add(origin_relayBean);
+            RelayNote origin_relayNote = new RelayNote();
+            origin_relayNote.setUser_id(user_id);
+            origin_relayNote.setContent(text);
+            origin_relayNote.setName(name);
+            relayNotes.add(origin_relayNote);
             for(Map<String,Object> one_relay_note : relay_list){
-                RelayBean relayBean = new RelayBean();
-                relayBean.setUser_id((Integer) one_relay_note.get(Const.USER_ID));
-                relayBean.setContent((String) one_relay_note.get(Const.NOTE_CONTENT));
-                relayBean.setName((String) one_relay_note.get(Const.NICKNAME));
-                relayBeans.add(relayBean);
+                RelayNote relayNote = new RelayNote();
+                relayNote.setUser_id((Integer) one_relay_note.get(Const.USER_ID));
+                relayNote.setContent((String) one_relay_note.get(Const.NOTE_CONTENT));
+                relayNote.setName((String) one_relay_note.get(Const.NICKNAME));
+                relayNotes.add(relayNote);
             }
             //最后反转一下
-            Collections.reverse(relayBeans);
+            Collections.reverse(relayNotes);
         }
         /**
          * 赋值给contentBean
          */
-        ContentBean contentBean = new ContentBean();
-        contentBean.setName(name);
-        contentBean.setUser_id(user_id);
-        contentBean.setComment_num(comment_num);
-        contentBean.setGood_num(good_num);
-        contentBean.setRelay_num(relay_num);
-        contentBean.setHead_image_url(head_image_url);
-        contentBean.setIsRelay(isRelay);
-        contentBean.setPost_time(post_time);
-        contentBean.setText(text);
-//        contentBean.setText(String.valueOf(note_id));
-        contentBean.setNote_id(note_id);
+        Note note = new Note();
+        note.setName(name);
+        note.setUser_id(user_id);
+        note.setComment_num(comment_num);
+        note.setGood_num(good_num);
+        note.setRelay_num(relay_num);
+        note.setHead_image_url(head_image_url);
+        note.setIsRelay(isRelay);
+        note.setPost_time(post_time);
+        note.setText(text);
+        note.setNote_id(note_id);
+        note.setPost_aera(post_area);
 
-        contentBean.setImgUrls(image_url);
-        contentBean.setImgSizes(image_size);
-        contentBean.setTag_list(tag_list);
-        contentBean.setRelayBeans(relayBeans);
-        contentBean.setFetchTime(System.currentTimeMillis());
-        System.out.println(contentBean);
-        return  contentBean;
+        note.setImgUrls(image_url);
+        note.setImgSizes(image_size);
+        note.setTag_list(tag_list);
+        note.setRelayNotes(relayNotes);
+        return note;
     }
+
+
+
 }

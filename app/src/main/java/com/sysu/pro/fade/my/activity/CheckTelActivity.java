@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.tool.RegisterTool;
+import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.utils.Const;
 
 /*
@@ -29,7 +29,7 @@ public class CheckTelActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what == 1){
                 String ans = (String) msg.obj;
-                Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
                 if(ans.equals("{}")){
 
                     //验证成功，跳转到输入密码界面
@@ -53,7 +53,7 @@ public class CheckTelActivity extends AppCompatActivity {
         btnToCheckNum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RegisterTool.toCheck(handler,mobilePhoneNumber,edGetCheckNum.getText().toString());
+                UserTool.toCheck(handler,mobilePhoneNumber,edGetCheckNum.getText().toString());
             }
         });
     }

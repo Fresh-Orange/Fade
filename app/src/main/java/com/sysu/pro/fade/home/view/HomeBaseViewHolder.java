@@ -20,12 +20,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.home.beans.ContentBean;
-import com.sysu.pro.fade.home.beans.RelayBean;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.RelayNote;
 
-import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,15 +32,14 @@ import java.util.List;
 
 abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	TextView tvName, tvBody;    //name为用户名，body为正文
+	ImageButton commentButton;    //评论按键
+	ImageButton addTimeButton;    //加一秒按键
+	ImageButton transmitButton;    //转发按键
 	EditText commentEditTextView;//评论的输入框
 	Button sendCommentButton;    //发送评论按键
 	LinearLayout commentEdit;    //包裹评论输入框和发送键的布局
 	LinearLayout tailLinearLayout;    //item的尾部布局
-	private ImageButton commentButton;    //评论按键
-	private ImageButton addTimeButton;    //加一秒按键
-	private ImageButton transmitButton;    //转发按键
 	private ImageView userAvatar;
-	private TextView addCountTextView, timeLeftTextView;
 
 	public HomeBaseViewHolder(View itemView) {
 		super(itemView);
@@ -57,84 +53,26 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		commentEdit = (LinearLayout) itemView.findViewById(R.id.edit_comment);
 		commentEditTextView = (EditText) itemView.findViewById(R.id.comment_edit_text_view);
 		sendCommentButton = (Button) itemView.findViewById(R.id.send_comment_button);
-		addCountTextView = (TextView) itemView.findViewById(R.id.tv_add_count);
-		timeLeftTextView = (TextView) itemView.findViewById(R.id.tv_time_left);
 	}
 
-	public void bindView(final Context context, List<ContentBean> data, int position) {
-		final ContentBean bean = data.get(position);
+	public void bindView(final Context context, List<Note> data, int position) {
+		final Note bean = data.get(position);
 		//设置头像
 		Glide.with(context).load(bean.getHead_image_url()).fitCenter().dontAnimate().into(userAvatar);
 
-		setOrCancleAddTime(bean);
-
 		tvName.setText(bean.getName());
-
-		addOrRemoveRelay(context, bean);
-		setAddCountText(context, bean);
-		setTimeLeftText(context, bean);
+		/*如果有转发信息，那么将正文界面隐藏起来（因为正文内容会在转发界面呈现）*/
+		if (!bean.getRelayNotes().isEmpty()) {
+			tvBody.setVisibility(View.GONE);
+			addRelayText(context, tailLinearLayout, bean);
+		}else{
+			tvBody.setVisibility(View.VISIBLE);
+			removeRelayText(tailLinearLayout);
+		}
 
 		setCommentVisAndLis(context);
 	}
 
-	/**
-	 * 1.续秒按钮设置初始图标
-	 * 2.续秒按钮的点击事件，变换图标以及状态，发送数据给服务器
-	 */
-	private void setOrCancleAddTime(final ContentBean bean) {
-		addTimeButton.setImageResource(bean.isGood() ? R.drawable.add_time_selected : R.drawable.add_time_unselected);
-		addTimeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (bean.isGood()) {
-					//TODO 发送数据给服务器
-					bean.setGood(false);
-					((ImageView) v).setImageResource(R.drawable.add_time_unselected);
-				} else {
-					//TODO 发送数据给服务器
-					bean.setGood(true);
-					((ImageView) v).setImageResource(R.drawable.add_time_selected);
-				}
-			}
-		});
-	}
-
-	/**
-	 * 如果有转发信息，那么将正文界面隐藏起来（因为正文内容会在转发界面呈现）
-	 * 没有转发信息则反之
-	 */
-	private void addOrRemoveRelay(Context context, ContentBean bean) {
-		if (!bean.getRelayBeans().isEmpty()) {
-			tvBody.setVisibility(View.GONE);
-			addRelayText(context, tailLinearLayout, bean);
-		} else {
-			tvBody.setVisibility(View.VISIBLE);
-			removeRelayText(tailLinearLayout);
-		}
-	}
-
-	private void setTimeLeftText(Context context, ContentBean bean) {
-		Date dateNow = new Date(bean.getFetchTime());
-		Date datePost = bean.getPost_time();
-		//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
-		long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE + 5 * bean.getGood_num()
-				- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
-		String sTimeLeft;
-		if (minuteLeft < 60)
-			sTimeLeft = String.valueOf(minuteLeft) + "分钟";
-		else if (minuteLeft < 1440)
-			sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 60)) + "小时";
-		else
-			sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 1440)) + "天";
-
-		timeLeftTextView.setText(context.getString(R.string.time_left_text, sTimeLeft));
-	}
-
-	private void setAddCountText(Context context, ContentBean bean) {
-		DecimalFormat decimalFormat = new DecimalFormat(",###");
-		String sCount = decimalFormat.format(bean.getGood_num());
-		addCountTextView.setText(context.getString(R.string.add_count_text, sCount));
-	}
 
 
 	/**
@@ -173,10 +111,10 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 *
 	 * @param context     上下文
 	 * @param parentView  转发布局的父布局
-	 * @param contentBean item的数据包
+	 * @param note item的数据包
 	 */
-	private void addRelayText(final Context context, ViewGroup parentView, ContentBean contentBean) {
-		List<RelayBean> relayBeans = contentBean.getRelayBeans();
+	private void addRelayText(final Context context, ViewGroup parentView, Note note) {
+		List<RelayNote> relayNotes = note.getRelayNotes();
 		LinearLayout relayTextLayout;
 		boolean noChild = false;
 		relayTextLayout = (LinearLayout) parentView.findViewById(R.id.relay_linear_layout);
@@ -190,7 +128,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		/*
 		 * 设置原贴的文字，以及原贴作者名点击事件
 		 */
-		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayBeans.get(0).getName() + "\n");
+		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayNotes.get(0).getName() + "\n");
 		ClickableSpan clickableSpan = new ClickableSpan() {
 			@Override
 			public void onClick(View widget) {
@@ -198,8 +136,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				Toast.makeText(context, "点击了用户名", Toast.LENGTH_SHORT).show();
 			}
 		};
-		spannableStringBuilder.append(relayBeans.get(0).getContent());
-		spannableStringBuilder.setSpan(clickableSpan, 0, relayBeans.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+		spannableStringBuilder.append(relayNotes.get(0).getContent());
+		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 		originalTextView.setText(spannableStringBuilder);
 		//文字的点击事件要加上这一句，不然不会生效
 		originalTextView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -208,24 +146,24 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		SpannableStringBuilder spannableStringBuilderRelay = new SpannableStringBuilder("");
 
 		//将当前用户(转发链的最后一个用户)单独设置，因为当前用户在转发链中不需要显示名字和冒号
-		spannableStringBuilderRelay.append(relayBeans.get(relayBeans.size() - 1).getContent());
-		int lastIndex = relayBeans.get(relayBeans.size() - 1).getContent().length() + 2;
+		spannableStringBuilderRelay.append(relayNotes.get(relayNotes.size() - 1).getContent() );
+		int lastIndex = relayNotes.get(relayNotes.size() - 1).getContent().length() + 2;
 
-		for (int i = relayBeans.size() - 2; i >= 1; i--) {
-			Log.d("relay1", relayBeans.get(i).getName() + " " + relayBeans.get(i).getContent());
-			spannableStringBuilderRelay.append("\\\\" + relayBeans.get(i).getName() + ":");
+		for (int i = relayNotes.size() - 2; i >= 1; i--) {
+			Log.d("relay1", relayNotes.get(i).getName()+" "+ relayNotes.get(i).getContent());
+			spannableStringBuilderRelay.append("\\\\" + relayNotes.get(i).getName() + ":");
 
-			spannableStringBuilderRelay.append(relayBeans.get(i).getContent());
+			spannableStringBuilderRelay.append(relayNotes.get(i).getContent());
 		}
-		for (int i = relayBeans.size() - 2; i >= 1; i--) {
-			final String name = relayBeans.get(i).getName();
+		for (int i = relayNotes.size() - 2; i >= 1; i--) {
+			final String name = relayNotes.get(i).getName();
 			spannableStringBuilderRelay.setSpan(new ClickableSpan() {
 				@Override
 				public void onClick(View widget) {
-					Toast.makeText(context, "点击了" + name, Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "点击了"+name, Toast.LENGTH_SHORT).show();
 				}
-			}, lastIndex, lastIndex + relayBeans.get(i).getName().length(), 0);
-			lastIndex += relayBeans.get(i).getName().length() + relayBeans.get(i).getContent().length() + 3;
+			}, lastIndex, lastIndex + relayNotes.get(i).getName().length(), 0);
+			lastIndex += relayNotes.get(i).getName().length() + relayNotes.get(i).getContent().length() + 3;
 		}
 		relayTextView.setText(spannableStringBuilderRelay);
 		//文字的点击事件要加上这一句，不然不会生效

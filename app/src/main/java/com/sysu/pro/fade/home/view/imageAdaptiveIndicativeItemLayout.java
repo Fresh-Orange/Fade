@@ -26,8 +26,8 @@ import com.sysu.pro.fade.home.activity.ImagePagerActivity;
 import java.io.Serializable;
 import java.util.List;
 
-import static com.sysu.pro.fade.tool.Screen.Dp2Px;
-import static com.sysu.pro.fade.tool.Screen.getScreenWidth;
+import static com.sysu.pro.fade.utils.Screen.Dp2Px;
+import static com.sysu.pro.fade.utils.Screen.getScreenWidth;
 
 /**
  * Created by LaiXiancheng on 2017/8/14.
