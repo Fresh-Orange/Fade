@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
-import com.sysu.pro.fade.home.beans.ContentBean;
+import com.sysu.pro.fade.beans.Note;
 
 import java.util.List;
 
@@ -31,11 +31,11 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	private Context context;
 	private int currentPage = 1;
 	private LinearLayoutManager mLinearLayoutManager;
-	private List<ContentBean> contentBeans;
+	private List<Note> notes;
 
-	public EndlessRecyclerOnScrollListener(Context context, LinearLayoutManager linearLayoutManager, List<ContentBean> contentBeans) {
+	public EndlessRecyclerOnScrollListener(Context context, LinearLayoutManager linearLayoutManager, List<Note> notes) {
 		this.mLinearLayoutManager = linearLayoutManager;
-		this.contentBeans = contentBeans;
+		this.notes = notes;
 		this.context = context;
 	}
 
@@ -60,11 +60,11 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		int lastVisible = layoutManager.findLastVisibleItemPosition();
 		if (firstVisible < lastVisible)
 			for (int i = firstVisible; i <= lastVisible; i++) {
-				if (i < contentBeans.size() && matchRemoveCondition(i)) {
+				if (i < notes.size() && matchRemoveCondition(i)) {
 					removeItem(recyclerView, i);
 				}
 			}
-		else if (lastVisible < contentBeans.size() && matchRemoveCondition(lastVisible)) {
+		else if (lastVisible < notes.size() && matchRemoveCondition(lastVisible)) {
 			removeItem(recyclerView, lastVisible);
 		}
 	}
@@ -76,7 +76,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	 * @return 是否满足移除条件
 	 */
 	private boolean matchRemoveCondition(int i) {
-		return contentBeans.get(i).getImgUrls().size() == 18;
+		return notes.get(i).getImgUrls().size() == 18;
 	}
 
 	/**
@@ -101,7 +101,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		float middleY = itemView.getTop() + itemView.getHeight() / 2;
 		if (middleY < 0 || middleY > recyclerView.getHeight())
 			return;
-		contentBeans.remove(position);
+		notes.remove(position);
 		recyclerView.getAdapter().notifyItemRemoved(position);
 
 		//移除之后，会有新的item填充进来，填充进来之后要判断是否移除，条件成立则移除。这样就变成了递归移除

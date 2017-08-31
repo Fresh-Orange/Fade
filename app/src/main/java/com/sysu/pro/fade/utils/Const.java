@@ -18,7 +18,7 @@ public class Const {
     public static final String NICKNAME     = "nickname";
     public static final String PASSWORD     = "password";
     public static final String SEX           = "sex";
-    public static final String IMAGE_URL    = "image_url";
+    public static final String HEAD_IMAGE_URL    = "head_image_url";
     public static final String REGISTER_TIME= "register_time";
     public static final String SUMMARY      = "summary";
     public static final String WECHAT_ID    = "wechat_id";
@@ -32,7 +32,6 @@ public class Const {
 
     //Note字段常量（有与user部分重叠的）
     public static final String NOTE_ID         = "note_id";
-    public static final String HEAD_IMAGE_URL  = "head_image_url";
     public static final String NOTE_CONTENT    = "note_content";
     public static final String POST_TIME       = "post_time";
     public static final String ISDIE_FANS      = "isDie_fans";
@@ -41,22 +40,40 @@ public class Const {
     public static final String RELAY_NUM       = "relay_num";
     public static final String GOOD_NUM        = "good_num";
     public static final String ISRELAY         = "isRelay";
+    public static final String POST_AREA        = "post_area";
 
     //note请求有关
     public static final String START        = "start";
     public static final String RESULT       = "result";
     public static final String ANS          = "ans";
-    public static final String IMAGE_LIST   = "image_list";
-    public static final String TAG_LIST      = "tag_list";
-    public static final String RELAY_LIST    = "relay_list";
+    public static final String ERR          = "err";
+
+    //一个帖子包括以下数组
+    public static final String IMAGE_LIST   = "image_list";  //图片数组
+    public static final String TAG_LIST      = "tag_list";    //标签数组
+    public static final String RELAY_LIST    = "relay_list"; //转发链数组
+    public static final String COMMENT_LIST   =  "comment_list";//三条热评组成的数组
+
+    //Comment字段常量
+    //8月1号加入，评论表
+    public static final String COMMENT_ID        ="comment_id";
+    public static final String TO_COMMENT_ID      ="to_comment_id";
+    public static final String COMMENT_TIME       ="comment_time";
+    public static final String COMMENT_CONTENT    ="comment_content";
+    public static final String COMMENT_GOOD_NUM   ="comment_good_num";
+    public static final String START_NUM          ="start_num";
+    public static final String ORIGIN_COMMENT     ="origin_comment";
+
+    //评论点赞表
+    public static final String COMMENT_GOOD_ID    ="comment_good_id";
 
     //一个图片应该包括以下
-   // public static final String IMAGE_URL =  "image_url";
+   public static final String IMAGE_URL =  "image_url";
     public static final String IMAGE_SIZE = "image_size";
 
     public static final int PAGE_SIZE = 5  ; //页面数量
-    public static final String IP = "sysufade.cn:8080"; //云服务器ip地址和端口号
-//    public static final String IP = "192.168.137.1:8080"; //本地ip地址和端口号
+    public static final String IP = "https://sysufade.cn/fade"; //云服务器ip地址和端口号
+    //public static final String IP = "http://192.168.137.1:8080/fade"; //本地ip地址和端口号
     public static final int HOME = 1;
     public static final int DISCOVER = 2;
     public static final int MESSAGE = 4;
@@ -70,8 +87,8 @@ public class Const {
     public static final String APP_ID = "flQyv4KhLIrCGcTQmKJTIigu-gzGzoHsz";
     public static final String APP_KEY = "2qHqzvu8oqNzlcpiPE2zsRQW";
 
-    //展示信息流用到的核心url
-    public static final String NOTE_URL = "https://sysufade.cn/Fade/note";;
     public static final String LIST = "list";
     public static final String CODE = "code";
+
+    public static final int PUBLISH_REQUEST_CODE = 1; //发送帖子的请求代号,返回码为1的话则发送成功，返回0的话发送失败
 }
