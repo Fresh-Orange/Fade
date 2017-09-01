@@ -36,6 +36,9 @@ public class Note implements Serializable {
     //2017.8.31新增
     private List<Comment>comment_list;  //三条热评组成的数组
 
+    //当前用户是否点赞
+    private Boolean isGood;
+
 
     public List<String> getTag_list() {
         return tag_list;
@@ -181,6 +184,14 @@ public class Note implements Serializable {
 
     public void setComment_list(List<Comment> comment_list) {
         this.comment_list = comment_list;
+    }
+
+    public Boolean getGood() {
+        return isGood;
+    }
+
+    public void setGood(Boolean good) {
+        isGood = good;
     }
 
     @Override

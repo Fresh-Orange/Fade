@@ -19,8 +19,16 @@ public class Comment implements Serializable{
 	private Date comment_time;          //评论时间
 	private String comment_content;       //评论内容
 	private Integer comment_good_num;     //评论点赞数
-
+	private Boolean comment_isGood;       //该用户是否对该评论点赞
 	private OriginComment originComment;  //如果是对某条评论的回复的话，则不为null
+
+	public Boolean getComment_isGood() {
+		return comment_isGood;
+	}
+
+	public void setComment_isGood(Boolean comment_isGood) {
+		this.comment_isGood = comment_isGood;
+	}
 
 	public OriginComment getOriginComment() {
 		return originComment;

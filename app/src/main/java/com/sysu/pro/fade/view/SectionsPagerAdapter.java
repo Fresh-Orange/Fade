@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.sysu.pro.fade.MainActivity;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 
 /**
  * Created by road on 2017/7/14.
