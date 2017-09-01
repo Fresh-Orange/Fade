@@ -2,14 +2,11 @@ package com.sysu.pro.fade.tool;
 
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
 
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.HttpUtils;
 import com.sysu.pro.fade.utils.GsonUtil;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
@@ -17,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -65,7 +61,7 @@ public class NoteTool {
         }.start();
     }
 
-    public static void getSmallSectionHome(final Handler handler, final String bunch){
+    public static void getSmallSectionHome(final Handler handler, final String user_id, final String bunch){
         //首页小请求，最多获得20条帖子内容
         new Thread(){
             @Override
@@ -73,7 +69,8 @@ public class NoteTool {
                 OkHttpClient mokHttpClient = new OkHttpClient();
                 Request.Builder builder = new Request.Builder().url(Const.IP
                         +"/note?bunch="+bunch
-                        +"&code=01");
+                        +"&code=01"
+                        +"&user_id="+user_id);
                 //设置参数
                 Request request = builder.build();
                 Call call = mokHttpClient.newCall(request);
@@ -94,7 +91,7 @@ public class NoteTool {
         }.start();
     }
 
-    public static void getSectionDiscoverRecommond(final  Handler handler, final String start){
+    public static void getSectionDiscoverRecommond(final  Handler handler, final String user_id,final String start){
         //发现推荐版块，20条一次 加载数据的请求：
         new Thread(){
             @Override
@@ -102,7 +99,8 @@ public class NoteTool {
                 OkHttpClient mokHttpClient = new OkHttpClient();
                 Request.Builder builder = new Request.Builder().url(Const.IP
                         +"/note?start="+start
-                        +"&code=05");
+                        +"&code=05"
+                        +"user_id="+user_id);
                 //设置参数
                 Request request = builder.build();
                 Call call = mokHttpClient.newCall(request);
@@ -128,7 +126,6 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
-                HttpClient httpClient = new DefaultHttpClient();
                 List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
                 list.add(new BasicNameValuePair(Const.USER_ID, user_id.toString()));
                 list.add(new BasicNameValuePair(Const.NICKNAME, nickname));

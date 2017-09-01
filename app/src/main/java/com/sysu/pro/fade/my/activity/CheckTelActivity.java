@@ -8,11 +8,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 
 /*
 短信发出后输入验证码的界面

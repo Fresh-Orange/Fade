@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.PhotoUtils;
 
 import java.io.File;

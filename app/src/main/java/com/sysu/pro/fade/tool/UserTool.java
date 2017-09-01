@@ -3,7 +3,7 @@ package com.sysu.pro.fade.tool;
 import android.os.Handler;
 import android.os.Message;
 
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.GsonUtil;
 
 import org.apache.http.HttpEntity;

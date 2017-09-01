@@ -18,14 +18,14 @@ import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.sysu.pro.fade.utils.Const.FANS_NUM;
-import static com.sysu.pro.fade.utils.Const.WALLPAPER_URL;
+import static com.sysu.pro.fade.Const.FANS_NUM;
+import static com.sysu.pro.fade.Const.WALLPAPER_URL;
 
 /*
 用户名密码方式的登录界面

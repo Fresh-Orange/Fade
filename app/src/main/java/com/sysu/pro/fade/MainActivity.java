@@ -23,7 +23,6 @@ import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.publish.PublishActivity;
-import com.sysu.pro.fade.utils.Const;
 import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
