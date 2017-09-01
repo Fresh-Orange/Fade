@@ -12,10 +12,7 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.utils.Const;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sysu.pro.fade.Const;
 
 import java.util.Map;
 

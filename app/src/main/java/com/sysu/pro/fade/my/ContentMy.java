@@ -15,7 +15,7 @@ import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 
 /**
  * Created by road on 2017/7/14.

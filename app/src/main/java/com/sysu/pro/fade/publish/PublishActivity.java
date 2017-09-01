@@ -50,7 +50,7 @@ import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.tool.NoteTool;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.io.File;

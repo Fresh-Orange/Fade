@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.User;
 
-import static com.sysu.pro.fade.utils.Const.USER_SHARE;
+import static com.sysu.pro.fade.Const.USER_SHARE;
 
 /**
  * Created by road on 2017/8/19.
