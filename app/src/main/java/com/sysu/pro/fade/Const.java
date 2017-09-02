@@ -4,6 +4,11 @@ package com.sysu.pro.fade;
  * Created by road on 2017/7/10.
  */
 public class Const {
+    /*
+    信息流相关常量
+     */
+    public static final int HOME_NODE_DEFAULT_LIFE = 60;    //单位：分钟
+    public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
 
     public static final String IP = "https://sysufade.cn/fade"; //云服务器ip地址和端口号
     //public static final String IP = "http://192.168.137.1:8080/fade"; //本地ip地址和端口号
