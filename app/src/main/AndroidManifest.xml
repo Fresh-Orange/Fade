@@ -17,12 +17,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"/>
         <activity android:name=".my.activity.AddContentActivity" />
         <activity android:name=".my.activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -35,6 +34,10 @@
         <activity android:name=".my.setting.Personal" />
         <activity android:name=".my.setting.Safety" />
         <activity android:name=".my.setting.About"></activity>
+        <activity android:name=".home.activity.ImagePagerActivity" android:theme="@style/imagePagerTheme"/>
+        <activity android:name=".publish.PublishActivity"></activity>
+        <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
+        <activity android:name=".publish.imageselector.PreviewActivity"></activity>
     </application>
 
 </manifest>

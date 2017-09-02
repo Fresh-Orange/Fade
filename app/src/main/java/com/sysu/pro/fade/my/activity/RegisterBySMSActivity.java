@@ -11,11 +11,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.tool.RegisterTool;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.tool.UserTool;
+import com.sysu.pro.fade.Const;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Map;
 
 /*
 验证手机号码界面
@@ -29,22 +28,19 @@ public class RegisterBySMSActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(msg.what == 2){
-                String ans_str = (String) msg.obj;
-                try {
-                    JSONObject jsonObject = new JSONObject(ans_str);
-                    String ans = jsonObject.getString("ans");
-                    Toast.makeText(RegisterBySMSActivity.this,ans,Toast.LENGTH_SHORT).show();
-                    if(ans.equals("没有注册")){
-                        RegisterTool.sendIdentifyCode(handler,edTelphone.getText().toString());
+                Map<String,Object>map = (Map<String, Object>) msg.obj;
+                    Integer ans = (Integer) map.get(Const.ANS);
+                    if(ans == 0){
+                        Toast.makeText(RegisterBySMSActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
+                        UserTool.sendIdentifyCode(handler,edTelphone.getText().toString());
+                    }else{
+                        Toast.makeText(RegisterBySMSActivity.this,"该手机号已经注册",Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
 
             if(msg.what == 1){
                 String ans_str = (String) msg.obj;
-                Toast.makeText(RegisterBySMSActivity.this,ans_str,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(RegisterBySMSActivity.this,ans_str,Toast.LENGTH_SHORT).show();
                 if(ans_str.equals("{}")){
                     Intent intent = new Intent(RegisterBySMSActivity.this,CheckTelActivity.class);
                     intent.putExtra("mobilePhoneNumber",edTelphone.getText().toString());
@@ -66,7 +62,7 @@ public class RegisterBySMSActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //先校验该手机号是否已经被注册
-                RegisterTool.checkTel(Const.IP,handler,edTelphone.getText().toString());
+                UserTool.checkTel(Const.IP,handler,edTelphone.getText().toString());
             }
         });
 

@@ -18,12 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.discover.ContentDiscover;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.publish.PublishActivity;
+import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private CustomViewPager mViewPager;
     private TabLayout mTabLayoutMenu;
     public Toolbar mToolbar;
+    private User user;
+
 
     /*
     上次back的时间，用于双击退出判断
@@ -44,8 +50,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //初始化用户信息
+        user = new UserUtil(this).getUer();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        /*
+        项目中该activity默认背景总是处于被覆盖状态。去除背景可以优化GPU绘制，减少一层绘制 --- by 赖贤城
+         */
+        getWindow().setBackgroundDrawable(null);
 
         mViewPager = (CustomViewPager) findViewById(R.id.container);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -55,7 +67,16 @@ public class MainActivity extends AppCompatActivity {
         mTabLayoutMenu = (TabLayout) findViewById(R.id.tab_layout_menu);
         bindPagerAndTab();
         setupTabIcon();
-
+        TabLayout.Tab publishTab = mTabLayoutMenu.getTabAt(2);
+        View publishTabView = publishTab.getCustomView();
+        publishTabView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PublishActivity.class);
+                startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
+                //跳转到发布页
+            }
+        });
     }
 
     //设置底部导航栏图片
@@ -65,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
                 createView(res.getDrawable(R.drawable.scenery_normal), "首页")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.drawable.community_normal), "发现")));
+        mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
+                createView(res.getDrawable(R.drawable.add), "发布")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.drawable.route_normal), "消息")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
@@ -130,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         }else if (tab.getPosition() == Const.MESSAGE-1) {
             img_title.setImageDrawable(res.getDrawable(R.drawable.route_selected));
             mViewPager.setCurrentItem(Const.MESSAGE-1,false);
-        } else {
+        } else if(tab.getPosition() == Const.MY-1){
             img_title.setImageDrawable(res.getDrawable(R.drawable.my_selected));
             mViewPager.setCurrentItem(Const.MY-1,false);
         }
@@ -149,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             img_title.setImageDrawable(res.getDrawable(R.drawable.community_normal));
         }else if (tab.getPosition() == Const.MESSAGE-1) {
             img_title.setImageDrawable(res.getDrawable(R.drawable.route_normal));
-        }else {
+        }else if(tab.getPosition() == Const.MY-1){
             img_title.setImageDrawable(res.getDrawable(R.drawable.my_normal));
         }
     }
@@ -170,18 +193,18 @@ public class MainActivity extends AppCompatActivity {
             //返回时重新加载数据
             super.onResume();
             if(contentHome != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.HOME){
-                contentHome.loadData();
+               // contentHome.loadData();
             }
             if(contentDiscover != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.DISCOVER){
-                contentDiscover.loadData();
+                //contentDiscover.loadData();
             }
 
             if(contentMessage != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MESSAGE){
-                contentMessage.loadData();
+                //contentMessage.loadData();
             }
 
             if(contentMy != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MY){
-                contentMy.loadData();
+                //contentMy.loadData();
             }
 
 
@@ -233,14 +256,24 @@ public class MainActivity extends AppCompatActivity {
             }
             return rootView;
         }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            switch (requestCode){
+                case Const.PUBLISH_REQUEST_CODE:{
+                    if(resultCode == 1){
+                        //发布成功的话则刷新
+                        MainActivity activity = (MainActivity) getActivity();
+                        contentHome.reload(activity.getCurrentUser().getUser_id());
+                    }
+                }
+                break;
+            }
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 
-    //处理一些界面更新
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
     @Override
     public void onBackPressed() {
@@ -251,5 +284,24 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "双击 back 退出", Toast.LENGTH_SHORT).show();
         }
         lastBackTime = currentTime;
+    }
+
+    public User getCurrentUser(){
+        //用于在fragment中，获取当前的用户对象
+        return  user;
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
+        //为fragment赋值
+        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();
+        Fragment fragmentHome = fragments.get(0);
+        if(requestCode == Const.PUBLISH_REQUEST_CODE){
+            //转交给fragmentHome处理
+            fragmentHome.onActivityResult(requestCode,resultCode,data);
+        }
     }
 }
