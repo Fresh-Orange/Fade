@@ -13,4 +13,10 @@
     <dimen name="foot_item_height">50dp</dimen>
     <dimen name="foot_item_text_size">15sp</dimen>
     <dimen name="viewPagerMaxHeight">400dp</dimen>
+
+    <!--for Publish fragment-->
+    <dimen name="article_post_et_h">100dp</dimen>
+    <dimen name="article_post_delete">50dp</dimen>
+    <dimen name="article_img_margin_top">10dp</dimen>
+    <dimen name="article_img_dimens">70dp</dimen>
 </resources>

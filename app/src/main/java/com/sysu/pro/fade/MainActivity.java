@@ -13,19 +13,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
-import com.sysu.pro.fade.domain.User;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayoutMenu;
     public Toolbar mToolbar;
     private User user;
+
 
     /*
     上次back的时间，用于双击退出判断
@@ -47,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /*用以解决输入评论时底部导航栏被顶起的问题*/
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         //初始化用户信息
         user = new UserUtil(this).getUer();
-
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         /*
@@ -70,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
         publishTabView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this,"点击啦发布按钮",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, PublishActivity.class);
+                startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                 //跳转到发布页
             }
         });
@@ -253,14 +259,24 @@ public class MainActivity extends AppCompatActivity {
             }
             return rootView;
         }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            switch (requestCode){
+                case Const.PUBLISH_REQUEST_CODE:{
+                    if(resultCode == 1){
+                        //发布成功的话则刷新
+                        MainActivity activity = (MainActivity) getActivity();
+                        contentHome.reload(activity.getCurrentUser().getUser_id());
+                    }
+                }
+                break;
+            }
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 
-    //处理一些界面更新
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
     @Override
     public void onBackPressed() {
@@ -276,5 +292,19 @@ public class MainActivity extends AppCompatActivity {
     public User getCurrentUser(){
         //用于在fragment中，获取当前的用户对象
         return  user;
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
+        //为fragment赋值
+        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();
+        Fragment fragmentHome = fragments.get(0);
+        if(requestCode == Const.PUBLISH_REQUEST_CODE){
+            //转交给fragmentHome处理
+            fragmentHome.onActivityResult(requestCode,resultCode,data);
+        }
     }
 }

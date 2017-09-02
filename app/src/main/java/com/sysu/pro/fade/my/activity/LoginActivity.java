@@ -14,19 +14,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.MainActivity;
-import com.sysu.pro.fade.utils.Const;
-import com.sysu.pro.fade.tool.LoginTool;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sysu.pro.fade.tool.UserTool;
+import com.sysu.pro.fade.Const;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.sysu.pro.fade.Const.FANS_NUM;
+import static com.sysu.pro.fade.Const.WALLPAPER_URL;
 
 /*
 用户名密码方式的登录界面
@@ -36,10 +35,11 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView iv_personal_icon;
     private EditText edAccount;
     private EditText edPassword;
-    private Button btnLogin;
+    private TextView btnLogin;
     private TextView tvToRegister;
     private SharedPreferences sharedPreferences;
     private ProgressDialog progressDialog;
+    private ImageView backIcon1;    //登录界面的返回键
 
     private String accountType = Const.TELEPHONE;
 
@@ -47,40 +47,25 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if(msg.what == 1){
-                String ans_str = (String) msg.obj;
-                String image_url = "";  String nickname = "";   String fade_name = "";
-                String telephone = "";  String sex = "";        Integer ans = 0;
-                String mail = "";       String register_time="";String summary="";
-                String wallpaper_url = "";  String aera = "";
-                Integer user_id = 0;
-                Integer concern_num = 0; Integer fans_num = 0;
-                String wehcat_id = ""; String weibo_id = "";  String qq_id="";
+                Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
+                String head_image_url = (String) ans_map.get(Const.HEAD_IMAGE_URL);
+                String nickname = (String) ans_map.get(Const.NICKNAME);
+                String fade_name = (String) ans_map.get(Const.FADE_NAME);
+                String telephone = (String) ans_map.get(Const.TELEPHONE);
+                String sex = (String) ans_map.get(Const.SEX);
+                String err  = (String) ans_map.get(Const.ERR);
+                String register_time= (String) ans_map.get(Const.REGISTER_TIME);
+                String summary = (String) ans_map.get(Const.SUMMARY);
+                String wallpaper_url = (String) ans_map.get(WALLPAPER_URL);
+                String aera = (String) ans_map.get(Const.AREA);
+                Integer user_id = (Integer) ans_map.get(Const.USER_ID);
+                Integer concern_num = (Integer) ans_map.get(Const.CONCERN_NUM);
+                Integer fans_num = (Integer) ans_map.get(FANS_NUM);
+                String wehcat_id = (String) ans_map.get(Const.WECHAT_ID);
+                String weibo_id = (String) ans_map.get(Const.WEIBO_ID);
+                String qq_id = (String) ans_map.get(Const.QQ_ID);
 
-                try {
-                    JSONObject jsonObject = new JSONObject(ans_str);
-                    ans = jsonObject.getInt("ans");
-                    image_url = jsonObject.getString(Const.IMAGE_URL);
-                    nickname = jsonObject.getString(Const.NICKNAME);
-                    fade_name = jsonObject.getString(Const.FADE_NAME);
-                    telephone = jsonObject.getString(Const.TELEPHONE);
-                    sex = jsonObject.getString(Const.SEX);
-                    user_id = jsonObject.getInt(Const.USER_ID);
-                    concern_num = jsonObject.getInt(Const.CONCERN_NUM);
-                    fans_num = jsonObject.getInt(Const.FANS_NUM);
-                    mail = jsonObject.getString(Const.MAIL);
-                    register_time = jsonObject.getString(Const.REGISTER_TIME);
-                    summary = jsonObject.getString(Const.SUMMARY);
-                    wallpaper_url = jsonObject.getString(Const.WALLPAPER_URL);
-                    wehcat_id = jsonObject.getString(Const.WECHAT_ID);
-                    weibo_id = jsonObject.getString(Const.WEIBO_ID);
-                    qq_id = jsonObject.getString(Const.QQ_ID);
-                    aera = jsonObject.getString(Const.AREA);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                if(ans == 1){
+                if(err == null){
                     Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                     //更新存储数据
                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -92,53 +77,45 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString(Const.FADE_NAME,edAccount.getText().toString());
 
                     editor.putString(Const.PASSWORD,edPassword.getText().toString());
-                    editor.putString(Const.IMAGE_URL,image_url);
+                    editor.putString(Const.HEAD_IMAGE_URL,head_image_url);
                     editor.putString(Const.NICKNAME,nickname);
                     editor.putString(Const.FADE_NAME,fade_name);
                     editor.putString(Const.TELEPHONE,telephone);
                     editor.putString(Const.SEX,sex);
                     editor.putInt(Const.USER_ID,user_id);
                     editor.putInt(Const.CONCERN_NUM,concern_num);
-                    editor.putInt(Const.FANS_NUM,fans_num);
-                    editor.putString(Const.MAIL,mail);
+                    editor.putInt(FANS_NUM,fans_num);
                     editor.putString(Const.REGISTER_TIME,register_time);
                     editor.putString(Const.SUMMARY,summary);
-                    editor.putString(Const.WALLPAPER_URL,wallpaper_url);
+                    editor.putString(WALLPAPER_URL,wallpaper_url);
                     editor.putString(Const.WECHAT_ID,wehcat_id);
                     editor.putString(Const.WEIBO_ID,weibo_id);
                     editor.putString(Const.QQ_ID,qq_id);
                     editor.putString(Const.AREA,aera);
-
                     editor.commit();
                     startActivity(new Intent(LoginActivity.this,MainActivity.class));
                     progressDialog.dismiss();
                     finish();
                 }else{
-                    Toast.makeText(LoginActivity.this,"登录失败，账号密码错误",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,err,Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                 }
             }
-            if(msg.what == 2){
-                String ans_str = (String) msg.obj;
-                Integer ans = 0;  String image_url2 = "";
-                try {
-                    JSONObject jsonObject2 = new JSONObject(ans_str);
-                    image_url2 = jsonObject2.getString(Const.IMAGE_URL);
-                    ans = jsonObject2.getInt("ans");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                if(image_url2 != null){
-                     if(ans == 1 && (!image_url2.equals(""))){
+            else if(msg.what == 2){
+                Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
+                String err = (String) ans_map.get(Const.ERR);
+                String head_image_url2 = (String) ans_map.get(Const.HEAD_IMAGE_URL);
+                if(err == null){
+                     if(head_image_url2 != null){
                          Toast.makeText(LoginActivity.this,"成功获取用户头像",Toast.LENGTH_SHORT).show();
-                         Picasso.with(LoginActivity.this).load(image_url2).into(iv_personal_icon);
+                         Picasso.with(LoginActivity.this).load(head_image_url2).into(iv_personal_icon);
                      }else{
                          Toast.makeText(LoginActivity.this,"使用默认头像",Toast.LENGTH_SHORT).show();
                          iv_personal_icon.setImageResource(R.drawable.default_head);
                      }
                 }else{
                     iv_personal_icon.setImageResource(R.drawable.default_head);
+                    Toast.makeText(LoginActivity.this,err,Toast.LENGTH_SHORT).show();
                 }
             }
             super.handleMessage(msg);
@@ -153,11 +130,11 @@ public class LoginActivity extends AppCompatActivity {
         iv_personal_icon = (ImageView) findViewById(R.id.ivLoginUserHead);
         edAccount = (EditText) findViewById(R.id.edAccount);
         edPassword = (EditText) findViewById(R.id.edPassword);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin = (TextView) findViewById(R.id.btnLogin);
         tvToRegister = (TextView) findViewById(R.id.tvToRegister);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
         progressDialog = new ProgressDialog(LoginActivity.this);
-
+        backIcon1 = (ImageView) findViewById(R.id.back_icon_1);
 
         edPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -167,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                     String  accunt = edAccount.getText().toString();
                     if(accunt != ""){
                         judgeAccount(accunt);
-                        LoginTool.getHeadImageUrl(handler,Const.IP,accunt,accountType);
+                        UserTool.getHeadImageUrl(handler,Const.IP,accunt,accountType);
                     }
                 }
             }
@@ -190,11 +167,18 @@ public class LoginActivity extends AppCompatActivity {
                 if((!account.equals("")) && (!password.equals(""))){
                     progressDialog.show();
                     judgeAccount(account);
-                    LoginTool.sendToLogin(handler, Const.IP,password,account,accountType);
+                    UserTool.sendToLogin(handler, Const.IP,password,account,accountType);
                 }else{
                     Toast.makeText(LoginActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        backIcon1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

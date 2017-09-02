@@ -2,11 +2,12 @@ package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
-import com.sysu.pro.fade.home.beans.ContentBean;
 
 import java.util.List;
 
@@ -25,10 +26,10 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 	}
 
 	@Override
-	public void bindView(final Context context, List<ContentBean> data, int  position){
+	public void bindView(final Context context, List<Note> data, int  position){
 		super.bindView(context, data, position);
 
-		final ContentBean bean = data.get(position);
+		final Note bean = data.get(position);
 
 		if (data != null && data.size() > 0) {
 			/**
@@ -37,12 +38,13 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			 */
 			pager.setId(++RecycleAdapter.viewPagerTag);
 
-			imageLayout.setViewPagerMaxHeight(500);
-			double RatioMax = 0;
+			double RatioMax = 1;
 			for (double d:bean.getImgSizes()) {
-				RatioMax = RatioMax > d ? RatioMax : d;
+				Log.d("Ratio", " "+d);
+				RatioMax = RatioMax < d ? RatioMax : d;
 			}
-			imageLayout.setHeightByRatio(((float) RatioMax));
+			imageLayout.setViewPagerMaxHeight(600);
+			imageLayout.setHeightByRatio(((float) (1.0/RatioMax)));
 			imageLayout.setPaths(bean.getImgUrls());
 		}
 	}
