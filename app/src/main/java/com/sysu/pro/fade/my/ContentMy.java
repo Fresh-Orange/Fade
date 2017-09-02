@@ -27,8 +27,8 @@ public class ContentMy {
     private SharedPreferences sharedPreferences;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
+    private Button mySetting;
     private User user;
-
 
     public ContentMy(final Activity activity, Context context, View rootview){
         this.activity = activity;
@@ -41,6 +41,17 @@ public class ContentMy {
         ivShowHead = (ImageView) rootview.findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
         loadData();
+
+        //设置
+        mySetting = (Button)  rootview.findViewById(R.id.MySetting);
+        mySetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, MySetting.class);
+                activity.startActivityForResult(intent, 1);
+            }
+        });
+        //修改壁纸
 
         //退出登录
         Button btnLogout = (Button) rootview.findViewById(R.id.btnLogout);
