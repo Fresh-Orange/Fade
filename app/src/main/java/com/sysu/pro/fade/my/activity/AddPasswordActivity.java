@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 
 public class AddPasswordActivity extends AppCompatActivity {
 

@@ -3,6 +3,7 @@ package com.sysu.pro.fade.discover;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * Created by road on 2017/7/14.

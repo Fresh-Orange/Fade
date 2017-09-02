@@ -8,11 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
-import com.sysu.pro.fade.utils.Const;
+import com.sysu.pro.fade.Const;
 
 /**
  * Created by road on 2017/7/14.
@@ -25,17 +28,18 @@ public class ContentMy {
     private ImageView ivShowHead;
     private TextView tvShowNickname;
     private Button mySetting;
-
+    private User user;
 
     public ContentMy(final Activity activity, Context context, View rootview){
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
+        Toast.makeText(context,"我的",Toast.LENGTH_SHORT).show();
+        //初始化用户信息
+        user = ((MainActivity) activity).getCurrentUser();
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
         ivShowHead = (ImageView) rootview.findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
-
-
         loadData();
 
         //设置
@@ -59,6 +63,7 @@ public class ContentMy {
                 editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
                 editor.commit();
                 activity.startActivity(new Intent(activity, GuideActivity.class));
+                activity.finish();
          }
         });
 
@@ -67,15 +72,20 @@ public class ContentMy {
     public  void loadData(){
         //获取本地用户信息举例
         String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
-        String image_url = sharedPreferences.getString(Const.IMAGE_URL,"");
-        String nickname = sharedPreferences.getString(Const.NICKNAME,"");
-        if(login_type.equals("")){
+        String image_url = user.getHead_image_url();
+        String nickname = user.getNickname();
+        if(login_type.equals("") || image_url == null || image_url.equals("")){
             ivShowHead.setImageResource(R.drawable.default_head);
-            tvShowNickname.setText("未登录");
         }else{
             Picasso.with(context).load(image_url).into(ivShowHead);
+        }
+        if(nickname.equals("")){
+            tvShowNickname.setText("未登录");
+        }else{
             tvShowNickname.setText(nickname);
         }
+
+
 
 
 

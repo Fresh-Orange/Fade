@@ -21,18 +21,14 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.utils.Const;
-import com.sysu.pro.fade.tool.RegisterTool;
+import com.sysu.pro.fade.tool.UserTool;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.PhotoUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.util.UUID;
+import java.util.Map;
 
 /*
 用户名+密码的注册界面
@@ -61,57 +57,66 @@ public class AddContentActivity extends AppCompatActivity {
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            if(msg.what == 1){
-                String ans_str = (String) msg.obj;
-                String fade_name = "";
-                String user_id = "";
-                String register_time = "";
-                String ans = "";
-                try {
-                    JSONObject jsonObject = new JSONObject(ans_str);
-                    fade_name = jsonObject.getString(Const.FADE_NAME);
-                    user_id = jsonObject.getString(Const.USER_ID);
-                    register_time = jsonObject.getString(Const.REGISTER_TIME);
-                    ans = jsonObject.getString("ans");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(AddContentActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("注册成功")){
-                    //成功则发送图片,并存储昵称  fade号  电话  性别  密码 user_id image_url 注册时间
-                    RegisterTool.sendImage(Const.IP,handler,"head",imagePath,user_id);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(Const.NICKNAME,edUserName.getText().toString());
-                    editor.putString(Const.USER_ID,user_id);
-                    editor.putString(Const.SEX,sex);
-                    editor.putString(Const.PASSWORD,password);
-                    editor.putString(Const.TELEPHONE,telephone);
-                    editor.putString(Const.FADE_NAME,fade_name);
-                    editor.putString(Const.REGISTER_TIME,register_time);
-                    //最后设置登陆类型 为账号密码登陆
-                    editor.putString(Const.LOGIN_TYPE,"0");
-                    editor.commit();
-                }else{
-                    progressDialog.dismiss();
-                }
-                super.handleMessage(msg);
-            }else{
-                String rsp = (String) msg.obj;
-                String image_url = "";
-                try {
-                    JSONObject jsonObject2 = new JSONObject(rsp);
-                    image_url = jsonObject2.getString(Const.IMAGE_URL);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                SharedPreferences.Editor editor2 = sharedPreferences.edit();
-                editor2.putString(Const.IMAGE_URL,image_url);
-                editor2.commit();
-                progressDialog.dismiss();
-                startActivity(new Intent(AddContentActivity.this,MainActivity.class));
-                finish();
-            }
+            switch (msg.what){
+                case 1:{
+                    Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
+                    String fade_name = (String) ans_map.get(Const.FADE_NAME);
+                    Integer user_id = (Integer) ans_map.get(Const.USER_ID);
+                    String register_time = (String) ans_map.get(Const.REGISTER_TIME);
+                    String err = (String) ans_map.get(Const.ERR);
+                    if(err == null){
+                        Toast.makeText(AddContentActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
+                        //成功则发送图片,并存储昵称  fade号  电话  性别  密码 user_id head_image_url 注册时间
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(Const.NICKNAME,edUserName.getText().toString());
+                        editor.putInt(Const.USER_ID,user_id);
+                        editor.putString(Const.SEX,sex);
+                        editor.putString(Const.PASSWORD,password);
+                        editor.putString(Const.TELEPHONE,telephone);
+                        editor.putString(Const.FADE_NAME,fade_name);
+                        editor.putString(Const.REGISTER_TIME,register_time);
+                        //最后设置登陆类型 为账号密码登陆
+                        editor.putString(Const.LOGIN_TYPE,"0");
+                        editor.commit();
+                        //如果本地头像不为空的话，则上传到服务器
+                        if(imagePath != null)
+                            UserTool.uploadHeadImage(handler,user_id,imagePath);
+                        else{
+                            progressDialog.dismiss();
+                            startActivity(new Intent(AddContentActivity.this,MainActivity.class));
+                            finish();
+                        }
 
+                    }else {
+                        Toast.makeText(AddContentActivity.this,err,Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
+                }
+                break;
+
+                case 2:{
+                    Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
+                    String head_image_url = (String) ans_map.get(Const.HEAD_IMAGE_URL);
+                    String err = (String) ans_map.get(Const.ERR);
+                    if(err == null){
+                        SharedPreferences.Editor editor2 = sharedPreferences.edit();
+                        editor2.putString(Const.HEAD_IMAGE_URL,head_image_url);
+                        editor2.commit();
+                        progressDialog.dismiss();
+                        //发送头像成功
+                        startActivity(new Intent(AddContentActivity.this,MainActivity.class));
+                        finish();
+                        progressDialog.dismiss();
+                    }else{
+                        Toast.makeText(AddContentActivity.this,err,Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AddContentActivity.this,MainActivity.class));
+                        finish();
+                        progressDialog.dismiss();
+                    }
+                }
+                break;
+            }
+            super.handleMessage(msg);
         }
     };
 
@@ -155,7 +160,7 @@ public class AddContentActivity extends AppCompatActivity {
                 if(nickname.equals("")){
                     Toast.makeText(AddContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();
                 }else{
-                    RegisterTool.sendToRegister(Const.IP,handler,nickname,password,sex,telephone);
+                    UserTool.sendToRegister(Const.IP,handler,nickname,password,sex,telephone);
                 }
             }
         });
