@@ -136,6 +136,7 @@ public class BeanConvertUtil {
         note.setTag_list(tag_list);
         note.setRelayNotes(relayNotes);
         note.setGood(isGood);
+        note.setFetchTime(System.currentTimeMillis());
         return note;
     }
 

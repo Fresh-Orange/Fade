@@ -77,7 +77,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	}
 
 	private void init() {
-		inflate(getContext(), R.layout.image_pager_layout, this);
+		inflate(getContext(), R.layout.home_image_pager_layout, this);
 		this.pager = (ViewPager) findViewById(R.id.pager);
 		this.dotLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_dots);
 	}
