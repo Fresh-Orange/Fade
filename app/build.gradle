@@ -19,7 +19,7 @@ android {
     }
 
     //为了解决部分第三方库重复打包了META-INF的问题
-    packagingOptions{
+    packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
@@ -34,7 +34,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile files('libs/httpclient-4.2.5.jar')
     compile files('libs/httpcore-4.2.4.jar')
     compile files('libs/afinal_0.5.1_bin.jar')
@@ -49,26 +48,33 @@ dependencies {
     //图片缩放库
     //compile 'com.github.chrisbanes:PhotoView:2.0.0'
     //圆形图像库
-    compile 'de.hdodenhof:circleimageview:2.1.0'
     //数据库简化操作库
-    compile 'org.litepal.android:core:1.5.1'
     //Http客户端
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
     //对OkHttp的进一步封装
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
     // LeanCloud 基础包
-    compile 'cn.leancloud.android:avoscloud-sdk:v4.3.2'
     // 推送与实时聊天需要的包
     compile('cn.leancloud.android:avoscloud-push:v4.3.2@aar') { transitive = true }
     // LeanCloud 统计包
-    compile 'cn.leancloud.android:avoscloud-statistics:v4.3.2'
     // LeanCloud 用户反馈包
-    compile 'cn.leancloud.android:avoscloud-feedback:v4.3.2@aar'
     // avoscloud-sns：LeanCloud 第三方登录包
-    compile 'cn.leancloud.android:avoscloud-sns:v4.3.2@aar'
-    compile 'cn.leancloud.android:qq-sdk:1.6.1-leancloud'
     // 目前新浪微博官方只提供 jar 包的集成方式
     // 请手动下载新浪微博 SDK 的 jar 包，将其放在 libs 目录下进行集成
     // LeanCloud 应用内搜索包
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'org.litepal.android:core:1.5.1'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'cn.leancloud.android:avoscloud-sdk:v4.3.2'
+    compile 'cn.leancloud.android:avoscloud-statistics:v4.3.2'
+    compile 'cn.leancloud.android:avoscloud-feedback:v4.3.2@aar'
+    compile 'cn.leancloud.android:avoscloud-sns:v4.3.2@aar'
+    compile 'cn.leancloud.android:qq-sdk:1.6.1-leancloud'
     compile 'cn.leancloud.android:avoscloud-search:v4.3.2@aar'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
 }

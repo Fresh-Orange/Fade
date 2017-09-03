@@ -87,6 +87,7 @@ public class BeanConvertUtil {
                 }
 
                 relayNotes.add(relayNote);
+
             }
             //最后反转一下
             Collections.reverse(relayNotes);

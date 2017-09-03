@@ -35,10 +35,11 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView iv_personal_icon;
     private EditText edAccount;
     private EditText edPassword;
-    private Button btnLogin;
+    private TextView btnLogin;
     private TextView tvToRegister;
     private SharedPreferences sharedPreferences;
     private ProgressDialog progressDialog;
+    private ImageView backIcon1;    //登录界面的返回键
 
     private String accountType = Const.TELEPHONE;
 
@@ -63,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                 String wehcat_id = (String) ans_map.get(Const.WECHAT_ID);
                 String weibo_id = (String) ans_map.get(Const.WEIBO_ID);
                 String qq_id = (String) ans_map.get(Const.QQ_ID);
+                String school = (String) ans_map.get(Const.SCHOOL);
 
                 if(err == null){
                     Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
@@ -91,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString(Const.WEIBO_ID,weibo_id);
                     editor.putString(Const.QQ_ID,qq_id);
                     editor.putString(Const.AREA,aera);
+                    editor.putString(Const.SCHOOL,school);
                     editor.commit();
                     startActivity(new Intent(LoginActivity.this,MainActivity.class));
                     progressDialog.dismiss();
@@ -129,11 +132,11 @@ public class LoginActivity extends AppCompatActivity {
         iv_personal_icon = (ImageView) findViewById(R.id.ivLoginUserHead);
         edAccount = (EditText) findViewById(R.id.edAccount);
         edPassword = (EditText) findViewById(R.id.edPassword);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin = (TextView) findViewById(R.id.btnLogin);
         tvToRegister = (TextView) findViewById(R.id.tvToRegister);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
         progressDialog = new ProgressDialog(LoginActivity.this);
-
+        backIcon1 = (ImageView) findViewById(R.id.back_icon_1);
 
         edPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -171,6 +174,13 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        backIcon1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.sysu.pro.fade">
+    <meta-data  android:name= "android.support.VERSION" tools:replace="android:value" android:value="25.3.1" />
 
     <!-- 基础模块（必须加入以下声明）START -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -19,20 +21,21 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".MainActivity"/>
         <activity android:name=".my.activity.AddContentActivity" />
-
-        <activity android:name=".my.activity.WelcomeActivity" >
+        <activity android:name=".my.activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".my.activity.LoginActivity">
-        </activity>
+        <activity android:name=".my.activity.LoginActivity" />
         <activity android:name=".my.activity.RegisterBySMSActivity" />
         <activity android:name=".my.activity.CheckTelActivity" />
         <activity android:name=".my.activity.GuideActivity" />
-        <activity android:name=".my.activity.AddPasswordActivity"></activity>
+        <activity android:name=".my.activity.AddPasswordActivity" />
+        <activity android:name=".my.MySetting" />
+        <activity android:name=".my.setting.Personal" />
+        <activity android:name=".my.setting.Safety" />
+        <activity android:name=".my.setting.About"></activity>
         <activity android:name=".home.activity.ImagePagerActivity" android:theme="@style/imagePagerTheme"/>
         <activity android:name=".publish.PublishActivity"></activity>
         <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
