@@ -21,6 +21,9 @@
         <item name="android:windowAnimationStyle">@style/ActivityFade</item>
     </style>
 
+    <!--版本差异，api21以下无法改变状态栏颜色-->
+    <style name="registerTheme" parent="@android:style/Theme.DeviceDefault"/>
+
     <style name="ActivityFade" parent="@android:style/Animation.Activity" >
         <item name="android:activityOpenEnterAnimation">@anim/activity_fade_enter</item>
         <item name="android:activityOpenExitAnimation">@anim/activity_fade_exit</item>

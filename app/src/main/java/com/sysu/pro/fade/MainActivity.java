@@ -83,13 +83,13 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabIcon(){
         Resources res = getResources();
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.scenery_normal), "首页")));
+                createView(res.getDrawable(R.drawable.home_normal), "首页")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.community_normal), "发现")));
+                createView(res.getDrawable(R.drawable.discover_normal), "发现")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.drawable.add), "发布")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.route_normal), "消息")));
+                createView(res.getDrawable(R.drawable.message_normal), "消息")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.drawable.my_normal), "我的")));
     }
@@ -97,10 +97,16 @@ public class MainActivity extends AppCompatActivity {
     private View createView(Drawable icon, String tab) {
         View view = getLayoutInflater().inflate(R.layout.tab_layout, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.icon);
-        TextView title = (TextView) view.findViewById(R.id.title);
+        //TextView title = (TextView) view.findViewById(R.id.title);
         imageView.setImageDrawable(icon);
 
-        title.setText(tab);
+        //发布的按钮稍微大一点
+        if (tab == "发布") {
+            imageView.setScaleX((float)1.4);
+            imageView.setScaleY((float)1.4);
+        }
+
+        //title.setText(tab);
         return view;
     }
 
@@ -143,15 +149,15 @@ public class MainActivity extends AppCompatActivity {
         Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
-        TextView txt_title = (TextView) view.findViewById(R.id.title);
+        //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.scenery_selected));
+            img_title.setImageDrawable(res.getDrawable(R.drawable.home_selected));
             mViewPager.setCurrentItem(Const.HOME-1,false);
         } else if (tab.getPosition()==Const.DISCOVER-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.community_selected));
+            img_title.setImageDrawable(res.getDrawable(R.drawable.discover_selected));
             mViewPager.setCurrentItem(Const.DISCOVER-1,false);
         }else if (tab.getPosition() == Const.MESSAGE-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.route_selected));
+            img_title.setImageDrawable(res.getDrawable(R.drawable.message_selected));
             mViewPager.setCurrentItem(Const.MESSAGE-1,false);
         } else if(tab.getPosition() == Const.MY-1){
             img_title.setImageDrawable(res.getDrawable(R.drawable.my_selected));
@@ -164,14 +170,14 @@ public class MainActivity extends AppCompatActivity {
         Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
-        TextView txt_title = (TextView) view.findViewById(R.id.title);
-        txt_title.setTextColor(Color.GRAY);
+        //TextView txt_title = (TextView) view.findViewById(R.id.title);
+        //txt_title.setTextColor(Color.GRAY);
         if (tab.getPosition() == Const.HOME -1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.scenery_normal));
+            img_title.setImageDrawable(res.getDrawable(R.drawable.home_normal));
         }  else if (tab.getPosition() == Const.DISCOVER-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.community_normal));
+            img_title.setImageDrawable(res.getDrawable(R.drawable.discover_normal));
         }else if (tab.getPosition() == Const.MESSAGE-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.route_normal));
+            img_title.setImageDrawable(res.getDrawable(R.drawable.message_normal));
         }else if(tab.getPosition() == Const.MY-1){
             img_title.setImageDrawable(res.getDrawable(R.drawable.my_normal));
         }

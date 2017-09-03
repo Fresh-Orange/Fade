@@ -5,58 +5,92 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#f9f9f9">
+        <ImageView
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/register_back"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:id="@+id/tvToRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="欢迎来到FADE"
+            android:textSize="40px"
+            android:textColor="#333333"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"/>
+    </RelativeLayout>
+
     <ImageView
-        android:layout_margin="10dp"
+        android:layout_margin="40dp"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/default_head"
+        android:src="@drawable/choose_head"
         android:id="@+id/ivRegisterUserHead"
+        android:scaleX="2"
+        android:scaleY="2"
         android:layout_gravity="center"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="点击图片设置头像"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10dp">
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="用户名"
-            android:textSize="16dp"/>
+            android:layout_gravity="center"
+            android:gravity="center|right">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/register_head_ic"/>
+        </LinearLayout>
+
         <EditText
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="10dp"
             android:id="@+id/edRegisterNickname"
-            android:hint="请输入您的用户名"
-            android:textSize="14dp"/>
+            android:hint="用户名"
+            android:textSize="18dp"
+            android:textColor="#bfbfbf"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_weight="2.5"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="性别"
-            android:textSize="16dp"
-            android:layout_marginTop="5dp"/>
+            android:layout_gravity="center"
+            android:gravity="right">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="性别"
+                android:textSize="18dp"
+                android:layout_marginTop="5dp"/>
+        </LinearLayout>
 
         <RadioGroup
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:gravity="left"
             android:orientation="horizontal"
             android:id="@+id/radioSex">
@@ -73,18 +107,135 @@
         </RadioGroup>
     </LinearLayout>
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:id="@+id/btnRegister"
+        android:src="@drawable/register_btn_ic"
+        android:layout_gravity="center"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <Button
+
+        <!--其他方式登录选项-->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="注册"
-            android:id="@+id/btnRegister"
-            android:textSize="20dp"
-            android:textColor="@color/White"
-            android:background="@color/colorPrimary"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:id="@+id/other_way_login"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/other1_black"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="短信登录"
+                    android:textSize="30px"
+                    android:textColor="#2C2C2C"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/other2_black"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="微信登录"
+                    android:textSize="30px"
+                    android:textColor="#2C2C2C"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/other3_black"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="QQ登录"
+                    android:textSize="30px"
+                    android:textColor="#2C2C2C"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/other4_black"/>
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="微博登录"
+                    android:textColor="#2C2C2C"
+                    android:textSize="30px" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--分割线-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_above="@id/other_way_login">
+            <View
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="1dp"
+                android:background="#2C2C2C"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="其他方式登录"
+                android:textSize="30px"
+                android:textColor="#2C2C2C"
+                android:alpha="0.75"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="1dp"
+                android:background="#2C2C2C"/>
+        </LinearLayout>
+
     </RelativeLayout>
+
 </LinearLayout>

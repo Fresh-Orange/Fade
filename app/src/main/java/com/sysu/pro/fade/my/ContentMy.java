@@ -27,7 +27,7 @@ public class ContentMy {
     private SharedPreferences sharedPreferences;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
-    private Button mySetting;
+    private ImageView mySetting;
     private User user;
 
     public ContentMy(final Activity activity, Context context, View rootview){
@@ -43,7 +43,7 @@ public class ContentMy {
         loadData();
 
         //设置
-        mySetting = (Button)  rootview.findViewById(R.id.MySetting);
+        mySetting = (ImageView)  rootview.findViewById(R.id.MySetting);
         mySetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
