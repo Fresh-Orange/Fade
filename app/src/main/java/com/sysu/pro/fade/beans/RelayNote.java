@@ -69,19 +69,4 @@ public class RelayNote {
 		this.content = content;
 	}
 
-	public List<String> getImgUrls() {
-		return imgUrls;
-	}
-
-	public void setImgUrls(List<String> imgUrls) {
-		this.imgUrls = imgUrls;
-	}
-
-	public List<Double> getImgSizes() {
-		return imgSizes;
-	}
-
-	public void setImgSizes(List<Double> imgSizes) {
-		this.imgSizes = imgSizes;
-	}
 }
