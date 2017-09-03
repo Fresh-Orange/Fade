@@ -1,5 +1,7 @@
 package com.sysu.pro.fade.beans;
 
+import java.util.List;
+
 /**
  * Created by LaiXiancheng on 2017/7/30.
  * 转发内容的最小单位
@@ -12,6 +14,25 @@ public class RelayNote {
 	String name;         //用户名
 	int user_id;        //用户id
 	String content;     //帖子内容
+
+	private List<String> imgUrls;        //图片url数组
+	private List<Double> imgSizes;       //图片尺寸数组
+
+	public List<String> getImgUrls() {
+		return imgUrls;
+	}
+
+	public void setImgUrls(List<String> imgUrls) {
+		this.imgUrls = imgUrls;
+	}
+
+	public List<Double> getImgSizes() {
+		return imgSizes;
+	}
+
+	public void setImgSizes(List<Double> imgSizes) {
+		this.imgSizes = imgSizes;
+	}
 
 	public RelayNote(){
 		/**

@@ -1,5 +1,5 @@
 
-package com.sysu.pro.fade.publish.emotionkeyboard.utils;
+package com.sysu.pro.fade.emotionkeyboard.utils;
 
 import android.support.v4.util.ArrayMap;
 

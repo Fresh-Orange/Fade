@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.model;
+package com.sysu.pro.fade.emotionkeyboard.model;
 
 import android.graphics.drawable.Drawable;
 

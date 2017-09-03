@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview;
+package com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.DisplayUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.DisplayUtils;
 
 import java.util.ArrayList;
 

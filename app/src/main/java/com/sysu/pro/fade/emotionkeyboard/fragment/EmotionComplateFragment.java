@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.fragment;
+package com.sysu.pro.fade.emotionkeyboard.fragment;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -9,12 +9,12 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.emotionkeyboard.adapter.EmotionGridViewAdapter;
-import com.sysu.pro.fade.publish.emotionkeyboard.adapter.EmotionPagerAdapter;
-import com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview.EmojiIndicatorView;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.DisplayUtils;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.EmotionUtils;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.GlobalOnItemClickManagerUtils;
+import com.sysu.pro.fade.emotionkeyboard.adapter.EmotionGridViewAdapter;
+import com.sysu.pro.fade.emotionkeyboard.adapter.EmotionPagerAdapter;
+import com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview.EmojiIndicatorView;
+import com.sysu.pro.fade.emotionkeyboard.utils.DisplayUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.GlobalOnItemClickManagerUtils;
 
 import java.util.ArrayList;
 import java.util.List;

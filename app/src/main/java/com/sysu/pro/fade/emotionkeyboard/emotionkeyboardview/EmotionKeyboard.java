@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview;
+package com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.LogUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.LogUtils;
 
 
 /**

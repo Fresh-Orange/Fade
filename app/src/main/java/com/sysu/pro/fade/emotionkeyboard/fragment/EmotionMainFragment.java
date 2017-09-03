@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.fragment;
+package com.sysu.pro.fade.emotionkeyboard.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,13 +14,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.emotionkeyboard.adapter.HorizontalRecyclerviewAdapter;
-import com.sysu.pro.fade.publish.emotionkeyboard.adapter.NoHorizontalScrollerVPAdapter;
-import com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview.EmotionKeyboard;
-import com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview.NoHorizontalScrollerViewPager;
-import com.sysu.pro.fade.publish.emotionkeyboard.model.ImageModel;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.EmotionUtils;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.GlobalOnItemClickManagerUtils;
+import com.sysu.pro.fade.emotionkeyboard.adapter.HorizontalRecyclerviewAdapter;
+import com.sysu.pro.fade.emotionkeyboard.adapter.NoHorizontalScrollerVPAdapter;
+import com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview.EmotionKeyboard;
+import com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview.NoHorizontalScrollerViewPager;
+import com.sysu.pro.fade.emotionkeyboard.model.ImageModel;
+import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.GlobalOnItemClickManagerUtils;
 
 import java.util.ArrayList;
 import java.util.List;

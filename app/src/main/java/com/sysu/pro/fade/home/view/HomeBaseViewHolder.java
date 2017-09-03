@@ -2,6 +2,7 @@ package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -24,6 +25,8 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.RelayNote;
+import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -216,7 +219,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				Toast.makeText(context, "点击了用户名", Toast.LENGTH_SHORT).show();
 			}
 		};
-		spannableStringBuilder.append(relayNotes.get(0).getContent());
+		SpannableString tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+				,relayTextView,relayNotes.get(0).getContent());
+		spannableStringBuilder.append(tBuilder);
 		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 		originalTextView.setText(spannableStringBuilder);
 		//文字的点击事件要加上这一句，不然不会生效
@@ -226,14 +231,18 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		SpannableStringBuilder spannableStringBuilderRelay = new SpannableStringBuilder("");
 
 		//将当前用户(转发链的最后一个用户)单独设置，因为当前用户在转发链中不需要显示名字和冒号
-		spannableStringBuilderRelay.append(relayNotes.get(relayNotes.size() - 1).getContent() );
+		tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+				,relayTextView,relayNotes.get(relayNotes.size() - 1).getContent());
+		spannableStringBuilderRelay.append(tBuilder);
 		int lastIndex = relayNotes.get(relayNotes.size() - 1).getContent().length() + 2;
 
 		for (int i = relayNotes.size() - 2; i >= 1; i--) {
 			Log.d("relay1", relayNotes.get(i).getName()+" "+ relayNotes.get(i).getContent());
 			spannableStringBuilderRelay.append("\\\\" + relayNotes.get(i).getName() + ":");
-
-			spannableStringBuilderRelay.append(relayNotes.get(i).getContent());
+			tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+					,relayTextView,relayNotes.get(i).getContent());
+			//spannableStringBuilderRelay.append(relayNotes.get(i).getContent());
+			spannableStringBuilderRelay.append(tBuilder);
 		}
 		for (int i = relayNotes.size() - 2; i >= 1; i--) {
 			final String name = relayNotes.get(i).getName();
