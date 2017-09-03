@@ -140,7 +140,8 @@ public class ContentHome {
                     int position = msg.arg1;
                     notes.get(position).setGood_num(good_num);
                     notes.get(position).setFetchTime(System.currentTimeMillis());
-                    adapter.notifyItemChanged(position);
+					Log.d("refreshGood", "good: "+good_num);
+					adapter.notifyItemChanged(position);
                 }
             }
 
