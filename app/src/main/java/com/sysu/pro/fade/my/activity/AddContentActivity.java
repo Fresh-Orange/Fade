@@ -42,7 +42,7 @@ public class AddContentActivity extends AppCompatActivity {
     protected static Uri tempUri;
     private ImageView iv_personal_icon;
     private EditText edUserName;
-    private Button btnRegister;
+    private ImageView btnRegister;
     private String   imagePath;
     private RadioGroup radioGroup;
     private String sex;
@@ -128,7 +128,7 @@ public class AddContentActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(AddContentActivity.this);
         iv_personal_icon = (ImageView) findViewById(R.id.ivRegisterUserHead);
         edUserName = (EditText) findViewById(R.id.edRegisterNickname);
-        btnRegister = (Button) findViewById(R.id.btnRegister);
+        btnRegister = (ImageView) findViewById(R.id.btnRegister);
         radioGroup = (RadioGroup) findViewById(R.id.radioSex);
 
         password = getIntent().getStringExtra(Const.PASSWORD);

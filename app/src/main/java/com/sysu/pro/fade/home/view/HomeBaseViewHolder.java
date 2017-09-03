@@ -1,7 +1,9 @@
 package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -21,9 +23,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.RelayNote;
+import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
+import com.sysu.pro.fade.tool.NoteTool;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -63,7 +69,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		sendCommentButton = (Button) itemView.findViewById(R.id.send_comment_button);
 	}
 
-	public void bindView(final Context context, List<Note> data, int position) {
+	public void bindView(final Context context, Handler handler, List<Note> data, int position) {
 		final Note bean = data.get(position);
 		//设置头像
 		Glide.with(context)
@@ -72,7 +78,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				.dontAnimate()
 				.into(userAvatar);
 
-		setOrCancleAddTime(bean);
+		setOrCancleAddTime(context, bean, handler, position);
+
 
 		tvName.setText(bean.getName());
 
@@ -87,17 +94,18 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 * 1.续秒按钮设置初始图标
 	 * 2.续秒按钮的点击事件，变换图标以及状态，发送数据给服务器
 	 */
-	private void setOrCancleAddTime(final Note bean) {
+	private void setOrCancleAddTime(final Context context, final Note bean, final Handler handler, final int position) {
 		addTimeButton.setImageResource(bean.getGood() ? R.drawable.add_time_selected : R.drawable.add_time_unselected);
 		addTimeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (bean.getGood()) {
 					//TODO 发送数据给服务器，取消续秒
-					bean.setGood(false);
-					((ImageView) v).setImageResource(R.drawable.add_time_unselected);
+					//bean.setGood(false);
+					//((ImageView) v).setImageResource(R.drawable.add_time_unselected);
 				} else {
-					//TODO 发送数据给服务器，续秒
+					NoteTool.addSecond(handler, String.valueOf(((MainActivity)context).getCurrentUser().getUser_id())
+					,String.valueOf(bean.getNote_id()), String.valueOf(bean.getIsRelay()), position);
 					bean.setGood(true);
 					((ImageView) v).setImageResource(R.drawable.add_time_selected);
 				}
@@ -216,7 +224,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				Toast.makeText(context, "点击了用户名", Toast.LENGTH_SHORT).show();
 			}
 		};
-		spannableStringBuilder.append(relayNotes.get(0).getContent());
+		SpannableString tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+				,relayTextView,relayNotes.get(0).getContent());
+		spannableStringBuilder.append(tBuilder);
 		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 		originalTextView.setText(spannableStringBuilder);
 		//文字的点击事件要加上这一句，不然不会生效
@@ -226,14 +236,18 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		SpannableStringBuilder spannableStringBuilderRelay = new SpannableStringBuilder("");
 
 		//将当前用户(转发链的最后一个用户)单独设置，因为当前用户在转发链中不需要显示名字和冒号
-		spannableStringBuilderRelay.append(relayNotes.get(relayNotes.size() - 1).getContent() );
+		tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+				,relayTextView,relayNotes.get(relayNotes.size() - 1).getContent());
+		spannableStringBuilderRelay.append(tBuilder);
 		int lastIndex = relayNotes.get(relayNotes.size() - 1).getContent().length() + 2;
 
 		for (int i = relayNotes.size() - 2; i >= 1; i--) {
 			Log.d("relay1", relayNotes.get(i).getName()+" "+ relayNotes.get(i).getContent());
 			spannableStringBuilderRelay.append("\\\\" + relayNotes.get(i).getName() + ":");
-
-			spannableStringBuilderRelay.append(relayNotes.get(i).getContent());
+			tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+					,relayTextView,relayNotes.get(i).getContent());
+			//spannableStringBuilderRelay.append(relayNotes.get(i).getContent());
+			spannableStringBuilderRelay.append(tBuilder);
 		}
 		for (int i = relayNotes.size() - 2; i >= 1; i--) {
 			final String name = relayNotes.get(i).getName();
@@ -252,4 +266,6 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			parentView.addView(relayTextLayout, 0);
 
 	}
+
+
 }

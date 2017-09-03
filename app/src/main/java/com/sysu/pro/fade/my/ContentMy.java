@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,6 +19,8 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.Const;
 
+import java.util.Map;
+
 /**
  * Created by road on 2017/7/14.
  */
@@ -27,15 +31,47 @@ public class ContentMy {
     private SharedPreferences sharedPreferences;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
-    private Button mySetting;
+    private ImageView mySetting;
     private User user;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            Map<String,Object>map = (Map<String, Object>) msg.obj;
+            String err = (String) map.get(Const.ERR);
+            if(msg.what == 1 || msg.what == 3 || msg.what == 4 || msg.what == 5 || msg.what == 6 ){
+                if(err != null){
+                    Toast.makeText(context,err,Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(context,"修改成功",Toast.LENGTH_SHORT).show();
+                }
+            }
+            else if(msg.what == 2){
+                //得到头像
+                if(err != null){
+                    Toast.makeText(context,err,Toast.LENGTH_SHORT).show();
+                }else {
+                    //得到最新头像的url，用于显示
+                    String latest_head_url = (String) map.get(Const.HEAD_IMAGE_URL);
+                }
+            }
+            else if(msg.what == 7){
+                //得到头像
+                if(err != null){
+                    Toast.makeText(context,err,Toast.LENGTH_SHORT).show();
+                }else {
+                    //得到最新头像的url，用于显示
+                    String latest_wallpaper_url = (String) map.get(Const.WALLPAPER_URL);
+                }
+            }
+            super.handleMessage(msg);
+        }
+    };
 
     public ContentMy(final Activity activity, Context context, View rootview){
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
-        Toast.makeText(context,"我的",Toast.LENGTH_SHORT).show();
-        //初始化用户信息
+        //获得本地存储的用户信息
         user = ((MainActivity) activity).getCurrentUser();
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
         ivShowHead = (ImageView) rootview.findViewById(R.id.ivShowHead);
@@ -43,7 +79,7 @@ public class ContentMy {
         loadData();
 
         //设置
-        mySetting = (Button)  rootview.findViewById(R.id.MySetting);
+        mySetting = (ImageView)  rootview.findViewById(R.id.MySetting);
         mySetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -25,6 +25,17 @@ public class User {
 	private String weibo_id;
 	private String qq_id;
 
+	//9月3号新增属性
+	private String school;
+
+	public String getSchool() {
+		return school;
+	}
+
+	public void setSchool(String school) {
+		this.school = school;
+	}
+
 	public Integer getConcern_num() {
 		return concern_num;
 	}

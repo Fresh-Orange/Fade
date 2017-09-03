@@ -43,7 +43,7 @@ import com.sysu.pro.fade.publish.adapter.MyCallBack;
 import com.sysu.pro.fade.publish.adapter.MyGridView;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
-import com.sysu.pro.fade.publish.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
@@ -112,6 +112,7 @@ public class PublishActivity extends AppCompatActivity {
     private User user;
     private TextView publishTextView;
     private ProgressDialog progressDialog;
+    private List<File> images_files;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -128,9 +129,13 @@ public class PublishActivity extends AppCompatActivity {
                         setResult(1,getIntent());
                         finish();
                     }else {
-                        List<File>images_files = new ArrayList<>();
-                        String image_size_list = dealWithImagesToSend(images,images_files);
+                        String image_size_list = dealWithImagesToSend(images);
+//                        List<File>lists = new ArrayList<>();
+//                        for(String str : images){
+//                            lists.add(new File(str));
+//                        }
                         NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list);
+                       // NoteTool.uploadNoteImage(handler,note_id,lists,image_size_list);
                     }
                 }else{
                     Toast.makeText(PublishActivity.this,err,Toast.LENGTH_SHORT).show();
@@ -139,7 +144,7 @@ public class PublishActivity extends AppCompatActivity {
                     finish();
                 }
             }
-            else if(msg.what == 0x2){
+            else if(msg.what == 0x22){
                 //发送图片得到的响应
                 Map<String, Object> map = (Map<String, Object>) msg.obj;
                 String err = (String) map.get(Const.ERR);
@@ -155,15 +160,24 @@ public class PublishActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     finish();
                 }
+                //最后要将所有缓存图片删除
+                for(File chache_file : images_files){
+                    if(chache_file.exists()){
+                        chache_file.delete();
+                    }
+                }
+
             }
 
             super.handleMessage(msg);
         }
     };
 
-    private String dealWithImagesToSend(List<String>images,List<File>images_files){
+    private String dealWithImagesToSend(List<String>images){
+        if(images_files == null) images_files = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-        String cache_path_root = "/mnt/sdcard/pic";
+        File sd=Environment.getExternalStorageDirectory();
+        String cache_path_root = sd.getPath() + "/chache_pic";
         File rootFile = new File(cache_path_root);
         if(!rootFile.exists())  rootFile.mkdir();
         for(String image_path : images){
