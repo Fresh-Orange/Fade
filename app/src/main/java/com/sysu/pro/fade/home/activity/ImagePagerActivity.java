@@ -26,6 +26,7 @@ public class ImagePagerActivity extends FragmentActivity {
 	private static final String STATE_POSITION = "STATE_POSITION";
 	public static final String EXTRA_IMAGE_INDEX = "image_index";
 	public static final String EXTRA_IMAGE_URLS = "image_urls";
+	public static final String TRANSIT_PIC = "picture";
 
 	private HackyViewPager mPager;
 	private int pagerPosition;
@@ -126,5 +127,12 @@ public class ImagePagerActivity extends FragmentActivity {
 			return ImageDetailFragment.newInstance(url);
 		}
 
+	}
+
+
+	@Override
+	public void onBackPressed() {
+		finish();
+		overridePendingTransition(0,R.anim.activity_fade_exit);
 	}
 }
