@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
 
 import com.sysu.pro.fade.beans.Note;
@@ -21,8 +22,8 @@ public class CompleteHolder extends ImageOnlyHolder{
 		super(itemView);
 	}
 	@Override
-	public void bindView(final Context context, List<Note> data, int  position){
-		super.bindView(context, data, position);
+	public void bindView(final Context context, Handler handler, List<Note> data, int  position){
+		super.bindView(context, handler, data, position);
 		final Note bean = data.get(position);
 		//因为继承了ImageOnlyHolder，所以这里只需要设置文字就可以
 		tvBody.setText(SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
