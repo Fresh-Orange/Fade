@@ -106,6 +106,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				} else {
 					NoteTool.addSecond(handler, String.valueOf(((MainActivity)context).getCurrentUser().getUser_id())
 					,String.valueOf(bean.getNote_id()), String.valueOf(bean.getIsRelay()), position);
+					Log.d("refreshGood", "position: "+position);
 					bean.setGood(true);
 					((ImageView) v).setImageResource(R.drawable.add_time_selected);
 				}
