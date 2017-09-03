@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.adapter;
+package com.sysu.pro.fade.emotionkeyboard.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

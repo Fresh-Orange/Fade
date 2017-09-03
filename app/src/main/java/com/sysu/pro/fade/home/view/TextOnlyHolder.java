@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 
 import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class TextOnlyHolder extends HomeBaseViewHolder{
 		super.bindView(context, data, position);
 
 		final Note bean = data.get(position);
-		tvBody.setText(bean.getText());
+		tvBody.setText(SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+				,tvBody,bean.getText()));
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sysu.pro.fade.publish.emotionkeyboard.utils;
+package com.sysu.pro.fade.emotionkeyboard.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -24,8 +24,7 @@ import java.util.regex.Pattern;
 public class SpanStringUtils {
 	
 	public static SpannableString getEmotionContent
-			(int emotion_map_type, final Context context, final TextView tv, String source,
-			 int curPosition, int curPositionEnd) {
+			(int emotion_map_type, final Context context, final TextView tv, String source) {
 		SpannableString spannableString = new SpannableString(source);
 		Resources res = context.getResources();
 

@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview;
+package com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

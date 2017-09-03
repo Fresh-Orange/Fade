@@ -143,10 +143,18 @@ public class BeanConvertUtil {
         note.setNote_id(note_id);
         note.setPost_aera(post_area);
 
-        note.setImgUrls(image_url);
-        note.setImgSizes(image_size);
+
+		note.setRelayNotes(relayNotes);
+		//将评论的图片放到note里面
+        if (note.getRelayNotes().size() > 0){
+            note.setImgUrls(note.getRelayNotes().get(0).getImgUrls());
+            note.setImgSizes(note.getRelayNotes().get(0).getImgSizes());
+        }
+        else{
+            note.setImgUrls(image_url);
+            note.setImgSizes(image_size);
+        }
         note.setTag_list(tag_list);
-        note.setRelayNotes(relayNotes);
         note.setGood(isGood);
         note.setFetchTime(System.currentTimeMillis());
         return note;

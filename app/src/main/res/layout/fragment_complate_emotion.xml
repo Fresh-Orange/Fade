@@ -20,7 +20,7 @@
             />
     </LinearLayout>
 
-    <com.sysu.pro.fade.publish.emotionkeyboard.emotionkeyboardview.EmojiIndicatorView
+    <com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview.EmojiIndicatorView
         android:id="@+id/ll_point_group"
         android:layout_width="match_parent"
         android:layout_height="30dp"

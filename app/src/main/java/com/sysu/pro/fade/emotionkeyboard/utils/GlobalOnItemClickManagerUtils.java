@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.utils;
+package com.sysu.pro.fade.emotionkeyboard.utils;
 
 import android.content.Context;
 import android.view.KeyEvent;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 
-import com.sysu.pro.fade.publish.emotionkeyboard.adapter.EmotionGridViewAdapter;
+import com.sysu.pro.fade.emotionkeyboard.adapter.EmotionGridViewAdapter;
 
 
 /**
@@ -64,7 +64,7 @@ public class GlobalOnItemClickManagerUtils {
                         int curPositionEnd = mEditText.getSelectionStart();
                         // 特殊文字处理,将表情等转换一下
                         mEditText.setText(SpanStringUtils.getEmotionContent(emotion_map_type,
-                                mContext, mEditText, sb.toString(), curPosition, curPositionEnd));
+                                mContext, mEditText, sb.toString()));
 
                         // 将光标设置到新增完表情的右侧
                         mEditText.setSelection(curPosition + emotionName.length());

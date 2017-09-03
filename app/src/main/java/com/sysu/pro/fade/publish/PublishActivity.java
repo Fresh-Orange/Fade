@@ -43,7 +43,7 @@ import com.sysu.pro.fade.publish.adapter.MyCallBack;
 import com.sysu.pro.fade.publish.adapter.MyGridView;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
-import com.sysu.pro.fade.publish.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;

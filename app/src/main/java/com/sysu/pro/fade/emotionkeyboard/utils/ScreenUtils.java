@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.utils;
+package com.sysu.pro.fade.emotionkeyboard.utils;
 
 import android.app.Activity;
 import android.content.Context;

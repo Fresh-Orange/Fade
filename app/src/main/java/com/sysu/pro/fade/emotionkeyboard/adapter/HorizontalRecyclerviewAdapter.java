@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.adapter;
+package com.sysu.pro.fade.emotionkeyboard.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.emotionkeyboard.model.ImageModel;
-import com.sysu.pro.fade.publish.emotionkeyboard.utils.ScreenUtils;
+import com.sysu.pro.fade.emotionkeyboard.model.ImageModel;
+import com.sysu.pro.fade.emotionkeyboard.utils.ScreenUtils;
 
 import java.util.List;
 

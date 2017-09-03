@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.emotionkeyboard.fragment;
+package com.sysu.pro.fade.emotionkeyboard.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

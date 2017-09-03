@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Fade</string>
 
+    <string name="search">搜索</string>
+
     <!--for Home fragment-->
     <string name="viewpager_indicator">%1$d/%2$d</string>
     <string name="life_hint">已续</string>
@@ -8,6 +10,7 @@
     <string name="send_button_text">发送</string>
     <string name="add_count_text">%1$s续秒</string>
     <string name="time_left_text">剩余%1$s</string>
+
 
     <!--for Publish fragment-->
     <string name="cancel">取消</string>
