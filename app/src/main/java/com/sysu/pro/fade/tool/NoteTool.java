@@ -258,4 +258,26 @@ public class NoteTool {
         });
     }
 
+    public static void topReload(final Handler handler, final Integer user_id, final String bunch){
+        //顶部下拉刷新
+        new Thread(){
+            @Override
+            public void run() {
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                if(bunch != null)
+                    list.add(new BasicNameValuePair("bunch",bunch));
+                list.add(new BasicNameValuePair(Const.CODE,"14"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 0x5;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+
 }

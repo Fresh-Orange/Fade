@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                 String wehcat_id = (String) ans_map.get(Const.WECHAT_ID);
                 String weibo_id = (String) ans_map.get(Const.WEIBO_ID);
                 String qq_id = (String) ans_map.get(Const.QQ_ID);
+                String school = (String) ans_map.get(Const.SCHOOL);
 
                 if(err == null){
                     Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
@@ -92,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString(Const.WEIBO_ID,weibo_id);
                     editor.putString(Const.QQ_ID,qq_id);
                     editor.putString(Const.AREA,aera);
+                    editor.putString(Const.SCHOOL,school);
                     editor.commit();
                     startActivity(new Intent(LoginActivity.this,MainActivity.class));
                     progressDialog.dismiss();

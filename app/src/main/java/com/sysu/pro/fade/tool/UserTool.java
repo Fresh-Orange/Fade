@@ -5,6 +5,7 @@ import android.os.Message;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.GsonUtil;
+import com.sysu.pro.fade.utils.HttpUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -359,6 +360,32 @@ public class UserTool {
         }.start();
     }
 
+    /**
+     * 2017/9/3  hl
+     * 修改个人信息相关的请求
+     */
+    //修改用户昵称的请求
+    public static void  editNickname(final Handler handler, final Integer user_id, final String nickname){
+        new Thread(){
+            @Override
+            public void run() {
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                if(nickname != null)
+                    list.add(new BasicNameValuePair(Const.NICKNAME,nickname));
+                list.add(new BasicNameValuePair(Const.CODE,"07"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 1;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+    //修改或上传头像的请求
     public static void uploadHeadImage(final Handler handler, Integer user_id, String head_path){
         String upload_url = Const.IP +"/uploadImage";
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -386,6 +413,118 @@ public class UserTool {
             }
         });
     }
+    //修改用户签名的请求
+    public static void  editSummary(final Handler handler, final Integer user_id, final String summary){
+        new Thread(){
+            @Override
+            public void run() {
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                if(summary != null)
+                    list.add(new BasicNameValuePair(Const.SUMMARY,summary));
+                list.add(new BasicNameValuePair(Const.CODE,"08"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 3;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+    //修改用户性别的请求
+    public static void  editSex(final Handler handler, final Integer user_id, final String sex){
+        new Thread(){
+            @Override
+            public void run() {
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                if(sex != null)
+                    list.add(new BasicNameValuePair(Const.SEX,sex));
+                list.add(new BasicNameValuePair(Const.CODE,"09"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 4;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+    //修改用户地区的请求
+    public static void  editArea(final Handler handler, final Integer user_id, final String area){
+        new Thread(){
+            @Override
+            public void run() {
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                if(area != null)
+                    list.add(new BasicNameValuePair(Const.AREA,area));
+                list.add(new BasicNameValuePair(Const.CODE,"10"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 5;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+    //修改用户学校的请求
+    public static void  editSchool(final Handler handler, final Integer user_id, final String school){
+        new Thread(){
+            @Override
+            public void run() {
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                if(school != null)
+                    list.add(new BasicNameValuePair(Const.AREA,school));
+                list.add(new BasicNameValuePair(Const.CODE,"11"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 6;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+    //上传或修改用户壁纸的请求
+    public static void editWallpaperUrl(final Handler handler, Integer user_id, String wallpaper_path){
+        String upload_url = Const.IP +"/uploadImage";
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        builder.addFormDataPart("imageType","wallpaper");
+        builder.addFormDataPart(Const.USER_ID,user_id.toString());
+        File file = new File(wallpaper_path);
+        builder.addFormDataPart("img",file.getName(), RequestBody.create(MediaType.parse("image/png"),file));
+        MultipartBody requestBody = builder.build();
+        Request request = new Request.Builder()
+                .url(upload_url).post(requestBody).build();
+        new OkHttpClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String ans_str = response.body().string();
+                Map<String,Object>ans_map = GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.what = 7;
+                message.obj = ans_map;
+                handler.sendMessage(message);
+            }
+        });
+    };
 
 
 }

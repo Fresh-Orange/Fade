@@ -38,6 +38,7 @@ public class UserUtil {
         user.setWallpapaer_url(sharedPreferences.getString(Const.WALLPAPER_URL,""));
         user.setTelephone(sharedPreferences.getString(Const.TELEPHONE,""));
         user.setSummary(sharedPreferences.getString(Const.SUMMARY,""));
+        user.setSchool(sharedPreferences.getString(Const.SCHOOL,""));
         return user;
     }
 
