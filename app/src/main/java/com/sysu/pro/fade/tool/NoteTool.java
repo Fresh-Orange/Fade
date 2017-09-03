@@ -148,7 +148,8 @@ public class NoteTool {
         }.start();
     }
 
-    public static void addSecond(final Handler handler,final String user_id,final String note_id, final String isRelay){
+    public static void addSecond(final Handler handler,final String user_id,final String note_id
+            , final String isRelay, final int position){
         //续一秒请求
         new Thread(){
             @Override
@@ -164,6 +165,7 @@ public class NoteTool {
                 Message message = new Message();
                 message.obj = map;
                 message.what = 0x3;
+                message.arg1 = position;
                 handler.sendMessage(message);
                 super.run();
             }
