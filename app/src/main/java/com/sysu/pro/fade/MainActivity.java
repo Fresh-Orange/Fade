@@ -11,14 +11,17 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /*用以解决输入评论时底部导航栏被顶起的问题*/
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         //初始化用户信息
         user = new UserUtil(this).getUer();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -303,5 +308,26 @@ public class MainActivity extends AppCompatActivity {
             //转交给fragmentHome处理
             fragmentHome.onActivityResult(requestCode,resultCode,data);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.search:
+                gotoSearchActivity();
+                break;
+        }
+        return true;
+    }
+
+    private void gotoSearchActivity() {
+        //TODO
+        Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
     }
 }

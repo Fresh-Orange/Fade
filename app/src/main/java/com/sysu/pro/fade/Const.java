@@ -4,6 +4,11 @@ package com.sysu.pro.fade;
  * Created by road on 2017/7/10.
  */
 public class Const {
+    /*
+    信息流相关常量
+     */
+    public static final int HOME_NODE_DEFAULT_LIFE = 60;    //单位：分钟
+    public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
 
     public static final String IP = "https://sysufade.cn/fade"; //云服务器ip地址和端口号
     //public static final String IP = "http://192.168.137.1:8080/fade"; //本地ip地址和端口号
@@ -32,6 +37,7 @@ public class Const {
     public static final String AREA          = "area";
     public static final String WALLPAPER_URL = "wallpaper_url";
     public static final String MAIL           = "mail";
+    public static final String SCHOOL         = "school";
 
     //Note字段常量（有与user部分重叠的）
     public static final String NOTE_ID         = "note_id";
@@ -94,6 +100,8 @@ public class Const {
     //首页大请求的id_list
     public static final String ID_LIST = "id_list";
     public static final String CODE = "code";
+    //续一秒更新数组 顶部下拉刷新用
+    public static final String GOOD_NUM_LIST = "good_num_list";
 
     public static final int PUBLISH_REQUEST_CODE = 1; //发送帖子的请求代号,返回码为1的话则发送成功，返回0的话发送失败
 }

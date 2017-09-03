@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 
 import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
+import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
 
 import java.util.List;
 
@@ -23,7 +25,8 @@ public class CompleteHolder extends ImageOnlyHolder{
 		super.bindView(context, data, position);
 		final Note bean = data.get(position);
 		//因为继承了ImageOnlyHolder，所以这里只需要设置文字就可以
-		tvBody.setText(bean.getText());
+		tvBody.setText(SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
+		,tvBody,bean.getText()));
 
 	}
 

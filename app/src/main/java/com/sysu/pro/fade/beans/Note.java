@@ -39,8 +39,17 @@ public class Note implements Serializable {
     //当前用户是否点赞
     private Boolean isGood;
 
+	private long fetchTime;
 
-    public List<String> getTag_list() {
+	public long getFetchTime() {
+		return fetchTime;
+	}
+
+	public void setFetchTime(long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
+
+	public List<String> getTag_list() {
         return tag_list;
     }
 

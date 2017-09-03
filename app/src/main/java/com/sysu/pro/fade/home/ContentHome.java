@@ -63,6 +63,9 @@ public class ContentHome {
     private Integer current_user_id;   //登录注册以后，当前使用者的user_id
     private User user;               //登录用户的全部信息
 
+    private List<Integer>now_note_id;         //要发给服务器的note_id
+    private List<Integer>latest_good_nums;   //更新之后的good_nums数组  对应列表的展示顺序
+
 
     private Handler handler = new Handler(){
         @Override
@@ -82,10 +85,12 @@ public class ContentHome {
                     if(notes == null)   notes = new ArrayList<>();
                     id_list = (List<Integer>) map.get(Const.ID_LIST);
                     if(start == 0){
-                        Toast.makeText(context,"大请求：首次加载 或 顶部刷新加载数据",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,"大请求：首次加载",Toast.LENGTH_SHORT).show();
                         notes.clear();
                         for(Map<String,Object> one_note : result){
-                            notes.add(BeanConvertUtil.convert2Note(one_note));
+                            Note note = BeanConvertUtil.convert2Note(one_note);
+                            notes.add(note);
+                            now_note_id.add(note.getNote_id());
                         }
                         initViews();
                         swipeRefresh.setRefreshing(false);
@@ -93,7 +98,9 @@ public class ContentHome {
                     }else {
                         Toast.makeText(context,"大请求：继续加载数据",Toast.LENGTH_SHORT).show();
                         for(Map<String,Object> one_note : result){
-                            notes.add(BeanConvertUtil.convert2Note(one_note));
+                            Note note = BeanConvertUtil.convert2Note(one_note);
+                            notes.add(note);
+                            now_note_id.add(note.getNote_id());
                         }
                         adapter.notifyDataSetChanged();
                         swipeRefresh.setRefreshing(false);
@@ -120,7 +127,9 @@ public class ContentHome {
                     List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
                     if(notes == null)   notes = new ArrayList<>();
                     for(Map<String,Object> one_note : result){
-                        notes.add(BeanConvertUtil.convert2Note(one_note));
+                        Note note = BeanConvertUtil.convert2Note(one_note);
+                        notes.add(note);
+                        now_note_id.add(note.getNote_id());
                     }
                     adapter.notifyDataSetChanged();
                     Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
@@ -146,7 +155,30 @@ public class ContentHome {
                 Integer comment_id = (Integer) map.get(Const.COMMENT_ID); //得到发送的评论的id
             }
 
+            else if(msg.what == 0x5){
+                //顶部下拉刷新
+                Map<String,Object>map = (Map<String, Object>) msg.obj;
+                latest_good_nums = (List<Integer>) map.get(Const.GOOD_NUM_LIST);
+                Collections.reverse(latest_good_nums);
+                String err = (String) map.get(Const.ERR);
+                if(err != null){
+                    Toast.makeText(context,"没有新的fade",Toast.LENGTH_SHORT).show();
+                    swipeRefresh.setRefreshing(false);
+                }
+                else{
+                    List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
+                    Toast.makeText(context,"更新了"+result.size()+"个fade",Toast.LENGTH_SHORT).show();
+                    if(notes == null)   notes = new ArrayList<>();
+                    for(Map<String,Object> one_note_map : result){
+                        Note note = BeanConvertUtil.convert2Note(one_note_map); //把note加到notes的最前面
+                        notes.add(0,note);
+                        now_note_id.add(0,note.getNote_id());//同时，已加载的也要更新
+                    }
+                    adapter.notifyDataSetChanged();
+                    swipeRefresh.setRefreshing(false);
+                }
 
+            }
 
         }
     };
@@ -160,6 +192,7 @@ public class ContentHome {
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
+        now_note_id = new ArrayList<>();
         NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
         flag = 0;
     }
@@ -257,11 +290,24 @@ public class ContentHome {
                     @Override
                     public void run() {
                         scrollListener.resetPreviousTotal();
-                        //changeData();
                         //顶部下拉刷新，使用大请求 start = 0
-                        start = 0;
-                        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
-//                      adapter.notifyDataSetChanged();
+//                        start = 0;
+//                        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
+                        if(now_note_id.size() != 0){
+                            StringBuilder sb = new StringBuilder();
+                            for(int i =now_note_id.size() -1; i >=  0; i--){
+                                sb.append(now_note_id.get(i));
+                                sb.append(",");
+                            }
+                            sb.deleteCharAt(sb.length()-1);
+                            String bunch = sb.toString();
+                            NoteTool.topReload(handler,current_user_id,bunch);
+                        }else{
+                            //否则就是首次加载
+                            NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
+                            start = 0;
+                            flag = 0;
+                        }
                         swipeRefresh.setRefreshing(true);
 
                     }
@@ -280,9 +326,23 @@ public class ContentHome {
 
     //提供给MainActivity在发完帖子后OnResult的更新
     public void reload(int user_id){
-        start = 0;
-        NoteTool.getBigSectionHome(handler,String.valueOf(user_id),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
-        flag = 0;
+        //直接顶部下拉刷新
+        if(now_note_id.size() != 0){
+            StringBuilder sb = new StringBuilder();
+            for(int i =now_note_id.size() -1; i >=  0; i--){
+                sb.append(now_note_id.get(i));
+                sb.append(",");
+            }
+            sb.deleteCharAt(sb.length()-1);
+            String bunch = sb.toString();
+            NoteTool.topReload(handler,current_user_id,bunch);
+        }else{
+            //否则就是首次加载
+            NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
+            start = 0;
+            flag = 0;
+        }
+        swipeRefresh.setRefreshing(true);
     }
 
 }
