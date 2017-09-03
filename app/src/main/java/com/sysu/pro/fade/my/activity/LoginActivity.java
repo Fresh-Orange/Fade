@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.MainActivity;
+import com.sysu.pro.fade.publish.imageselector.entry.Image;
 import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.Const;
 
@@ -35,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView iv_personal_icon;
     private EditText edAccount;
     private EditText edPassword;
-    private TextView btnLogin;
+    private ImageView btnLogin;
     private TextView tvToRegister;
     private SharedPreferences sharedPreferences;
     private ProgressDialog progressDialog;
@@ -111,12 +112,15 @@ public class LoginActivity extends AppCompatActivity {
                      if(head_image_url2 != null){
                          Toast.makeText(LoginActivity.this,"成功获取用户头像",Toast.LENGTH_SHORT).show();
                          Picasso.with(LoginActivity.this).load(head_image_url2).into(iv_personal_icon);
+                         btnLogin.setImageResource(R.drawable.login_btn_active);
                      }else{
                          Toast.makeText(LoginActivity.this,"使用默认头像",Toast.LENGTH_SHORT).show();
-                         iv_personal_icon.setImageResource(R.drawable.default_head);
+                         iv_personal_icon.setImageResource(R.drawable.login_head_ic);
+                         btnLogin.setImageResource(R.drawable.login_btn_inactive);
                      }
                 }else{
-                    iv_personal_icon.setImageResource(R.drawable.default_head);
+                    iv_personal_icon.setImageResource(R.drawable.login_head_ic);
+                    btnLogin.setImageResource(R.drawable.login_btn_inactive);
                     Toast.makeText(LoginActivity.this,err,Toast.LENGTH_SHORT).show();
                 }
             }
@@ -132,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
         iv_personal_icon = (ImageView) findViewById(R.id.ivLoginUserHead);
         edAccount = (EditText) findViewById(R.id.edAccount);
         edPassword = (EditText) findViewById(R.id.edPassword);
-        btnLogin = (TextView) findViewById(R.id.btnLogin);
+        btnLogin = (ImageView) findViewById(R.id.btnLogin);
         tvToRegister = (TextView) findViewById(R.id.tvToRegister);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
         progressDialog = new ProgressDialog(LoginActivity.this);
@@ -177,12 +181,15 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //登录界面的返回icon
         backIcon1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+            finish();
             }
         });
+
+
     }
 
     private void judgeAccount(String account){

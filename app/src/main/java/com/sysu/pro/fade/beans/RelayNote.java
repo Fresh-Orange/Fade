@@ -18,22 +18,6 @@ public class RelayNote {
 	private List<String> imgUrls;        //图片url数组
 	private List<Double> imgSizes;       //图片尺寸数组
 
-	public List<String> getImgUrls() {
-		return imgUrls;
-	}
-
-	public void setImgUrls(List<String> imgUrls) {
-		this.imgUrls = imgUrls;
-	}
-
-	public List<Double> getImgSizes() {
-		return imgSizes;
-	}
-
-	public void setImgSizes(List<Double> imgSizes) {
-		this.imgSizes = imgSizes;
-	}
-
 	public RelayNote(){
 		/**
 		 * 默认构造方法

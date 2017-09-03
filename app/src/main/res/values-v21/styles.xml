@@ -7,4 +7,9 @@
         <item name="android:colorPrimaryDark">@android:color/black</item>
         <item name="android:windowAnimationStyle">@style/ActivityFade</item>
     </style>
+
+    <!--注册时使状态栏为黑色-->
+    <style name="registerTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/black</item>
+    </style>
 </resources>
