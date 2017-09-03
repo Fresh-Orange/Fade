@@ -118,7 +118,10 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	public void setLoadingMore(boolean isShow){
 		showFootView = isShow;
-		notifyItemRemoved(getItemCount());
+		if (isShow)
+			notifyItemInserted(getItemCount());
+		else
+			notifyItemRemoved(getItemCount());
 	}
 
 
