@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
 
 import com.sysu.pro.fade.beans.Note;
@@ -19,7 +20,7 @@ public class FootViewHolder extends HomeBaseViewHolder{
 		super(itemView);
 	}
 	@Override
-	public void bindView(final Context context, List<Note> data, int  position){
+	public void bindView(final Context context, Handler handler, List<Note> data, int  position){
 		//empty
 	}
 

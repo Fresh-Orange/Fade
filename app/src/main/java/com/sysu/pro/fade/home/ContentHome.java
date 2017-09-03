@@ -7,32 +7,25 @@ import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.beans.Comment;
-import com.sysu.pro.fade.beans.OriginComment;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
-import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.beans.RelayNote;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.tool.NoteTool;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.BeanConvertUtil;
-import com.sysu.pro.fade.utils.TimeUtil;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import static com.sysu.pro.fade.Const.NICKNAME;
 
 /**
  * Created by road on 2017/7/14.
@@ -144,8 +137,10 @@ public class ContentHome {
                     Toast.makeText(context,"帖子被删除或者原贴不存在",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(context,"成功续一秒",Toast.LENGTH_SHORT).show();
-                    //用返回的good_num更新帖子信息（可选）
-                    //...
+                    int position = msg.arg1;
+                    notes.get(position).setGood_num(good_num);
+                    notes.get(position).setFetchTime(System.currentTimeMillis());
+                    adapter.notifyItemChanged(position);
                 }
             }
 
@@ -160,10 +155,14 @@ public class ContentHome {
                 Map<String,Object>map = (Map<String, Object>) msg.obj;
                 latest_good_nums = (List<Integer>) map.get(Const.GOOD_NUM_LIST);
                 Collections.reverse(latest_good_nums);
+                Log.d("refreshGood", "latest_good_nums.size()"+latest_good_nums.size()+"\nnotes.size()"+notes.size());
+                for (int i = 0; i < latest_good_nums.size(); i++) {
+                    notes.get(i).setGood_num(latest_good_nums.get(i));
+                    notes.get(i).setFetchTime(System.currentTimeMillis());
+                }
                 String err = (String) map.get(Const.ERR);
                 if(err != null){
                     Toast.makeText(context,"没有新的fade",Toast.LENGTH_SHORT).show();
-                    swipeRefresh.setRefreshing(false);
                 }
                 else{
                     List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
@@ -174,9 +173,9 @@ public class ContentHome {
                         notes.add(0,note);
                         now_note_id.add(0,note.getNote_id());//同时，已加载的也要更新
                     }
-                    adapter.notifyDataSetChanged();
-                    swipeRefresh.setRefreshing(false);
                 }
+                adapter.notifyDataSetChanged();
+                swipeRefresh.setRefreshing(false);
 
             }
 
@@ -201,7 +200,7 @@ public class ContentHome {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new RecycleAdapter(context, notes);
+        adapter = new RecycleAdapter(context, handler, notes);
         recyclerView.setAdapter(adapter);
 
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
