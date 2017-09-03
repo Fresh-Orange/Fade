@@ -75,7 +75,19 @@ public class BeanConvertUtil {
                 relayNote.setUser_id((Integer) one_relay_note.get(Const.USER_ID));
                 relayNote.setContent((String) one_relay_note.get(Const.NOTE_CONTENT));
                 relayNote.setName((String) one_relay_note.get(Const.NICKNAME));
+
+                //加入图片url和图片尺寸数组
+                List<Map<String,Object>>image_url_size = (List<Map<String, Object>>) one_relay_note.get(Const.IMAGE_LIST);
+                if(image_url_size != null){
+                    List<String> image_url = new ArrayList<>();
+                    List<Double> image_size = new ArrayList<>();
+                    BeanConvertUtil.convertImageListMap(image_url_size,image_url,image_size);
+                    relayNote.setImgUrls(image_url);
+                    relayNote.setImgSizes(image_size);
+                }
+
                 relayNotes.add(relayNote);
+
             }
             //最后反转一下
             Collections.reverse(relayNotes);
