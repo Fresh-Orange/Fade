@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +27,8 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 	}
 
 	@Override
-	public void bindView(final Context context, List<Note> data, int  position){
-		super.bindView(context, data, position);
+	public void bindView(final Context context, Handler handler, List<Note> data, int  position){
+		super.bindView(context, handler, data, position);
 
 		final Note bean = data.get(position);
 
