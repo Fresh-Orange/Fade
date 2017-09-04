@@ -2,6 +2,8 @@ package com.sysu.pro.fade.tool;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.HttpUtils;
@@ -146,7 +148,8 @@ public class NoteTool {
         }.start();
     }
 
-    public static void addSecond(final Handler handler,final String user_id,final String note_id, final String isRelay){
+    public static void addSecond(final Handler handler,final String user_id,final String note_id
+            , final String isRelay, final int position){
         //续一秒请求
         new Thread(){
             @Override
@@ -162,6 +165,7 @@ public class NoteTool {
                 Message message = new Message();
                 message.obj = map;
                 message.what = 0x3;
+                message.arg1 = position;
                 handler.sendMessage(message);
                 super.run();
             }
@@ -228,18 +232,15 @@ public class NoteTool {
         //上传帖子图片
         String upload_url = Const.IP +"/uploadImage";
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        for(int i = 0; i < image_files.size(); i++){
-            File file = image_files.get(i);
-            if(file != null){
-                builder.addFormDataPart("img",file.getName(), RequestBody.create(MediaType.parse("image/png"),file));
-            }
-        }
-        builder.addFormDataPart("image_size_list",image_size_list);
         builder.addFormDataPart("imageType","note");
+        builder.addFormDataPart("image_size_list",image_size_list);
         builder.addFormDataPart(Const.NOTE_ID,note_id.toString());
+        for(File file : image_files){
+            builder.addFormDataPart("img",file.getName(), RequestBody.create(MediaType.parse("image/png"),file));
+        }
         MultipartBody requestBody = builder.build();
         Request request = new Request.Builder()
-                          .url(upload_url).post(requestBody).build();
+                .url(upload_url).post(requestBody).build();
         new OkHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -251,12 +252,13 @@ public class NoteTool {
                 String ans_str = response.body().string();
                 Map<String,Object>ans_map = GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
-                message.what = 0x2;
+                message.what = 0x22;
                 message.obj = ans_map;
                 handler.sendMessage(message);
             }
         });
     }
+
 
     public static void topReload(final Handler handler, final Integer user_id, final String bunch){
         //顶部下拉刷新

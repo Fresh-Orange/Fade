@@ -7,9 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import com.sysu.pro.fade.home.adapter.RecycleAdapter;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -76,7 +78,13 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	 * @return 是否满足移除条件
 	 */
 	private boolean matchRemoveCondition(int i) {
-		return notes.get(i).getImgUrls().size() == 18;
+		Note bean = notes.get(i);
+		Date dateNow = new Date(bean.getFetchTime());
+		Date datePost = bean.getPost_time();
+		//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
+		long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE + 5 * bean.getGood_num()
+				- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
+		return minuteLeft <= 0;
 	}
 
 	/**
