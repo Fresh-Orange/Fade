@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.beans;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  * 转发内容的最小单位
  */
 
-public class RelayNote {
+public class RelayNote implements Serializable {
 	/**
 	 * 转发的文字内容
 	 */

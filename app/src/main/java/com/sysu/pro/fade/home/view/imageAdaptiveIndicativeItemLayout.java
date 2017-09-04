@@ -88,6 +88,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	 * @param heightToWidthRatio 高宽比，注意是“高/宽”。建议传入所有图片高宽比中最大的那个高宽比
 	 */
 	public void setHeightByRatio(float heightToWidthRatio) {
+		Log.d("Ratio", "in "+heightToWidthRatio);
 		ViewGroup.LayoutParams layoutParams = pager.getLayoutParams();
 		int screenWidth = getScreenWidth(getContext());
 		int fitHeight = (int) (heightToWidthRatio * screenWidth);
