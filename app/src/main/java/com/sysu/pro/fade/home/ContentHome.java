@@ -177,6 +177,7 @@ public class ContentHome {
                 }
                 adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
+                scrollListener.judgeAndRemoveItem(recyclerView);
 
             }
 
@@ -212,7 +213,7 @@ public class ContentHome {
                 refreshItems();
             }
         });
-        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, notes) {
+        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, notes, now_note_id) {
             @Override
             public void onLoadMore(int currentPage) {
                 addItems();
@@ -343,6 +344,11 @@ public class ContentHome {
             flag = 0;
         }
         swipeRefresh.setRefreshing(true);
+
+    }
+
+    private void scrollToTOP(){
+        recyclerView.smoothScrollToPosition(0);
     }
 
 }

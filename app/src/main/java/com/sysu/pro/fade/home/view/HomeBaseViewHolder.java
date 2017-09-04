@@ -1,12 +1,12 @@
 package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +29,8 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.RelayNote;
 import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
 import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
+import com.sysu.pro.fade.home.listener.RelayClickMovementMethod;
+import com.sysu.pro.fade.relay_publish.RelayPublishAcitivity;
 import com.sysu.pro.fade.tool.NoteTool;
 
 import java.text.DecimalFormat;
@@ -77,10 +79,11 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				.fitCenter()
 				.dontAnimate()
 				.into(userAvatar);
+		setGoToDetailClick(context, bean);
 
 		setOrCancleAddTime(context, bean, handler, position);
 
-
+		setTransmitClick(context, bean);
 		tvName.setText(bean.getName());
 
 		addOrRemoveRelay(context, bean);
@@ -89,6 +92,27 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 		setCommentVisAndLis(context);
 	}
+
+	private void setGoToDetailClick(final Context context, final Note bean) {
+		itemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startDetailsActivity(context, bean);
+			}
+		});
+	}
+
+	private void setTransmitClick(final Context context, final Note bean) {
+		transmitButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(context, RelayPublishAcitivity.class);
+				intent.putExtra("NOTE", bean);
+				context.startActivity(intent);
+			}
+		});
+	}
+
 
 	/**
 	 * 1.续秒按钮设置初始图标
@@ -231,7 +255,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 		originalTextView.setText(spannableStringBuilder);
 		//文字的点击事件要加上这一句，不然不会生效
-		originalTextView.setMovementMethod(LinkMovementMethod.getInstance());
+		//originalTextView.setMovementMethod(LinkMovementMethod.getInstance());
+		originalTextView.setOnTouchListener(RelayClickMovementMethod.getInstance());
 
 		//设置转发链
 		SpannableStringBuilder spannableStringBuilderRelay = new SpannableStringBuilder("");
@@ -262,10 +287,23 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		}
 		relayTextView.setText(spannableStringBuilderRelay);
 		//文字的点击事件要加上这一句，不然不会生效
-		relayTextView.setMovementMethod(LinkMovementMethod.getInstance());
+		//relayTextView.setMovementMethod(LinkMovementMethod.getInstance());
+		relayTextView.setOnTouchListener(RelayClickMovementMethod.getInstance());
 		if (noChild)
 			parentView.addView(relayTextLayout, 0);
 
+	}
+
+	/**
+	 * 跳转到详情页
+	 * @param bean 当前贴的信息
+	 */
+	private void startDetailsActivity(Context context, Note bean) {
+		//TODO: 跳转到详情页，把ImagePagerActivity替换成你的activity
+		/*Intent intent = new Intent(context, ImagePagerActivity.class);
+		intent.putExtra("NOTE", bean);
+		context.startActivity(intent);*/
+		Toast.makeText(context, "跳转到详情", Toast.LENGTH_SHORT).show();
 	}
 
 
