@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.utils.UserUtil;
 
 import java.util.Map;
 
@@ -31,6 +34,7 @@ public class ContentMy {
     private SharedPreferences sharedPreferences;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
+    private TextView tvShowSummary; //个性签名
     private ImageView mySetting;
     private User user;
     private Handler handler = new Handler(){
@@ -71,11 +75,12 @@ public class ContentMy {
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
+
         //获得本地存储的用户信息
-        user = ((MainActivity) activity).getCurrentUser();
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
         ivShowHead = (ImageView) rootview.findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
+        tvShowSummary = (TextView) rootview.findViewById(R.id.tvShowSummary);
         loadData();
 
         //设置
@@ -84,10 +89,9 @@ public class ContentMy {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, MySetting.class);
-                activity.startActivityForResult(intent, 1);
+                activity.startActivity(intent);
             }
         });
-        //修改壁纸
 
         //退出登录
         Button btnLogout = (Button) rootview.findViewById(R.id.btnLogout);
@@ -107,9 +111,11 @@ public class ContentMy {
 
     public  void loadData(){
         //获取本地用户信息举例
+        user = new UserUtil(activity).getUer(); //重新加载本地user数据
         String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
         String image_url = user.getHead_image_url();
         String nickname = user.getNickname();
+        String summary = user.getSummary();
         if(login_type.equals("") || image_url == null || image_url.equals("")){
             ivShowHead.setImageResource(R.drawable.default_head);
         }else{
@@ -120,13 +126,13 @@ public class ContentMy {
         }else{
             tvShowNickname.setText(nickname);
         }
-
-
-
-
+        if(summary.equals("")){
+            tvShowSummary.setText("暂无个签，点击设置图标进行编辑");
+        }else{
+            tvShowSummary.setText(summary);
+        }
 
     }
-
 
 
 }
