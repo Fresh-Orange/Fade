@@ -3,7 +3,10 @@ package com.sysu.pro.fade.message;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.sysu.pro.fade.R;
 
 /**
  * Created by road on 2017/7/14.
