@@ -39,7 +39,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			 */
 			pager.setId(++RecycleAdapter.viewPagerTag);
 
-			double RatioMax = 1;
+			double RatioMax = 999;
 			for (double d:bean.getImgSizes()) {
 				Log.d("Ratio", " "+d);
 				RatioMax = RatioMax < d ? RatioMax : d;
