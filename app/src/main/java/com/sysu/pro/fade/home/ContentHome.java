@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
@@ -19,6 +21,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.BeanConvertUtil;
 
@@ -26,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.sysu.pro.fade.R.id.edit_comment;
 
 /**
  * Created by road on 2017/7/14.
@@ -223,6 +228,24 @@ public class ContentHome {
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
+		SoftKeyboardStateWatcher watcher = new SoftKeyboardStateWatcher(rootView.getRootView(), context);
+		final TabLayout tabLayout = (TabLayout) rootView.getRootView().findViewById(R.id.tab_layout_menu);
+		watcher.addSoftKeyboardStateListener(
+				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
+					@Override
+					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
+						//tabLayout.setVisibility(View.GONE);
+						//recyclerView.smoothScrollBy(0,-tabLayout.getMeasuredHeight());
+						scrollListener.setStartManualScroll(true);
+					}
+					@Override
+					public void onSoftKeyboardClosed() {
+						tabLayout.setVisibility(View.VISIBLE);
+                        LinearLayout linearLayout = (LinearLayout) recyclerView.getLayoutManager().getFocusedChild().findViewById(edit_comment);
+                        linearLayout.setVisibility(View.GONE);
+					}
+				}
+		);
     }
 
     /**

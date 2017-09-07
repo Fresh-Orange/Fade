@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 
@@ -35,6 +36,12 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	private LinearLayoutManager mLinearLayoutManager;
 	private List<Note> notes;
 	private List<Integer>now_note_id;
+	private boolean startManualScroll;
+
+	public void setStartManualScroll(boolean startManualScroll) {
+		this.startManualScroll = startManualScroll;
+	}
+
 
 	public EndlessRecyclerOnScrollListener(Context context, LinearLayoutManager linearLayoutManager
 											, List<Note> notes, List<Integer> now_note_id) {
@@ -50,7 +57,15 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		//Log.d(logTag, "onScrollStateChanged");
 		super.onScrollStateChanged(recyclerView, newState);
 		if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+			manualScroll(recyclerView);
 			judgeAndRemoveItem(recyclerView);
+		}
+	}
+
+	private void manualScroll(RecyclerView recyclerView) {
+		if (startManualScroll){
+			startManualScroll = false;
+			recyclerView.smoothScrollBy(0,-recyclerView.getRootView().findViewById(R.id.tab_layout_menu).getMeasuredHeight());
 		}
 	}
 

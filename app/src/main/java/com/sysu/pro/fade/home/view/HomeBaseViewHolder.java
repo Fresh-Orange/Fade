@@ -3,6 +3,7 @@ package com.sysu.pro.fade.home.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -195,6 +196,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			public void onClick(View v) {
 				commentEdit.setVisibility(View.VISIBLE);
 				commentEditTextView.requestFocus();
+				TabLayout tabLayout = (TabLayout) itemView.getRootView().findViewById(R.id.tab_layout_menu);
+				tabLayout.setVisibility(View.GONE);
 				showKeyboard(context,commentEditTextView);
 			}
 		});

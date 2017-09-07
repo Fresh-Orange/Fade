@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         /*用以解决输入评论时底部导航栏被顶起的问题*/
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         //初始化用户信息
         user = new UserUtil(this).getUer();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -334,4 +334,6 @@ public class MainActivity extends AppCompatActivity {
         //TODO
         Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
     }
+
+
 }
