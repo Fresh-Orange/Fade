@@ -36,6 +36,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private Handler handler;
 	private List<Note> data;
 	private boolean showFootView = true;
+	private String TAG = "footView";
 
 
 	private FootViewHolder footViewHolder;
@@ -117,8 +118,15 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	}
 
 	public void setLoadingMore(boolean isShow){
+		if (showFootView == isShow)
+			return;
 		showFootView = isShow;
-		notifyItemRemoved(getItemCount());
+		if (isShow){
+			notifyItemInserted(getItemCount());
+		}
+		else{
+			notifyItemRemoved(getItemCount());
+		}
 	}
 
 

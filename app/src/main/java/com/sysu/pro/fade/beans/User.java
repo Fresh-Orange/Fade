@@ -18,7 +18,7 @@ public class User {
 	//7月22日新增属性
 	private Integer concern_num;
 	private Integer fans_num;
-	private String aera;
+	private String area;
 	private String wallpapaer_url;
 	//第三方提供的id
 	private String wechat_id;
@@ -48,11 +48,11 @@ public class User {
 	public void setFans_num(Integer fans_num) {
 		this.fans_num = fans_num;
 	}
-	public String getAera() {
-		return aera;
+	public String getArea() {
+		return area;
 	}
-	public void setAera(String aera) {
-		this.aera = aera;
+	public void setArea(String area) {
+		this.area = area;
 	}
 	public String getWallpapaer_url() {
 		return wallpapaer_url;

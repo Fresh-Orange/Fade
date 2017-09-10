@@ -34,11 +34,14 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	private int currentPage = 1;
 	private LinearLayoutManager mLinearLayoutManager;
 	private List<Note> notes;
+	private List<Integer>now_note_id;
 
-	public EndlessRecyclerOnScrollListener(Context context, LinearLayoutManager linearLayoutManager, List<Note> notes) {
+	public EndlessRecyclerOnScrollListener(Context context, LinearLayoutManager linearLayoutManager
+											, List<Note> notes, List<Integer> now_note_id) {
 		this.mLinearLayoutManager = linearLayoutManager;
 		this.notes = notes;
 		this.context = context;
+		this.now_note_id = now_note_id;
 	}
 
 
@@ -56,7 +59,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	 *
 	 * @param recyclerView
 	 */
-	private void judgeAndRemoveItem(RecyclerView recyclerView) {
+	public void judgeAndRemoveItem(RecyclerView recyclerView) {
 		LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 		int firstVisible = layoutManager.findFirstVisibleItemPosition();
 		int lastVisible = layoutManager.findLastVisibleItemPosition();
@@ -110,6 +113,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		if (middleY < 0 || middleY > recyclerView.getHeight())
 			return;
 		notes.remove(position);
+		now_note_id.remove(position);
 		recyclerView.getAdapter().notifyItemRemoved(position);
 
 		//移除之后，会有新的item填充进来，填充进来之后要判断是否移除，条件成立则移除。这样就变成了递归移除

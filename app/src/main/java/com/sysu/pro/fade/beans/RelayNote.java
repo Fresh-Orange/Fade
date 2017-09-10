@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.beans;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  * 转发内容的最小单位
  */
 
-public class RelayNote {
+public class RelayNote implements Serializable {
 	/**
 	 * 转发的文字内容
 	 */
@@ -17,6 +18,22 @@ public class RelayNote {
 
 	private List<String> imgUrls;        //图片url数组
 	private List<Double> imgSizes;       //图片尺寸数组
+
+	public List<String> getImgUrls() {
+		return imgUrls;
+	}
+
+	public void setImgUrls(List<String> imgUrls) {
+		this.imgUrls = imgUrls;
+	}
+
+	public List<Double> getImgSizes() {
+		return imgSizes;
+	}
+
+	public void setImgSizes(List<Double> imgSizes) {
+		this.imgSizes = imgSizes;
+	}
 
 	public RelayNote(){
 		/**
