@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.MainActivity;
@@ -53,11 +54,12 @@ public class AddContentActivity extends AppCompatActivity {
     protected static final int TAKE_PICTURE = 0;
     protected static final int CHOOSE_PICTURE = 1;
     private static final int CROP_SMALL_PICTURE = 2;
-    protected static Uri tempUri;
+//    protected static Uri tempUri;
+    private TextView tvToRegister;
     private ImageView iv_personal_icon;
     private EditText edUserName;
     private ImageView btnRegister;
-    private String   imagePath;
+//    private String   imagePath;
     private RadioGroup radioGroup;
     private String sex;
 
@@ -95,8 +97,8 @@ public class AddContentActivity extends AppCompatActivity {
                         editor.putString(Const.LOGIN_TYPE,"0");
                         editor.commit();
                         //如果本地头像不为空的话，则上传到服务器
-                        if(imagePath != null)
-                            UserTool.uploadHeadImage(handler,user_id,imagePath);
+                        if(PhotoUtils.imagePath != null)
+                            UserTool.uploadHeadImage(handler,user_id,PhotoUtils.imagePath);
                         else{
                             progressDialog.dismiss();
                             startActivity(new Intent(AddContentActivity.this,MainActivity.class));
@@ -146,6 +148,8 @@ public class AddContentActivity extends AppCompatActivity {
         edUserName = (EditText) findViewById(R.id.edRegisterNickname);
         btnRegister = (ImageView) findViewById(R.id.btnRegister);
         radioGroup = (RadioGroup) findViewById(R.id.radioSex);
+        tvToRegister = (TextView) findViewById(R.id.tvOfBackBar);
+        tvToRegister.setText("欢迎来到FADE");
 
         password = getIntent().getStringExtra(Const.PASSWORD);
         telephone = getIntent().getStringExtra(Const.TELEPHONE);
@@ -164,10 +168,9 @@ public class AddContentActivity extends AppCompatActivity {
         iv_personal_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showChoosePicDialog();
+                PhotoUtils.showChoosePicDialog(AddContentActivity.this);
             }
         });
-
 
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -183,6 +186,7 @@ public class AddContentActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * 显示修改头像的对话框
@@ -208,7 +212,10 @@ public class AddContentActivity extends AppCompatActivity {
                         takePhoto();
                         break;
                     case CHOOSE_PICTURE: // 选择本地照片
-                        checkPermissionAndLoadImages();
+                        Intent openAlbumIntent = new Intent(
+                                Intent.ACTION_GET_CONTENT);
+                        openAlbumIntent.setType("image/*");
+                        startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
                         break;
                 }
             }
@@ -216,20 +223,21 @@ public class AddContentActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) { // 如果返回码是可以用的
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    startPhotoZoom(tempUri); // 开始对图片进行裁剪处理
+                    PhotoUtils.startPhotoZoom(PhotoUtils.tempUri, this); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:
-                    startPhotoZoom(data.getData()); // 开始对图片进行裁剪处理
+                    PhotoUtils.startPhotoZoom(data.getData(), this); // 开始对图片进行裁剪处理
                     break;
                 case CROP_SMALL_PICTURE:
                     if (data != null) {
-                        setImageToView(data); // 让刚才选择裁剪得到的图片显示在界面上
+                        PhotoUtils.setImageToView(data, iv_personal_icon); // 让刚才选择裁剪得到的图片显示在界面上
                     }
                     break;
             }
@@ -300,35 +308,36 @@ public class AddContentActivity extends AppCompatActivity {
         startActivityForResult(intent, CROP_SMALL_PICTURE);
     }
 
+
     /**
      * 保存裁剪之后的图片数据
      *
      */
-    protected void setImageToView(Intent data) {
-        Bundle extras = data.getExtras();
-        if (extras != null) {
-            Bitmap photo = extras.getParcelable("data");
-            photo = PhotoUtils.toRoundBitmap(photo, tempUri); // 这个时候的图片已经被处理成圆形的了
-            iv_personal_icon.setImageBitmap(photo);
-            uploadPic(photo);
-        }
-    }
+//    protected void setImageToView(Intent data) {
+//        Bundle extras = data.getExtras();
+//        if (extras != null) {
+//            Bitmap photo = extras.getParcelable("data");
+//            photo = PhotoUtils.toRoundBitmap(photo, tempUri); // 这个时候的图片已经被处理成圆形的了
+//            iv_personal_icon.setImageBitmap(photo);
+//            uploadPic(photo);
+//        }
+//    }
 
-    private void uploadPic(Bitmap bitmap) {
-        // 上传至服务器
-        // ... 可以在这里把Bitmap转换成file，然后得到file的url，做文件上传操作
-        // 注意这里得到的图片已经是圆形图片了
-        // bitmap是没有做个圆形处理的，但已经被裁剪了
-
-        imagePath = PhotoUtils.savePhoto(bitmap, Environment
-                .getExternalStorageDirectory().getAbsolutePath(), String
-                .valueOf(System.currentTimeMillis()));
-        Log.e("imagePath", imagePath+"");
-        if(imagePath != null){
-            // 拿着imagePath上传了
-            // ...
-        }
-    }
+//    private void uploadPic(Bitmap bitmap) {
+//        // 上传至服务器
+//        // ... 可以在这里把Bitmap转换成file，然后得到file的url，做文件上传操作
+//        // 注意这里得到的图片已经是圆形图片了
+//        // bitmap是没有做个圆形处理的，但已经被裁剪了
+//
+//        imagePath = PhotoUtils.savePhoto(bitmap, Environment
+//                .getExternalStorageDirectory().getAbsolutePath(), String
+//                .valueOf(System.currentTimeMillis()));
+//        Log.e("imagePath", imagePath+"");
+//        if(imagePath != null){
+//            // 拿着imagePath上传了
+//            // ...
+//        }
+//    }
 
 
     /**

@@ -42,6 +42,7 @@
         <activity android:name=".my.setting.About"></activity>
         <activity android:name=".home.activity.ImagePagerActivity" android:theme="@style/imagePagerTheme"/>
         <activity android:name=".publish.PublishActivity"></activity>
+        <activity android:name=".relay_publish.RelayPublishAcitivity"></activity>
         <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
         <activity android:name=".publish.imageselector.PreviewActivity"></activity>
         <activity android:name=".publish.imageselector.ClickToPreviewActivity"></activity>

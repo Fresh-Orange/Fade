@@ -376,9 +376,9 @@ public class UserTool {
                 list.add(new BasicNameValuePair(Const.CODE,"07"));
 
                 String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                //Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
-                message.obj = map;
+                message.obj = ans_str;
                 message.what = 1;
                 handler.sendMessage(message);
                 super.run();
@@ -425,9 +425,9 @@ public class UserTool {
                 list.add(new BasicNameValuePair(Const.CODE,"08"));
 
                 String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                //Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
-                message.obj = map;
+                message.obj = ans_str;
                 message.what = 3;
                 handler.sendMessage(message);
                 super.run();
@@ -446,9 +446,9 @@ public class UserTool {
                 list.add(new BasicNameValuePair(Const.CODE,"09"));
 
                 String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                //Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
-                message.obj = map;
+                message.obj = ans_str;
                 message.what = 4;
                 handler.sendMessage(message);
                 super.run();
@@ -467,9 +467,9 @@ public class UserTool {
                 list.add(new BasicNameValuePair(Const.CODE,"10"));
 
                 String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+               // Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
-                message.obj = map;
+                message.obj = ans_str;
                 message.what = 5;
                 handler.sendMessage(message);
                 super.run();
@@ -488,9 +488,9 @@ public class UserTool {
                 list.add(new BasicNameValuePair(Const.CODE,"11"));
 
                 String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+               // Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
-                message.obj = map;
+                message.obj = ans_str;
                 message.what = 6;
                 handler.sendMessage(message);
                 super.run();
