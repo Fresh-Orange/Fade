@@ -1,19 +1,25 @@
 package com.sysu.pro.fade.publish;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -44,16 +50,20 @@ import com.sysu.pro.fade.publish.adapter.MyGridView;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.publish.imageselector.ClickToPreviewActivity;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
+import com.sysu.pro.fade.publish.utils.PhotoUtils;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +72,7 @@ public class PublishActivity extends AppCompatActivity {
 
     public static PublishActivity publishActivity;
     private static final int REQUEST_CODE = 0x00000011;
+    public static int currentItem;
 
     private EditText edit_temp = null;
     private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
@@ -200,17 +211,7 @@ public class PublishActivity extends AppCompatActivity {
         setContentView(R.layout.activity_publish);
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
         progressDialog = new ProgressDialog(PublishActivity.this);
-//        rvImage = (RecyclerView) findViewById(R.id.rv_image);
-//        rvImage.setLayoutManager(new GridLayoutManager(this, 3));
-//        rvImage.getLayoutManager();
-//        mAdapter = new ImageAdapter(this);
-//        rvImage.setAdapter(mAdapter);
-
-//        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_addpic);
-//        bitmaps.add(bp);
-
         InitView();
-
         et_emotion= (EditText) findViewById(R.id.my_et_emotion);
         //设置焦点，可被操作
         et_emotion.setFocusable(true);
@@ -218,30 +219,8 @@ public class PublishActivity extends AppCompatActivity {
         et_emotion.requestFocus();
         InputMethodManager im = ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE));
         im.showSoftInput(et_emotion, 0);
-
-
         InitListener();
         initEmotionMainFragment();
-
-//        mAdapter.setOnItemClickLisitenter(new RecycleViewLisitenter.onItemClickLisitenter() {
-//            @Override
-//            public void onItemClick(View v, int position) {
-//                if (bitmaps.size() == 10) {
-//                    Toast.makeText(PublishActivity.this, "图片数9张已满", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    if (position == bitmaps.size() - 1) {
-//                        Toast.makeText(PublishActivity.this, "添加图片", Toast.LENGTH_SHORT).show();
-//                        // 选择图片
-//                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
-//                    } else {
-//                        Toast.makeText(PublishActivity.this, "点击第" + (position + 1) + " 号图片", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                ArrayList<String> selectImage = new ArrayList<String>();
-//                selectImage.add(images.get(position));
-//            }
-//        });
-//        findViewById(R.id.btn_limit).setOnClickListener(this);
     }
 
     private void InitListener() {
@@ -251,12 +230,19 @@ public class PublishActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //先发送文字，收到note_id后再接收图片
-                if(edit_temp.getText().toString().equals("") || edit_temp == null){
-                    Toast.makeText(PublishActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
-                }else {
-                    progressDialog.show();
-                    NoteTool.addNote(handler,user.getUser_id(),user.getNickname(),
-                            user.getHead_image_url(),edit_temp.getText().toString(),0,"1,2");
+                Log.d("Yellow", edit_temp.getText().toString());
+                try {
+                    String str = URLDecoder.decode(edit_temp.getText().toString(),"unicode");
+                    Toast.makeText(PublishActivity.this,str,Toast.LENGTH_LONG).show();
+                    if(str.equals("") || edit_temp == null){
+                        Toast.makeText(PublishActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
+                    }else {
+                        progressDialog.show();
+                        NoteTool.addNote(handler,user.getUser_id(),user.getNickname(),
+                                user.getHead_image_url(),str,0,"1,2");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -300,7 +286,7 @@ public class PublishActivity extends AppCompatActivity {
 //                                postArticleImgAdapter.notifyDataSetChanged();
                             }
                             else {
-                                int currentItem = pager.getPosition();
+                                currentItem = pager.getPosition();
                                 Log.d("Hey", "" + currentItem);
                                 removeImg(currentItem);
                                 newCount = maxCount - images.size();
@@ -318,48 +304,21 @@ public class PublishActivity extends AppCompatActivity {
                     dialog.show();
             }
         });
-
-//        pager.addOnItemTouchListener
-        // 设置点击监听事件
-//        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (position == bitmaps.size() - 1 && !isFull) {
-//                    showListDialog();
-////                    Toast.makeText(PublishActivity.this, "添加图片", Toast.LENGTH_SHORT).show();
-//                    // 选择图片
-//                } else {
-////                    Toast.makeText(PublishActivity.this, "点击第" + (position + 1) + " 号图片",
-////                            Toast.LENGTH_SHORT).show();
-////                    if (images != null)
-//                    ClickToPreviewActivity.openActivity(PublishActivity.this, images,
-//                            newCount, position);
-////                    images = getIntent().getStringArrayListExtra(Constants.NEW_PATH);
-//                }
-//            }
-//        });
-
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-
-//        isHidden = EmotionMainFragment.isHidden;
         activityRootView = findViewById(R.id.activity_publish);
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
                 if (heightDiff > dpToPx(PublishActivity.this, 200)) {
-//                    Toast.makeText(PublishActivity.this, "显示", Toast.LENGTH_SHORT).show();
-//                    findViewById(R.id.vp_image).setVisibility(View.GONE);
                     findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
                 }
                 else{
-                    Toast.makeText(PublishActivity.this, "隐藏", Toast.LENGTH_SHORT).show();
-//                    findViewById(R.id.vp_image).setVisibility(View.VISIBLE);
                     if (frameLayout.getVisibility() == View.GONE)
                       findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
                 }
@@ -377,22 +336,10 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
-        // 设置默认图片为加号
-//        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_addpic);
-//        bitmaps.add(bp);
-        // 找到控件ID
-//        mGridView = (MyGridView) findViewById(R.id.gridView1);
-        // 绑定Adapter
-//        adapter = new MyAdapter(getApplicationContext(), bitmaps, mGridView);
-//        mGridView.setAdapter(adapter);
-
         publishActivity = this;
         mContext = getApplicationContext();
         dragImages = new ArrayList<>();
         dragImages.addAll(images);
-//        new Thread(new MyRunnable(dragImages, images, dragImages, myHandler, false)).start();
-
-
         pager = (imageAdaptiveIndicativeLayout) findViewById(R.id.image_viewpager);
         choose_view = (LinearLayout) findViewById(R.id.choose_view);
         viewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
@@ -455,8 +402,6 @@ public class PublishActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        ShowThumbnail();
-//        ShowViewPager();
         }
 
     private void ShowViewPager() {
@@ -465,6 +410,7 @@ public class PublishActivity extends AppCompatActivity {
             pager.setVisibility(View.VISIBLE);
             viewSwitcher.setVisibility(View.VISIBLE);
             viewSwitcher.setDisplayedChild(0);
+            pager.setImages(images, newCount);
             float maxRatio = 0;
             for (String image : images)
             {
@@ -473,27 +419,19 @@ public class PublishActivity extends AppCompatActivity {
                  * 最关键在此，把options.inJustDecodeBounds = true;
                  * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
                  */
- //                options.inJustDecodeBounds = true;
                 Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
-//                Bitmap bitmap = BitmapFactory.decodeFile(image);
                 /**
                  *options.outHeight为原始图片的高
                  */
                 float currentRatio = (float)options.outHeight / (float)options.outWidth;
-//                float currentRatio = bitmap.getHeight() / bitmap.getWidth();
                 if (currentRatio > maxRatio)
                     maxRatio = currentRatio;
             }
-//            maxRatio *= 3;
             pager.setViewPagerMaxHeight(280);
             pager.setHeightByRatio(maxRatio);
             pager.setPaths(images,images.size() - 1);
             if (bitmaps.size() == 9)
                 isFull = true;
-//            else
-//                bitmaps.add(bp);
-//            adapter.notifyDataSetChanged();
-//            bitmaps.clear();
         }
     }
 
@@ -528,47 +466,44 @@ public class PublishActivity extends AppCompatActivity {
                 images = (newDataList);
             }
             ShowViewPager();
-//            new Thread(new MyRunnable(images,
-//                    images, dragImages, myHandler, true)).start();
-//            postArticleImgAdapter.notifyDataSetChanged();
         }
-        //仅剩一张还删了
-//        if (data != null && data.getBooleanExtra(Constants.IS_ALL_DELETED, false)
-//                && requestCode == Constants.CLICK_RESULT_CODE) {
-//            images.clear();
-//            newCount = maxCount;
-//            postArticleImgAdapter.notifyDataSetChanged();
-//        }
-        //其他删除情况
-//        if (data != null && data.getBooleanExtra(Constants.IS_DELETED, false)
-//                && requestCode == Constants.CLICK_RESULT_CODE) {
-//            //既然删了就没满
-//            isFull = false;
-//            int clickPositionSize = data.getIntExtra(Constants.CURRENT_POSITION_SIZE,0);
-//            if (clickPositionSize >= images.size()) {
-//                newCount = maxCount;
-//                images.clear();
-//            }
-//            else if (clickPositionSize > 0) {
-//                Bundle bundle = data.getExtras();
-//                int[] clickPosition = new int[15];
-//                clickPosition = bundle.getIntArray(Constants.CURRENT_POSITION);
-//                for (int i = 0; i < clickPositionSize; i++) {
-//                    int removePosition = 0;
-//                    if (clickPosition != null) {
-//                        removePosition = clickPosition[i];
-//                    }
+//        仅剩一张还删了
+        if (data != null && requestCode == Constants.CLICK_RESULT_CODE)
+        {
+            if (data.getBooleanExtra(Constants.IS_ALL_DELETED, false)) {
+                images.clear();
+                newCount = maxCount;
+//            pager.setPaths(images,0);
+                choose_view.setVisibility(View.VISIBLE);
+                viewSwitcher.setVisibility(View.GONE);
+            }
+            //        其他删除情况
+            else if (data.getBooleanExtra(Constants.IS_DELETED, false)) {
+                isFull = false;
+                int clickPositionSize = data.getIntExtra(Constants.CURRENT_POSITION_SIZE,0);
+                if (clickPositionSize >= images.size()) {
+                    newCount = maxCount;
+                    images.clear();
+                }
+                else if (clickPositionSize > 0) {
+                    Bundle bundle = data.getExtras();
+                    int[] clickPosition = new int[15];
+                    clickPosition = bundle.getIntArray(Constants.CURRENT_POSITION);
+                    for (int i = 0; i < clickPositionSize; i++) {
+                        int removePosition = 0;
+                        if (clickPosition != null) {
+                            removePosition = clickPosition[i];
+                        }
 //                    Log.d("Yellow", "" + removePosition);
-//                    if (removePosition < images.size())
-//                        images.remove(removePosition);
-//                }
-//                newCount = maxCount - images.size();
-//            }
-////            images.remove(data.getIntExtra(Constants.CURRENT_POSITION, 0));
-////            newCount -= newDataList.size();
-//            postArticleImgAdapter.notifyDataSetChanged();
-//        }
-
+                        if (removePosition < images.size())
+                            images.remove(removePosition);
+                    }
+                    newCount = maxCount - images.size();
+                }
+                pager.setPaths(images,0);
+                pager.notifyChanged();
+            }
+        }
         if (requestCode == Constants.TAKE_PICTURE  && resultCode == RESULT_OK)
         {
             if (path != null) {
@@ -576,33 +511,24 @@ public class PublishActivity extends AppCompatActivity {
                 newCount--;
                 ShowViewPager();
              }
-            }
+        }
     }
 
     private void showListDialog() {
         final String[] items = { "拍摄","从相册选择"};
         AlertDialog.Builder listDialog =
                 new AlertDialog.Builder(PublishActivity.this);
-//        listDialog.setTitle("我是一个列表Dialog");
         listDialog.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
-//                        Toast.makeText(PublishActivity.this,
-//                                "你点击了拍照", Toast.LENGTH_SHORT).show();
                         takePhoto();
                         break;
                     case 1:
-//                        Toast.makeText(PublishActivity.this,
-//                                "你点击了相册", Toast.LENGTH_SHORT).show();
-//                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
                         ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
                         break;
                 }
-                // which 下标从0开始
-                // ...To-do
-
             }
         });
         listDialog.show();
@@ -613,7 +539,7 @@ public class PublishActivity extends AppCompatActivity {
     public void takePhoto()
     {
         Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
+//        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         File vFile = new File(Environment.getExternalStorageDirectory()
                 + "/myimage/", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
@@ -630,8 +556,14 @@ public class PublishActivity extends AppCompatActivity {
             }
         }
         path = vFile.getPath();
-        Uri cameraUri = Uri.fromFile(vFile);
-        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+//        Uri cameraUri = Uri.fromFile(vFile);
+        Uri photoURI = FileProvider.getUriForFile(mContext,
+                mContext.getApplicationContext().getPackageName() +
+                        ".provider", vFile);
+        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        }
         startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
     }
 
@@ -643,86 +575,5 @@ public class PublishActivity extends AppCompatActivity {
         }
     }
 
-
-
-//    static class MyRunnable implements Runnable {
-//
-//        ArrayList<String> images;
-//        ArrayList<String> originImages;
-//        ArrayList<String> dragImages;
-//        Handler handler;
-//        boolean add;//是否为添加图片
-//
-//        public MyRunnable(ArrayList<String> images,
-//                          ArrayList<String> originImages,
-//                          ArrayList<String> dragImages,
-//                          Handler handler,
-//                          boolean add) {
-//            this.images = images;
-//            this.originImages = originImages;
-//            this.dragImages = dragImages;
-//            this.handler = handler;
-//            this.add = add;
-//        }
-//
-//        @Override
-//        public void run() {
-//            SdcardUtils sdcardUtils = new SdcardUtils();
-//            String filePath;
-//            Bitmap newBitmap;
-//            int addIndex = originImages.size();
-//            int i = 0;
-//            for (String image : images) {
-//                //压缩
-////                newBitmap = ImageUtils.compressScaleByWH(images.get(i),
-////                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100),
-////                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100));
-//                newBitmap = BitmapUtils.decodeSampledBitmapFromFd(image, 200, 200);
-//                //文件地址
-//                filePath = sdcardUtils.getSDPATH() + FILE_DIR_NAME + "/"
-//                        + FILE_IMG_NAME + "/" + String.format("img_%d.jpg", System.currentTimeMillis());
-//                //保存图片
-//                ImageUtils.save(newBitmap, filePath, Bitmap.CompressFormat.JPEG, true);
-//                //设置值
-////                if (!add) {
-//                    images.set(i++, filePath);
-////                } else {//添加图片，要更新
-////                    dragImages.add(addIndex, filePath);
-////                    originImages.add(addIndex++, filePath);
-////                }
-//            }
-//            Message message = new Message();
-//            message.what = 1;
-//            handler.sendMessage(message);
-//        }
-//    }
-//
-//    private MyHandler myHandler = new MyHandler(this);
-//
-//    private static class MyHandler extends Handler {
-//        private WeakReference<Activity> reference;
-//
-//        public MyHandler(Activity activity) {
-//            reference = new WeakReference<>(activity);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            PublishActivity activity = (PublishActivity) reference.get();
-//            if (activity != null) {
-//                switch (msg.what) {
-//                    case 1:
-//                        activity.postArticleImgAdapter.notifyDataSetChanged();
-//                        break;
-//                }
-//            }
-//        }
-//    }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        myHandler.removeCallbacksAndMessages(null);
-//    }
 
 }
