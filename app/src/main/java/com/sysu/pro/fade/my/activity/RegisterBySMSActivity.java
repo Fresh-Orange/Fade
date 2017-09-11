@@ -33,6 +33,7 @@ public class RegisterBySMSActivity extends AppCompatActivity {
                     if(ans == 0){
                         Toast.makeText(RegisterBySMSActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
                         UserTool.sendIdentifyCode(handler,edTelphone.getText().toString());
+
                     }else{
                         Toast.makeText(RegisterBySMSActivity.this,"该手机号已经注册",Toast.LENGTH_SHORT).show();
                     }
