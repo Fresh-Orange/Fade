@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +17,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
+import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Folder;
 import com.sysu.pro.fade.publish.imageselector.model.ImageModel;
 import com.sysu.pro.fade.tool.UserTool;
@@ -48,8 +51,8 @@ import java.util.Map;
 
 public class AddContentActivity extends AppCompatActivity {
 
-    protected static final int CHOOSE_PICTURE = 0;
-    protected static final int TAKE_PICTURE = 1;
+    protected static final int TAKE_PICTURE = 0;
+    protected static final int CHOOSE_PICTURE = 1;
     private static final int CROP_SMALL_PICTURE = 2;
 //    protected static Uri tempUri;
     private TextView tvToRegister;
@@ -150,6 +153,8 @@ public class AddContentActivity extends AppCompatActivity {
 
         password = getIntent().getStringExtra(Const.PASSWORD);
         telephone = getIntent().getStringExtra(Const.TELEPHONE);
+//        telephone = "18902356675";
+//        password = "hhh";
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -189,27 +194,28 @@ public class AddContentActivity extends AppCompatActivity {
     protected void showChoosePicDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("设置头像");
-        String[] items = { "选择本地照片", "拍照" };
+        String[] items = { "拍照" , "选择本地照片"};
         builder.setNegativeButton("取消", null);
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
+                    case TAKE_PICTURE: // 拍照
+//                        Intent openCameraIntent = new Intent(
+//                                MediaStore.ACTION_IMAGE_CAPTURE);
+//                        tempUri = Uri.fromFile(new File(Environment
+//                                .getExternalStorageDirectory(), "image.jpg"));
+//                        // 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
+//                        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+//                        startActivityForResult(openCameraIntent, TAKE_PICTURE);
+                        takePhoto();
+                        break;
                     case CHOOSE_PICTURE: // 选择本地照片
                         Intent openAlbumIntent = new Intent(
                                 Intent.ACTION_GET_CONTENT);
                         openAlbumIntent.setType("image/*");
                         startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
-                        break;
-                    case TAKE_PICTURE: // 拍照
-                        Intent openCameraIntent = new Intent(
-                                MediaStore.ACTION_IMAGE_CAPTURE);
-                        tempUri = Uri.fromFile(new File(Environment
-                                .getExternalStorageDirectory(), "image.jpg"));
-                        // 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
-                        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
-                        startActivityForResult(openCameraIntent, TAKE_PICTURE);
                         break;
                 }
             }
@@ -238,29 +244,70 @@ public class AddContentActivity extends AppCompatActivity {
         }
     }
 
+    public void takePhoto()
+    {
+        Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        File vFile = new File(Environment.getExternalStorageDirectory()
+                + "/myimage/", String.valueOf(System.currentTimeMillis())
+                + ".jpg");
+        if (!vFile.exists())
+        {
+            File vDirPath = vFile.getParentFile();
+            vDirPath.mkdirs();
+        }
+        else
+        {
+            if (vFile.exists())
+            {
+                vFile.delete();
+            }
+        }
+        tempUri = FileProvider.getUriForFile(getApplicationContext(),
+                getApplicationContext().getPackageName() +
+                        ".provider", vFile);
+        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        }
+        startActivityForResult(openCameraIntent, TAKE_PICTURE);
+    }
+
     /**
      * 裁剪图片方法实现
      *
      * @param uri
      */
-//    protected void startPhotoZoom(Uri uri) {
-//        if (uri == null) {
-//            Log.i("tag", "The uri is not exist.");
-//        }
-//        tempUri = uri;
-//        Intent intent = new Intent("com.android.camera.action.CROP");
+    protected void startPhotoZoom(Uri uri) {
+        if (uri == null) {
+            Log.i("tag", "The uri is not exist.");
+        }
+        tempUri = uri;
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        {
+            //赋予权限
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //举个栗子
+            intent.setDataAndType(uri,"image/*");
+        }
+        else
+        {
+            intent.setDataAndType(uri,"image/*");
+        }
 //        intent.setDataAndType(uri, "image/*");
-//        // 设置裁剪
-//        intent.putExtra("crop", "true");
-//        // aspectX aspectY 是宽高的比例
-//        intent.putExtra("aspectX", 1);
-//        intent.putExtra("aspectY", 1);
-//        // outputX outputY 是裁剪图片宽高
-//        intent.putExtra("outputX", 150);
-//        intent.putExtra("outputY", 150);
-//        intent.putExtra("return-data", true);
-//        startActivityForResult(intent, CROP_SMALL_PICTURE);
-//    }
+        // 设置裁剪
+        intent.putExtra("crop", "true");
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // outputX outputY 是裁剪图片宽高
+        intent.putExtra("outputX", 150);
+        intent.putExtra("outputY", 150);
+        intent.putExtra("return-data", true);
+        startActivityForResult(intent, CROP_SMALL_PICTURE);
+    }
+
 
     /**
      * 保存裁剪之后的图片数据
