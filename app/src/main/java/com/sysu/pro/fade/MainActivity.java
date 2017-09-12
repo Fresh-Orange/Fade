@@ -9,12 +9,14 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -202,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             //返回时重新加载数据
             super.onResume();
             if(contentHome != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.HOME){
-               // contentHome.loadData();
+                //contentHome.loadData();
             }
             if(contentDiscover != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.DISCOVER){
                 //contentDiscover.loadData();
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(contentMy != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MY){
-                //contentMy.loadData();
+                contentMy.loadData();
             }
 
 
@@ -242,14 +244,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View rootView =null;
+
+            // TODO: 2017/9/4 消息界面的toolbar由于My界面会隐藏所以显示不了，待解决
+            //隐藏toolbar
+            FrameLayout frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
+
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
                 case Const.HOME:
                     rootView = inflater.inflate(R.layout.fragment_home,container,false);
+                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
                     contentHome = new ContentHome(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.DISCOVER:
                     rootView = inflater.inflate(R.layout.fragment_discover,container,false);
+                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
                     contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
                     break;
 
@@ -260,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
                 case Const.MY:
                     rootView = inflater.inflate(R.layout.fragment_my,container,false);
+                    frameBar.setVisibility(View.GONE);//隐藏toolbar--by VJ
                     contentMy = new ContentMy(getActivity(),getContext(),rootView);
                     break;
             }

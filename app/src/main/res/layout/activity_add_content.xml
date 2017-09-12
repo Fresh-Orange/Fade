@@ -5,27 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <com.sysu.pro.fade.my.BackBar
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#f9f9f9">
-        <ImageView
-            android:layout_marginLeft="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/register_back"
-            android:layout_centerVertical="true"/>
-        <TextView
-            android:id="@+id/tvToRegister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="欢迎来到FADE"
-            android:textSize="40px"
-            android:textColor="#333333"
-            android:layout_centerVertical="true"
-            android:layout_centerInParent="true"
-            android:layout_marginRight="10dp"/>
-    </RelativeLayout>
+        android:layout_height="wrap_content"/>
 
     <ImageView
         android:layout_margin="40dp"

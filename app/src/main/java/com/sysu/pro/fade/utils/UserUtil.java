@@ -23,7 +23,7 @@ public class UserUtil {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(USER_SHARE, Context.MODE_PRIVATE);
         user.setUser_id(sharedPreferences.getInt(Const.USER_ID,0));
         user.setNickname(sharedPreferences.getString(Const.NICKNAME,""));
-        user.setAera(sharedPreferences.getString(Const.AREA,""));
+        user.setArea(sharedPreferences.getString(Const.AREA,""));
         user.setConcern_num(sharedPreferences.getInt(Const.CONCERN_NUM,0));
         user.setFans_num(sharedPreferences.getInt(Const.FANS_NUM,0));
         user.setFade_name(sharedPreferences.getString(Const.FADE_NAME,""));
