@@ -81,44 +81,26 @@ public class PublishActivity extends AppCompatActivity {
 
     private LinearLayout rl_editbar_bg;
     private View activityRootView;
-    private boolean isFull = false;
-    private MyAdapter adapter;
 
-    private MyGridView mGridView;
     private int newCount = 9;
-    private RecyclerView rvImage;
-    private ImageAdapter mAdapter;
     private ArrayList<String> images = new ArrayList<String>();
     private ArrayList<String> newDataList = new ArrayList<String>();
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-
     private final int maxCount = 9;
     private EditText et_emotion; //编辑器
     private EmotionMainFragment emotionMainFragment;
-
-    private boolean isHidden = true;
-
     private FrameLayout frameLayout;
-
     private ImageButton imageButton;
-
     private imageAdaptiveIndicativeLayout pager;
-
     private LinearLayout choose_view;
-
-
     private ViewSwitcher viewSwitcher;
 
-    public PostArticleImgAdapter postArticleImgAdapter;
-    private ItemTouchHelper itemTouchHelper;
-    private RecyclerView rcvImg;
-    private TextView tv;//删除区域提示
     private Context mContext;
-    private ArrayList<String> dragImages;//压缩长宽后图片
     public static final String FILE_DIR_NAME = "com.kuyue.wechatpublishimagesdrag";//应用缓存地址
     public static final String FILE_IMG_NAME = "images";//放置图片缓存
 
+    private final int CHOOSE = 0;
+    private final int VIEW = 1;
+    private int show;
     //add by hl
     private User user;
     private TextView publishTextView;
@@ -209,6 +191,7 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
+        show = CHOOSE;
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
         progressDialog = new ProgressDialog(PublishActivity.this);
         InitView();
@@ -277,12 +260,14 @@ public class PublishActivity extends AppCompatActivity {
                             if (images.size() == 0) {
                                 choose_view.setVisibility(View.VISIBLE);
                                 viewSwitcher.setVisibility(View.GONE);
+                                show = CHOOSE;
                             }
                             if (images.size() == 1) {
                                 images.clear();
                                 newCount = maxCount;
                                 choose_view.setVisibility(View.VISIBLE);
                                 viewSwitcher.setVisibility(View.GONE);
+                                show = CHOOSE;
 //                                postArticleImgAdapter.notifyDataSetChanged();
                             }
                             else {
@@ -317,10 +302,22 @@ public class PublishActivity extends AppCompatActivity {
                 int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
                 if (heightDiff > dpToPx(PublishActivity.this, 200)) {
                     findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
+                    if (show == CHOOSE)
+                        choose_view.setVisibility(View.GONE);
+                    else
+                        viewSwitcher.setVisibility(View.GONE);
                 }
                 else{
-                    if (frameLayout.getVisibility() == View.GONE)
-                      findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
+                    if (frameLayout.getVisibility() == View.GONE) {
+                        findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
+                    }
+                }
+                if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
+                {
+                    if (show == CHOOSE)
+                        choose_view.setVisibility(View.VISIBLE);
+                    else
+                        viewSwitcher.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -338,21 +335,9 @@ public class PublishActivity extends AppCompatActivity {
     private void InitView() {
         publishActivity = this;
         mContext = getApplicationContext();
-        dragImages = new ArrayList<>();
-        dragImages.addAll(images);
         pager = (imageAdaptiveIndicativeLayout) findViewById(R.id.image_viewpager);
         choose_view = (LinearLayout) findViewById(R.id.choose_view);
         viewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
-        rcvImg = (RecyclerView) findViewById(R.id.rcv_img);
-        tv = (TextView) findViewById(R.id.tv);
-
-        postArticleImgAdapter = new PostArticleImgAdapter(mContext, dragImages);
-        rcvImg.setLayoutManager(new GridLayoutManager(mContext, 3));
-        rcvImg.setAdapter(postArticleImgAdapter);
-        MyCallBack myCallBack = new MyCallBack(postArticleImgAdapter, dragImages, images);
-        itemTouchHelper = new ItemTouchHelper(myCallBack);
-        itemTouchHelper.attachToRecyclerView(rcvImg);//绑定RecyclerView
-
         pager.setViewSwitcher(viewSwitcher);
 //
     }
@@ -367,7 +352,6 @@ public class PublishActivity extends AppCompatActivity {
         //隐藏控件
         bundle.putBoolean(EmotionMainFragment.HIDE_BAR_EDITTEXT_AND_BTN,true);
 
-        bundle.putBoolean(EmotionMainFragment.EMOTION_HIDE,isHidden);
         //替换fragment
         //创建修改实例
         frameLayout = (FrameLayout) findViewById(R.id.fl_memotionview_main);
@@ -410,6 +394,7 @@ public class PublishActivity extends AppCompatActivity {
             pager.setVisibility(View.VISIBLE);
             viewSwitcher.setVisibility(View.VISIBLE);
             viewSwitcher.setDisplayedChild(0);
+            show = VIEW;
             pager.setImages(images, newCount);
             float maxRatio = 0;
             for (String image : images)
@@ -430,25 +415,6 @@ public class PublishActivity extends AppCompatActivity {
             pager.setViewPagerMaxHeight(280);
             pager.setHeightByRatio(maxRatio);
             pager.setPaths(images,images.size() - 1);
-            if (bitmaps.size() == 9)
-                isFull = true;
-        }
-    }
-
-    private void ShowThumbnail() {
-        if (images != null) {
-            Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_addpic);
-            bitmaps.clear();
-            for (String image : images) {
-                Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(image, 200, 200);
-                bitmaps.add(newBp);
-            }
-            if (bitmaps.size() == 9)
-                isFull = true;
-//            else
-//                bitmaps.add(bp);
-            postArticleImgAdapter.notifyDataSetChanged();
-//            bitmaps.clear();
         }
     }
 
@@ -476,10 +442,10 @@ public class PublishActivity extends AppCompatActivity {
 //            pager.setPaths(images,0);
                 choose_view.setVisibility(View.VISIBLE);
                 viewSwitcher.setVisibility(View.GONE);
+                show = CHOOSE;
             }
             //        其他删除情况
             else if (data.getBooleanExtra(Constants.IS_DELETED, false)) {
-                isFull = false;
                 int clickPositionSize = data.getIntExtra(Constants.CURRENT_POSITION_SIZE,0);
                 if (clickPositionSize >= images.size()) {
                     newCount = maxCount;
