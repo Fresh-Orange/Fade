@@ -29,6 +29,7 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.RelayNote;
 import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
 import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
+import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.listener.RelayClickMovementMethod;
 import com.sysu.pro.fade.relay_publish.RelayPublishAcitivity;
 import com.sysu.pro.fade.tool.NoteTool;
@@ -303,6 +304,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		/*Intent intent = new Intent(context, ImagePagerActivity.class);
 		intent.putExtra("NOTE", bean);
 		context.startActivity(intent);*/
+		Intent intent = new Intent(context, DetailActivity.class);
+		intent.putExtra(Const.NOTE_ID,bean.getNote_id());
+		context.startActivity(intent);
 		Toast.makeText(context, "跳转到详情", Toast.LENGTH_SHORT).show();
 	}
 

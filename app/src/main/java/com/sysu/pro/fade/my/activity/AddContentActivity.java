@@ -33,6 +33,7 @@ public class AddContentActivity extends AppCompatActivity {
     protected static final int TAKE_PICTURE = 1;
     protected static final int CHOOSE_PICTURE = 0;
     private static final int CROP_SMALL_PICTURE = 2;
+    protected static Uri tempUri;
     private TextView tvToRegister;
     private ImageView iv_personal_icon;
     private EditText edUserName;

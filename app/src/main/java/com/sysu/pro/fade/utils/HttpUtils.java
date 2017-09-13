@@ -24,7 +24,7 @@ public class HttpUtils {
     }
     public  static String getRequest(String url, List<BasicNameValuePair>list){
         HttpClient httpClient = new DefaultHttpClient();
-        String param = URLEncodedUtils.format(list, "UTF-8");
+        String param = URLEncodedUtils.format(list, "utf-8");
         HttpGet httpGet = new HttpGet(url+"?"+ param);
         try {
             HttpResponse response = httpClient.execute(httpGet);

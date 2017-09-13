@@ -76,6 +76,9 @@ public class Const {
     public static final String ORIGIN_COMMENT     ="origin_comment";
     public static final String COMMENT_ISGOOD      = "comment_isGood";
 
+    //贴自己点赞表相关
+    public static final String GOOD_ID              = "good_id";
+    public static final String GOOD_TIME            = "good_time";
     //评论点赞表
     public static final String COMMENT_GOOD_ID    ="comment_good_id";
 

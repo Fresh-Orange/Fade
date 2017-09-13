@@ -39,6 +39,7 @@ public class UserUtil {
         user.setTelephone(sharedPreferences.getString(Const.TELEPHONE,""));
         user.setSummary(sharedPreferences.getString(Const.SUMMARY,""));
         user.setSchool(sharedPreferences.getString(Const.SCHOOL,""));
+        user.setFade_num(sharedPreferences.getInt(Const.FANS_NUM,0));
         return user;
     }
 

@@ -202,15 +202,16 @@ public class NoteTool {
                 list.add(new BasicNameValuePair(Const.CODE,"10"));
                 String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
                 Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                String ans = (String) map.get(Const.ANS);
-                List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
-                System.out.println(result);
+                Message message = new Message();
+                message.what = 0x14;
+                message.obj = map;
+                handler.sendMessage(message);
             }
         }.start();
     }
 
     public static void getTwentyGood(final Handler handler, final String note_id,final String start){
-        //打开详情页，在转发列表一次获取20条点赞信息
+        //打开详情页，在一次获取20条点赞信息
         new Thread(){
             @Override
             public void run() {
@@ -221,9 +222,10 @@ public class NoteTool {
                 list.add(new BasicNameValuePair(Const.CODE,"11"));
                 String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
                 Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                String ans = (String) map.get(Const.ANS);
-                List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
-                System.out.println(result);
+                Message message = new Message();
+                message.what = 0x11;
+                message.obj = map;
+                handler.sendMessage(message);
             }
         }.start();
     }
@@ -281,5 +283,6 @@ public class NoteTool {
             }
         }.start();
     }
+
 
 }
