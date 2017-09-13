@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
@@ -19,6 +21,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.BeanConvertUtil;
 
@@ -26,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.sysu.pro.fade.R.id.edit_comment;
 
 /**
  * Created by road on 2017/7/14.
@@ -194,6 +199,7 @@ public class ContentHome {
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
         now_note_id = new ArrayList<>();
+
         NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
         flag = 0;
     }
@@ -201,6 +207,9 @@ public class ContentHome {
     private void initViews(){
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        /*//提前加载，以防在item出现时才进行裁剪计算
+        layoutManager.setInitialPrefetchItemCount(3);
+        layoutManager.setItemPrefetchEnabled(true);*/
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecycleAdapter(context, handler, notes);
         recyclerView.setAdapter(adapter);
@@ -223,6 +232,36 @@ public class ContentHome {
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
+		SoftKeyboardStateWatcher watcher = new SoftKeyboardStateWatcher(rootView.getRootView(), context);
+		final TabLayout tabLayout = (TabLayout) rootView.getRootView().findViewById(R.id.tab_layout_menu);
+		watcher.addSoftKeyboardStateListener(
+				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
+					@Override
+					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
+						scrollListener.setResizing(true);
+                        /*//500毫秒内没有滑动，则认为是键盘已经开启
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                if (!scrollListener.isScroll()){
+                                    scrollListener.setKeyBoardOpen(true);
+                                }
+                            }
+                        }).start();*/
+					}
+					@Override
+					public void onSoftKeyboardClosed() {
+						tabLayout.setVisibility(View.VISIBLE);
+                        LinearLayout linearLayout = (LinearLayout) recyclerView.getLayoutManager().getFocusedChild().findViewById(edit_comment);
+                        linearLayout.setVisibility(View.GONE);
+					}
+				}
+		);
     }
 
     /**
@@ -349,6 +388,26 @@ public class ContentHome {
 
     private void scrollToTOP(){
         recyclerView.smoothScrollToPosition(0);
+    }
+
+    public void refreshIfUserChange(){
+        boolean isChange = false;
+        for (Note note: notes){
+            if (note.getUser_id() == user.getUser_id()){
+                if (!note.getHead_image_url().equals(user.getHead_image_url())){
+                    note.setHead_image_url(user.getHead_image_url());
+                    note.setName(user.getNickname());
+                    isChange = true;
+                }
+                else{
+                    isChange = false;
+                    break;
+                }
+            }
+        }
+        if (isChange){
+            adapter.notifyDataSetChanged();
+        }
     }
 
 }

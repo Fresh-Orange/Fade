@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
@@ -71,7 +72,13 @@ public class ImageDetailFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		Glide.with(this).load(mImageUrl).placeholder(R.drawable.unload).thumbnail(0.05f).fitCenter().into(new GlideDrawableImageViewTarget(mImageView){
+		Glide.with(this)
+				.load(mImageUrl)
+				.placeholder(R.drawable.unload)
+				.diskCacheStrategy(DiskCacheStrategy.SOURCE)
+				.thumbnail(0.05f)
+				.fitCenter()
+				.into(new GlideDrawableImageViewTarget(mImageView){
 			//重写其中的三个方法，其实就是对加载过程进行监听！
 			@Override
 			public void onLoadFailed(Exception e, Drawable errorDrawable) {
