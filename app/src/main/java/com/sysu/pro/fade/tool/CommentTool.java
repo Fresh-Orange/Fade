@@ -72,28 +72,6 @@ public class CommentTool {
         }.start();
     }
 
-    public static void getTwentyComment(final Handler handler, final Integer note_id, final Integer user_id, final Integer start){
-        //获取十条热评，显示在评论列表的上半部分
-        new Thread(){
-            @Override
-            public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.USER_ID, user_id.toString()));
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
-                list.add(new BasicNameValuePair(Const.START,start.toString()));
-                list.add(new BasicNameValuePair(Const.CODE, "02"));
-
-                String ans_str = HttpUtils.getRequest(Const.IP+"/comment", list);
-                Map<String,Object> map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x6;
-                message.obj = map;
-                handler.sendMessage(message);
-                super.run();
-            }
-        }.start();
-    }
-
     public static void addCommentGood(final Handler handler, final Integer comment_id, final Integer user_id, final Integer note_id){
         //为评论点赞
         new Thread(){
@@ -110,6 +88,48 @@ public class CommentTool {
                 Message message = new Message();
                 message.what = 0x7;
                 message.obj = map;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+
+    public static void getFirstComments(final Handler handler, final Integer user_id, final  Integer note_id){
+        new Thread(){
+            public void run() {
+                //得到十条热门评论+20条普通评论
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
+                list.add(new BasicNameValuePair(Const.CODE,"05"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/comment",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 0x12;
+                handler.sendMessage(message);
+                super.run();
+            }
+        }.start();
+    }
+
+
+    public static void getTwentyComments(final Handler handler, final Integer user_id, final  Integer note_id, final Integer start){
+        new Thread(){
+            public void run() {
+                //首次加载之后，使用这个函数获得20条普通评论（按时间排序）
+                List<BasicNameValuePair>list = new ArrayList<>();
+                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
+                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
+                list.add(new BasicNameValuePair(Const.START,start.toString()));
+                list.add(new BasicNameValuePair(Const.CODE,"02"));
+
+                String ans_str = HttpUtils.getRequest(Const.IP+"/comment",list);
+                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                Message message = new Message();
+                message.obj = map;
+                message.what = 0x13;
                 handler.sendMessage(message);
                 super.run();
             }
