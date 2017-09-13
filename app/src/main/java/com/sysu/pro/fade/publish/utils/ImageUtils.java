@@ -1,6 +1,8 @@
 package com.sysu.pro.fade.publish.utils;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -29,6 +31,13 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1588,6 +1597,41 @@ public final class ImageUtils {
             e.printStackTrace();
             return  null;
         }
+    }
+
+    /**
+     * by 赖贤城
+     * 加载url处的图片进入imageView，只显示坐标起点为（x,y）宽为width，长为height的区域
+     */
+    static public void loadImage(final Context context, String url,
+                                 final ImageView imageView,
+                                 final int x, final int y, final int width, final int height) {
+        Glide.with(context)
+                .load(url)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .fitCenter()
+                .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                    @Override
+                    public void onResourceReady(final Bitmap resource, GlideAnimation glideAnimation) {
+                        //final Bitmap cropeedBitmap;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int h = resource.getHeight();
+                                int w = resource.getWidth();
+                                int min = h < w ? h : w;
+                                final Bitmap cropeedBitmap = Bitmap.createBitmap(resource, x, y, min, min);
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        imageView.setImageBitmap(cropeedBitmap);
+                                    }
+                                });
+                            }
+                        }).start();
+                    }
+                });
     }
 
 }

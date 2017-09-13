@@ -45,7 +45,8 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 				RatioMax = RatioMax < d ? RatioMax : d;
 			}
 			imageLayout.setViewPagerMaxHeight(600);
-			imageLayout.setHeightByRatio(((float) (1.0/RatioMax)));
+			//imageLayout.setHeightByRatio(((float) (1.0/RatioMax)));
+			imageLayout.setHeightByRatio(1);
 			imageLayout.setPaths(bean.getImgUrls());
 		}
 	}

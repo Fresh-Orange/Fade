@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
+import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
@@ -31,6 +32,8 @@ import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
 import java.util.List;
+
+import static com.sysu.pro.fade.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,8 +67,10 @@ public class MainActivity extends AppCompatActivity {
          */
         getWindow().setBackgroundDrawable(null);
 
-        mViewPager = (CustomViewPager) findViewById(R.id.container);
+        mViewPager = (CustomViewPager) findViewById(container);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        /*改变预加载页的数量*/
+        mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         //设置底部导航栏以及监听
@@ -189,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static class PlaceHolderFragment extends Fragment{
+    public static class PlaceHolderFragment extends LazyFragment{
 
         //四大模块
         private ContentDiscover contentDiscover = null;
@@ -197,10 +202,20 @@ public class MainActivity extends AppCompatActivity {
         private ContentMessage contentMessage = null;
         private ContentMy contentMy = null;
 
+        View rootView;
+        FrameLayout frameBar;
+
         private static final String ARG_SECTION_NUMBER = "section_number";
+
+
+        //是否已经初始化完成
+        private boolean isPrepared;
+        //是否已被加载过一次，第二次就不再去请求数据了
+        private boolean mHasLoadedOnce;
 
         @Override
         public void onResume() {
+
             //返回时重新加载数据
             super.onResume();
             if(contentHome != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.HOME){
@@ -243,38 +258,30 @@ public class MainActivity extends AppCompatActivity {
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View rootView =null;
+            rootView =null;
 
-            // TODO: 2017/9/4 消息界面的toolbar由于My界面会隐藏所以显示不了，待解决
-            //隐藏toolbar
-            FrameLayout frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
                 case Const.HOME:
                     rootView = inflater.inflate(R.layout.fragment_home,container,false);
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
-                    contentHome = new ContentHome(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.DISCOVER:
                     rootView = inflater.inflate(R.layout.fragment_discover,container,false);
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
-                    contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.MESSAGE:
                     rootView = inflater.inflate(R.layout.fragment_message,container,false);
-                    contentMessage = new ContentMessage(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.MY:
                     rootView = inflater.inflate(R.layout.fragment_my,container,false);
-                    frameBar.setVisibility(View.GONE);//隐藏toolbar--by VJ
-                    contentMy = new ContentMy(getActivity(),getContext(),rootView);
                     break;
             }
             return rootView;
         }
+
+
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -289,6 +296,46 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        @Override
+        protected void lazyLoad() {
+            //TODO layzyLoad
+            if (!isVisible || !isActivityCreated) {
+                Log.d("fragmentLazy", "没显示"+getArguments().getInt(ARG_SECTION_NUMBER));
+                return;
+            }
+            // TODO: 2017/9/4 消息界面的toolbar由于My界面会隐藏所以显示不了，待解决
+            //隐藏toolbar
+            frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
+            //
+
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)){
+                case Const.HOME:
+                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
+                    if (!mHasLoadedOnce)
+                        contentHome = new ContentHome(getActivity(),getContext(),rootView);
+                    break;
+
+                case Const.DISCOVER:
+                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
+                    if (!mHasLoadedOnce)
+                        contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
+                    break;
+
+                case Const.MESSAGE:
+                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
+                    if (!mHasLoadedOnce)
+                        contentMessage = new ContentMessage(getActivity(),getContext(),rootView);
+                    break;
+
+                case Const.MY:
+                    frameBar.setVisibility(View.GONE);//隐藏toolbar--by VJ
+                    if (!mHasLoadedOnce)
+                        contentMy = new ContentMy(getActivity(),getContext(),rootView);
+                    break;
+            }
+            mHasLoadedOnce = true;
         }
     }
 

@@ -199,8 +199,11 @@ public class ContentHome {
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
         now_note_id = new ArrayList<>();
-        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
-        flag = 0;
+
+        loadData();
+		//移动到loadData
+        //NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
+        //flag = 0;
     }
 
     private void initViews(){
@@ -234,9 +237,21 @@ public class ContentHome {
 				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
 					@Override
 					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
-						//tabLayout.setVisibility(View.GONE);
-						//recyclerView.smoothScrollBy(0,-tabLayout.getMeasuredHeight());
-						scrollListener.setStartManualScroll(true);
+						scrollListener.setResizing(true);
+                        /*//500毫秒内没有滑动，则认为是键盘已经开启
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                if (!scrollListener.isScroll()){
+                                    scrollListener.setKeyBoardOpen(true);
+                                }
+                            }
+                        }).start();*/
 					}
 					@Override
 					public void onSoftKeyboardClosed() {
@@ -373,5 +388,9 @@ public class ContentHome {
     private void scrollToTOP(){
         recyclerView.smoothScrollToPosition(0);
     }
+    public void loadData(){
+		NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
+		flag = 0;
+	}
 
 }

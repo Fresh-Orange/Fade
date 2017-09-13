@@ -6,9 +6,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 
@@ -36,11 +36,23 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	private LinearLayoutManager mLinearLayoutManager;
 	private List<Note> notes;
 	private List<Integer>now_note_id;
-	private boolean startManualScroll;
+	private boolean isKeyBoardOpen;
+	private boolean resizing;
 
-	public void setStartManualScroll(boolean startManualScroll) {
-		this.startManualScroll = startManualScroll;
+	public boolean isScroll() {
+		return isScroll;
 	}
+
+	private boolean isScroll;
+
+	public void setKeyBoardOpen(boolean keyBoardOpen) {
+		isKeyBoardOpen = keyBoardOpen;
+	}
+
+	public void setResizing(boolean resizing) {
+		this.resizing = resizing;
+	}
+
 
 
 	public EndlessRecyclerOnScrollListener(Context context, LinearLayoutManager linearLayoutManager
@@ -57,17 +69,25 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		//Log.d(logTag, "onScrollStateChanged");
 		super.onScrollStateChanged(recyclerView, newState);
 		if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-			manualScroll(recyclerView);
+			isScroll = false;
+			checkOpen();
 			judgeAndRemoveItem(recyclerView);
+		}
+		else if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING){
+			isScroll = true;
 		}
 	}
 
-	private void manualScroll(RecyclerView recyclerView) {
-		if (startManualScroll){
-			startManualScroll = false;
-			recyclerView.smoothScrollBy(0,-recyclerView.getRootView().findViewById(R.id.tab_layout_menu).getMeasuredHeight());
+	private void checkOpen() {
+		InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+		if (inputMethodManager.isActive()){
+			resizing = false;
+			isKeyBoardOpen = true;
+			//recyclerView.smoothScrollBy(0,-recyclerView.getRootView().findViewById(R.id.tab_layout_menu).getMeasuredHeight());
 		}
 	}
+
+
 
 	/**
 	 * 移除当前可视的item中满足移除条件的item
@@ -154,6 +174,10 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
 	@Override
 	public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+		if (isKeyBoardOpen){
+			isKeyBoardOpen = false;
+			closeKeyboard();
+		}
 		//Log.d(logTag, "onScrolled");
 		super.onScrolled(recyclerView, dx, dy);
 
@@ -187,9 +211,19 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 				+ "pre = " + String.valueOf(previousTotal) + " first = " + String.valueOf(firstVisibleItem));
 	}
 
+
+
 	public void resetPreviousTotal() {
 		previousTotal = 0;
 	}
 
 	public abstract void onLoadMore(int currentPage);
+
+	private void closeKeyboard() {
+		View view = ((Activity) context).getWindow().peekDecorView();
+		if (view != null) {
+			InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		}
+	}
 }

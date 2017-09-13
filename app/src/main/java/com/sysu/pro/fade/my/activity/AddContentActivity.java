@@ -6,8 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -18,29 +18,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
-import com.sysu.pro.fade.publish.imageselector.entry.Folder;
-import com.sysu.pro.fade.publish.imageselector.model.ImageModel;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.PhotoUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Map;
+
+import static com.sysu.pro.fade.utils.PhotoUtils.tempUri;
 
 /*
 用户名+密码的注册界面
@@ -224,7 +219,7 @@ public class AddContentActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) { // 如果返回码是可以用的
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    PhotoUtils.startPhotoZoom(PhotoUtils.tempUri, this); // 开始对图片进行裁剪处理
+                    PhotoUtils.startPhotoZoom(tempUri, this); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:
                     PhotoUtils.startPhotoZoom(data.getData(), this); // 开始对图片进行裁剪处理
