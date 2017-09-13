@@ -1,7 +1,6 @@
 package com.sysu.pro.fade.beans;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by road on 2017/9/4.

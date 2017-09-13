@@ -75,6 +75,10 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		}
 		else if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING){
 			isScroll = true;
+			if (isKeyBoardOpen && newState == RecyclerView.SCROLL_STATE_DRAGGING){
+				isKeyBoardOpen = false;
+				closeKeyboard();
+			}
 		}
 	}
 
@@ -174,10 +178,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
 	@Override
 	public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-		if (isKeyBoardOpen){
-			isKeyBoardOpen = false;
-			closeKeyboard();
-		}
+
 		//Log.d(logTag, "onScrolled");
 		super.onScrolled(recyclerView, dx, dy);
 

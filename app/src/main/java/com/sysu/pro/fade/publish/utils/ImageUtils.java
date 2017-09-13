@@ -1,7 +1,6 @@
 package com.sysu.pro.fade.publish.utils;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -35,9 +34,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -51,6 +50,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+
+import static com.bumptech.glide.load.resource.bitmap.TransformationUtils.PAINT_FLAGS;
 
 /**
  * 图片处理相关
@@ -1610,28 +1611,65 @@ public final class ImageUtils {
                 .load(url)
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                .transform(new BitmapTransformation(context) {
                     @Override
-                    public void onResourceReady(final Bitmap resource, GlideAnimation glideAnimation) {
-                        //final Bitmap cropeedBitmap;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                int h = resource.getHeight();
-                                int w = resource.getWidth();
-                                int min = h < w ? h : w;
-                                final Bitmap cropeedBitmap = Bitmap.createBitmap(resource, x, y, min, min);
-                                ((Activity) context).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        imageView.setImageBitmap(cropeedBitmap);
-                                    }
-                                });
-                            }
-                        }).start();
+                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+
+                        //以下为第一次试验代码
+                        final Bitmap toReuse = pool.get(outWidth, outHeight, toTransform.getConfig() != null
+                                ? toTransform.getConfig() : Bitmap.Config.ARGB_8888);
+                        Bitmap transformed = customCrop(toReuse, toTransform, outWidth, outHeight, x , y);
+                        if (toReuse != null && toReuse != transformed && !pool.put(toReuse)) {
+                            toReuse.recycle();
+                        }
+                        return transformed;
                     }
-                });
+
+                    @Override
+                    public String getId() {
+                        return "custom_crop";
+                    }
+                })
+                .into(imageView);
+
+    }
+
+    public static Bitmap customCrop(Bitmap recycled, Bitmap toCrop, int width, int height, int x, int y) {
+        if (toCrop == null) {
+            return null;
+        } else if (toCrop.getWidth() == width && toCrop.getHeight() == height) {
+            return toCrop;
+        }
+        // From ImageView/Bitmap.createScaledBitmap.
+        final float scale;
+        Matrix m = new Matrix();
+        if (toCrop.getWidth() * height > width * toCrop.getHeight()) {
+            scale = (float) height / (float) toCrop.getHeight();
+            //dx = (width - toCrop.getWidth() * scale) * 0.5f;
+        } else {
+            scale = (float) width / (float) toCrop.getWidth();
+            //dy = (height - toCrop.getHeight() * scale) * 0.5f;
+        }
+
+        m.setScale(scale, scale);
+        m.postTranslate((int) (x + 0.5f), (int) (y + 0.5f));
+        final Bitmap result;
+        if (recycled != null) {
+            result = recycled;
+        } else {
+            result = Bitmap.createBitmap(width, height, getSafeConfig(toCrop));
+        }
+
+        TransformationUtils.setAlpha(toCrop, result);
+
+        Canvas canvas = new Canvas(result);
+        Paint paint = new Paint(PAINT_FLAGS);
+        canvas.drawBitmap(toCrop, m, paint);
+        return result;
+    }
+
+    private static Bitmap.Config getSafeConfig(Bitmap bitmap) {
+        return bitmap.getConfig() != null ? bitmap.getConfig() : Bitmap.Config.ARGB_8888;
     }
 
 }

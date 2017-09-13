@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
         View rootView;
         FrameLayout frameBar;
+        ImageView shadow;
 
         private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -212,29 +213,6 @@ public class MainActivity extends AppCompatActivity {
         private boolean isPrepared;
         //是否已被加载过一次，第二次就不再去请求数据了
         private boolean mHasLoadedOnce;
-
-        @Override
-        public void onResume() {
-
-            //返回时重新加载数据
-            super.onResume();
-            if(contentHome != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.HOME){
-                //contentHome.loadData();
-            }
-            if(contentDiscover != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.DISCOVER){
-                //contentDiscover.loadData();
-            }
-
-            if(contentMessage != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MESSAGE){
-                //contentMessage.loadData();
-            }
-
-            if(contentMy != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MY){
-                contentMy.loadData();
-            }
-
-
-        }
 
         @Override
         public void onPause() {
@@ -278,8 +256,10 @@ public class MainActivity extends AppCompatActivity {
                     rootView = inflater.inflate(R.layout.fragment_my,container,false);
                     break;
             }
+
             return rootView;
         }
+
 
 
 
@@ -298,44 +278,64 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
+        /**
+         * 当该fragment变为可见时回调的方法，例如从消息页跳回首页，则首页回调这个方法
+         * by 赖贤城
+         */
         @Override
         protected void lazyLoad() {
-            //TODO layzyLoad
             if (!isVisible || !isActivityCreated) {
                 Log.d("fragmentLazy", "没显示"+getArguments().getInt(ARG_SECTION_NUMBER));
                 return;
             }
-            // TODO: 2017/9/4 消息界面的toolbar由于My界面会隐藏所以显示不了，待解决
-            //隐藏toolbar
+
             frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
-            //
+            shadow = (ImageView) getActivity().findViewById(R.id.shadow);
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
                 case Const.HOME:
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
+                    setToolbarShow(true);
                     if (!mHasLoadedOnce)
                         contentHome = new ContentHome(getActivity(),getContext(),rootView);
+                    else
+                        contentHome.refreshIfUserChange();
                     break;
 
                 case Const.DISCOVER:
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
+                    setToolbarShow(true);
                     if (!mHasLoadedOnce)
                         contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.MESSAGE:
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
+                    setToolbarShow(true);
                     if (!mHasLoadedOnce)
                         contentMessage = new ContentMessage(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.MY:
-                    frameBar.setVisibility(View.GONE);//隐藏toolbar--by VJ
+                    setToolbarShow(false);
                     if (!mHasLoadedOnce)
                         contentMy = new ContentMy(getActivity(),getContext(),rootView);
                     break;
             }
             mHasLoadedOnce = true;
+        }
+
+        /**
+         * 设置显示或隐藏toolbar（以及阴影）
+         * @param isShow 是否显示
+         * by 赖贤城
+         */
+        private void setToolbarShow(boolean isShow){
+            if (isShow){
+                frameBar.setVisibility(View.VISIBLE);
+                shadow.setVisibility(View.VISIBLE);
+            }
+            else{
+                frameBar.setVisibility(View.GONE);
+                shadow.setVisibility(View.GONE);
+            }
         }
     }
 

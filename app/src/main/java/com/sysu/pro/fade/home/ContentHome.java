@@ -200,15 +200,16 @@ public class ContentHome {
         current_user_id = user.getUser_id();
         now_note_id = new ArrayList<>();
 
-        loadData();
-		//移动到loadData
-        //NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
-        //flag = 0;
+        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
+        flag = 0;
     }
 
     private void initViews(){
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        /*//提前加载，以防在item出现时才进行裁剪计算
+        layoutManager.setInitialPrefetchItemCount(3);
+        layoutManager.setItemPrefetchEnabled(true);*/
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecycleAdapter(context, handler, notes);
         recyclerView.setAdapter(adapter);
@@ -388,9 +389,25 @@ public class ContentHome {
     private void scrollToTOP(){
         recyclerView.smoothScrollToPosition(0);
     }
-    public void loadData(){
-		NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
-		flag = 0;
-	}
+
+    public void refreshIfUserChange(){
+        boolean isChange = false;
+        for (Note note: notes){
+            if (note.getUser_id() == user.getUser_id()){
+                if (!note.getHead_image_url().equals(user.getHead_image_url())){
+                    note.setHead_image_url(user.getHead_image_url());
+                    note.setName(user.getNickname());
+                    isChange = true;
+                }
+                else{
+                    isChange = false;
+                    break;
+                }
+            }
+        }
+        if (isChange){
+            adapter.notifyDataSetChanged();
+        }
+    }
 
 }
