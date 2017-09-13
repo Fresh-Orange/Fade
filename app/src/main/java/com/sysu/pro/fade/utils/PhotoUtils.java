@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -17,17 +19,26 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.sysu.pro.fade.my.activity.AddContentActivity;
 
 public class PhotoUtils {
 
-	private static final int CHOOSE_PICTURE = 0;
-	private static final int TAKE_PICTURE = 1;
+	protected static final int TAKE_PICTURE = 1;
+	protected static final int CHOOSE_PICTURE = 0;
 	private static final int CROP_SMALL_PICTURE = 2;
 	public static Uri tempUri;	//照片的Uri
 	public static String imagePath;	//选择的图片的路径
@@ -46,24 +57,51 @@ public class PhotoUtils {
 			public void onClick(DialogInterface dialog, int which) {
 				switch (which) {
 					case CHOOSE_PICTURE: // 选择本地照片
-						Intent openAlbumIntent = new Intent(
-								Intent.ACTION_GET_CONTENT);
-						openAlbumIntent.setType("image/*");
-						activity.startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
+//						Intent openAlbumIntent = new Intent(
+//								Intent.ACTION_GET_CONTENT);
+//						openAlbumIntent.setType("image/*");
+//						activity.startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
+						checkPermissionAndLoadImages(activity);
 						break;
 					case TAKE_PICTURE: // 拍照
-						Intent openCameraIntent = new Intent(
-								MediaStore.ACTION_IMAGE_CAPTURE);
-						tempUri = Uri.fromFile(new File(Environment
-								.getExternalStorageDirectory(), "image.jpg"));
-						// 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
-						openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
-						activity.startActivityForResult(openCameraIntent, TAKE_PICTURE);
+						takePhoto(activity);
 						break;
 				}
 			}
 		});
 		builder.create().show();
+	}
+
+	//适配7.0的拍照方法
+	private static void takePhoto(Activity activity)
+	{
+		Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		File vFile = new File(Environment.getExternalStorageDirectory()
+				+ "/myimage/", String.valueOf(System.currentTimeMillis())
+				+ ".jpg");
+		if (!vFile.exists())
+		{
+			File vDirPath = vFile.getParentFile();
+			vDirPath.mkdirs();
+		}
+		else
+		{
+			if (vFile.exists())
+			{
+				vFile.delete();
+			}
+		}
+		if (Build.VERSION.SDK_INT >= 24)
+			tempUri = FileProvider.getUriForFile(activity.getApplicationContext(),
+					activity.getApplicationContext().getPackageName() +
+							".provider", vFile);
+		else tempUri = Uri.fromFile(vFile);
+		openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+		}
+		activity.startActivityForResult(openCameraIntent, TAKE_PICTURE);
 	}
 
 	/**
@@ -75,8 +113,19 @@ public class PhotoUtils {
 		if (uri == null) {
 			Log.i("tag", "The uri is not exist.");
 		}
+		tempUri = uri;
 		Intent intent = new Intent("com.android.camera.action.CROP");
-		intent.setDataAndType(uri, "image/*");
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+		{
+			//赋予权限
+			intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			//举个栗子
+			intent.setDataAndType(uri,"image/*");
+		}
+		else
+		{
+			intent.setDataAndType(uri,"image/*");
+		}
 		// 设置裁剪
 		intent.putExtra("crop", "true");
 		// aspectX aspectY 是宽高的比例
@@ -235,5 +284,74 @@ public class PhotoUtils {
 		canvas.drawBitmap(bitmap, src, dst, paint); // ��Mode.SRC_INģʽ�ϲ�bitmap���Ѿ�draw�˵�Circle
 
 		return output;
+	}
+
+	/**
+	 * 检查权限并加载SD卡里的图片。
+	 */
+	private static final int PERMISSION_REQUEST_CODE = 0X00000060;
+
+	private static void checkPermissionAndLoadImages(Activity activity) {
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			Toast.makeText(activity, "没有图片", Toast.LENGTH_LONG).show();
+			return;
+		}
+		int hasWriteContactsPermission = ContextCompat.checkSelfPermission(activity.getApplication(),
+				Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		if (hasWriteContactsPermission == PackageManager.PERMISSION_GRANTED) {
+			//有权限，加载图片。
+			loadImageForSDCard(activity);
+		} else {
+			//没有权限，申请权限。
+			ActivityCompat.requestPermissions(activity,
+					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+		}
+	}
+
+
+	/**
+	 * 发生没有权限等异常时，显示一个提示dialog.
+	 */
+	private static boolean isToSettings = false;
+	public static void showExceptionDialog(final Activity activity) {
+		new android.app.AlertDialog.Builder(activity)
+				.setCancelable(false)
+				.setTitle("提示")
+				.setMessage("该相册需要赋予访问存储的权限，请到“设置”>“应用”>“权限”中配置权限。")
+				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+						activity.finish();
+					}
+				}).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				startAppSettings(activity);
+				isToSettings = true;
+			}
+		}).show();
+	}
+
+	/**
+	 * 从SDCard加载图片。
+	 */
+	public static void loadImageForSDCard(Activity activity) {
+		Log.d("Yellow","Success");
+		Intent openAlbumIntent = new Intent(
+				Intent.ACTION_GET_CONTENT);
+		openAlbumIntent.setType("image/*");
+		activity.startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
+	}
+
+	/**
+	 * 启动应用的设置
+	 */
+	private static void startAppSettings(Activity activity) {
+		Intent intent = new Intent(
+				Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+		intent.setData(Uri.parse("package:" + activity.getPackageName()));
+		activity.startActivity(intent);
 	}
 }
