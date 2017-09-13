@@ -82,7 +82,7 @@ public class Personal extends AppCompatActivity {
             //个签
             else if(msg.what == 3){
                 String ans_str = (String) msg.obj;
-                if(ans_str.equals("{}")){
+                if(ans_str.equals("")){
                     //更新到本地
                     editor.putString(Const.SUMMARY, settingSummary.getText().toString());
                     editor.apply();

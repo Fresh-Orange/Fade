@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -15,14 +16,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
+           <TextView
                 android:id="@+id/tv_headerView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:text="我是头部布局"
+                android:layout_height="600dp"
+                android:text="这个地方用来展示帖子"
                 android:textSize="30sp"
-                android:background="#ad29e1"
+                android:background="@color/white"
                 android:gravity="center"/>
+
             <LinearLayout
                 android:id="@+id/ll_topView"
                 android:layout_width="match_parent"
@@ -30,27 +32,29 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <LinearLayout
+                    android:id="@+id/ll_tab"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="50dp"
                     android:orientation="horizontal"
-                    android:id="@+id/ll_nav">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="已经续了xx秒"/>
+                    android:background="#fff">
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tab_detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/avoscloud_blue"
+                        app:tabIndicatorColor="@color/white"
+                        app:tabSelectedTextColor="@color/light_gray"
+                        app:tabTextColor="@color/white" />
                 </LinearLayout>
-
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_buttom"
-                android:layout_width="match_parent"
-                android:layout_height="1000dp"
-                android:background="#dc7f28"
-                android:paddingTop="160dp"
-                android:orientation="horizontal">
-            </LinearLayout>
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vp_detail"
+                android:layout_width="fill_parent"
+                android:layout_height="600dp"
+                android:background="@color/white"
+                android:paddingTop="30dp"
+                />
 
         </LinearLayout>
     </com.sysu.pro.fade.home.view.ObservableScrollView>
@@ -64,4 +68,3 @@
 
 
 </RelativeLayout>
-

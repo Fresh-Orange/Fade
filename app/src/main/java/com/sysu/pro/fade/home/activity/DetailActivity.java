@@ -1,10 +1,19 @@
 package com.sysu.pro.fade.home.activity;
 
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.home.adapter.DetailFragmentAdapter;
+import com.sysu.pro.fade.home.fragment.DetailPageFragment;
 import com.sysu.pro.fade.home.view.ObservableScrollView;
 
 public class DetailActivity extends AppCompatActivity implements ObservableScrollView.OnObservableScrollViewScrollChanged{
@@ -12,20 +21,34 @@ public class DetailActivity extends AppCompatActivity implements ObservableScrol
     //详情页上下滑动
     private ObservableScrollView sv_contentView;
     private LinearLayout ll_topView;
-    private LinearLayout ll_nav;
+   // private TextView tv_topView;
+    private LinearLayout ll_tab;
     private LinearLayout ll_fixedView;
     //用来记录内层固定布局到屏幕顶部的距离
     private int mHeight;
     //配置viewpager相关
+    public Integer note_id;
+    private ImageView iv_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        sv_contentView = (ObservableScrollView) findViewById(R.id.sv_contentView);
-        ll_topView = (LinearLayout) findViewById(R.id.ll_topView);
-        ll_nav = (LinearLayout) findViewById(R.id.ll_nav);
-        ll_fixedView = (LinearLayout) findViewById(R.id.ll_fixedView);
+        //初始化note_id
+        note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
+        sv_contentView= (ObservableScrollView) findViewById(R.id.sv_contentView);
+        ll_topView= (LinearLayout) findViewById(R.id.ll_topView);
+        ll_tab = (LinearLayout) findViewById(R.id.ll_tab);
+        ll_fixedView= (LinearLayout) findViewById(R.id.ll_fixedView);
+
+        //Fragment+ViewPager+FragmentViewPager组合的使用
+        ViewPager viewPager = (ViewPager) findViewById(R.id.vp_detail);
+        DetailFragmentAdapter adapter = new DetailFragmentAdapter(getSupportFragmentManager(),this);
+        viewPager.setAdapter(adapter);
+
+        //TabLayout
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_detail);
+        tabLayout.setupWithViewPager(viewPager);
 
         sv_contentView.setOnObservableScrollViewScrollChanged(this);
     }
@@ -49,14 +72,14 @@ public class DetailActivity extends AppCompatActivity implements ObservableScrol
     @Override
     public void onObservableScrollViewScrollChanged(int l, int t, int oldl, int oldt) {
         if(t>=mHeight){
-            if(ll_nav.getParent()!=ll_fixedView){
-                ll_topView.removeView(ll_nav);
-                ll_fixedView.addView(ll_nav);
+            if(ll_tab.getParent()!=ll_fixedView){
+                ll_topView.removeView(ll_tab);
+                ll_fixedView.addView(ll_tab);
             }
         }else{
-            if(ll_nav.getParent()!=ll_topView){
-                ll_fixedView.removeView(ll_nav);
-                ll_topView.addView(ll_nav);
+            if(ll_tab.getParent()!=ll_topView){
+                ll_fixedView.removeView(ll_tab);
+                ll_topView.addView(ll_tab);
             }
         }
     }

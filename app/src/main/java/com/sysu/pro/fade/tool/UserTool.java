@@ -484,7 +484,7 @@ public class UserTool {
                 List<BasicNameValuePair>list = new ArrayList<>();
                 list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
                 if(school != null)
-                    list.add(new BasicNameValuePair(Const.AREA,school));
+                    list.add(new BasicNameValuePair(Const.SCHOOL,school));
                 list.add(new BasicNameValuePair(Const.CODE,"11"));
 
                 String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);

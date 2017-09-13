@@ -43,6 +43,7 @@
         <activity android:name=".relay_publish.RelayPublishAcitivity"></activity>
         <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
         <activity android:name=".publish.imageselector.PreviewActivity"></activity>
+        <activity android:name=".home.activity.DetailActivity"></activity>
     </application>
 
 </manifest>
