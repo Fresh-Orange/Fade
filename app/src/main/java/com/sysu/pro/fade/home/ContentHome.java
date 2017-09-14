@@ -21,6 +21,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
 import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.BeanConvertUtil;
@@ -42,8 +43,10 @@ public class ContentHome {
     private RecycleAdapter adapter;
     /*刷新控件*/
     private SwipeRefreshLayout swipeRefresh;
-    /*滑动监听*/
-    private EndlessRecyclerOnScrollListener scrollListener;
+    /*上拉加载滑动监听*/
+    private EndlessRecyclerOnScrollListener loadMoreScrollListener;
+    /*检测是否删除的滑动监听*/
+    private JudgeRemoveOnScrollListener judgeRemoveScrollListener;
     /*列表*/
     private RecyclerView recyclerView;
 
@@ -182,7 +185,7 @@ public class ContentHome {
                 }
                 adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
-                scrollListener.judgeAndRemoveItem(recyclerView);
+                judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
 
             }
 
@@ -207,9 +210,6 @@ public class ContentHome {
     private void initViews(){
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        /*//提前加载，以防在item出现时才进行裁剪计算
-        layoutManager.setInitialPrefetchItemCount(3);
-        layoutManager.setItemPrefetchEnabled(true);*/
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecycleAdapter(context, handler, notes);
         recyclerView.setAdapter(adapter);
@@ -222,13 +222,16 @@ public class ContentHome {
                 refreshItems();
             }
         });
-        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, notes, now_note_id) {
+        loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
                 addItems();
             }
         };
-        recyclerView.setOnScrollListener(scrollListener);
+        //TODO 监听器分离
+        judgeRemoveScrollListener = new JudgeRemoveOnScrollListener(context, notes, now_note_id);
+        recyclerView.addOnScrollListener(loadMoreScrollListener);
+        recyclerView.addOnScrollListener(judgeRemoveScrollListener);
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
@@ -238,27 +241,17 @@ public class ContentHome {
 				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
 					@Override
 					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
-						scrollListener.setResizing(true);
-                        /*//500毫秒内没有滑动，则认为是键盘已经开启
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                if (!scrollListener.isScroll()){
-                                    scrollListener.setKeyBoardOpen(true);
-                                }
-                            }
-                        }).start();*/
 					}
 					@Override
 					public void onSoftKeyboardClosed() {
+                        loadMoreScrollListener.setKeyBoardOpen(false);
 						tabLayout.setVisibility(View.VISIBLE);
-                        LinearLayout linearLayout = (LinearLayout) recyclerView.getLayoutManager().getFocusedChild().findViewById(edit_comment);
-                        linearLayout.setVisibility(View.GONE);
+                        View focusView = recyclerView.getLayoutManager().getFocusedChild();
+                        LinearLayout linearLayout = null;
+                        if (focusView != null)
+                            linearLayout = (LinearLayout)focusView.findViewById(edit_comment);
+                        if (linearLayout != null)
+                            linearLayout.setVisibility(View.GONE);
 					}
 				}
 		);
@@ -329,7 +322,7 @@ public class ContentHome {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        scrollListener.resetPreviousTotal();
+                        loadMoreScrollListener.resetPreviousTotal();
                         //顶部下拉刷新，使用大请求 start = 0
 //                        start = 0;
 //                        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
@@ -390,6 +383,10 @@ public class ContentHome {
         recyclerView.smoothScrollToPosition(0);
     }
 
+    /**
+     * 如果当前帖子有本机用户自己的帖子，则检查其头像和名字更新
+     * 当home变为可见时调用
+     */
     public void refreshIfUserChange(){
         boolean isChange = false;
         for (Note note: notes){
