@@ -199,8 +199,12 @@ public class PublishActivity extends AppCompatActivity {
                     images_files.add(file);
                     have_compress_num++;
                     if(have_compress_num == images.size()){
-                        NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list);
-                        //发送图片
+                        //直到这里，所有图片才生成本地的压缩文件，才能发送图片
+                        //TODO : 后面两个参数为 coordinate_list, cut_size_list
+                        //coordinate_list为坐标用逗号连成的字符串，例如:"1:2,1:2,2:2"  横纵坐标之间用冒号隔开
+                        //cut_size_list为裁剪比例用逗号连成的字符串，0代表0代表不裁剪，1代表长图4:5, 2代表宽图15:8，例："0,1,2"
+                        //顺序与images的顺序相同
+                        NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list,null,null);
                     }
                 }
                 @Override

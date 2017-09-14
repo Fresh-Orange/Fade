@@ -14,6 +14,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,19 +46,29 @@ public class NoteTool {
                         +"&code=00");
                 //设置参数
                 Request request = builder.build();
-                Call call = mokHttpClient.newCall(request);
-                try {
-                    Response response = call.execute();
-                    String ans_str = response.body().string();
-                    //开始json解析
-                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                    Message msg = new Message();
-                    msg.what = 0x1;
-                    msg.obj = map;
-                    handler.sendMessage(msg);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message msg = new Message();
+                        msg.what = 0x1;
+                        msg.obj = map;
+                        handler.sendMessage(msg);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -75,19 +86,31 @@ public class NoteTool {
                         +"&user_id="+user_id);
                 //设置参数
                 Request request = builder.build();
-                Call call = mokHttpClient.newCall(request);
-                try {
-                    Response response = call.execute();
-                    String ans_str = response.body().string();
-                    //开始json解析
-                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                    Message msg = new Message();
-                    msg.what = 0x2;
-                    msg.obj = map;
-                    handler.sendMessage(msg);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+
+                        Message msg = new Message();
+                        msg.what = 0x2;
+                        msg.obj = map;
+                        handler.sendMessage(msg);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -105,18 +128,7 @@ public class NoteTool {
                         +"user_id="+user_id);
                 //设置参数
                 Request request = builder.build();
-                Call call = mokHttpClient.newCall(request);
-                try {
-                    Response response = call.execute();
-                    String ans_str = response.body().string();
-                    //开始json解析
-                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                    String ans = (String) map.get(Const.ANS);
-                    List<Map<String,Object>>result = (List<Map<String, Object>>) map.get(Const.RESULT);
-                    System.out.println(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                //发现版块以后写
                 super.run();
             }
         }.start();
@@ -128,22 +140,46 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.USER_ID, user_id.toString()));
-                list.add(new BasicNameValuePair(Const.NICKNAME, nickname));
-                list.add(new BasicNameValuePair(Const.HEAD_IMAGE_URL, head_image_url));
-                list.add(new BasicNameValuePair(Const.NOTE_CONTENT, note_content));
-                list.add(new BasicNameValuePair(Const.ISRELAY, isRelay.toString()));
-                list.add(new BasicNameValuePair(Const.TAG_LIST, tag_list));
-                if (isRelay == 0) list.add(new BasicNameValuePair(Const.CODE, "03"));
-                else list.add(new BasicNameValuePair(Const.CODE, "04"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/note?user_id=").append(user_id.toString())
+                        .append("&nickname=").append(nickname)
+                        .append("&head_image_url=").append(head_image_url)
+                        .append("&note_content=").append(note_content)
+                        .append("&isRelay=").append(isRelay.toString())
+                        .append("&tag_list=").append(tag_list)
+                        .append("&code=");
+                if (isRelay == 0) sb.append("03");
+                else sb.append("04");
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/note", list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x1;
-                message.obj = map;
-                handler.sendMessage(message);
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+
+                        Message msg = new Message();
+                        msg.what = 0x1;
+                        msg.obj = map;
+                        handler.sendMessage(msg);
+                    }
+                });
             }
         }.start();
     }
@@ -154,19 +190,40 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id));
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id));
-                list.add(new BasicNameValuePair(Const.ISRELAY,isRelay));
-                list.add(new BasicNameValuePair(Const.CODE,"07"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/note?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id.toString())
+                        .append("&isRelay=").append(isRelay.toString())
+                        .append("&code=07");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = map;
-                message.what = 0x3;
-                message.arg1 = position;
-                handler.sendMessage(message);
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.obj = map;
+                        message.what = 0x3;
+                        message.arg1 = position;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -178,14 +235,39 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
-                super.run();
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id));
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id));
-                list.add(new BasicNameValuePair(Const.CODE,"09"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/note?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id.toString())
+                        .append("&code=09");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.obj = map;
+                        message.what = 0x4;
+                        handler.sendMessage(message);
+                    }
+                });
+                super.run();
             }
         }.start();
     }
@@ -195,17 +277,39 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/note?note_id=").append(note_id.toString())
+                        .append("&start=").append(start)
+                        .append("&code=10");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 0x14;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
-                List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id));
-                list.add(new BasicNameValuePair(Const.START,start));
-                list.add(new BasicNameValuePair(Const.CODE,"10"));
-                String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x14;
-                message.obj = map;
-                handler.sendMessage(message);
             }
         }.start();
     }
@@ -215,27 +319,54 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/note?note_id=").append(note_id.toString())
+                        .append("&start=").append(start)
+                        .append("&code=11");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 0x11;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
-                List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id));
-                list.add(new BasicNameValuePair(Const.START,start));
-                list.add(new BasicNameValuePair(Const.CODE,"11"));
-                String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x11;
-                message.obj = map;
-                handler.sendMessage(message);
             }
         }.start();
     }
 
-    public static void uploadNoteImage(final Handler handler, Integer note_id, List<File>image_files, String image_size_list){
+    public static void uploadNoteImage(final Handler handler, Integer note_id, List<File>image_files,
+                                       String image_size_list,String coordinate_list, String cut_size_list){
         //上传帖子图片
         String upload_url = Const.IP +"/uploadImage";
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         builder.addFormDataPart("imageType","note");
         builder.addFormDataPart("image_size_list",image_size_list);
+        //加入左上角点的坐标，以及裁剪比例
+        builder.addFormDataPart("image_coordinate_list",coordinate_list);
+        builder.addFormDataPart("image_cut_size",cut_size_list);
+
         builder.addFormDataPart(Const.NOTE_ID,note_id.toString());
         for(File file : image_files){
             builder.addFormDataPart("img",file.getName(), RequestBody.create(MediaType.parse("image/png"),file));
@@ -244,18 +375,20 @@ public class NoteTool {
         Request request = new Request.Builder()
                 .url(upload_url).post(requestBody).build();
         new OkHttpClient().newCall(request).enqueue(new Callback() {
+            Map<String,Object>map = null;
             @Override
             public void onFailure(Call call, IOException e) {
+                map.put(Const.ERR,"上传图片失败，请检查网络！");
                 e.printStackTrace();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String ans_str = response.body().string();
-                Map<String,Object>ans_map = GsonUtil.jsonToMap(ans_str);
+                map = GsonUtil.jsonToMap(ans_str);
                 Message message = new Message();
                 message.what = 0x22;
-                message.obj = ans_map;
+                message.obj = map;
                 handler.sendMessage(message);
             }
         });
@@ -267,19 +400,38 @@ public class NoteTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                if(bunch != null)
-                    list.add(new BasicNameValuePair("bunch",bunch));
-                list.add(new BasicNameValuePair(Const.CODE,"14"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/note?user_id=").append(user_id.toString())
+                        .append("&bunch=").append(bunch.toString())
+                        .append("&code=14");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/note",list);
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = map;
-                message.what = 0x5;
-                handler.sendMessage(message);
-                super.run();
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.obj = map;
+                        message.what = 0x5;
+                        handler.sendMessage(message);
+                    }
+                });
             }
         }.start();
     }

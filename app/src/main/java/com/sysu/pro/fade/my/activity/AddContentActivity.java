@@ -160,7 +160,7 @@ public class AddContentActivity extends AppCompatActivity {
                 if(nickname.equals("")){
                     Toast.makeText(AddContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();
                 }else{
-                    UserTool.sendToRegister(Const.IP,handler,nickname,password,sex,telephone);
+                    UserTool.sendToRegister(handler,nickname,password,sex,telephone);
                 }
             }
         });

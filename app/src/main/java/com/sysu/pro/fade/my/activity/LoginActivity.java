@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                     String  accunt = edAccount.getText().toString();
                     if(accunt != ""){
                         judgeAccount(accunt);
-                        UserTool.getHeadImageUrl(handler,Const.IP,accunt,accountType);
+                        UserTool.getHeadImageUrl(handler,accunt,accountType);
                     }
                 }
             }
@@ -173,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
                 if((!account.equals("")) && (!password.equals(""))){
                     progressDialog.show();
                     judgeAccount(account);
-                    UserTool.sendToLogin(handler, Const.IP,password,account,accountType);
+                    UserTool.sendToLogin(handler,password,account,accountType);
                 }else{
                     Toast.makeText(LoginActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
                 }

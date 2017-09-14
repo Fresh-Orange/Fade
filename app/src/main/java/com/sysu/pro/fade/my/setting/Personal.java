@@ -24,6 +24,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.AddContentActivity;
 import com.sysu.pro.fade.tool.UserTool;
+import com.sysu.pro.fade.utils.GsonUtil;
 import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.UserUtil;
 

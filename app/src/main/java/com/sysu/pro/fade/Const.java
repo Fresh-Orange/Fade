@@ -83,9 +83,11 @@ public class Const {
     public static final String COMMENT_GOOD_ID    ="comment_good_id";
 
     //一个图片应该包括以下
-   public static final String IMAGE_URL =  "image_url";
+    public static final String IMAGE_URL =  "image_url";
     public static final String IMAGE_SIZE = "image_size";
-
+    //新增
+    public static final String IMAGE_COORDINATE = "image_coordinate";
+    public static final String IMAGE_CUT_SIZE     = "image_cut_size";
     public static final int PAGE_SIZE = 5  ; //页面数量
     public static final int HOME = 1;
     public static final int DISCOVER = 2;
