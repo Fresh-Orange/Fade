@@ -30,6 +30,7 @@ public class BeanConvertUtil {
             image_size.add(bigDecimal.doubleValue());
             image_coordinate.add((String) one_image.get(Const.IMAGE_COORDINATE));
         }
+        if(image_url_size.size() != 0)
         image_cut_size = (Integer) image_url_size.get(0).get(Const.IMAGE_CUT_SIZE);
     }
 
