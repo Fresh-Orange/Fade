@@ -21,7 +21,9 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".MainActivity"/>
         <activity android:name=".my.activity.AddContentActivity"
-            android:theme="@style/registerTheme"/>
+            android:theme="@style/registerTheme">
+       </activity>
+
         <activity android:name=".my.activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,7 +45,18 @@
         <activity android:name=".relay_publish.RelayPublishAcitivity"></activity>
         <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
         <activity android:name=".publish.imageselector.PreviewActivity"></activity>
+
         <activity android:name=".home.activity.DetailActivity"></activity>
+
+            <provider
+                android:name="android.support.v4.content.FileProvider"
+                android:authorities="${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+                <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/filepaths"/>
+            </provider>
     </application>
 
 </manifest>

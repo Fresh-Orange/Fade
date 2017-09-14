@@ -3,6 +3,7 @@ package com.sysu.pro.fade.home.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -27,6 +28,7 @@ import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.RelayNote;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
 import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
 import com.sysu.pro.fade.home.activity.DetailActivity;
@@ -73,8 +75,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	}
 
 	public void bindView(final Context context, Handler handler, List<Note> data, int position) {
-		final Note bean = data.get(position);
+		Note bean = data.get(position);
 		//设置头像
+		checkAndSetCurUser((MainActivity) context, bean);
 		Glide.with(context)
 				.load(bean.getHead_image_url())
 				.fitCenter()
@@ -92,6 +95,14 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		setTimeLeftText(context, bean);
 
 		setCommentVisAndLis(context);
+	}
+
+	private void checkAndSetCurUser(MainActivity context, Note bean) {
+		User curUser = context.getCurrentUser();
+		if (bean.getUser_id() == curUser.getUser_id()){
+			bean.setHead_image_url(curUser.getHead_image_url());
+			bean.setName(curUser.getNickname());
+		}
 	}
 
 	private void setGoToDetailClick(final Context context, final Note bean) {
@@ -196,6 +207,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			public void onClick(View v) {
 				commentEdit.setVisibility(View.VISIBLE);
 				commentEditTextView.requestFocus();
+				TabLayout tabLayout = (TabLayout) itemView.getRootView().findViewById(R.id.tab_layout_menu);
+				tabLayout.setVisibility(View.GONE);
 				showKeyboard(context,commentEditTextView);
 			}
 		});

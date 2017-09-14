@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.publish.utils;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,13 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -42,6 +50,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+
+import static com.bumptech.glide.load.resource.bitmap.TransformationUtils.PAINT_FLAGS;
 
 /**
  * 图片处理相关
@@ -1588,6 +1598,78 @@ public final class ImageUtils {
             e.printStackTrace();
             return  null;
         }
+    }
+
+    /**
+     * by 赖贤城
+     * 加载url处的图片进入imageView，只显示坐标起点为（x,y）宽为width，长为height的区域
+     */
+    static public void loadImage(final Context context, String url,
+                                 final ImageView imageView,
+                                 final int x, final int y, final int width, final int height) {
+        Glide.with(context)
+                .load(url)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .transform(new BitmapTransformation(context) {
+                    @Override
+                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+
+                        //以下为第一次试验代码
+                        final Bitmap toReuse = pool.get(outWidth, outHeight, toTransform.getConfig() != null
+                                ? toTransform.getConfig() : Bitmap.Config.ARGB_8888);
+                        Bitmap transformed = customCrop(toReuse, toTransform, outWidth, outHeight, x , y);
+                        if (toReuse != null && toReuse != transformed && !pool.put(toReuse)) {
+                            toReuse.recycle();
+                        }
+                        return transformed;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return "custom_crop";
+                    }
+                })
+                .into(imageView);
+
+    }
+
+    public static Bitmap customCrop(Bitmap recycled, Bitmap toCrop, int width, int height, int x, int y) {
+        if (toCrop == null) {
+            return null;
+        } else if (toCrop.getWidth() == width && toCrop.getHeight() == height) {
+            return toCrop;
+        }
+        // From ImageView/Bitmap.createScaledBitmap.
+        final float scale;
+        Matrix m = new Matrix();
+        if (toCrop.getWidth() * height > width * toCrop.getHeight()) {
+            scale = (float) height / (float) toCrop.getHeight();
+            //dx = (width - toCrop.getWidth() * scale) * 0.5f;
+        } else {
+            scale = (float) width / (float) toCrop.getWidth();
+            //dy = (height - toCrop.getHeight() * scale) * 0.5f;
+        }
+
+        m.setScale(scale, scale);
+        m.postTranslate((int) (x + 0.5f), (int) (y + 0.5f));
+        final Bitmap result;
+        if (recycled != null) {
+            result = recycled;
+        } else {
+            result = Bitmap.createBitmap(width, height, getSafeConfig(toCrop));
+        }
+
+        TransformationUtils.setAlpha(toCrop, result);
+
+        Canvas canvas = new Canvas(result);
+        Paint paint = new Paint(PAINT_FLAGS);
+        canvas.drawBitmap(toCrop, m, paint);
+        return result;
+    }
+
+    private static Bitmap.Config getSafeConfig(Bitmap bitmap) {
+        return bitmap.getConfig() != null ? bitmap.getConfig() : Bitmap.Config.ARGB_8888;
     }
 
 }
