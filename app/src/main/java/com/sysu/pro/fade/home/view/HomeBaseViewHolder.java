@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.home.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -109,7 +110,23 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startDetailsActivity(context, bean);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(250);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						((Activity) context).runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								startDetailsActivity(context, bean);
+							}
+						});
+
+					}
+				}).start();
 			}
 		});
 	}
@@ -255,7 +272,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		/*
 		 * 设置原贴的文字，以及原贴作者名点击事件
 		 */
-		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayNotes.get(0).getName() + "\n");
+		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayNotes.get(0).getName());
 		ClickableSpan clickableSpan = new ClickableSpan() {
 			@Override
 			public void onClick(View widget) {
@@ -264,9 +281,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			}
 		};
 		SpannableString tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
-				,relayTextView,relayNotes.get(0).getContent());
+				,relayTextView, " \n"+relayNotes.get(0).getContent());
 		spannableStringBuilder.append(tBuilder);
-		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		originalTextView.setText(spannableStringBuilder);
 		//文字的点击事件要加上这一句，不然不会生效
 		//originalTextView.setMovementMethod(LinkMovementMethod.getInstance());
