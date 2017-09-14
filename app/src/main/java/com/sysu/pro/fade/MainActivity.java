@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
+import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
@@ -31,6 +32,8 @@ import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
 import java.util.List;
+
+import static com.sysu.pro.fade.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         /*用以解决输入评论时底部导航栏被顶起的问题*/
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         //初始化用户信息
         user = new UserUtil(this).getUer();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,8 +67,10 @@ public class MainActivity extends AppCompatActivity {
          */
         getWindow().setBackgroundDrawable(null);
 
-        mViewPager = (CustomViewPager) findViewById(R.id.container);
+        mViewPager = (CustomViewPager) findViewById(container);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        /*改变预加载页的数量*/
+        mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         //设置底部导航栏以及监听
@@ -189,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static class PlaceHolderFragment extends Fragment{
+    public static class PlaceHolderFragment extends LazyFragment{
 
         //四大模块
         private ContentDiscover contentDiscover = null;
@@ -197,29 +202,17 @@ public class MainActivity extends AppCompatActivity {
         private ContentMessage contentMessage = null;
         private ContentMy contentMy = null;
 
+        View rootView;
+        FrameLayout frameBar;
+        ImageView shadow;
+
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        @Override
-        public void onResume() {
-            //返回时重新加载数据
-            super.onResume();
-            if(contentHome != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.HOME){
-                //contentHome.loadData();
-            }
-            if(contentDiscover != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.DISCOVER){
-                //contentDiscover.loadData();
-            }
 
-            if(contentMessage != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MESSAGE){
-                //contentMessage.loadData();
-            }
-
-            if(contentMy != null && getArguments().getInt(ARG_SECTION_NUMBER) == Const.MY){
-                contentMy.loadData();
-            }
-
-
-        }
+        //是否已经初始化完成
+        private boolean isPrepared;
+        //是否已被加载过一次，第二次就不再去请求数据了
+        private boolean mHasLoadedOnce;
 
         @Override
         public void onPause() {
@@ -243,38 +236,32 @@ public class MainActivity extends AppCompatActivity {
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View rootView =null;
+            rootView =null;
 
-            // TODO: 2017/9/4 消息界面的toolbar由于My界面会隐藏所以显示不了，待解决
-            //隐藏toolbar
-            FrameLayout frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
                 case Const.HOME:
                     rootView = inflater.inflate(R.layout.fragment_home,container,false);
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
-                    contentHome = new ContentHome(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.DISCOVER:
                     rootView = inflater.inflate(R.layout.fragment_discover,container,false);
-                    frameBar.setVisibility(View.VISIBLE);//显示toolbar--by VJ
-                    contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.MESSAGE:
                     rootView = inflater.inflate(R.layout.fragment_message,container,false);
-                    contentMessage = new ContentMessage(getActivity(),getContext(),rootView);
                     break;
 
                 case Const.MY:
                     rootView = inflater.inflate(R.layout.fragment_my,container,false);
-                    frameBar.setVisibility(View.GONE);//隐藏toolbar--by VJ
-                    contentMy = new ContentMy(getActivity(),getContext(),rootView);
                     break;
             }
+
             return rootView;
         }
+
+
+
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -289,6 +276,66 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        /**
+         * 当该fragment变为可见时回调的方法，例如从消息页跳回首页，则首页回调这个方法
+         * by 赖贤城
+         */
+        @Override
+        protected void lazyLoad() {
+            if (!isVisible || !isActivityCreated) {
+                Log.d("fragmentLazy", "没显示"+getArguments().getInt(ARG_SECTION_NUMBER));
+                return;
+            }
+
+            frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
+            shadow = (ImageView) getActivity().findViewById(R.id.shadow);
+
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)){
+                case Const.HOME:
+                    setToolbarShow(true);
+                    if (!mHasLoadedOnce)
+                        contentHome = new ContentHome(getActivity(),getContext(),rootView);
+                    else
+                        contentHome.refreshIfUserChange();
+                    break;
+
+                case Const.DISCOVER:
+                    setToolbarShow(true);
+                    if (!mHasLoadedOnce)
+                        contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
+                    break;
+
+                case Const.MESSAGE:
+                    setToolbarShow(true);
+                    if (!mHasLoadedOnce)
+                        contentMessage = new ContentMessage(getActivity(),getContext(),rootView);
+                    break;
+
+                case Const.MY:
+                    setToolbarShow(false);
+                    if (!mHasLoadedOnce)
+                        contentMy = new ContentMy(getActivity(),getContext(),rootView);
+                    break;
+            }
+            mHasLoadedOnce = true;
+        }
+
+        /**
+         * 设置显示或隐藏toolbar（以及阴影）
+         * @param isShow 是否显示
+         * by 赖贤城
+         */
+        private void setToolbarShow(boolean isShow){
+            if (isShow){
+                frameBar.setVisibility(View.VISIBLE);
+                shadow.setVisibility(View.VISIBLE);
+            }
+            else{
+                frameBar.setVisibility(View.GONE);
+                shadow.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -344,4 +391,6 @@ public class MainActivity extends AppCompatActivity {
         //TODO
         Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
     }
+
+
 }

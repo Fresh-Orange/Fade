@@ -4,11 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,10 +17,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.PhotoUtils;
 
 import java.util.Map;
@@ -33,6 +34,7 @@ public class AddContentActivity extends AppCompatActivity {
     protected static final int TAKE_PICTURE = 1;
     protected static final int CHOOSE_PICTURE = 0;
     private static final int CROP_SMALL_PICTURE = 2;
+    protected static Uri tempUri;
     private TextView tvToRegister;
     private ImageView iv_personal_icon;
     private EditText edUserName;

@@ -19,9 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.activity.ImagePagerActivity;
+import com.sysu.pro.fade.publish.utils.ImageUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -229,7 +229,8 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
 
-			Glide.with(this).load(mImageUrl).fitCenter().into(mImageView);
+			//Glide.with(this).load(mImageUrl).fitCenter().into(mImageView);
+			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, 0, 0, 23, 54);
 		}
 
 
