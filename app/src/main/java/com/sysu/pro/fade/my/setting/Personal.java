@@ -203,6 +203,7 @@ public class Personal extends AppCompatActivity {
             public void onClick(View v) {
                 updateDS(user);     //自定义方法，更新数据库的内容并更新个人主页
                 Toast.makeText(Personal.this, "保存修改成功", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
