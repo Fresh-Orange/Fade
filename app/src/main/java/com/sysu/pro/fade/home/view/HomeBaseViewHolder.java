@@ -337,7 +337,6 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		Intent intent = new Intent(context, DetailActivity.class);
 		intent.putExtra(Const.NOTE_ID,bean.getNote_id());
 		context.startActivity(intent);
-		Toast.makeText(context, "跳转到详情", Toast.LENGTH_SHORT).show();
 	}
 
 
