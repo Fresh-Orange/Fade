@@ -41,8 +41,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.my.activity.GuideActivity;
+import com.sysu.pro.fade.my.activity.WelcomeActivity;
 import com.sysu.pro.fade.publish.adapter.ImageAdapter;
 import com.sysu.pro.fade.publish.adapter.MyAdapter;
 import com.sysu.pro.fade.publish.adapter.MyCallBack;
@@ -166,6 +169,19 @@ public class PublishActivity extends AppCompatActivity {
         }
     };
 
+    private Handler newhandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
+            {
+                if (show == CHOOSE)
+                    choose_view.setVisibility(View.VISIBLE);
+                else
+                    viewSwitcher.setVisibility(View.VISIBLE);
+            }
+            super.handleMessage(msg);
+        }
+    };
     private String dealWithImagesToSend(List<String>images){
         if(images_files == null) images_files = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -311,13 +327,7 @@ public class PublishActivity extends AppCompatActivity {
                     if (frameLayout.getVisibility() == View.GONE) {
                         findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
                     }
-                }
-                if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
-                {
-                    if (show == CHOOSE)
-                        choose_view.setVisibility(View.VISIBLE);
-                    else
-                        viewSwitcher.setVisibility(View.VISIBLE);
+                    newhandler.sendEmptyMessageDelayed(0,1000);
                 }
             }
         });
