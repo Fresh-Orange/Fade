@@ -58,6 +58,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
+
 public class PublishActivity extends AppCompatActivity {
 
     public static PublishActivity publishActivity;
@@ -108,6 +111,10 @@ public class PublishActivity extends AppCompatActivity {
     public static final String FILE_DIR_NAME = "com.kuyue.wechatpublishimagesdrag";//应用缓存地址
     public static final String FILE_IMG_NAME = "images";//放置图片缓存
 
+    //2017.9.13 hl
+    public Integer have_compress_num = 0;
+    public String image_size_list;
+    public Integer note_id; //发送文本成功后得到的
     //add by hl
     private User user;
     private TextView publishTextView;
@@ -120,7 +127,7 @@ public class PublishActivity extends AppCompatActivity {
                 //发送文本得到的相应
                 Map<String, Object> map = (Map<String, Object>) msg.obj;
                 //Toast.makeText(PublishActivity.this,map.toString(),Toast.LENGTH_LONG).show();
-                Integer note_id = (Integer) map.get(Const.NOTE_ID);
+                note_id = (Integer) map.get(Const.NOTE_ID);
                 String err = (String) map.get(Const.ERR);
                 if(err == null && note_id != null){
                     if(images.size() == 0 || images == null){
@@ -129,13 +136,7 @@ public class PublishActivity extends AppCompatActivity {
                         setResult(1,getIntent());
                         finish();
                     }else {
-                        String image_size_list = dealWithImagesToSend(images);
-//                        List<File>lists = new ArrayList<>();
-//                        for(String str : images){
-//                            lists.add(new File(str));
-//                        }
-                        NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list);
-                       // NoteTool.uploadNoteImage(handler,note_id,lists,image_size_list);
+                        image_size_list = dealWithImagesToSend(images);
                     }
                 }else{
                     Toast.makeText(PublishActivity.this,err,Toast.LENGTH_SHORT).show();
@@ -173,7 +174,7 @@ public class PublishActivity extends AppCompatActivity {
         }
     };
 
-    private String dealWithImagesToSend(List<String>images){
+    private String dealWithImagesToSend(final List<String>images){
         if(images_files == null) images_files = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         File sd=Environment.getExternalStorageDirectory();
@@ -186,8 +187,32 @@ public class PublishActivity extends AppCompatActivity {
             Double size = new Integer(bitmap_temp.getWidth()).doubleValue()/ new Integer(bitmap_temp.getHeight()).doubleValue();
             sb.append(size.toString());
             sb.append(",");
-            File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
-            images_files.add(cache_file);
+            Luban.with(this)
+                    .load(new File(image_path))
+                    .setCompressListener(new OnCompressListener() {
+                @Override
+                public void onStart() {
+                }
+
+                @Override
+                public void onSuccess(File file) {
+                    images_files.add(file);
+                    have_compress_num++;
+                    if(have_compress_num == images.size()){
+                        //直到这里，所有图片才生成本地的压缩文件，才能发送图片
+                        //TODO : 后面两个参数为 coordinate_list, cut_size_list
+                        //coordinate_list为坐标用逗号连成的字符串，例如:"1:2,1:2,2:2"  横纵坐标之间用冒号隔开
+                        //cut_size_list为裁剪比例用逗号连成的字符串，0代表0代表不裁剪，1代表长图4:5, 2代表宽图15:8，例："0,1,2"
+                        //顺序与images的顺序相同
+                        NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list,null,null);
+                    }
+                }
+                @Override
+                public void onError(Throwable e) {
+                    Toast.makeText(PublishActivity.this,e.getMessage().toString(),Toast.LENGTH_SHORT).show();
+                }
+            }).launch();
+           // File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
         }
         //测试
         sb.deleteCharAt(sb.length()-1);
