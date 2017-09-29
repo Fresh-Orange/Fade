@@ -19,7 +19,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:textSize="15sp"
-        android:textColor="@color/light_gray"
+        android:textColor="@color/dark_gray"
         android:text="放入你喜爱的照片吧"/>
 
 </RelativeLayout>

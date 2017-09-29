@@ -7,7 +7,6 @@
         android:id="@+id/vp_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
         android:background="#272828" />
 
     <RelativeLayout
@@ -61,55 +60,17 @@
             android:layout_marginRight="16dp"
             android:foreground="@drawable/btn_foreground_selector">
 
-            <TextView
-                android:id="@+id/tv_confirm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_green_shape"
-                android:gravity="center"
-                android:minWidth="50dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingTop="5dp"
-                android:text="@string/confirm"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+            <Button
+                android:id="@+id/photo_bt_del"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_del" />
+
 
         </FrameLayout>
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/rl_bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:background="#373c3d"
-        android:clickable="true">
-
-        <TextView
-            android:id="@+id/tv_select"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:drawableLeft="@drawable/icon_image_un_select"
-            android:drawablePadding="10dp"
-            android:gravity="center"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/select"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_toLeftOf="@+id/tv_select"
-            android:background="@android:color/black" />
-
-    </RelativeLayout>
 
 </RelativeLayout>
