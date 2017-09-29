@@ -5,6 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true//为了在低版本中使用vectorDrawables
         applicationId "com.sysu.pro.fade"
         minSdkVersion 15
         targetSdkVersion 25

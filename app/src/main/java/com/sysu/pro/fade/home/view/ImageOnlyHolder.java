@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.home.adapter.RecycleAdapter;
+import com.sysu.pro.fade.home.adapter.NotesAdapter;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			 * Whenever you need to dynamically add pagers, you need to set an ID for each pager using ViewPager.setId().
 			 * from : https://stackoverflow.com/questions/14920459/placing-viewpager-as-a-row-in-listview
 			 */
-			pager.setId(++RecycleAdapter.viewPagerTag);
+			pager.setId(++NotesAdapter.viewPagerTag);
 
 			double RatioMax = 999;
 			for (double d:bean.getImgSizes()) {

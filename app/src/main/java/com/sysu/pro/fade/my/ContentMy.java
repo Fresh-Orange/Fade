@@ -6,20 +6,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.sysu.pro.fade.MainActivity;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.util.Map;
@@ -116,6 +114,7 @@ public class ContentMy {
         String image_url = user.getHead_image_url();
         String nickname = user.getNickname();
         String summary = user.getSummary();
+        Log.d("loadData", "loadData: "+user.getNickname());
         if(login_type.equals("") || image_url == null || image_url.equals("")){
             ivShowHead.setImageResource(R.drawable.default_head);
         }else{
