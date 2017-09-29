@@ -27,6 +27,16 @@ public class User {
 
 	//9月3号新增属性
 	private String school;
+	//9月13号新增属性
+	private Integer fade_num; //fade数量
+
+	public Integer getFade_num() {
+		return fade_num;
+	}
+
+	public void setFade_num(Integer fade_num) {
+		this.fade_num = fade_num;
+	}
 
 	public String getSchool() {
 		return school;

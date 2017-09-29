@@ -9,43 +9,62 @@ import com.sysu.pro.fade.utils.HttpUtils;
 
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by road on 2017/8/31.
  */
 public class CommentTool {
-    /**
-     * 发送评论
-     * @param handler
-     * @param note_id
-     * @param user_id
-     * @param nickname
-     * @param head_image_url
-     * @param to_comment_id
-     * @param comment_content
-     */
     public static void addComment(final Handler handler , final Integer note_id, final Integer user_id, final String nickname, final String head_image_url, final Integer to_comment_id, final String comment_content){
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.USER_ID, user_id.toString()));
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
-                list.add(new BasicNameValuePair(Const.NICKNAME, nickname));
-                list.add(new BasicNameValuePair(Const.HEAD_IMAGE_URL, head_image_url));
-                list.add(new BasicNameValuePair(Const.TO_COMMENT_ID,to_comment_id.toString()));
-                list.add(new BasicNameValuePair(Const.COMMENT_CONTENT,comment_content));
-                list.add(new BasicNameValuePair(Const.CODE, "01"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/comment?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id)
+                        .append("&nickname=").append(nickname)
+                        .append("&head_image_url=").append(head_image_url)
+                        .append("&to_comment_id=").append(to_comment_id)
+                        .append("&comment_content=").append(comment_content)
+                        .append("&code=01");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/comment", list);
-                Map<String,Object> map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x4;
-                message.obj = map;
-                handler.sendMessage(message);
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 0x4;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -56,39 +75,38 @@ public class CommentTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.USER_ID, user_id.toString()));
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
-                list.add(new BasicNameValuePair(Const.CODE, "00"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/comment?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id)
+                        .append("&code=00");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/comment", list);
-                Map<String,Object> map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x5;
-                message.obj = map;
-                handler.sendMessage(message);
-                super.run();
-            }
-        }.start();
-    }
-
-    public static void getTwentyComment(final Handler handler, final Integer note_id, final Integer user_id, final Integer start){
-        //获取十条热评，显示在评论列表的上半部分
-        new Thread(){
-            @Override
-            public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.USER_ID, user_id.toString()));
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
-                list.add(new BasicNameValuePair(Const.START,start.toString()));
-                list.add(new BasicNameValuePair(Const.CODE, "02"));
-
-                String ans_str = HttpUtils.getRequest(Const.IP+"/comment", list);
-                Map<String,Object> map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x6;
-                message.obj = map;
-                handler.sendMessage(message);
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 0x5;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -99,26 +117,124 @@ public class CommentTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.COMMENT_ID, comment_id.toString()));
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                list.add(new BasicNameValuePair(Const.NOTE_ID,note_id.toString()));
-                list.add(new BasicNameValuePair(Const.CODE, "03"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/comment?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id)
+                        .append("&comment_id=").append(comment_id)
+                        .append("&code=03");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/comment", list);
-                Map<String,Object> map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.what = 0x7;
-                message.obj = map;
-                handler.sendMessage(message);
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 0x7;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
+            }
+        }.start();
+    }
+
+    public static void getFirstComments(final Handler handler, final Integer user_id, final  Integer note_id){
+        new Thread(){
+            public void run() {
+                //得到十条热门评论+20条普通评论
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/comment?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id)
+                        .append("&code=05");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.obj = map;
+                        message.what = 0x12;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
     }
 
+    public static void getTwentyComments(final Handler handler, final Integer user_id, final  Integer note_id, final Integer start){
+        new Thread(){
+            public void run() {
+                //首次加载之后，使用这个函数获得20条普通评论（按时间排序）
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                StringBuilder sb = new StringBuilder();
+                sb.append(Const.IP)
+                        .append("/comment?user_id=").append(user_id.toString())
+                        .append("&note_id=").append(note_id)
+                        .append("&start=").append(start)
+                        .append("&code=02");
+                Request.Builder builder = new Request.Builder().url(sb.toString());
+                Request request = builder.build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-
-
-
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.obj = map;
+                        message.what = 0x13;
+                        handler.sendMessage(message);
+                    }
+                });
+                super.run();
+            }
+        }.start();
+    }
 
 }

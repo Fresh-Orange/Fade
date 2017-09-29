@@ -63,7 +63,7 @@ public class RegisterBySMSActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //先校验该手机号是否已经被注册
-                UserTool.checkTel(Const.IP,handler,edTelphone.getText().toString());
+                UserTool.checkTel(handler,edTelphone.getText().toString());
             }
         });
 

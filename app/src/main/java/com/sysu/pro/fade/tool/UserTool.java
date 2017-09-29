@@ -31,11 +31,13 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -47,73 +49,87 @@ import okhttp3.Response;
  * Created by road on 2017/8/29.
  */
 public class UserTool {
-    public static void sendToLogin(final Handler handler, final String ip, final String password, final String account, final String accountType){
+    public static void sendToLogin(final Handler handler, final String password, final String account, final String accountType){
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.PASSWORD,password)
+                        .add(Const.CODE,"05");
                 if(accountType.equals(Const.TELEPHONE))
-                    list.add(new BasicNameValuePair(Const.TELEPHONE,account));
+                    builder.add(Const.TELEPHONE,account);
                 else if(accountType.equals(Const.FADE_NAME))
-                    list.add(new BasicNameValuePair(Const.FADE_NAME,account));
+                    builder.add(Const.FADE_NAME,account);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                list.add(new BasicNameValuePair(Const.PASSWORD,password));
-                list.add(new BasicNameValuePair(Const.CODE,"05"));
-                String param = URLEncodedUtils.format(list, "UTF-8");
-
-                HttpClient httpClient = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(ip+"/user?"+param);
-                try {
-                    HttpResponse response = httpClient.execute(httpGet);
-                    HttpEntity httpEntity1 = response.getEntity();
-                    String ans = EntityUtils.toString(httpEntity1,"utf-8");
-                    Message msg = new Message();
-                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans);
-                    msg.what = 1;
-                    msg.obj = map;
-                    handler.sendMessage(msg);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 1;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
     }
 
-    public static void getHeadImageUrl(final  Handler handler, final String ip,final String account,final String accountType){
+    public static void getHeadImageUrl(final  Handler handler,final String account,final String accountType){
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add("imageType","head")
+                        .add(Const.CODE,"06");
                 if(accountType.equals(Const.TELEPHONE))
-                    list.add(new BasicNameValuePair(Const.TELEPHONE,account));
+                    builder.add(Const.TELEPHONE,account);
                 else if(accountType.equals(Const.FADE_NAME))
-                    list.add(new BasicNameValuePair(Const.FADE_NAME,account));
+                    builder.add(Const.FADE_NAME,account);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                list.add(new BasicNameValuePair("imageType","head"));
-                list.add(new BasicNameValuePair(Const.CODE,"06"));
-
-                String param = URLEncodedUtils.format(list, "UTF-8");
-
-                HttpClient httpClient = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(ip+"/user?"+param);
-                try {
-                    HttpResponse response = httpClient.execute(httpGet);
-                    HttpEntity httpEntity1 = response.getEntity();
-                    String ans = EntityUtils.toString(httpEntity1,"utf-8");
-                    Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans);
-                    Message msg = new Message();
-                    msg.what = 2;
-                    msg.obj = map;
-                    handler.sendMessage(msg);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 2;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -121,145 +137,44 @@ public class UserTool {
 
 
     //用户名密码注册
-    public static void sendToRegister(final String ip, final Handler handler, final String nickname, final String password, final String sex,final String telephone){
+    public static void sendToRegister(final Handler handler, final String nickname, final String password, final String sex,final String telephone){
         new Thread(){
             @Override
             public void run() {
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"04")
+                       .add(Const.NICKNAME,nickname)
+                       .add(Const.PASSWORD,password)
+                       .add(Const.SEX,sex)
+                       .add(Const.TELEPHONE,telephone);
 
-                List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.NICKNAME,nickname));
-                list.add(new BasicNameValuePair(Const.PASSWORD,password));
-                list.add(new BasicNameValuePair(Const.SEX,sex));
-                list.add(new BasicNameValuePair(Const.TELEPHONE,telephone));
-                list.add(new BasicNameValuePair("code","04"));
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
+                    }
 
-                try {
-                    HttpClient httpClient = new DefaultHttpClient();
-                    String param = URLEncodedUtils.format(list, "UTF-8");
-                    HttpGet httpGet = new HttpGet(ip+"/user?"+param);
-                    HttpResponse response = httpClient.execute(httpGet);
-                    if(response.getStatusLine().getStatusCode() == 200){
-                        HttpEntity entity1 = response.getEntity();
-                        String ans_str = EntityUtils.toString(entity1,"utf-8");
-                        Map<String,Object> map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                        Message msg = new Message();
-                        msg.what = 1;
-                        msg.obj = map;
-                        handler.sendMessage(msg);
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 1;
+                        message.obj = map;
+                        handler.sendMessage(message);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
-
-
-    //发送图片类
-    public static void sendImage(final String ip, final Handler handler, final String imageType, final String path, final Integer id){
-        new Thread(){
-            @Override
-            public void run() {
-                String rsp = "";
-                HttpURLConnection conn = null;
-                String BOUNDARY = "|"; // request头和上传文件内容分隔符
-                try {
-                    URL url = new URL("http://" +ip+"/fade/uploadImage");
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(5000);
-                    conn.setReadTimeout(30000);
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-                    conn.setUseCaches(false);
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Connection", "Keep-Alive");
-                    conn.setRequestProperty("User-Agent",
-                            "Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.6)");
-                    conn.setRequestProperty("Content-Type",
-                            "multipart/form-data; boundary=" + BOUNDARY);
-
-                    OutputStream out = new DataOutputStream(conn.getOutputStream());
-                    File file = new File(path);
-                    String filename = file.getName();
-                    String contentType = "";
-                    if (filename.endsWith(".png")) {
-                        contentType = "image/png";
-                    }
-                    if (filename.endsWith(".jpg")) {
-                        contentType = "image/jpg";
-                    }
-                    if (filename.endsWith(".gif")) {
-                        contentType = "image/gif";
-                    }
-                    if (filename.endsWith(".bmp")) {
-                        contentType = "image/bmp";
-                    }
-                    if (contentType == null || contentType.equals("")) {
-                        contentType = "application/octet-stream";
-                    }
-                    StringBuffer strBuf = new StringBuffer();
-
-                    //加入imageType
-                    strBuf.append("\r\n").append("--").append(BOUNDARY).append("\r\n");
-                    strBuf.append("Content-Disposition: form-data; name=" + "imageType"
-                            +"\r\n\r\n");
-                    strBuf.append(imageType + "\r\n");
-
-                    //加入user_id
-                    strBuf.append("--").append(BOUNDARY).append("\r\n");
-                    if(imageType == "head"){
-                        strBuf.append("Content-Disposition: form-data; name=\"" + "user_id"+"\""
-                                +"\r\n\r\n");
-                    }else{
-                        strBuf.append("Content-Disposition: form-data; name=\"" + "note_id"+"\""
-                                +"\r\n\r\n");
-                    }
-                    strBuf.append(id + "\r\n");
-
-                    //加入图片内容
-                    strBuf.append("--").append(BOUNDARY).append("\r\n");
-                    strBuf.append("Content-Disposition: form-data; name=\"" + path
-                            + "\"; filename=\"" + filename + "\"\r\n");
-                    strBuf.append("Content-Type:" + contentType + "\r\n\r\n");
-                    out.write(strBuf.toString().getBytes());
-                    System.out.println(strBuf.toString());
-                    System.out.println(strBuf.toString().getBytes());
-                    DataInputStream in = new DataInputStream(new FileInputStream(file));
-                    int bytes = 0;
-                    byte[] bufferOut = new byte[1024];
-                    while ((bytes = in.read(bufferOut)) != -1) {
-                        out.write(bufferOut, 0, bytes);
-                    }
-                    in.close();
-                    byte[] endData = ("\r\n--" + BOUNDARY + "--\r\n").getBytes();
-                    out.write(endData);
-                    out.flush();
-                    out.close();
-
-                    // 读取返回数据
-                    StringBuffer buffer = new StringBuffer();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        buffer.append(line).append("\n");
-                    }
-                    rsp = buffer.toString();
-                    reader.close();
-                    reader = null;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                        conn = null;
-                    }
-                }
-                Message msg = new Message();
-                msg.what = 2;
-                Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(rsp);
-                msg.obj = map;
-                handler.sendMessage(msg);
-                super.run();
+                });
             }
         }.start();
     }
@@ -330,32 +245,41 @@ public class UserTool {
 
     }
     //校验手机号是否已被注册
-    public static void checkTel(final String ip, final Handler handler, final String telephone){
+    public static void checkTel( final Handler handler, final String telephone){
         new Thread(){
             @Override
             public void run() {
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"03")
+                        .add(Const.TELEPHONE,telephone);
 
-                List<BasicNameValuePair>list = new ArrayList<BasicNameValuePair>();
-                list.add(new BasicNameValuePair(Const.TELEPHONE,telephone));
-                list.add(new BasicNameValuePair("code","03"));
-
-                try {
-                    HttpClient httpClient = new DefaultHttpClient();
-                    String param = URLEncodedUtils.format(list, "UTF-8");
-                    HttpGet httpGet = new HttpGet(ip+"/user?"+param);
-                    HttpResponse response = httpClient.execute(httpGet);
-                    if(response.getStatusLine().getStatusCode() == 200){
-                        HttpEntity entity1 = response.getEntity();
-                        String ans = EntityUtils.toString(entity1,"utf-8");
-                        Message msg = new Message();
-                        Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans);
-                        msg.what = 2;
-                        msg.obj = map;
-                        handler.sendMessage(msg);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    Map<String,Object>map = null;
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        map = new HashMap<String, Object>();
+                        map.put(Const.ERR,"请求异常，请检查你的网络");
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        try{
+                            map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
+                        }catch (Exception e){
+                            map = new HashMap<String, Object>();
+                            map.put(Const.ERR,"服务器返回异常" + e.getMessage().toString());
+                        }
+                        Message message = new Message();
+                        message.what = 2;
+                        message.obj = map;
+                        handler.sendMessage(message);
+                    }
+                });
             }
         }.start();
     }
@@ -369,19 +293,29 @@ public class UserTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                if(nickname != null)
-                    list.add(new BasicNameValuePair(Const.NICKNAME,nickname));
-                list.add(new BasicNameValuePair(Const.CODE,"07"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"07")
+                        .add(Const.USER_ID,user_id.toString())
+                        .add(Const.NICKNAME,nickname);
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                //Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = ans_str;
-                message.what = 1;
-                handler.sendMessage(message);
-                super.run();
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        Message message = new Message();
+                        message.what = 1;
+                        message.obj = ans_str;
+                        handler.sendMessage(message);
+                    }
+                });
             }
         }.start();
     }
@@ -418,18 +352,29 @@ public class UserTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                if(summary != null)
-                    list.add(new BasicNameValuePair(Const.SUMMARY,summary));
-                list.add(new BasicNameValuePair(Const.CODE,"08"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"08")
+                        .add(Const.USER_ID,user_id.toString())
+                        .add(Const.SUMMARY,summary);
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                //Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = ans_str;
-                message.what = 3;
-                handler.sendMessage(message);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        Message message = new Message();
+                        message.what = 3;
+                        message.obj = ans_str;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -439,18 +384,29 @@ public class UserTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                if(sex != null)
-                    list.add(new BasicNameValuePair(Const.SEX,sex));
-                list.add(new BasicNameValuePair(Const.CODE,"09"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"09")
+                        .add(Const.USER_ID,user_id.toString())
+                        .add(Const.SEX,sex);
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-                //Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = ans_str;
-                message.what = 4;
-                handler.sendMessage(message);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        Message message = new Message();
+                        message.what = 4;
+                        message.obj = ans_str;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -460,18 +416,29 @@ public class UserTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                if(area != null)
-                    list.add(new BasicNameValuePair(Const.AREA,area));
-                list.add(new BasicNameValuePair(Const.CODE,"10"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"10")
+                        .add(Const.USER_ID,user_id.toString())
+                        .add(Const.AREA,area);
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-               // Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = ans_str;
-                message.what = 5;
-                handler.sendMessage(message);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        Message message = new Message();
+                        message.what = 5;
+                        message.obj = ans_str;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();
@@ -481,18 +448,29 @@ public class UserTool {
         new Thread(){
             @Override
             public void run() {
-                List<BasicNameValuePair>list = new ArrayList<>();
-                list.add(new BasicNameValuePair(Const.USER_ID,user_id.toString()));
-                if(school != null)
-                    list.add(new BasicNameValuePair(Const.AREA,school));
-                list.add(new BasicNameValuePair(Const.CODE,"11"));
+                OkHttpClient mokHttpClient = new OkHttpClient();
+                //涉及到用户关键信息，用post传更安全
+                FormBody.Builder builder = new FormBody.Builder();
+                builder.add(Const.CODE,"11")
+                        .add(Const.USER_ID,user_id.toString())
+                        .add(Const.SCHOOL,school);
 
-                String ans_str = HttpUtils.getRequest(Const.IP+"/user",list);
-               // Map<String,Object>map = (Map<String, Object>) GsonUtil.jsonToMap(ans_str);
-                Message message = new Message();
-                message.obj = ans_str;
-                message.what = 6;
-                handler.sendMessage(message);
+                Request request = new Request.Builder().post(builder.build()).url(Const.IP + "/user").build();
+                mokHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String ans_str = response.body().string();
+                        //开始json解析
+                        Message message = new Message();
+                        message.what = 6;
+                        message.obj = ans_str;
+                        handler.sendMessage(message);
+                    }
+                });
                 super.run();
             }
         }.start();

@@ -45,7 +45,9 @@
         <activity android:name=".relay_publish.RelayPublishAcitivity"></activity>
         <activity android:name=".publish.imageselector.ImageSelectorActivity"></activity>
         <activity android:name=".publish.imageselector.PreviewActivity"></activity>
-        <activity android:name=".publish.imageselector.ClickToPreviewActivity"></activity>
+
+        <activity android:name=".home.activity.DetailActivity"></activity>
+
             <provider
                 android:name="android.support.v4.content.FileProvider"
                 android:authorities="${applicationId}.provider"

@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
@@ -19,6 +21,8 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.RecycleAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
+import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.BeanConvertUtil;
 
@@ -26,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.sysu.pro.fade.R.id.edit_comment;
 
 /**
  * Created by road on 2017/7/14.
@@ -37,8 +43,10 @@ public class ContentHome {
     private RecycleAdapter adapter;
     /*刷新控件*/
     private SwipeRefreshLayout swipeRefresh;
-    /*滑动监听*/
-    private EndlessRecyclerOnScrollListener scrollListener;
+    /*上拉加载滑动监听*/
+    private EndlessRecyclerOnScrollListener loadMoreScrollListener;
+    /*检测是否删除的滑动监听*/
+    private JudgeRemoveOnScrollListener judgeRemoveScrollListener;
     /*列表*/
     private RecyclerView recyclerView;
 
@@ -177,7 +185,7 @@ public class ContentHome {
                 }
                 adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
-                scrollListener.judgeAndRemoveItem(recyclerView);
+                judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
 
             }
 
@@ -194,6 +202,7 @@ public class ContentHome {
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
         now_note_id = new ArrayList<>();
+
         NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
         flag = 0;
     }
@@ -213,16 +222,39 @@ public class ContentHome {
                 refreshItems();
             }
         });
-        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, notes, now_note_id) {
+        loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
                 addItems();
             }
         };
-        recyclerView.setOnScrollListener(scrollListener);
+        //TODO 监听器分离
+        judgeRemoveScrollListener = new JudgeRemoveOnScrollListener(context, notes, now_note_id);
+        recyclerView.addOnScrollListener(loadMoreScrollListener);
+        recyclerView.addOnScrollListener(judgeRemoveScrollListener);
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
+		SoftKeyboardStateWatcher watcher = new SoftKeyboardStateWatcher(rootView.getRootView(), context);
+		final TabLayout tabLayout = (TabLayout) rootView.getRootView().findViewById(R.id.tab_layout_menu);
+		watcher.addSoftKeyboardStateListener(
+				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
+					@Override
+					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
+					}
+					@Override
+					public void onSoftKeyboardClosed() {
+                        loadMoreScrollListener.setKeyBoardOpen(false);
+						tabLayout.setVisibility(View.VISIBLE);
+                        View focusView = recyclerView.getLayoutManager().getFocusedChild();
+                        LinearLayout linearLayout = null;
+                        if (focusView != null)
+                            linearLayout = (LinearLayout)focusView.findViewById(edit_comment);
+                        if (linearLayout != null)
+                            linearLayout.setVisibility(View.GONE);
+					}
+				}
+		);
     }
 
     /**
@@ -290,7 +322,7 @@ public class ContentHome {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        scrollListener.resetPreviousTotal();
+                        loadMoreScrollListener.resetPreviousTotal();
                         //顶部下拉刷新，使用大请求 start = 0
 //                        start = 0;
 //                        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
@@ -349,6 +381,30 @@ public class ContentHome {
 
     private void scrollToTOP(){
         recyclerView.smoothScrollToPosition(0);
+    }
+
+    /**
+     * 如果当前帖子有本机用户自己的帖子，则检查其头像和名字更新
+     * 当home变为可见时调用
+     */
+    public void refreshIfUserChange(){
+        boolean isChange = false;
+        for (Note note: notes){
+            if (note.getUser_id() == user.getUser_id()){
+                if (!note.getHead_image_url().equals(user.getHead_image_url())){
+                    note.setHead_image_url(user.getHead_image_url());
+                    note.setName(user.getNickname());
+                    isChange = true;
+                }
+                else{
+                    isChange = false;
+                    break;
+                }
+            }
+        }
+        if (isChange){
+            adapter.notifyDataSetChanged();
+        }
     }
 
 }

@@ -2,9 +2,11 @@ package com.sysu.pro.fade.utils;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.DetailRelay;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.OriginComment;
 import com.sysu.pro.fade.beans.RelayNote;
+import com.sysu.pro.fade.beans.DetailGood;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,12 +22,16 @@ import static com.sysu.pro.fade.Const.NICKNAME;
  */
 public class BeanConvertUtil {
     //返回图片url数组以及宽高比数组
-    public static void convertImageListMap(List<Map<String,Object>> image_url_size,List<String> image_url,List<Double> image_size){
+    public static void convertImageListMap(List<Map<String,Object>> image_url_size,
+                                           List<String> image_url,List<Double> image_size, List<String> image_coordinate, Integer image_cut_size){
         for(Map<String,Object> one_image : image_url_size){
             image_url.add((String)one_image.get(Const.IMAGE_URL));
             BigDecimal bigDecimal = (BigDecimal) one_image.get(Const.IMAGE_SIZE);
             image_size.add(bigDecimal.doubleValue());
+            image_coordinate.add((String) one_image.get(Const.IMAGE_COORDINATE));
         }
+        if(image_url_size.size() != 0)
+        image_cut_size = (Integer) image_url_size.get(0).get(Const.IMAGE_CUT_SIZE);
     }
 
     //返回评论数组
@@ -81,13 +87,15 @@ public class BeanConvertUtil {
                 if(image_url_size != null){
                     List<String> image_url = new ArrayList<>();
                     List<Double> image_size = new ArrayList<>();
-                    BeanConvertUtil.convertImageListMap(image_url_size,image_url,image_size);
+                    List<String> image_coordinate = new ArrayList<>();
+                    Integer image_cut_size = 0;
+                    BeanConvertUtil.convertImageListMap(image_url_size,image_url,image_size,image_coordinate,image_cut_size);
                     relayNote.setImgUrls(image_url);
                     relayNote.setImgSizes(image_size);
+                    relayNote.setImgCoordinates(image_coordinate);
+                    relayNote.setImgCutSize(image_cut_size);
                 }
-
                 relayNotes.add(relayNote);
-
             }
             //最后反转一下
             Collections.reverse(relayNotes);
@@ -110,12 +118,15 @@ public class BeanConvertUtil {
         String post_area = (String) map.get(Const.POST_AREA);
         //加入是否点赞
         Boolean isGood = ((Integer)map.get(Const.IS_GOOD)) == 1 ? true : false;//1代表点过赞，0代表没有点过
+        //加入裁剪比例
 
         //加入图片url和图片尺寸数组
         List<Map<String,Object>>image_url_size = (List<Map<String, Object>>) map.get(Const.IMAGE_LIST);
         List<String> image_url = new ArrayList<>();
         List<Double> image_size = new ArrayList<>();
-        BeanConvertUtil.convertImageListMap(image_url_size,image_url,image_size);
+        List<String> image_coordinate = new ArrayList<>();
+        Integer image_cut_size = 0;
+        BeanConvertUtil.convertImageListMap(image_url_size,image_url,image_size,image_coordinate,image_cut_size);
 
         //加入标签数组
         List<String>tag_list = (List<String>) map.get(Const.TAG_LIST);
@@ -145,14 +156,18 @@ public class BeanConvertUtil {
 
 
 		note.setRelayNotes(relayNotes);
-		//将评论的图片放到note里面
+		//将转发的图片放到note里面
         if (note.getRelayNotes().size() > 0){
             note.setImgUrls(note.getRelayNotes().get(0).getImgUrls());
             note.setImgSizes(note.getRelayNotes().get(0).getImgSizes());
+            note.setImgCoordinates(note.getRelayNotes().get(0).getImgCoordinates());
+            note.setImgCutSize(note.getRelayNotes().get(0).getImgCutSize());
         }
         else{
             note.setImgUrls(image_url);
             note.setImgSizes(image_size);
+            note.setImgCoordinates(image_coordinate);
+            note.setImgCutSize(image_cut_size);
         }
         note.setTag_list(tag_list);
         note.setGood(isGood);
@@ -160,4 +175,49 @@ public class BeanConvertUtil {
         return note;
     }
 
+    //返回一个DetailGood，续一秒列表需要的数据
+    public static DetailGood convert2DetailGood(Map<String,Object> map){
+        DetailGood detailGood = new DetailGood();
+        detailGood.setHead_image_url((String) map.get(Const.HEAD_IMAGE_URL));
+        detailGood.setSummary((String) map.get(Const.SUMMARY));
+        detailGood.setUser_id((Integer) map.get(Const.USER_ID));
+        detailGood.setGood_id((Integer) map.get(Const.GOOD_ID));
+        detailGood.setNickname((String) map.get(Const.NICKNAME));
+        detailGood.setGood_time((String) map.get(Const.GOOD_TIME));
+        return detailGood;
+    }
+
+    //返回一个DetailRelay，转发列表需要的数据
+    public static DetailRelay convert2DetailRelay(Map<String,Object>map){
+        DetailRelay detailRelay = new DetailRelay();
+        detailRelay.setHead_image_url((String) map.get(Const.HEAD_IMAGE_URL));
+        detailRelay.setNickname((String) map.get(Const.NICKNAME));
+        detailRelay.setUser_id((Integer) map.get(Const.USER_ID));
+        detailRelay.setPost_time((String)map.get(Const.POST_TIME));
+        return detailRelay;
+    }
+    public static Comment convert2Comment(Map<String,Object>one_comment_map){
+        Comment comment = new Comment();
+        comment.setComment_id((Integer) one_comment_map.get(Const.COMMENT_ID));
+        comment.setUser_id((Integer) one_comment_map.get(Const.USER_ID));
+        comment.setNickname((String) one_comment_map.get(Const.NICKNAME));
+        comment.setHead_image_url((String) one_comment_map.get(Const.HEAD_IMAGE_URL));
+        comment.setTo_comment_id((Integer) one_comment_map.get(Const.TO_COMMENT_ID));
+        comment.setNote_id((Integer) one_comment_map.get(Const.NOTE_ID));
+        comment.setComment_time(TimeUtil.getTimeDate((String) one_comment_map.get(Const.COMMENT_TIME)));
+        comment.setComment_content((String) one_comment_map.get(Const.COMMENT_CONTENT));
+        comment.setComment_good_num((Integer) one_comment_map.get(Const.COMMENT_GOOD_NUM));
+        Boolean comment_isGood = ((Integer) one_comment_map.get(Const.COMMENT_ISGOOD)) == 1 ? true : false;
+        comment.setComment_isGood(comment_isGood);
+        if(comment.getTo_comment_id() != 0){
+            //加入comment_origin
+            Map<String,Object> origin_comment_map = (Map<String, Object>) one_comment_map.get(Const.ORIGIN_COMMENT);
+            OriginComment originComment = new OriginComment();
+            originComment.setComment_content((String) origin_comment_map.get(Const.COMMENT_CONTENT));
+            originComment.setNickname((String) origin_comment_map.get(Const.NICKNAME));
+            originComment.setUser_id((Integer) origin_comment_map.get(Const.USER_ID));
+            comment.setOriginComment(originComment);
+        }
+        return comment;
+    }
 }

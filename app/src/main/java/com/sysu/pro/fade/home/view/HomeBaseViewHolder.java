@@ -1,8 +1,10 @@
 package com.sysu.pro.fade.home.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -27,8 +29,10 @@ import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.RelayNote;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
 import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
+import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.listener.RelayClickMovementMethod;
 import com.sysu.pro.fade.relay_publish.RelayPublishAcitivity;
 import com.sysu.pro.fade.tool.NoteTool;
@@ -72,8 +76,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	}
 
 	public void bindView(final Context context, Handler handler, List<Note> data, int position) {
-		final Note bean = data.get(position);
+		Note bean = data.get(position);
 		//设置头像
+		checkAndSetCurUser((MainActivity) context, bean);
 		Glide.with(context)
 				.load(bean.getHead_image_url())
 				.fitCenter()
@@ -93,11 +98,35 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		setCommentVisAndLis(context);
 	}
 
+	private void checkAndSetCurUser(MainActivity context, Note bean) {
+		User curUser = context.getCurrentUser();
+		if (bean.getUser_id() == curUser.getUser_id()){
+			bean.setHead_image_url(curUser.getHead_image_url());
+			bean.setName(curUser.getNickname());
+		}
+	}
+
 	private void setGoToDetailClick(final Context context, final Note bean) {
 		itemView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startDetailsActivity(context, bean);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(250);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						((Activity) context).runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								startDetailsActivity(context, bean);
+							}
+						});
+
+					}
+				}).start();
 			}
 		});
 	}
@@ -195,6 +224,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			public void onClick(View v) {
 				commentEdit.setVisibility(View.VISIBLE);
 				commentEditTextView.requestFocus();
+				TabLayout tabLayout = (TabLayout) itemView.getRootView().findViewById(R.id.tab_layout_menu);
+				tabLayout.setVisibility(View.GONE);
 				showKeyboard(context,commentEditTextView);
 			}
 		});
@@ -241,7 +272,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		/*
 		 * 设置原贴的文字，以及原贴作者名点击事件
 		 */
-		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayNotes.get(0).getName() + "\n");
+		SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(relayNotes.get(0).getName());
 		ClickableSpan clickableSpan = new ClickableSpan() {
 			@Override
 			public void onClick(View widget) {
@@ -250,9 +281,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			}
 		};
 		SpannableString tBuilder = SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
-				,relayTextView,relayNotes.get(0).getContent());
+				,relayTextView, " \n"+relayNotes.get(0).getContent());
 		spannableStringBuilder.append(tBuilder);
-		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+		spannableStringBuilder.setSpan(clickableSpan, 0, relayNotes.get(0).getName().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		originalTextView.setText(spannableStringBuilder);
 		//文字的点击事件要加上这一句，不然不会生效
 		//originalTextView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -303,7 +334,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		/*Intent intent = new Intent(context, ImagePagerActivity.class);
 		intent.putExtra("NOTE", bean);
 		context.startActivity(intent);*/
-		Toast.makeText(context, "跳转到详情", Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(context, DetailActivity.class);
+		intent.putExtra(Const.NOTE_ID,bean.getNote_id());
+		context.startActivity(intent);
 	}
 
 

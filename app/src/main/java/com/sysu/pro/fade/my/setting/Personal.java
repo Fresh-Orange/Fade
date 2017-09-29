@@ -24,6 +24,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.AddContentActivity;
 import com.sysu.pro.fade.tool.UserTool;
+import com.sysu.pro.fade.utils.GsonUtil;
 import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.UserUtil;
 
@@ -82,7 +83,7 @@ public class Personal extends AppCompatActivity {
             //个签
             else if(msg.what == 3){
                 String ans_str = (String) msg.obj;
-                if(ans_str.equals("{}")){
+                if(ans_str.equals("")){
                     //更新到本地
                     editor.putString(Const.SUMMARY, settingSummary.getText().toString());
                     editor.apply();
@@ -203,6 +204,7 @@ public class Personal extends AppCompatActivity {
             public void onClick(View v) {
                 updateDS(user);     //自定义方法，更新数据库的内容并更新个人主页
                 Toast.makeText(Personal.this, "保存修改成功", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }

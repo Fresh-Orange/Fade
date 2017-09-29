@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="详情"
+            android:layout_gravity="center" />
+    </android.support.v7.widget.Toolbar>
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="9">
+    <com.sysu.pro.fade.home.view.ObservableScrollView
+        android:id="@+id/sv_contentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/ll_contentView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_headerView"
+                android:layout_width="match_parent"
+                android:layout_height="600dp"
+                android:text="这个地方用来展示帖子"
+                android:textSize="30sp"
+                android:background="@color/white"
+                android:gravity="center"/>
+
+            <LinearLayout
+                android:id="@+id/ll_topView"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/ll_tab"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:background="#fff">
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tab_detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/avoscloud_blue"
+                        app:tabIndicatorColor="@color/white"
+                        app:tabSelectedTextColor="@color/light_gray"
+                        app:tabTextColor="@color/white" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vp_detail"
+                android:layout_width="fill_parent"
+                android:layout_height="600dp"
+                android:background="@color/white"
+                android:paddingTop="10dp"
+                />
+
+        </LinearLayout>
+    </com.sysu.pro.fade.home.view.ObservableScrollView>
+    <LinearLayout
+        android:id="@+id/ll_fixedView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        android:alpha="0"
+        android:layout_gravity="top">
+    </LinearLayout>
+</FrameLayout>
+
+
+
+
+
+</LinearLayout>
