@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.home.adapter.RecycleAdapter;
+import com.sysu.pro.fade.home.adapter.NotesAdapter;
 
 import java.util.List;
 
@@ -37,17 +37,31 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			 * Whenever you need to dynamically add pagers, you need to set an ID for each pager using ViewPager.setId().
 			 * from : https://stackoverflow.com/questions/14920459/placing-viewpager-as-a-row-in-listview
 			 */
-			pager.setId(++RecycleAdapter.viewPagerTag);
+			pager.setId(++NotesAdapter.viewPagerTag);
 
-			double RatioMax = 999;
-			for (double d:bean.getImgSizes()) {
-				Log.d("Ratio", " "+d);
-				RatioMax = RatioMax < d ? RatioMax : d;
-			}
+			double ratio = getNoteRatio(bean);
 			imageLayout.setViewPagerMaxHeight(600);
-			//imageLayout.setHeightByRatio(((float) (1.0/RatioMax)));
-			imageLayout.setHeightByRatio(1);
+			//imageLayout.setHeightByRatio(((float) (1.0/ratio)));
+			imageLayout.setImgCoordinates(bean.getImgCoordinates());
+			imageLayout.setHeightByRatio((float)ratio);
 			imageLayout.setPaths(bean.getImgUrls());
 		}
+	}
+
+	private double getNoteRatio(Note bean) {
+		double ratio;
+		int cutSize = bean.getImgCutSize();
+		if (cutSize == 1)
+			ratio = 5/4;
+		else if (cutSize == 2)
+			ratio = 8/15;
+		else{
+			ratio = 999;
+			for (double d:bean.getImgSizes()) {
+				Log.d("Ratio", " "+d);
+				ratio = ratio < d ? ratio : d;
+			}
+		}
+		return 1;
 	}
 }

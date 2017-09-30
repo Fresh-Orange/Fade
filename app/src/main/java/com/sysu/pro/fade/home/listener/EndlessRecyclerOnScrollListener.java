@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
-import com.sysu.pro.fade.home.adapter.RecycleAdapter;
+import com.sysu.pro.fade.home.adapter.NotesAdapter;
 
 import static com.sysu.pro.fade.utils.SystemUtils.closeKeyboard;
 
@@ -99,7 +99,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 			Log.d("loadNow", "unload");
 		}else if ((totalItemCount - visibleItemCount) > firstVisibleItem){
 			loading = false;
-			RecycleAdapter recycleAdapter = (RecycleAdapter) recyclerView.getAdapter();
+			NotesAdapter recycleAdapter = (NotesAdapter) recyclerView.getAdapter();
 			recycleAdapter.setLoadingMore(true);
 		}
 		Log.d("loadMoreVar", "visible = " + String.valueOf(visibleItemCount) + "  total = " + String.valueOf(totalItemCount)
