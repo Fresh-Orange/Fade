@@ -204,7 +204,7 @@ public class PublishActivity extends AppCompatActivity {
                         //coordinate_list为坐标用逗号连成的字符串，例如:"1:2,1:2,2:2"  横纵坐标之间用冒号隔开
                         //cut_size_list为裁剪比例用逗号连成的字符串，0代表0代表不裁剪，1代表长图4:5, 2代表宽图15:8，例："0,1,2"
                         //顺序与images的顺序相同
-                        NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list,null,null);
+                        //NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list,null,null);
                     }
                 }
                 @Override
