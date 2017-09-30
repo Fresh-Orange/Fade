@@ -11,13 +11,13 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.util;
+package com.sysu.pro.fade.publish.crop.util;
 
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.R;
+import com.sysu.pro.fade.R;
 
 /**
  * Utility class for handling all of the Paint used to draw the CropOverlayView.

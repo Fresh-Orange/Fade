@@ -11,7 +11,9 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.cropwindow.edge;
+package com.sysu.pro.fade.publish.crop.cropwindow.edge;
+
+import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
 
 /**
  * Simple class to hold a pair of Edges.
