@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 
 import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 
+
 /**
  * Handle helper class to handle horizontal handles (i.e. top and bottom handles).
  */

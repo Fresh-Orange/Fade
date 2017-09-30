@@ -16,6 +16,7 @@ package com.sysu.pro.fade.publish.crop.cropwindow.handle;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
+
 /**
  * HandleHelper class to handle the center handle.
  */

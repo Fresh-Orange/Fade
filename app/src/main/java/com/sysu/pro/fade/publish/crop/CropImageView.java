@@ -28,7 +28,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
+import android.widget.ImageView;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
@@ -36,6 +38,10 @@ import com.sysu.pro.fade.publish.crop.cropwindow.handle.Handle;
 import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 import com.sysu.pro.fade.publish.crop.util.HandleUtil;
 import com.sysu.pro.fade.publish.crop.util.PaintUtil;
+
+import static com.sysu.pro.fade.publish.crop.CropActivity.current_position;
+import static com.sysu.pro.fade.publish.crop.CropActivity.imageX;
+import static com.sysu.pro.fade.publish.crop.CropActivity.imageY;
 
 
 /**
@@ -109,29 +115,33 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
     // Mode indicating how/whether to show the guidelines; must be one of GUIDELINES_OFF, GUIDELINES_ON_TOUCH, GUIDELINES_ON.
     private int mGuidelinesMode = 1;
+//    private int currentPosition = 0;
 
     // Constructors ////////////////////////////////////////////////////////////////////////////////
 
     public CropImageView(Context context) {
         super(context);
         init(context, null);
+//        getCroppedImage();
     }
 
     public CropImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
+//        getCroppedImage();
     }
 
     public CropImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
+//        getCroppedImage();
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
 
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CropImageView, 0, 0);
         mGuidelinesMode = typedArray.getInteger(R.styleable.CropImageView_guidelines, 1);
-        mFixAspectRatio = typedArray.getBoolean(R.styleable.CropImageView_fixAspectRatio, false);
+        mFixAspectRatio = typedArray.getBoolean(R.styleable.CropImageView_fixAspectRatio, true);
         mAspectRatioX = typedArray.getInteger(R.styleable.CropImageView_aspectRatioX, 1);
         mAspectRatioY = typedArray.getInteger(R.styleable.CropImageView_aspectRatioY, 1);
         typedArray.recycle();
@@ -142,6 +152,8 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         mGuidelinePaint = PaintUtil.newGuidelinePaint(resources);
         mSurroundingAreaOverlayPaint = PaintUtil.newSurroundingAreaOverlayPaint(resources);
         mCornerPaint = PaintUtil.newCornerPaint(resources);
+
+//        getCroppedImage();
 
         mHandleRadius = resources.getDimension(R.dimen.target_radius);
         mSnapRadius = resources.getDimension(R.dimen.snap_radius);
@@ -159,6 +171,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         mBitmapRect = getBitmapRect();
         initCropWindow(mBitmapRect);
+//        getCroppedImage();
     }
 
     @Override
@@ -170,6 +183,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         drawGuidelines(canvas);
         drawBorder(canvas);
         drawCorners(canvas);
+//        getCroppedImage();
     }
 
     @Override
@@ -248,6 +262,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         if (mFixAspectRatio) {
             requestLayout(); // Request measure/layout to be run again.
+            getCroppedImage();
         }
     }
 
@@ -256,7 +271,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
      *
      * @return a new Bitmap representing the cropped image
      */
-    public Bitmap getCroppedImage() {
+    public Pair<Float,Float> getCroppedImage() {
 
         // Implementation reference: http://stackoverflow.com/a/26930938/1068656
 
@@ -296,12 +311,16 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         Log.d("Yellow","cropWidth: " + cropWidth);
         Log.d("Yellow","cropHeight: " + cropHeight);
 
+        imageX[CropActivity.current_position] = cropX;
+        CropActivity.imageY[CropActivity.current_position] = cropY;
         // Crop the subset from the original Bitmap.
-        return Bitmap.createBitmap(originalBitmap,
-                                   (int) cropX,
-                                   (int) cropY,
-                                   (int) cropWidth,
-                                   (int) cropHeight);
+//        return Bitmap.createBitmap(originalBitmap,
+//                                   (int) cropX,
+//                                   (int) cropY,
+//                                   (int) cropWidth,
+//                                   (int) cropHeight);
+        Pair<Float,Float> pair = new Pair<Float,Float>(cropX, cropY);
+        return pair;
 
     }
 
@@ -311,12 +330,13 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
     /**
      * Gets the bounding rectangle of the bitmap within the ImageView.
      */
-    private RectF getBitmapRect() {
+    public RectF getBitmapRect() {
 
         final Drawable drawable = getDrawable();
         if (drawable == null) {
             return new RectF();
         }
+
 
         // Get image matrix values and place them in an array.
         final float[] matrixValues = new float[9];
@@ -337,13 +357,24 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final int drawableDisplayWidth = Math.round(drawableIntrinsicWidth * scaleX);
         final int drawableDisplayHeight = Math.round(drawableIntrinsicHeight * scaleY);
 
-        // Get the Rect of the displayed image within the ImageView.
-        final float left = Math.max(transX, 0);
-        final float top = Math.max(transY, 0);
-        final float right = Math.min(left + drawableDisplayWidth, getWidth());
-        final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
+//        if (imageX[current_position] > 0 || imageY[current_position] > 0) {
+//            final float left = imageX[current_position];
+//            final float top = imageX[current_position];
+//            final float right = Math.min(left + drawableDisplayWidth, getWidth());
+//            final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
+//            return new RectF(left, top, right, bottom);
+//        }
 
-        return new RectF(left, top, right, bottom);
+        // Get the Rect of the displayed image within the ImageView.
+//        else {
+            final float left = Math.max(transX, 0);
+            final float top = Math.max(transY, 0);
+            final float right = Math.min(left + drawableDisplayWidth, getWidth());
+            final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
+
+            return new RectF(left, top, right, bottom);
+//        }
+
     }
 
     /**
@@ -371,12 +402,14 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
             Edge.RIGHT.setCoordinate(bitmapRect.right - horizontalPadding);
             Edge.BOTTOM.setCoordinate(bitmapRect.bottom - verticalPadding);
         }
+        getCroppedImage();
     }
 
     private void initCropWindowWithFixedAspectRatio(@NonNull RectF bitmapRect) {
 
         // If the image aspect ratio is wider than the crop aspect ratio,
         // then the image height is the determining initial length. Else, vice-versa.
+
         if (AspectRatioUtil.calculateAspectRatio(bitmapRect) > getTargetAspectRatio()) {
 
             final float cropWidth = AspectRatioUtil.calculateWidth(bitmapRect.height(), getTargetAspectRatio());
@@ -535,6 +568,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
     private void onActionUp() {
         if (mPressedHandle != null) {
             mPressedHandle = null;
+            getCroppedImage();
             invalidate();
         }
     }
@@ -556,6 +590,8 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         x += mTouchOffset.x;
         y += mTouchOffset.y;
 
+
+        getCroppedImage();
         // Calculate the new crop window size/position.
         if (mFixAspectRatio) {
             mPressedHandle.updateCropWindow(x, y, getTargetAspectRatio(), mBitmapRect, mSnapRadius);
@@ -565,4 +601,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         invalidate();
     }
 
+    public void createBound(float x, float y) {
+//        onLayout(true,x, y);
+    }
 }

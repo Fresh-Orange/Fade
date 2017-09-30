@@ -4,21 +4,42 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
+import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
+import com.sysu.pro.fade.publish.imageselector.entry.Folder;
+import com.sysu.pro.fade.publish.imageselector.entry.Image;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
+import com.sysu.pro.fade.publish.imageselector.view.MyViewPager;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.sysu.pro.fade.publish.PublishActivity.imageX;
+import static com.sysu.pro.fade.publish.PublishActivity.imageY;
+import static com.sysu.pro.fade.publish.crop.CropImageView.GUIDELINES_ON_TOUCH;
+import static com.sysu.pro.fade.publish.utils.Utils.getContext;
 
 public class CropActivity extends AppCompatActivity {
 

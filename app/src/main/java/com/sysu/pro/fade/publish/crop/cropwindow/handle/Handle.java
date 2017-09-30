@@ -16,6 +16,8 @@ package com.sysu.pro.fade.publish.crop.cropwindow.handle;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
+
+
 /**
  * Enum representing a pressable, draggable Handle on the crop window.
  */

@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import com.sysu.pro.fade.publish.crop.cropwindow.edge.EdgePair;
 import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 
+
 /**
  * Abstract helper class to handle operations on a crop window Handle.
  */

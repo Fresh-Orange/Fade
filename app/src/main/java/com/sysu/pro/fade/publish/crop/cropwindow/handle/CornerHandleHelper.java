@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 
 import com.sysu.pro.fade.publish.crop.cropwindow.edge.EdgePair;
 
+
 /**
  * HandleHelper class to handle corner Handles (i.e. top-left, top-right, bottom-left, and
  * bottom-right handles).

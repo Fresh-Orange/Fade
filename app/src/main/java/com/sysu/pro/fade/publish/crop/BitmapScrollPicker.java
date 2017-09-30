@@ -12,6 +12,7 @@ import com.sysu.pro.fade.R;
 import java.util.List;
 
 
+
 /**
  * 图片滚动选择器
  * Created by huangziwei on 16-12-7.

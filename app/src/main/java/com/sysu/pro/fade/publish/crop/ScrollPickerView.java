@@ -19,11 +19,10 @@ import android.view.ViewParent;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 
-import com.sysu.pro.fade.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sysu.pro.fade.R;
 
 /**
  * 滚动选择器,带惯性滑动
@@ -103,9 +102,12 @@ public abstract class ScrollPickerView<T> extends View {
             TypedArray typedArray = getContext().obtainStyledAttributes(attrs,
                     R.styleable.ScrollPickerView);
 
-            if (typedArray.hasValue(R.styleable.ScrollPickerView_spv_center_item_background)) {
-                setCenterItemBackground(typedArray.getDrawable(R.styleable.ScrollPickerView_spv_center_item_background));
-            }
+//            if (typedArray.hasValue(R.styleable.ScrollPickerView_spv_center_item_background)) {
+//                setCenterItemBackground(typedArray.getDrawable(R.styleable.ScrollPickerView_spv_center_item_background));
+//            }
+//            if (typedArray.hasValue(R.styleable.ScrollPickerView_spv_center_item_background)) {
+                setCenterItemBackground(R.drawable.bound);
+//            }
             setVisibleItemCount(typedArray.getInt(
                     R.styleable.ScrollPickerView_spv_visible_item_count,
                     getVisibleItemCount()));
@@ -192,7 +194,7 @@ public abstract class ScrollPickerView<T> extends View {
 
     private void reset() {
         if (mCenterPosition < 0) {
-            mCenterPosition = mVisibleItemCount / 2;
+            mCenterPosition = mVisibleItemCount / 2 + 1;
         }
 
         if (mIsHorizontal) {
@@ -704,7 +706,7 @@ public abstract class ScrollPickerView<T> extends View {
         } else {
             this.mData = data;
         }
-        mSelected = mData.size() / 2;
+        mSelected = 0;
         invalidate();
     }
 

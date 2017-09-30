@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 
 import com.sysu.pro.fade.R;
 
-
 /**
  * Utility class for handling all of the Paint used to draw the CropOverlayView.
  */
