@@ -16,6 +16,9 @@ public class ImageSelectorUtils {
 
     public static final String SELECT_LAST = "select_last";
 
+    public static final String CROP_RESULT = "crop_result";
+
+    public static final String CROP_LAST = "crop_last";
     /**
      * 打开相册，选择图片,可多选,不限数量。
      *
