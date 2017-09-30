@@ -11,13 +11,13 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.cropwindow.handle;
+package com.sysu.pro.fade.publish.crop.cropwindow.handle;
 
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.cropwindow.edge.Edge;
-import com.edmodo.cropper.util.AspectRatioUtil;
+import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
+
 
 /**
  * Handle helper class to handle horizontal handles (i.e. top and bottom handles).

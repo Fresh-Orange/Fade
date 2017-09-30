@@ -11,12 +11,13 @@
  * governing permissions and limitations under the License. 
 */
 
-package com.sysu.pro.fade.publish.crop.cropwindow.edge;
+package com.sysu.pro.fade.publish.crop.cropwindow.handle;
 
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.util.AspectRatioUtil;
+import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
+
 
 /**
  * Enum representing an edge in the crop window.

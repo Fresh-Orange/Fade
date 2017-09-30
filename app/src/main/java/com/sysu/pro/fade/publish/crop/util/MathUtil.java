@@ -1,4 +1,4 @@
-package com.edmodo.cropper.util;
+package com.sysu.pro.fade.publish.crop.util;
 
 public class MathUtil {
 

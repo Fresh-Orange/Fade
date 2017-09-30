@@ -570,7 +570,7 @@ public class PublishActivity extends AppCompatActivity {
 //                        Toast.makeText(PublishActivity.this,
 //                                "你点击了相册", Toast.LENGTH_SHORT).show();
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
-                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
+//                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
                         ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
                         break;
                 }
