@@ -83,6 +83,7 @@ public class EmotionMainFragment extends BaseFragment{
     private View emotionView;
     private ImageView emotion_button;
 
+
     /**
      * 创建与Fragment对象关联的View视图时调用
      * @param inflater

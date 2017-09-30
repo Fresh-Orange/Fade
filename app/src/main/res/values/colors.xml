@@ -33,5 +33,13 @@
     <color name="bg_indicator_point_normal">#D8D8D8</color>
     <color name="bg_indicator_point_selected">#A6A6A6</color>
 
+    <!--for Crop fragment-->
+    <color name="white_translucent">#AAFFFFFF</color>
+    <color name="black_translucent">#B0000000</color>
+
+    <color name="border">@color/white_translucent</color>
+    <color name="guideline">@color/white_translucent</color>
+    <color name="corner">@android:color/white</color>
+    <color name="surrounding_area">@color/black_translucent</color>
 
 </resources>

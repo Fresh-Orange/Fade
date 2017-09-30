@@ -221,7 +221,7 @@ public class RelayPublishAcitivity extends AppCompatActivity{
                     if (frameLayout.getVisibility() == View.GONE) {
                         findViewById(R.id.show_view).setVisibility(View.VISIBLE);
                         findViewById(R.id.relay_layout).setVisibility(View.VISIBLE);
-                        findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
+                        findViewById(R.id.relay_rl_editbar_bg).setVisibility(View.GONE);
                     }
                 }
             }
