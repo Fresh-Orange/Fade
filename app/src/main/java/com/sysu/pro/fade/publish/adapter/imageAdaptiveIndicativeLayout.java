@@ -22,13 +22,11 @@ import android.widget.ViewSwitcher;
 
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.imageselector.ClickToPreviewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sysu.pro.fade.publish.PublishActivity.currentItem;
 import static com.sysu.pro.fade.publish.PublishActivity.publishActivity;
 
 /**

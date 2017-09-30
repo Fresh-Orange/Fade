@@ -1,17 +1,16 @@
-package cn.forward.androids.views;
+package com.sysu.pro.fade.publish.crop;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
+
+import com.sysu.pro.fade.R;
 
 import java.util.List;
 
-import cn.forward.androids.R;
-import cn.forward.androids.utils.ColorUtil;
 
 /**
  * 图片滚动选择器

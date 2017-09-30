@@ -1,5 +1,7 @@
 package com.sysu.pro.fade.utils;
 
+import android.util.Log;
+
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.DetailRelay;
@@ -138,9 +140,27 @@ public class BeanConvertUtil {
         //加入转发链
         List<Map<String,Object>>relay_list = (List<Map<String, Object>>) map.get(Const.RELAY_LIST);
         List<RelayNote> relayNotes = BeanConvertUtil.convertRelayListMap(isRelay,user_id,note_content,nickname,relay_list);
+        if(image_url_size.size() != 0){
+            image_cut_size = (Integer) image_url_size.get(0).get(Const.IMAGE_CUT_SIZE);
+            Log.d("convert2Note:", "image_url_size not not empty");
+        }
+        else
+            Log.d("convert2Note:", "image_url_size empty");
         /**
          * 赋值给contentBean
          */
+        if (image_coordinate.isEmpty()){
+            Log.d("convert2Note", "isEmpty");
+        }
+        else{
+            for (String s:image_coordinate){
+                if (s == null)
+                    Log.d("convert2Note", "null");
+                else
+                    Log.d("convert2Note", s);
+            }
+        }
+        Log.d("convert2Note:", "convert2Note: "+image_cut_size);
         Note note = new Note();
         note.setName(nickname);
         note.setUser_id(user_id);

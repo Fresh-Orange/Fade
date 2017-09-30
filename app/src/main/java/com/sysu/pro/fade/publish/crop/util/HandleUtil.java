@@ -11,12 +11,13 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper.util;
+package com.sysu.pro.fade.publish.crop.util;
 
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 
-import com.edmodo.cropper.cropwindow.handle.Handle;
+import com.sysu.pro.fade.publish.crop.cropwindow.handle.Handle;
+
 
 /**
  * Utility class to perform basic operations with Handles.

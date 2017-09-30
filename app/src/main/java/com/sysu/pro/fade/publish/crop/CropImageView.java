@@ -11,7 +11,7 @@
  * governing permissions and limitations under the License. 
  */
 
-package com.edmodo.cropper;
+package com.sysu.pro.fade.publish.crop;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,18 +29,19 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
-import com.edmodo.cropper.cropwindow.edge.Edge;
-import com.edmodo.cropper.cropwindow.handle.Handle;
-import com.edmodo.cropper.util.AspectRatioUtil;
-import com.edmodo.cropper.util.HandleUtil;
-import com.edmodo.cropper.util.PaintUtil;
+import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
+import com.sysu.pro.fade.publish.crop.cropwindow.handle.Handle;
+import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
+import com.sysu.pro.fade.publish.crop.util.HandleUtil;
+import com.sysu.pro.fade.publish.crop.util.PaintUtil;
+
 
 /**
  * Custom view that provides cropping capabilities to an image.
  */
-public class CropImageView extends ImageView {
+public class CropImageView extends android.support.v7.widget.AppCompatImageView {
 
     // Private Constants ///////////////////////////////////////////////////////////////////////////
 

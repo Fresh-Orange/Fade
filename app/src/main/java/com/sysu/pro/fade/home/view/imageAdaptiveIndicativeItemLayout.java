@@ -56,6 +56,11 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	private int viewPagerMaxHeight = 400;
 	private ViewPager pager;
 	private LinearLayout dotLinearLayout;
+	private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
+
+	public void setImgCoordinates(List<String> imgCoordinates) {
+		this.imgCoordinates = imgCoordinates;
+	}
 
 	public imageAdaptiveIndicativeItemLayout(@NonNull Context context) {
 		super(context);
@@ -105,7 +110,8 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	 * @param imagePathList
 	 */
 	public void setPaths(List<String> imagePathList) {
-		mImageItemPagerAdapter imgAdapter = new mImageItemPagerAdapter(((AppCompatActivity) this.getContext()).getSupportFragmentManager(), imagePathList);
+		mImageItemPagerAdapter imgAdapter = new mImageItemPagerAdapter(
+				((AppCompatActivity) this.getContext()).getSupportFragmentManager(), imagePathList, imgCoordinates);
 		pager.setAdapter(imgAdapter);
 		addDots(getContext(), dotLinearLayout, imagePathList.size());
 		//viewPager滑动的时候，设置下方点的变化
@@ -177,9 +183,10 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 		private String mNextUrl;
 		private ImageView mImageView;
 		private int fragmentIndex;
+		private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
 		public static mImageItemFragment newInstance(List<String> urlList, int position,
-													 String nextUrl) {
+													 String nextUrl, List<String> imgCoordinates) {
 			final mImageItemFragment f = new mImageItemFragment();
 			String imageUrl = urlList.get(position);
 			final Bundle args = new Bundle();
@@ -188,6 +195,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			args.putString("nextUrl", nextUrl);
 			f.urlList = urlList;
 			f.setArguments(args);
+			f.imgCoordinates = imgCoordinates;
 
 			return f;
 		}
@@ -230,7 +238,20 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			super.onActivityCreated(savedInstanceState);
 
 			//Glide.with(this).load(mImageUrl).fitCenter().into(mImageView);
-			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, 0, 0, 23, 54);
+			int startX = 0;
+			int startY = 0;
+			if (imgCoordinates!=null && !imgCoordinates.isEmpty()){
+				String cord = imgCoordinates.get(fragmentIndex);
+				if (cord == null)
+					Log.d("convert2Note", "null");
+				else{
+					Log.d("convert2Note", cord);
+					startX = Integer.valueOf(imgCoordinates.get(fragmentIndex).split(":")[0]);
+					startY = Integer.valueOf(imgCoordinates.get(fragmentIndex).split(":")[1]);
+				}
+			}
+
+			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, startX, startY, 23, 54);
 		}
 
 
@@ -242,10 +263,12 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	private class mImageItemPagerAdapter extends FragmentStatePagerAdapter {
 
 		public List<String> imagePathList;
+		private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
-		public mImageItemPagerAdapter(FragmentManager fm, List<String> imagePathList) {
+		public mImageItemPagerAdapter(FragmentManager fm, List<String> imagePathList, List<String> imgCoordinates) {
 			super(fm);
 			this.imagePathList = imagePathList;
+			this.imgCoordinates = imgCoordinates;
 		}
 
 		@Override
@@ -258,7 +281,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			String nextUrl = "";
 			if (position + 1 < imagePathList.size())
 				nextUrl = imagePathList.get(position + 1);
-			return mImageItemFragment.newInstance(imagePathList, position, nextUrl);
+			return mImageItemFragment.newInstance(imagePathList, position, nextUrl, imgCoordinates);
 		}
 
 	}

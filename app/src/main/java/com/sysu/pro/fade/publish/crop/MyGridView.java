@@ -1,4 +1,4 @@
-package com.donkingliang.imageselectdemo.adapter;
+package com.sysu.pro.fade.publish.crop;
 
 import android.content.Context;
 import android.util.AttributeSet;

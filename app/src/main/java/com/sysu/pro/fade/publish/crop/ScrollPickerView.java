@@ -1,4 +1,4 @@
-package cn.forward.androids.views;
+package com.sysu.pro.fade.publish.crop;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -19,10 +19,11 @@ import android.view.ViewParent;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 
+import com.sysu.pro.fade.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.forward.androids.R;
 
 /**
  * 滚动选择器,带惯性滑动
