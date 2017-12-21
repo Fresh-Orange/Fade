@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -68,6 +69,7 @@ public class ContentHome {
     private List<Integer>latest_good_nums;   //更新之后的good_nums数组  对应列表的展示顺序
 
 
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {

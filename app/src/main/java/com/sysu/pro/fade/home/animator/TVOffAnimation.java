@@ -16,7 +16,6 @@ public class TVOffAnimation extends Animation {
 	@Override
 	public void initialize(int width, int height, int parentWidth, int parentHeight) {
 		super.initialize(width, height, parentWidth, parentHeight);
-		//设置动画时间为700毫秒
 		setDuration(getDuration());
 		//设置动画结束后就结束在动画结束的时刻
 		setFillAfter(true);
