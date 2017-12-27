@@ -1,57 +1,49 @@
 package com.sysu.pro.fade.publish.crop;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
+import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
-import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
+import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
+import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
+import com.sysu.pro.fade.publish.crop.util.NoScrollView;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
-import com.sysu.pro.fade.publish.imageselector.entry.Folder;
-import com.sysu.pro.fade.publish.imageselector.entry.Image;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
-import com.sysu.pro.fade.publish.imageselector.view.MyViewPager;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.sysu.pro.fade.publish.PublishActivity.imageX;
-import static com.sysu.pro.fade.publish.PublishActivity.imageY;
-import static com.sysu.pro.fade.publish.crop.CropImageView.GUIDELINES_ON_TOUCH;
-import static com.sysu.pro.fade.publish.utils.Utils.getContext;
-
-public class CropActivity extends AppCompatActivity {
+public class CropActivity extends AppCompatActivity{
 
     private int newCount = 9;
     private int mMaxCount;
 
+    public static NoScrollView scrollView;
     private ArrayList<String> newimages;
+    static NoScrollView outScroll;
     private BitmapScrollPicker mPickerHorizontal;
     public static int current_position = 0;
     private CropImageView cropImageView;
     public static float[] imageX = new float[10];
     public static float[] imageY = new float[10];
+    public static float[] left = new float[10];
+    public static float[] right = new float[10];
+    public static float[] top = new float[10];
+    public static float[] bottom = new float[10];
+    public static boolean[] isSet = new boolean[10];
     private int cut_size = 1;
 
     private boolean flag = false;
@@ -94,12 +86,17 @@ public class CropActivity extends AppCompatActivity {
 
     // Activity Methods ////////////////////////////////////////////////////////////////////////////
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_crop);
+
+        for (int i = 0; i < isSet.length; i++)
+            isSet[i] = false;
+        outScroll = (NoScrollView) findViewById(R.id.scrollview);
         Intent intent = getIntent();
         newCount = intent.getIntExtra(Constants.CROP_COUNT, 9);
         flag = intent.getBooleanExtra(Constants.FLAG,true);
@@ -109,12 +106,18 @@ public class CropActivity extends AppCompatActivity {
             newimages = intent.getStringArrayListExtra(ImageSelectorUtils.CROP_LAST);
         }
         cropImageView = (CropImageView) findViewById(R.id.CropImageView);
+
+        current_position = 0;
+        Bitmap bm = BitmapFactory.decodeFile(newimages.get(0));
+        cropImageView.setImageBitmap(bm);
         if (flag) {
             cropImageView.setAspectRatio(15, 8);
+            cropImageView.setLongPicture(false);
             cut_size = 2;
         }
         else {
             cropImageView.setAspectRatio(4, 5);
+            cropImageView.setLongPicture(true);
             cut_size = 1;
         }
         final TextView publishTextView = (TextView) findViewById(R.id.tv_confirm);
@@ -131,8 +134,6 @@ public class CropActivity extends AppCompatActivity {
                 intent.putExtra(Constants.IS_CROP, true);
                 setResult(Constants.CROP_RESULT_CODE, intent);
                 finish();
-//                Toast.makeText(CropActivity.this,
-//                        "X: " + imageX[0] + "Y: " + imageY[0],Toast.LENGTH_LONG).show();
             }
         });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -146,52 +147,83 @@ public class CropActivity extends AppCompatActivity {
             Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(newimages.get(i), 50, 50);
             bitmaps.add(newBp);
         }
-
         mPickerHorizontal = (BitmapScrollPicker) findViewById(R.id.picker_04_horizontal);
         mPickerHorizontal.setData(bitmaps);
 
-        initImage();
         cropImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        Bitmap bm = BitmapFactory.decodeFile(newimages.get(0));
-        cropImageView.setImageBitmap(bm);
         current_position = 0;
         mPickerHorizontal.setOnSelectedListener(new ScrollPickerView.OnSelectedListener() {
             @Override
             public void onSelected(ScrollPickerView scrollPickerView, int position) {
+                Log.d("position", "Current: " + position);
+                current_position = position;
+
+//                Glide.with(CropActivity.this).load(newimages.get(position))
+//                        .into(cropImageView);
                 Bitmap bm = BitmapFactory.decodeFile(newimages.get(position));
                 cropImageView.setImageBitmap(bm);
+                Log.d("Height", "Height: " + cropImageView.getHeight());
+                Log.d("imageY", "imageX[current_position]: " + imageX[current_position]);
+                Log.d("imageY", "imageY[current_position]: " + imageY[current_position]);
+                outScroll.smoothScrollTo(0, (int) imageY[current_position]);
+//                if (cropImageView.getLayoutParams().height > 100) {
 
-                current_position = position;
+//                    outScroll.smoothScrollTo((int)imageX[current_position], (int)imageY[current_position]);
+
+//                }
+//                initImage(cropImageView, position);
             }
         });
 
     }
 
-    private void initImage() {
-        for (int index = 0; index < newimages.size(); index++) {
-//            String image = newimages.get(index);
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            /**
-//             * 最关键在此，把options.inJustDecodeBounds = true;
-//             * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
-//             */
-//            Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
-//            /**
-//             *options.outHeight为原始图片的高
-//             */
-//            float currentRatio = (float)options.outHeight / (float)options.outWidth;
-//            if (currentRatio > 1.3375f) {
-//                imageX[index] = (float)options.outWidth / 2;
-//                imageY[index] = 0;
-//            }
-//            else {
-//                imageX[index] = 0;
-//                imageY[index] = (float) options.outHeight / 2;
-//            }
-            imageX[index] = 0;
-            imageY[index] = 0;
+    private void initImage(CropImageView cropImageView, int position) {
+        if (isSet[position])
+            return;
+//        for (int index = 0; index < newimages.size(); index++) {
+////            String image = newimages.get(index);
+////            BitmapFactory.Options options = new BitmapFactory.Options();
+////            /**
+////             * 最关键在此，把options.inJustDecodeBounds = true;
+////             * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
+////             */
+////            Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
+////            /**
+////             *options.outHeight为原始图片的高
+////             */
+////            float currentRatio = (float)options.outHeight / (float)options.outWidth;
+////            if (currentRatio > 1.3375f) {
+////                imageX[index] = (float)options.outWidth / 2;
+////                imageY[index] = 0;
+////            }
+////            else {
+////                imageX[index] = 0;
+////                imageY[index] = (float) options.outHeight / 2;
+////            }
+//            imageX[index] = 0;
+//            imageY[index] = 0;
+//        }
+        RectF bitmapRect = new RectF();
+        bitmapRect = cropImageView.getBitmapRect();
+        if (AspectRatioUtil.calculateAspectRatio(bitmapRect) > cropImageView.getTargetAspectRatio()) {
+            final float cropWidth = AspectRatioUtil.calculateWidth(bitmapRect.height(), cropImageView.getTargetAspectRatio());
+            Log.d("position","cropWidth: " + cropWidth);
+            left[position] = bitmapRect.centerX() - cropWidth / 2f;
+            top[position] = bitmapRect.top;
+            right[position] = bitmapRect.centerX() + cropWidth / 2f;
+            bottom[position] = bitmapRect.bottom;
+        } else {
+            final float cropHeight = AspectRatioUtil.calculateHeight(bitmapRect.width(), cropImageView.getTargetAspectRatio());
+            Log.d("position","cropHeight: " + cropHeight);
+            left[position] = bitmapRect.left;
+            top[position] = bitmapRect.centerY() - cropHeight / 2f;
+            right[position] = bitmapRect.right;
+            bottom[position] = bitmapRect.centerY() + cropHeight / 2f;
         }
+        Log.d("position","Originleft: " + CropActivity.left[position]);
+        Log.d("position","Origintop: " + CropActivity.top[position]);
+        Log.d("position","Originright: " + CropActivity.right[position]);
+        Log.d("position","Originbottom: " + CropActivity.bottom[position]);
     }
-
 
 }

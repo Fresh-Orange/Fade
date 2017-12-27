@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.emotionkeyboard.emotionkeyboardview;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -95,6 +96,7 @@ public class EmotionKeyboard {
 	 * @param editText
 	 * @return
 	 */
+	@SuppressLint("ClickableViewAccessibility")
 	public EmotionKeyboard bindToEditText(EditText editText) {
 		mEditText = editText;
 		mEditText.requestFocus();
