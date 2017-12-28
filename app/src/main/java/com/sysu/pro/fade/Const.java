@@ -90,8 +90,8 @@ public class Const {
     public static final String IMAGE_CUT_SIZE     = "image_cut_size";
     public static final int PAGE_SIZE = 5  ; //页面数量
     public static final int HOME = 1;
-    public static final int DISCOVER = 2;
-    public static final int MESSAGE = 4;
+    public static final int DISCOVER = 4;
+    public static final int MESSAGE = 2;
     public static final int MY = 5;
 
     //用于leancloud服务器的常量
