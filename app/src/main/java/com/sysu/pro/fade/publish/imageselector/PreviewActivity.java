@@ -14,9 +14,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ViewConfigurationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -24,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.home.others.gestures.GestureDetector;
 import com.sysu.pro.fade.publish.imageselector.adapter.ImagePagerAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Image;
@@ -59,7 +65,7 @@ public class PreviewActivity extends AppCompatActivity {
     private BitmapDrawable mSelectDrawable;
     private BitmapDrawable mUnSelectDrawable;
 
-    public static void openActivity(Activity activity, ArrayList<Image> images,
+    public static void openActivity(Activity activity, int requestCode, ArrayList<Image> images,
                                     ArrayList<Image> selectImages,
                                     int maxSelectCount, int position) {
         tempImages = images;
@@ -68,7 +74,7 @@ public class PreviewActivity extends AppCompatActivity {
         intent.putExtra(Constants.MAX_SELECT_COUNT, maxSelectCount);
 //        intent.putExtra(Constants.IS_SINGLE, isSingle);
         intent.putExtra(Constants.POSITION, position);
-        activity.startActivityForResult(intent, Constants.RESULT_CODE);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     @Override
@@ -152,17 +158,34 @@ public class PreviewActivity extends AppCompatActivity {
         //作用是显示滑动切换效果
         //选择mImages放到vpImage里面
         ImagePagerAdapter adapter = new ImagePagerAdapter(this, mImages);
-        vpImage.setAdapter(adapter);
-        adapter.setOnItemClickListener(new ImagePagerAdapter.OnItemClickListener() {
+        vpImage.setOnItemClickListener(new MyViewPager.OnItemClickListener() {
             @Override
-            public void onItemClick(int position, Image image) {
+            public void onItemClick(int position) {
                 if (isShowBar) {
+                    Log.d("Yellow", "isShow");
                     hideBar();
                 } else {
+                    Log.d("Yellow", "isHide");
                     showBar();
                 }
             }
         });
+//        vpImage.setClickable(true);
+        vpImage.setAdapter(adapter);
+//        adapter.setOnItemClickListener(new ImagePagerAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(int position, Image image) {
+//                if (isShowBar) {
+//                    Log.d("Yellow", "isShow");
+//                    hideBar();
+//                } else {
+//                    Log.d("Yellow", "isHide");
+//                    showBar();
+//                }
+//            }
+//        });
+
+
         vpImage.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -180,6 +203,7 @@ public class PreviewActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * 修改状态栏颜色

@@ -18,9 +18,10 @@ import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.home.adapter.RecycleAdapter;
+import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
 import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
 import com.sysu.pro.fade.tool.NoteTool;
 import com.sysu.pro.fade.utils.BeanConvertUtil;
@@ -39,11 +40,13 @@ public class ContentHome {
     /*图片URL数组*/
     private List<Note> notes;
     /*信息流适配器*/
-    private RecycleAdapter adapter;
+    private NotesAdapter adapter;
     /*刷新控件*/
     private SwipeRefreshLayout swipeRefresh;
-    /*滑动监听*/
-    private EndlessRecyclerOnScrollListener scrollListener;
+    /*上拉加载滑动监听*/
+    private EndlessRecyclerOnScrollListener loadMoreScrollListener;
+    /*检测是否删除的滑动监听*/
+    private JudgeRemoveOnScrollListener judgeRemoveScrollListener;
     /*列表*/
     private RecyclerView recyclerView;
 
@@ -63,6 +66,7 @@ public class ContentHome {
 
     private List<Integer>now_note_id;         //要发给服务器的note_id
     private List<Integer>latest_good_nums;   //更新之后的good_nums数组  对应列表的展示顺序
+
 
 
     private Handler handler = new Handler(){
@@ -182,7 +186,7 @@ public class ContentHome {
                 }
                 adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
-                scrollListener.judgeAndRemoveItem(recyclerView);
+                judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
 
             }
 
@@ -207,11 +211,8 @@ public class ContentHome {
     private void initViews(){
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        /*//提前加载，以防在item出现时才进行裁剪计算
-        layoutManager.setInitialPrefetchItemCount(3);
-        layoutManager.setItemPrefetchEnabled(true);*/
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new RecycleAdapter(context, handler, notes);
+        adapter = new NotesAdapter(context, handler, notes);
         recyclerView.setAdapter(adapter);
 
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
@@ -222,13 +223,16 @@ public class ContentHome {
                 refreshItems();
             }
         });
-        scrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager, notes, now_note_id) {
+        loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
                 addItems();
             }
         };
-        recyclerView.setOnScrollListener(scrollListener);
+        //TODO 监听器分离
+        judgeRemoveScrollListener = new JudgeRemoveOnScrollListener(context, notes, now_note_id);
+        recyclerView.addOnScrollListener(loadMoreScrollListener);
+        recyclerView.addOnScrollListener(judgeRemoveScrollListener);
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
@@ -238,27 +242,17 @@ public class ContentHome {
 				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
 					@Override
 					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
-						scrollListener.setResizing(true);
-                        /*//500毫秒内没有滑动，则认为是键盘已经开启
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                if (!scrollListener.isScroll()){
-                                    scrollListener.setKeyBoardOpen(true);
-                                }
-                            }
-                        }).start();*/
 					}
 					@Override
 					public void onSoftKeyboardClosed() {
+                        loadMoreScrollListener.setKeyBoardOpen(false);
 						tabLayout.setVisibility(View.VISIBLE);
-                        LinearLayout linearLayout = (LinearLayout) recyclerView.getLayoutManager().getFocusedChild().findViewById(edit_comment);
-                        linearLayout.setVisibility(View.GONE);
+                        View focusView = recyclerView.getLayoutManager().getFocusedChild();
+                        LinearLayout linearLayout = null;
+                        if (focusView != null)
+                            linearLayout = (LinearLayout)focusView.findViewById(edit_comment);
+                        if (linearLayout != null)
+                            linearLayout.setVisibility(View.GONE);
 					}
 				}
 		);
@@ -329,7 +323,7 @@ public class ContentHome {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        scrollListener.resetPreviousTotal();
+                        loadMoreScrollListener.resetPreviousTotal();
                         //顶部下拉刷新，使用大请求 start = 0
 //                        start = 0;
 //                        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
@@ -390,11 +384,16 @@ public class ContentHome {
         recyclerView.smoothScrollToPosition(0);
     }
 
+    /**
+     * 如果当前帖子有本机用户自己的帖子，则检查其头像和名字更新
+     * 当home变为可见时调用
+     */
     public void refreshIfUserChange(){
         boolean isChange = false;
         for (Note note: notes){
             if (note.getUser_id() == user.getUser_id()){
-                if (!note.getHead_image_url().equals(user.getHead_image_url())){
+                if (!note.getHead_image_url().equals(user.getHead_image_url())
+                        || !note.getName().equals(user.getNickname())){
                     note.setHead_image_url(user.getHead_image_url());
                     note.setName(user.getNickname());
                     isChange = true;

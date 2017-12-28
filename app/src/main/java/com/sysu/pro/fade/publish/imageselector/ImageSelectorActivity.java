@@ -33,7 +33,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
+import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Folder;
@@ -73,6 +75,10 @@ public class ImageSelectorActivity extends AppCompatActivity {
 //    private boolean isSingle;
     private int mMaxCount;
 
+    public static float[] imageX = new float[10];
+    public static float[] imageY = new float[10];
+    private int crop_size = 1;
+
     private Handler mHideHandler = new Handler();
     private Runnable mHide = new Runnable() {
         @Override
@@ -80,6 +86,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
             hideTime();
         }
     };
+
 
     /**
      * 启动图片选择器
@@ -411,10 +418,19 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
 
         newCount = mMaxCount - newimages.size();
-        //点击确定，把选中的图片通过Intent传给上一个Activity。
+        CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
+
+    }
+
+    private void cropConfirm() {
+//        点击确定，把选中的图片通过Intent传给上一个Activity。
+
         Intent intent = new Intent();
         intent.putStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT, newimages);
         intent.putExtra(Constants.NEW_COUNT, newCount);
+        intent.putExtra(Constants.IMAGEX,imageX);
+        intent.putExtra(Constants.IMAGEY,imageY);
+        intent.putExtra(Constants.CUT_SIZE,crop_size);
         setResult(RESULT_OK, intent);
 
         finish();
@@ -423,7 +439,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
     private void toPreviewActivity(ArrayList<Image> images, int position) {
         if (images != null && !images.isEmpty()) {
             int temp = newCount;
-            PreviewActivity.openActivity(this, images,
+            PreviewActivity.openActivity(this, Constants.RESULT_CODE, images,
                     mAdapter.getSelectImages() , temp, position);
         }
     }
@@ -452,13 +468,24 @@ public class ImageSelectorActivity extends AppCompatActivity {
             if (data != null && data.getBooleanExtra(Constants.IS_CONFIRM, false)) {
                 //如果用户在预览页点击了确定，就直接把用户选中的图片返回给用户。
                 confirm();
-            } else {
+            }
+            else {
                 //否则，就刷新当前页面。
                 mAdapter.notifyDataSetChanged();
                 setSelectImageCount(mAdapter.getSelectImages().size());
             }
         }
+        if (requestCode == Constants.CROP_PICTURE) {
+            if (data != null && data.getBooleanExtra(Constants.IS_CROP, false)) {
+                imageX = data.getFloatArrayExtra(Constants.IMAGEX);
+                imageY = data.getFloatArrayExtra(Constants.IMAGEY);
+                crop_size = data.getIntExtra(Constants.CUT_SIZE, 1);
+                cropConfirm();
+            }
+        }
     }
+
+
 
     /**
      * 横竖屏切换处理

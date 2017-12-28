@@ -1,38 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_margin="10dp"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_relay_publish"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/header_titlebar" />
+
+    <LinearLayout
+        android:id="@+id/show_view"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/bg_gray"
+        android:orientation="vertical"
+        android:layout_weight="2.5">
+
     <!--图片以及图片下方点的封装-->
     <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
         android:id="@+id/image_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/tv_relay_name_and_text"
+        </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/relay_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/dark_gray"
-        android:text="是啊哈哈哈哈"/>
-    <LinearLayout
+        android:orientation="vertical"
         android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <View
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:background="@color/light_blue"/>
-        <TextView
-            android:id="@+id/tv_original_name_and_text"
-            android:layout_marginLeft="10dp"
-            android:layout_width="0dp"
+        android:background="@color/bg_gray">
+        <LinearLayout
+            android:id="@+id/relay_text_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/dark_gray"
-            android:lineSpacingExtra="3dp"
-            android:text="\@黑暗膜法\n热力公司该睡觉快递号\n就现代风格公司还敢斯莱特林"/>
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.3">
+            <TextView
+                android:id="@+id/tv_relay_name_and_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/deep_gray"
+                android:text="是啊哈哈哈哈"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/relay_origin_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="0.3">
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/light_blue"/>
+            <TextView
+                android:id="@+id/tv_original_name_and_text"
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark_gray"
+                android:lineSpacingExtra="3dp"
+                android:text="\@黑暗膜法\n热力公司该睡觉快递号\n就现代风格公司还敢斯莱特林"/>
+        </LinearLayout>
     </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/mScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.0"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/relay_my_et_emotion"
+                android:layout_width="match_parent"
+                android:focusable="true"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:hint="说说你的想法..." >
+            </EditText>
+        </LinearLayout>
+    </ScrollView>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/relay_rl_editbar_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/bg_horizontal_line_color"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+
+            <ImageView
+                android:id="@+id/relay_emotion_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top"
+                android:clickable="true"
+                android:src="@drawable/ic_emotion" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/relay_fl_memotionview_main"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:descendantFocusability="beforeDescendants"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2.5"
+        android:visibility="gone"
+        />
 
 </LinearLayout>

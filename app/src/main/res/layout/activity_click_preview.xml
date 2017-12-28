@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.sysu.pro.fade.publish.imageselector.view.MyViewPager
+        android:id="@+id/vp_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#272828" />
+
+    <RelativeLayout
+        android:id="@+id/rl_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#373c3d"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/btn_back_selector">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_back" />
+
+        </FrameLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@+id/btn_back"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/tv_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/btn_back"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <FrameLayout
+            android:id="@+id/btn_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:foreground="@drawable/btn_foreground_selector">
+
+            <Button
+                android:id="@+id/photo_bt_del"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/btn_del" />
+
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

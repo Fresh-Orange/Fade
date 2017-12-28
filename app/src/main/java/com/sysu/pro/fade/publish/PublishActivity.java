@@ -16,9 +16,6 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -33,30 +30,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.publish.adapter.ImageAdapter;
-import com.sysu.pro.fade.publish.adapter.MyAdapter;
-import com.sysu.pro.fade.publish.adapter.MyCallBack;
-import com.sysu.pro.fade.publish.adapter.MyGridView;
+import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
-import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.tool.NoteTool;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 public class PublishActivity extends AppCompatActivity {
 
@@ -70,18 +65,14 @@ public class PublishActivity extends AppCompatActivity {
 
     private LinearLayout rl_editbar_bg;
     private View activityRootView;
-    private boolean isFull = false;
-    private MyAdapter adapter;
-
-    private MyGridView mGridView;
     private int newCount = 9;
-    private RecyclerView rvImage;
-    private ImageAdapter mAdapter;
     private ArrayList<String> images = new ArrayList<String>();
     private ArrayList<String> newDataList = new ArrayList<String>();
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
+    private String coordinate_list;
+    private String cut_size_list;
     private final int maxCount = 9;
     private EditText et_emotion; //编辑器
     private EmotionMainFragment emotionMainFragment;
@@ -94,20 +85,26 @@ public class PublishActivity extends AppCompatActivity {
 
     private imageAdaptiveIndicativeLayout pager;
 
+    private boolean flag = true;
+
     private LinearLayout choose_view;
-
-
-    private ViewSwitcher viewSwitcher;
-
     public PostArticleImgAdapter postArticleImgAdapter;
-    private ItemTouchHelper itemTouchHelper;
-    private RecyclerView rcvImg;
     private TextView tv;//删除区域提示
     private Context mContext;
-    private ArrayList<String> dragImages;//压缩长宽后图片
-    public static final String FILE_DIR_NAME = "com.kuyue.wechatpublishimagesdrag";//应用缓存地址
-    public static final String FILE_IMG_NAME = "images";//放置图片缓存
+    private int show;
+    private static int CHOOSE = 0;
+    private static int PAGER = 1;
 
+    //2017.9.29
+    public static float[] imageX = new float[10];
+    public static float[] imageY = new float[10];
+    private int crop_size = 1;
+    private String size_string;
+
+    //2017.9.13 hl
+    public Integer have_compress_num = 0;
+    public String image_size_list;
+    public Integer note_id; //发送文本成功后得到的
     //add by hl
     private User user;
     private TextView publishTextView;
@@ -120,7 +117,7 @@ public class PublishActivity extends AppCompatActivity {
                 //发送文本得到的相应
                 Map<String, Object> map = (Map<String, Object>) msg.obj;
                 //Toast.makeText(PublishActivity.this,map.toString(),Toast.LENGTH_LONG).show();
-                Integer note_id = (Integer) map.get(Const.NOTE_ID);
+                note_id = (Integer) map.get(Const.NOTE_ID);
                 String err = (String) map.get(Const.ERR);
                 if(err == null && note_id != null){
                     if(images.size() == 0 || images == null){
@@ -129,13 +126,7 @@ public class PublishActivity extends AppCompatActivity {
                         setResult(1,getIntent());
                         finish();
                     }else {
-                        String image_size_list = dealWithImagesToSend(images);
-//                        List<File>lists = new ArrayList<>();
-//                        for(String str : images){
-//                            lists.add(new File(str));
-//                        }
-                        NoteTool.uploadNoteImage(handler,note_id,images_files,image_size_list);
-                       // NoteTool.uploadNoteImage(handler,note_id,lists,image_size_list);
+                        image_size_list = dealWithImagesToSend(images);
                     }
                 }else{
                     Toast.makeText(PublishActivity.this,err,Toast.LENGTH_SHORT).show();
@@ -173,7 +164,20 @@ public class PublishActivity extends AppCompatActivity {
         }
     };
 
-    private String dealWithImagesToSend(List<String>images){
+    private Handler newhandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE) {
+                if (show == CHOOSE)
+                    choose_view.setVisibility(View.VISIBLE);
+                if (show == PAGER)
+                    pager.setVisibility(View.VISIBLE);
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    private String dealWithImagesToSend(final List<String>images){
         if(images_files == null) images_files = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         File sd=Environment.getExternalStorageDirectory();
@@ -186,8 +190,35 @@ public class PublishActivity extends AppCompatActivity {
             Double size = new Integer(bitmap_temp.getWidth()).doubleValue()/ new Integer(bitmap_temp.getHeight()).doubleValue();
             sb.append(size.toString());
             sb.append(",");
-            File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
-            images_files.add(cache_file);
+            Luban.with(this)
+                    .load(new File(image_path))
+                    .setCompressListener(new OnCompressListener() {
+                @Override
+                public void onStart() {
+                }
+
+                @Override
+                public void onSuccess(File file) {
+                    images_files.add(file);
+                    have_compress_num++;
+                    if(have_compress_num == images.size()){
+                        //直到这里，所有图片才生成本地的压缩文件，才能发送图片
+                        //TODO : 后面两个参数为 coordinate_list, cut_size_list
+
+                        //coordinate_list为坐标用逗号连成的字符串，例如:"1:2,1:2,2:2"  横纵坐标之间用冒号隔开
+                        //cut_size为裁剪比例，1代表宽图4:5, 2代表长图15:8
+                        //顺序与images的顺序相同
+                        NoteTool.uploadNoteImage(handler,note_id,images_files,
+                                image_size_list,getString(),crop_size + "");
+                    }
+                }
+                @Override
+                public void onError(Throwable e) {
+                    Toast.makeText(PublishActivity.this,e.getMessage().toString(),Toast.LENGTH_SHORT).show();
+                }
+            }).launch();
+            bitmap_temp.recycle();
+           // File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
         }
         //测试
         sb.deleteCharAt(sb.length()-1);
@@ -200,50 +231,37 @@ public class PublishActivity extends AppCompatActivity {
         setContentView(R.layout.activity_publish);
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
         progressDialog = new ProgressDialog(PublishActivity.this);
-//        rvImage = (RecyclerView) findViewById(R.id.rv_image);
-//        rvImage.setLayoutManager(new GridLayoutManager(this, 3));
-//        rvImage.getLayoutManager();
-//        mAdapter = new ImageAdapter(this);
-//        rvImage.setAdapter(mAdapter);
-
-//        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_addpic);
-//        bitmaps.add(bp);
-
+        show = CHOOSE;
         InitView();
+        if (flag) {
+            et_emotion= (EditText) findViewById(R.id.my_et_emotion);
+            //设置焦点，可被操作
+            et_emotion.setFocusable(true);
+            et_emotion.setFocusableInTouchMode(true);
+            et_emotion.requestFocus();
+            InputMethodManager im = ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE));
+            im.showSoftInput(et_emotion, 0);
+            InitListener();
 
-        et_emotion= (EditText) findViewById(R.id.my_et_emotion);
-        //设置焦点，可被操作
-        et_emotion.setFocusable(true);
-        et_emotion.setFocusableInTouchMode(true);
-        et_emotion.requestFocus();
-        InputMethodManager im = ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE));
-        im.showSoftInput(et_emotion, 0);
+            initEmotionMainFragment();
+        }
 
-
-        InitListener();
-        initEmotionMainFragment();
-
-//        mAdapter.setOnItemClickLisitenter(new RecycleViewLisitenter.onItemClickLisitenter() {
-//            @Override
-//            public void onItemClick(View v, int position) {
-//                if (bitmaps.size() == 10) {
-//                    Toast.makeText(PublishActivity.this, "图片数9张已满", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    if (position == bitmaps.size() - 1) {
-//                        Toast.makeText(PublishActivity.this, "添加图片", Toast.LENGTH_SHORT).show();
-//                        // 选择图片
-//                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
-//                    } else {
-//                        Toast.makeText(PublishActivity.this, "点击第" + (position + 1) + " 号图片", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                ArrayList<String> selectImage = new ArrayList<String>();
-//                selectImage.add(images.get(position));
-//            }
-//        });
-//        findViewById(R.id.btn_limit).setOnClickListener(this);
     }
 
+    private String getString() {
+        String str = "";
+        for (int i = 0; i < images.size(); i++) {
+            int x = (int) (imageX[i] * 1000);
+            String xStr = "" + x;
+            int y = (int) (imageY[i] * 1000);
+            String yStr = "" + y;
+            str += xStr + ":" + yStr;
+            if (i < images.size() - 1)
+                str += ",";
+        }
+        Log.d("upload_size", str);
+        return str;
+    }
     private void InitListener() {
         imageButton = (ImageButton) findViewById(R.id.add_button);
         publishTextView = (TextView) findViewById(R.id.tv_confirm);
@@ -288,16 +306,12 @@ public class PublishActivity extends AppCompatActivity {
                     dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (images.size() == 0) {
-                                choose_view.setVisibility(View.VISIBLE);
-                                viewSwitcher.setVisibility(View.GONE);
-                            }
                             if (images.size() == 1) {
                                 images.clear();
                                 newCount = maxCount;
                                 choose_view.setVisibility(View.VISIBLE);
-                                viewSwitcher.setVisibility(View.GONE);
-//                                postArticleImgAdapter.notifyDataSetChanged();
+                                pager.setVisibility(View.GONE);
+                                show = CHOOSE;
                             }
                             else {
                                 int currentItem = pager.getPosition();
@@ -319,25 +333,6 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-//        pager.addOnItemTouchListener
-        // 设置点击监听事件
-//        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (position == bitmaps.size() - 1 && !isFull) {
-//                    showListDialog();
-////                    Toast.makeText(PublishActivity.this, "添加图片", Toast.LENGTH_SHORT).show();
-//                    // 选择图片
-//                } else {
-////                    Toast.makeText(PublishActivity.this, "点击第" + (position + 1) + " 号图片",
-////                            Toast.LENGTH_SHORT).show();
-////                    if (images != null)
-//                    ClickToPreviewActivity.openActivity(PublishActivity.this, images,
-//                            newCount, position);
-////                    images = getIntent().getStringArrayListExtra(Constants.NEW_PATH);
-//                }
-//            }
-//        });
 
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -346,23 +341,37 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-//        isHidden = EmotionMainFragment.isHidden;
         activityRootView = findViewById(R.id.activity_publish);
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
                 if (heightDiff > dpToPx(PublishActivity.this, 200)) {
-//                    Toast.makeText(PublishActivity.this, "显示", Toast.LENGTH_SHORT).show();
-//                    findViewById(R.id.vp_image).setVisibility(View.GONE);
                     findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
+                    choose_view.setVisibility(View.GONE);
+                    pager.setVisibility(View.GONE);
                 }
                 else{
-                    Toast.makeText(PublishActivity.this, "隐藏", Toast.LENGTH_SHORT).show();
-//                    findViewById(R.id.vp_image).setVisibility(View.VISIBLE);
                     if (frameLayout.getVisibility() == View.GONE)
                       findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
+                    if (show == CHOOSE)
+                        choose_view.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
+                             choose_view.setVisibility(View.VISIBLE);
+                        }
+                    }, 50);
+                    if (show == PAGER)
+                        pager.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
+                                    choose_view.setVisibility(View.VISIBLE);
+                            }
+                        }, 3000);
                 }
+
             }
         });
 
@@ -377,40 +386,10 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
-        // 设置默认图片为加号
-//        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_addpic);
-//        bitmaps.add(bp);
-        // 找到控件ID
-//        mGridView = (MyGridView) findViewById(R.id.gridView1);
-        // 绑定Adapter
-//        adapter = new MyAdapter(getApplicationContext(), bitmaps, mGridView);
-//        mGridView.setAdapter(adapter);
-
-        publishActivity = this;
-        mContext = getApplicationContext();
-        dragImages = new ArrayList<>();
-        dragImages.addAll(images);
-//        new Thread(new MyRunnable(dragImages, images, dragImages, myHandler, false)).start();
-
-
         pager = (imageAdaptiveIndicativeLayout) findViewById(R.id.image_viewpager);
         choose_view = (LinearLayout) findViewById(R.id.choose_view);
-        viewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher);
-        rcvImg = (RecyclerView) findViewById(R.id.rcv_img);
         tv = (TextView) findViewById(R.id.tv);
-
-        postArticleImgAdapter = new PostArticleImgAdapter(mContext, dragImages);
-        rcvImg.setLayoutManager(new GridLayoutManager(mContext, 3));
-        rcvImg.setAdapter(postArticleImgAdapter);
-        MyCallBack myCallBack = new MyCallBack(postArticleImgAdapter, dragImages, images);
-        itemTouchHelper = new ItemTouchHelper(myCallBack);
-        itemTouchHelper.attachToRecyclerView(rcvImg);//绑定RecyclerView
-
-        pager.setViewSwitcher(viewSwitcher);
-//
     }
-
-//        image_viewpager = (LinearLayout) findViewById(R.id.image_viewpager);
 
     private void initEmotionMainFragment() {
         //构建传递参数
@@ -430,7 +409,6 @@ public class PublishActivity extends AppCompatActivity {
         emotionMainFragment.bindToFramelayout(frameLayout);
         emotionMainFragment.bindToRl_editbar_bg(rl_editbar_bg);
         emotionMainFragment.bindToEmotion((ImageView)findViewById(R.id.emotion_button));
-//        isHidden = emotionMainFragment.getIsHidden();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         // Replace whatever is in thefragment_container view with this fragment,
         // and add the transaction to the backstack
@@ -463,8 +441,7 @@ public class PublishActivity extends AppCompatActivity {
         if (images != null) {
             choose_view.setVisibility(View.GONE);
             pager.setVisibility(View.VISIBLE);
-            viewSwitcher.setVisibility(View.VISIBLE);
-            viewSwitcher.setDisplayedChild(0);
+            show = PAGER;
             float maxRatio = 0;
             for (String image : images)
             {
@@ -473,27 +450,17 @@ public class PublishActivity extends AppCompatActivity {
                  * 最关键在此，把options.inJustDecodeBounds = true;
                  * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
                  */
- //                options.inJustDecodeBounds = true;
                 Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
-//                Bitmap bitmap = BitmapFactory.decodeFile(image);
                 /**
                  *options.outHeight为原始图片的高
                  */
                 float currentRatio = (float)options.outHeight / (float)options.outWidth;
-//                float currentRatio = bitmap.getHeight() / bitmap.getWidth();
                 if (currentRatio > maxRatio)
                     maxRatio = currentRatio;
             }
-//            maxRatio *= 3;
             pager.setViewPagerMaxHeight(280);
             pager.setHeightByRatio(maxRatio);
             pager.setPaths(images,images.size() - 1);
-            if (bitmaps.size() == 9)
-                isFull = true;
-//            else
-//                bitmaps.add(bp);
-//            adapter.notifyDataSetChanged();
-//            bitmaps.clear();
         }
     }
 
@@ -505,12 +472,6 @@ public class PublishActivity extends AppCompatActivity {
                 Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(image, 200, 200);
                 bitmaps.add(newBp);
             }
-            if (bitmaps.size() == 9)
-                isFull = true;
-//            else
-//                bitmaps.add(bp);
-            postArticleImgAdapter.notifyDataSetChanged();
-//            bitmaps.clear();
         }
     }
 
@@ -518,6 +479,9 @@ public class PublishActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && data != null) {
             newCount = data.getIntExtra(Constants.NEW_COUNT, maxCount);
+            imageX = data.getFloatArrayExtra(Constants.IMAGEX);
+            imageY = data.getFloatArrayExtra(Constants.IMAGEY);
+            crop_size = data.getIntExtra(Constants.CUT_SIZE, 1);
             newDataList = new ArrayList<String>();
             if (data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT) != null)
             {
@@ -527,10 +491,10 @@ public class PublishActivity extends AppCompatActivity {
             {
                 images = (newDataList);
             }
-            ShowViewPager();
-//            new Thread(new MyRunnable(images,
-//                    images, dragImages, myHandler, true)).start();
-//            postArticleImgAdapter.notifyDataSetChanged();
+//            ShowViewPager();
+            flag = true;
+            Log.d("My","string: " + getString());
+            Log.d("My", "size: " + crop_size);
         }
         //仅剩一张还删了
 //        if (data != null && data.getBooleanExtra(Constants.IS_ALL_DELETED, false)
@@ -597,6 +561,7 @@ public class PublishActivity extends AppCompatActivity {
 //                        Toast.makeText(PublishActivity.this,
 //                                "你点击了相册", Toast.LENGTH_SHORT).show();
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
+//                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
                         ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
                         break;
                 }
@@ -642,87 +607,4 @@ public class PublishActivity extends AppCompatActivity {
             images.remove(location);
         }
     }
-
-
-
-//    static class MyRunnable implements Runnable {
-//
-//        ArrayList<String> images;
-//        ArrayList<String> originImages;
-//        ArrayList<String> dragImages;
-//        Handler handler;
-//        boolean add;//是否为添加图片
-//
-//        public MyRunnable(ArrayList<String> images,
-//                          ArrayList<String> originImages,
-//                          ArrayList<String> dragImages,
-//                          Handler handler,
-//                          boolean add) {
-//            this.images = images;
-//            this.originImages = originImages;
-//            this.dragImages = dragImages;
-//            this.handler = handler;
-//            this.add = add;
-//        }
-//
-//        @Override
-//        public void run() {
-//            SdcardUtils sdcardUtils = new SdcardUtils();
-//            String filePath;
-//            Bitmap newBitmap;
-//            int addIndex = originImages.size();
-//            int i = 0;
-//            for (String image : images) {
-//                //压缩
-////                newBitmap = ImageUtils.compressScaleByWH(images.get(i),
-////                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100),
-////                        DensityUtils.dp2px(MyApplication.getInstance().getContext(), 100));
-//                newBitmap = BitmapUtils.decodeSampledBitmapFromFd(image, 200, 200);
-//                //文件地址
-//                filePath = sdcardUtils.getSDPATH() + FILE_DIR_NAME + "/"
-//                        + FILE_IMG_NAME + "/" + String.format("img_%d.jpg", System.currentTimeMillis());
-//                //保存图片
-//                ImageUtils.save(newBitmap, filePath, Bitmap.CompressFormat.JPEG, true);
-//                //设置值
-////                if (!add) {
-//                    images.set(i++, filePath);
-////                } else {//添加图片，要更新
-////                    dragImages.add(addIndex, filePath);
-////                    originImages.add(addIndex++, filePath);
-////                }
-//            }
-//            Message message = new Message();
-//            message.what = 1;
-//            handler.sendMessage(message);
-//        }
-//    }
-//
-//    private MyHandler myHandler = new MyHandler(this);
-//
-//    private static class MyHandler extends Handler {
-//        private WeakReference<Activity> reference;
-//
-//        public MyHandler(Activity activity) {
-//            reference = new WeakReference<>(activity);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            PublishActivity activity = (PublishActivity) reference.get();
-//            if (activity != null) {
-//                switch (msg.what) {
-//                    case 1:
-//                        activity.postArticleImgAdapter.notifyDataSetChanged();
-//                        break;
-//                }
-//            }
-//        }
-//    }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        myHandler.removeCallbacksAndMessages(null);
-//    }
-
 }

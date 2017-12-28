@@ -25,6 +25,8 @@ import com.sysu.pro.fade.utils.PhotoUtils;
 
 import java.util.Map;
 
+import static com.sysu.pro.fade.utils.PhotoUtils.tempUri;
+
 /*
 用户名+密码的注册界面
  */
@@ -160,7 +162,7 @@ public class AddContentActivity extends AppCompatActivity {
                 if(nickname.equals("")){
                     Toast.makeText(AddContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();
                 }else{
-                    UserTool.sendToRegister(Const.IP,handler,nickname,password,sex,telephone);
+                    UserTool.sendToRegister(handler,nickname,password,sex,telephone);
                 }
             }
         });
@@ -172,7 +174,7 @@ public class AddContentActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) { // 如果返回码是可以用的
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    PhotoUtils.startPhotoZoom(PhotoUtils.tempUri, this); // 开始对图片进行裁剪处理
+                    PhotoUtils.startPhotoZoom(tempUri, this); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:
                     PhotoUtils.startPhotoZoom(data.getData(), this); // 开始对图片进行裁剪处理

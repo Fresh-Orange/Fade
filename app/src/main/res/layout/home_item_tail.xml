@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:id="@+id/tail_linear_layout"
               android:layout_margin="@dimen/item_head_margin"
               android:layout_width="match_parent"
@@ -71,7 +72,7 @@
             android:layout_weight="1"
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
-            android:src="@drawable/transmit"/>
+            app:srcCompat="@drawable/transmit"/>
     </LinearLayout>
 
     <LinearLayout

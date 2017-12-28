@@ -19,4 +19,13 @@
     <dimen name="article_post_delete">50dp</dimen>
     <dimen name="article_img_margin_top">10dp</dimen>
     <dimen name="article_img_dimens">70dp</dimen>
+
+    <!--for Crop fragment-->
+    <dimen name="border_thickness">3dp</dimen>
+    <dimen name="corner_thickness">5dp</dimen>
+    <dimen name="guideline_thickness">2px</dimen>
+
+    <dimen name="target_radius">24dp</dimen>
+    <dimen name="snap_radius">3dp</dimen>
+    <dimen name="corner_length">20dp</dimen>
 </resources>

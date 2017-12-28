@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout
+        android:id="@+id/crop_layout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
+
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/header_titlebar" />
+    <com.sysu.pro.fade.publish.crop.BitmapScrollPicker
+        android:id="@+id/picker_04_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:background="@color/light_gray"
+        app:spv_center_item_background="@color/light_blue"
+        app:spv_center_item_position="2"
+        app:spv_max_scale="1.5"
+        app:spv_min_scale="0.8"
+        app:spv_draw_bitmap_width="50dp"
+        app:spv_disallow_intercept_touch="true"
+        app:spv_draw_bitmap_mode="fill"
+        app:spv_is_circulation="false"
+        app:spv_orientation="horizontal"
+        app:spv_visible_item_count="5" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:orientation="vertical"
+            >
+
+            <com.sysu.pro.fade.publish.crop.util.NoScrollView
+                android:id="@+id/scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    tools:layout_editor_absoluteY="8dp"
+                    tools:layout_editor_absoluteX="8dp"
+                    >
+                    <com.sysu.pro.fade.publish.crop.CropImageView
+                        android:id="@+id/CropImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_gravity="center_horizontal"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"
+                        android:focusableInTouchMode="false"
+                        android:src="@drawable/butterfly"/>
+                </ScrollView>
+
+
+            </com.sysu.pro.fade.publish.crop.util.NoScrollView>
+
+
+        </LinearLayout>
+
+
+</LinearLayout>

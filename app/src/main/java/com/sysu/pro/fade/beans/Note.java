@@ -31,6 +31,10 @@ public class Note implements Serializable {
     private List<String> imgUrls;        //图片url数组
     private List<Double> imgSizes;       //图片尺寸数组
 
+    //add by hl 2017.9.14
+    private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
+    private Integer imgCutSize;          //裁剪比例 1代表长图4:5, 2宽图15:8  0代表之前那些没设置比例的
+
     private List<String> tag_list;       //标签数组
 
     //2017.8.31新增
@@ -201,6 +205,22 @@ public class Note implements Serializable {
 
     public void setGood(Boolean good) {
         isGood = good;
+    }
+
+    public List<String> getImgCoordinates() {
+        return imgCoordinates;
+    }
+
+    public void setImgCoordinates(List<String> imgCoordinates) {
+        this.imgCoordinates = imgCoordinates;
+    }
+
+    public Integer getImgCutSize() {
+        return imgCutSize;
+    }
+
+    public void setImgCutSize(Integer imgCutSize) {
+        this.imgCutSize = imgCutSize;
     }
 
     @Override

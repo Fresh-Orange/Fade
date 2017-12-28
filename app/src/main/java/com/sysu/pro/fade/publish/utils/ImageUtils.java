@@ -29,6 +29,7 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -1600,6 +1601,8 @@ public final class ImageUtils {
         }
     }
 
+
+    static public int width,height;
     /**
      * by 赖贤城
      * 加载url处的图片进入imageView，只显示坐标起点为（x,y）宽为width，长为height的区域
@@ -1607,10 +1610,11 @@ public final class ImageUtils {
     static public void loadImage(final Context context, String url,
                                  final ImageView imageView,
                                  final int x, final int y, final int width, final int height) {
+        Log.d("loadImage", "x = "+ x + "  y = "+y);
         Glide.with(context)
                 .load(url)
                 .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .transform(new BitmapTransformation(context) {
                     @Override
                     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
@@ -1618,6 +1622,7 @@ public final class ImageUtils {
                         //以下为第一次试验代码
                         final Bitmap toReuse = pool.get(outWidth, outHeight, toTransform.getConfig() != null
                                 ? toTransform.getConfig() : Bitmap.Config.ARGB_8888);
+
                         Bitmap transformed = customCrop(toReuse, toTransform, outWidth, outHeight, x , y);
                         if (toReuse != null && toReuse != transformed && !pool.put(toReuse)) {
                             toReuse.recycle();
@@ -1631,28 +1636,39 @@ public final class ImageUtils {
                     }
                 })
                 .into(imageView);
-
+        //Log.d("loadImage", "width = "+ ImageUtils.width + "  height = "+ImageUtils.height);
     }
 
-    public static Bitmap customCrop(Bitmap recycled, Bitmap toCrop, int width, int height, int x, int y) {
+    public static Bitmap customCrop(Bitmap recycled, Bitmap toCrop, int width, int height, int x_pos, int y_pos) {
         if (toCrop == null) {
             return null;
         } else if (toCrop.getWidth() == width && toCrop.getHeight() == height) {
             return toCrop;
         }
         // From ImageView/Bitmap.createScaledBitmap.
-        final float scale;
+        float scale;
         Matrix m = new Matrix();
         if (toCrop.getWidth() * height > width * toCrop.getHeight()) {
             scale = (float) height / (float) toCrop.getHeight();
-            //dx = (width - toCrop.getWidth() * scale) * 0.5f;
         } else {
             scale = (float) width / (float) toCrop.getWidth();
-            //dy = (height - toCrop.getHeight() * scale) * 0.5f;
         }
 
+        /////测试是不是因为百分比的原因
+        float y_percent = y_pos;
+        float x_percent = x_pos;
+
+        float y = - (float) (y_percent*1.0/1000*toCrop.getHeight()*scale);//(y_percent*1.0*toCrop.getHeight()/1000*scale);
+        float x = - (float) (x_percent*1.0/1000*toCrop.getWidth()*scale);//(x_percent*1.0*toCrop.getWidth()/1000*scale);
+        ImageUtils.width = toCrop.getWidth();
+        ImageUtils.height = toCrop.getHeight();
+        Log.d("loadImage", "contain_width = "+ width + "  contain_height = "+height);
+        Log.d("loadImage", "scale = "+ scale);
+        Log.d("loadImage", "image_width = "+ ImageUtils.width + "  image_height = "+ImageUtils.height);
+        Log.d("loadImage", "y_percent = "+ y_percent + "  x_percent = "+x_percent);
+        Log.d("loadImage", "transY = "+ y + "  transX = "+x);
         m.setScale(scale, scale);
-        m.postTranslate((int) (x + 0.5f), (int) (y + 0.5f));
+        m.postTranslate((int) x, (int) y);
         final Bitmap result;
         if (recycled != null) {
             result = recycled;

@@ -18,12 +18,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.PublishActivity;
+import com.sysu.pro.fade.publish.imageselector.ClickToPreviewActivity;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 import static com.sysu.pro.fade.publish.PublishActivity.publishActivity;
 
@@ -52,10 +55,12 @@ import static com.sysu.pro.fade.publish.PublishActivity.publishActivity;
 public class imageAdaptiveIndicativeLayout extends FrameLayout {
 	private int viewPagerMaxHeight = 400;
 	private mImageItemPagerAdapter imgAdapter;
-	private ViewPager pager;
-	public static ViewSwitcher viewSwitcher;
+	private static ViewPager pager;
 	public static MyCallBack myCallBack;
 	private LinearLayout dotLinearLayout;
+	public static ArrayList<String> images;
+	public static int newCount;
+
 	public imageAdaptiveIndicativeLayout(@NonNull Context context) {
 		super(context);
 		init();
@@ -141,9 +146,6 @@ public class imageAdaptiveIndicativeLayout extends FrameLayout {
 		return  (int) (padding_in_dp * scale + 0.5f);
 	}
 
-	public void setViewSwitcher(ViewSwitcher viewSwitcher) {
-		this.viewSwitcher = viewSwitcher;
-	}
 
 	public void setCallBack(MyCallBack callBack) {
 		this.myCallBack = callBack;
@@ -151,6 +153,11 @@ public class imageAdaptiveIndicativeLayout extends FrameLayout {
 
 	public void notifyChanged() {
 		imgAdapter.notifyDataSetChanged();
+	}
+
+	public void setImages(ArrayList<String> images, int newCount) {
+		this.images = images;
+		this.newCount = newCount;
 	}
 
 	/**
@@ -212,14 +219,12 @@ public class imageAdaptiveIndicativeLayout extends FrameLayout {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			final View v = inflater.inflate(R.layout.image_item_fragment, container, false);
 			mImageView = (ImageView) v.findViewById(R.id.full_image);
-//			viewSwitcher = (ViewSwitcher) v.findViewById(R.id.view_switcher);
-			mImageView.setOnLongClickListener(new OnLongClickListener() {
+			mImageView.setOnClickListener(new OnClickListener() {
 				@Override
-				public boolean onLongClick(View v) {
-					Toast.makeText(publishActivity, "Long click",
-							Toast.LENGTH_LONG).show();
-					viewSwitcher.setDisplayedChild(1);
-					return false;
+				public void onClick(View v) {
+					ClickToPreviewActivity.openActivity(publishActivity, images,
+							newCount, pager.getCurrentItem());
+					Toast.makeText(publishActivity,"click",Toast.LENGTH_LONG).show();
 				}
 			});
 			return v;

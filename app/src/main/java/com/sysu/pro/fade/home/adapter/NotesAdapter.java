@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 
-public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
+public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	/*item的类型常量*/
 	private static final int COMPLETE_ITEM = 0;//图片加文字类型
@@ -41,7 +41,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	private FootViewHolder footViewHolder;
 
-	public RecycleAdapter(Context context, Handler handler, List<Note> data) {
+	public NotesAdapter(Context context, Handler handler, List<Note> data) {
 		this.context = context;
 		this.data = data;
 		this.handler = handler;
