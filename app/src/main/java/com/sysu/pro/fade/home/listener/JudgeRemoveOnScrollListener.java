@@ -38,15 +38,11 @@ public class JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener {
 
 	@Override
 	public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-		//Log.d(logTag, "onScrollStateChanged");
 		super.onScrollStateChanged(recyclerView, newState);
 		if (newState == RecyclerView.SCROLL_STATE_IDLE) {
 			judgeAndRemoveItem(recyclerView);
 		}
 	}
-
-
-
 
 	/**
 	 * 移除当前可视的item中满足移除条件的item

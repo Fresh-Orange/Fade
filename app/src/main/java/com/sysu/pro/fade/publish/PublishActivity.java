@@ -16,9 +16,6 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -34,26 +31,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sysu.pro.fade.MainActivity;
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.my.activity.GuideActivity;
-import com.sysu.pro.fade.my.activity.WelcomeActivity;
-import com.sysu.pro.fade.publish.adapter.ImageAdapter;
-import com.sysu.pro.fade.publish.adapter.MyAdapter;
-import com.sysu.pro.fade.publish.adapter.MyCallBack;
-import com.sysu.pro.fade.publish.adapter.MyGridView;
+import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
-import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
-import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.tool.NoteTool;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.io.File;
@@ -228,6 +217,7 @@ public class PublishActivity extends AppCompatActivity {
                     Toast.makeText(PublishActivity.this,e.getMessage().toString(),Toast.LENGTH_SHORT).show();
                 }
             }).launch();
+            bitmap_temp.recycle();
            // File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
         }
         //测试
@@ -261,14 +251,15 @@ public class PublishActivity extends AppCompatActivity {
     private String getString() {
         String str = "";
         for (int i = 0; i < images.size(); i++) {
-            int x = (int) imageX[i];
+            int x = (int) (imageX[i] * 1000);
             String xStr = "" + x;
-            int y = (int) imageY[i];
+            int y = (int) (imageY[i] * 1000);
             String yStr = "" + y;
             str += xStr + ":" + yStr;
             if (i < images.size() - 1)
                 str += ",";
         }
+        Log.d("upload_size", str);
         return str;
     }
     private void InitListener() {

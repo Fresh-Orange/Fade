@@ -1,5 +1,6 @@
 package com.sysu.pro.fade;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
@@ -389,6 +391,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void gotoSearchActivity() {
         //TODO
+        final Context context = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(context).clearDiskCache();
+            }
+        }).start();
+
         Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
     }
 
