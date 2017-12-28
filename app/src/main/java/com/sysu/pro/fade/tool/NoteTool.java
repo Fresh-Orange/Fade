@@ -2,18 +2,12 @@ package com.sysu.pro.fade.tool;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.utils.HttpUtils;
 import com.sysu.pro.fade.utils.GsonUtil;
-
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -357,15 +351,15 @@ public class NoteTool {
     }
 
     public static void uploadNoteImage(final Handler handler, Integer note_id, List<File>image_files,
-                                       String image_size_list,String coordinate_list, String cut_size_list){
+                                       String image_size_list,String coordinate_list, String cut_size){
         //上传帖子图片
         String upload_url = Const.IP +"/uploadImage";
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         builder.addFormDataPart("imageType","note");
         builder.addFormDataPart("image_size_list",image_size_list);
         //加入左上角点的坐标，以及裁剪比例
-        builder.addFormDataPart("image_coordinate_list",coordinate_list);
-        builder.addFormDataPart("image_cut_size",cut_size_list);
+        builder.addFormDataPart("coordinate_list",coordinate_list);
+        builder.addFormDataPart("cut_size",cut_size);
 
         builder.addFormDataPart(Const.NOTE_ID,note_id.toString());
         for(File file : image_files){

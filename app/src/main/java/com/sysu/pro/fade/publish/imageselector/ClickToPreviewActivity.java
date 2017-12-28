@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -13,23 +14,17 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.ViewConfigurationCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.MotionEvent;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.home.others.gestures.GestureDetector;
+import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.imageselector.adapter.ImagePagerAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Image;
@@ -39,65 +34,84 @@ import java.util.ArrayList;
 
 import static android.animation.ObjectAnimator.ofFloat;
 
-public class PreviewActivity extends AppCompatActivity {
+public class ClickToPreviewActivity extends Activity {
 
     private MyViewPager vpImage;    //ViewPager容器，用于显示侧滑效果
     private TextView tvIndicator;   //当前位置/总数量，位于左上角
-    private TextView tvConfirm;     //(X/9)，位于右上角
-    private FrameLayout btnConfirm; //确定，如果选择图片为0则会变暗
-    private TextView tvSelect;      //右下角，是否选择了该图片
+//    private TextView tvConfirm;     //(X/9)，位于右上角
+//    private FrameLayout btnConfirm; //确定，如果选择图片为0则会变暗
+//    private TextView tvSelect;      //右下角，是否选择了该图片
     private RelativeLayout rlTopBar;    //上面的状态栏
-    private RelativeLayout rlBottomBar; //下面的状态栏
+//    private RelativeLayout rlBottomBar; //下面的状态栏
 
     //tempImages和tempSelectImages用于图片列表数据的页面传输。
     //之所以不要Intent传输这两个图片列表，因为要保证两位页面操作的是同一个列表数据，同时可以避免数据量大时，
     // 用Intent传输发生的错误问题。
     private static ArrayList<Image> tempImages;
-    private static ArrayList<Image> tempSelectImages;
+//    private static ArrayList<String> tempPath;
+//    private static ArrayList<Image> tempSelectImages;
 
     private ArrayList<Image> mImages;   //已经选中的图片
-    private ArrayList<Image> mSelectImages; //待选图片
+//    private ArrayList<String> mPath;    //图片路径
+//    private ArrayList<Image> mSelectImages; //待选图片
     private boolean isShowBar = true;
-    private boolean isConfirm = false;
-//    private boolean isSingle;
+    private boolean isDeleted = false;
+    private boolean isAllDeleted = false;
+    //    private boolean isSingle;
     private int mMaxCount;
+    private int deleteCount;
+    private int currentPosition;
+    private int[] clickPosition = new int[15];
+    private int clickPositionSize = 0;
 
     private BitmapDrawable mSelectDrawable;
     private BitmapDrawable mUnSelectDrawable;
 
-    public static void openActivity(Activity activity, int requestCode, ArrayList<Image> images,
-                                    ArrayList<Image> selectImages,
+    private ImagePagerAdapter adapter;
+    public static void openActivity(Activity activity, ArrayList<String> paths,
                                     int maxSelectCount, int position) {
+        ArrayList<Image> images = new ArrayList<Image>();
+        if (paths.size() > 0) {
+            for (String path : paths) {
+                if (path != null) {
+                    Image image = new Image(path, 0, " ");
+                    images.add(image);
+//                    tempPath.add(path);
+                }
+            }
+        }
         tempImages = images;
-        tempSelectImages = selectImages;
-        Intent intent = new Intent(activity, PreviewActivity.class);
+//        tempSelectImages = selectImages;
+        Intent intent = new Intent(activity, ClickToPreviewActivity.class);
         intent.putExtra(Constants.MAX_SELECT_COUNT, maxSelectCount);
 //        intent.putExtra(Constants.IS_SINGLE, isSingle);
-        intent.putExtra(Constants.POSITION, position);
-        activity.startActivityForResult(intent, requestCode);
+        intent.putExtra(Constants.CLICK_POSITION, position);
+        activity.startActivityForResult(intent, Constants.CLICK_RESULT_CODE);
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview);
-
+        setContentView(R.layout.activity_click_preview);
         setStatusBarVisible(true);
         mImages = tempImages;
         tempImages = null;
-        mSelectImages = tempSelectImages;
-        tempSelectImages = null;
+//        mPath = tempPath;
+//        tempPath = null;
+//        mSelectImages = tempSelectImages;
+//        tempSelectImages = null;
 
         Intent intent = getIntent();
         mMaxCount = intent.getIntExtra(Constants.MAX_SELECT_COUNT, 0);
+        currentPosition = intent.getIntExtra(Constants.CLICK_POSITION, 0);
 //        isSingle = intent.getBooleanExtra(Constants.IS_SINGLE, false);
-
+        deleteCount = 0;
         Resources resources = getResources();
-        Bitmap selectBitmap = BitmapFactory.decodeResource(resources, R.drawable.icon_image_select);
+        Bitmap selectBitmap = BitmapFactory.decodeResource(resources, com.sysu.pro.fade.R.drawable.icon_image_select);
         mSelectDrawable = new BitmapDrawable(resources, selectBitmap);
         mSelectDrawable.setBounds(0, 0, selectBitmap.getWidth(), selectBitmap.getHeight());
 
-        Bitmap unSelectBitmap = BitmapFactory.decodeResource(resources, R.drawable.icon_image_un_select);
+        Bitmap unSelectBitmap = BitmapFactory.decodeResource(resources, com.sysu.pro.fade.R.drawable.icon_image_un_select);
         mUnSelectDrawable = new BitmapDrawable(resources, unSelectBitmap);
         mUnSelectDrawable.setBounds(0, 0, unSelectBitmap.getWidth(), unSelectBitmap.getHeight());
 
@@ -107,18 +121,18 @@ public class PreviewActivity extends AppCompatActivity {
         initViewPager();
 
         tvIndicator.setText(1 + "/" + mImages.size());
-        changeSelect(mImages.get(0));
-        vpImage.setCurrentItem(intent.getIntExtra(Constants.POSITION, 0));
+//        changeSelect(mImages.get(0));
+        vpImage.setCurrentItem(intent.getIntExtra(Constants.CLICK_POSITION, 0));
     }
 
     private void initView() {
-        vpImage = (MyViewPager) findViewById(R.id.vp_image);
-        tvIndicator = (TextView) findViewById(R.id.tv_indicator);
-        tvConfirm = (TextView) findViewById(R.id.tv_confirm);
-        btnConfirm = (FrameLayout) findViewById(R.id.btn_confirm);
-        tvSelect = (TextView) findViewById(R.id.tv_select);
-        rlTopBar = (RelativeLayout) findViewById(R.id.rl_top_bar);
-        rlBottomBar = (RelativeLayout) findViewById(R.id.rl_bottom_bar);
+        vpImage = (MyViewPager) findViewById(com.sysu.pro.fade.R.id.vp_image);
+        tvIndicator = (TextView) findViewById(com.sysu.pro.fade.R.id.tv_indicator);
+//        tvConfirm = (TextView) findViewById(com.sysu.pro.fade.R.id.tv_confirm);
+//        btnConfirm = (FrameLayout) findViewById(com.sysu.pro.fade.R.id.btn_confirm);
+//        tvSelect = (TextView) findViewById(com.sysu.pro.fade.R.id.tv_select);
+        rlTopBar = (RelativeLayout) findViewById(com.sysu.pro.fade.R.id.rl_top_bar);
+//        rlBottomBar = (RelativeLayout) findViewById(com.sysu.pro.fade.R.id.rl_bottom_bar);
 
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) rlTopBar.getLayoutParams();
         lp.topMargin = getStatusBarHeight(this);
@@ -127,28 +141,30 @@ public class PreviewActivity extends AppCompatActivity {
 
     private void initListener() {
         //返回
-        findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
+        findViewById(com.sysu.pro.fade.R.id.btn_back).setOnClickListener(
+                new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        //左上角的选择
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isConfirm = true;
-                finish();
-            }
-        });
+
+        //右上角的选择
+//        btnConfirm.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                isConfirm = true;
+//                finish();
+//            }
+//        });
         //右下角的选择
-        if (mMaxCount > 0)
-            tvSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickSelect();
-            }
-        });
+//        if (mMaxCount > 0)
+//            tvSelect.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    clickSelect();
+//                }
+//            });
     }
 
     /**
@@ -157,35 +173,54 @@ public class PreviewActivity extends AppCompatActivity {
     private void initViewPager() {
         //作用是显示滑动切换效果
         //选择mImages放到vpImage里面
-        ImagePagerAdapter adapter = new ImagePagerAdapter(this, mImages);
-        vpImage.setOnItemClickListener(new MyViewPager.OnItemClickListener() {
+
+        //删除
+        findViewById(R.id.photo_bt_del).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(int position) {
+            public void onClick(View v) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(ClickToPreviewActivity.this);
+                dialog.setTitle("提示");
+                dialog.setMessage("确定要删除这张照片吗?");
+                dialog.setCancelable(false);
+                dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (mImages.size() <= 1) {
+                            isAllDeleted = true;
+                            mImages.clear();
+                            finish();
+                        }
+                        else {
+                            isDeleted = true;
+                            deleteCount++;
+                            removeImg(currentPosition);
+                            clickPosition[clickPositionSize++] = currentPosition;
+                            adapter.removeView(currentPosition);
+                            tvIndicator.setText(currentPosition + 1 + "/" + mImages.size());
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dialog.show();
+            }
+        });
+        adapter = new ImagePagerAdapter(this, mImages);
+        vpImage.setAdapter(adapter);
+        adapter.setOnItemClickListener(new ImagePagerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, Image image) {
                 if (isShowBar) {
-                    Log.d("Yellow", "isShow");
                     hideBar();
                 } else {
-                    Log.d("Yellow", "isHide");
                     showBar();
                 }
             }
         });
-//        vpImage.setClickable(true);
-        vpImage.setAdapter(adapter);
-//        adapter.setOnItemClickListener(new ImagePagerAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(int position, Image image) {
-//                if (isShowBar) {
-//                    Log.d("Yellow", "isShow");
-//                    hideBar();
-//                } else {
-//                    Log.d("Yellow", "isHide");
-//                    showBar();
-//                }
-//            }
-//        });
-
-
         vpImage.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -195,15 +230,18 @@ public class PreviewActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 //设置左上角
                 tvIndicator.setText(position + 1 + "/" + mImages.size());
-                changeSelect(mImages.get(position));
+                currentPosition = position;
+//                changeSelect(mImages.get(position));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
             }
         });
-    }
 
+
+
+    }
 
     /**
      * 修改状态栏颜色
@@ -264,8 +302,8 @@ public class PreviewActivity extends AppCompatActivity {
                     }
                 });
                 animator.start();
-                ofFloat(rlBottomBar, "translationY", rlBottomBar.getTranslationY(), 0)
-                        .setDuration(300).start();
+//                ofFloat(rlBottomBar, "translationY", rlBottomBar.getTranslationY(), 0)
+//                        .setDuration(300).start();
             }
         }, 100);
     }
@@ -292,62 +330,26 @@ public class PreviewActivity extends AppCompatActivity {
             }
         });
         animator.start();
-        ofFloat(rlBottomBar, "translationY", 0, rlBottomBar.getHeight())
-                .setDuration(300).start();
     }
 
-    private void clickSelect() {
-        int position = vpImage.getCurrentItem();
-        if (mImages != null && mImages.size() > position) {
-            //选择图片
-            Image image = mImages.get(position);
-            if (mSelectImages.contains(image)) {
-                //已经选择，就取消选择
-                mSelectImages.remove(image);
-            }
-//            else if (isSingle) {
-//                mSelectImages.clear();
-//                mSelectImages.add(image);
-//            }
-            else if (mMaxCount <= 0 || mSelectImages.size() < mMaxCount) {
-                //未选择，就增加
-                mSelectImages.add(image);
-            }
-            changeSelect(image);
+
+    private void removeImg(int location)
+    {
+        if (location + 1 <= mImages.size())
+        {
+            mImages.remove(location);
         }
     }
-
-    private void changeSelect(Image image) {
-        //如果已经选择，就打钩
-        tvSelect.setCompoundDrawables(mSelectImages.contains(image) ?
-                mSelectDrawable : mUnSelectDrawable, null, null, null);
-        setSelectImageCount(mSelectImages.size());
-    }
-
-    private void setSelectImageCount(int count) {
-        //显示当前图片数/总图片数,如果没添加图片，图标变暗
-        if (count == 0) {
-            btnConfirm.setEnabled(false);
-            tvConfirm.setText("确定");
-        } else {
-            btnConfirm.setEnabled(true);
-//            if (isSingle) {
-//                tvConfirm.setText("确定");
-//            } else
-            if (mMaxCount > 0) {
-                tvConfirm.setText("确定(" + count + "/" + mMaxCount + ")");
-            } else {
-                tvConfirm.setText("确定(" + count + ")");
-            }
-        }
-    }
-
-    @Override
     public void finish() {
         //Activity关闭时，通过Intent把用户的操作(确定/返回)传给ImageSelectActivity。
-        Intent intent = new Intent();
-        intent.putExtra(Constants.IS_CONFIRM, isConfirm);
-        setResult(Constants.RESULT_CODE, intent);
+        Intent intent = new Intent(ClickToPreviewActivity.this, PublishActivity.class);
+        intent.putExtra(Constants.IS_DELETED, isDeleted);
+        intent.putExtra(Constants.IS_ALL_DELETED, isAllDeleted);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.CURRENT_POSITION, clickPosition);
+        intent.putExtras(bundle);
+        intent.putExtra(Constants.CURRENT_POSITION_SIZE, clickPositionSize);
+        setResult(RESULT_OK,intent);
         super.finish();
     }
 }
