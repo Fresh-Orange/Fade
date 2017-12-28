@@ -26,6 +26,7 @@ import com.sysu.pro.fade.publish.utils.ImageUtils;
 import java.io.Serializable;
 import java.util.List;
 
+
 import static com.sysu.pro.fade.utils.Screen.Dp2Px;
 import static com.sysu.pro.fade.utils.Screen.getScreenWidth;
 
@@ -140,6 +141,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	public void addDots(Context context, LinearLayout dotsLinearLayout, int imgCnt) {
 		dotsLinearLayout.removeAllViews();
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Dp2Px(10, context), Dp2Px(10, context));
+		lp.setMargins(Dp2Px(5, context), Dp2Px(5, context), Dp2Px(5, context), 0);
 
 		if (imgCnt > 1) {
 			ImageView dotView = new ImageView(context);
@@ -148,7 +150,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			dotView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			dotsLinearLayout.addView(dotView);
 			for (int i = 1; i < imgCnt; i++) {
-				dotView = new ImageView(context);
+				dotView = new ImageView(context,null);
 				dotView.setImageResource(R.drawable.point_unselected);
 				dotView.setLayoutParams(lp);
 				dotView.setScaleType(ImageView.ScaleType.FIT_CENTER);

@@ -6,17 +6,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
 import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 import com.sysu.pro.fade.publish.crop.util.NoScrollView;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
@@ -45,6 +43,8 @@ public class CropActivity extends AppCompatActivity{
     public static float[] bottom = new float[10];
     public static boolean[] isSet = new boolean[10];
     private int cut_size = 1;
+
+    private Bitmap[] bms = new Bitmap[10];
 
     private boolean flag = false;
     public CropActivity() {
@@ -108,8 +108,8 @@ public class CropActivity extends AppCompatActivity{
         cropImageView = (CropImageView) findViewById(R.id.CropImageView);
 
         current_position = 0;
-        Bitmap bm = BitmapFactory.decodeFile(newimages.get(0));
-        cropImageView.setImageBitmap(bm);
+        bms[current_position] = BitmapFactory.decodeFile(newimages.get(0));
+        cropImageView.setImageBitmap(bms[current_position]);
         if (flag) {
             cropImageView.setAspectRatio(15, 8);
             cropImageView.setLongPicture(false);
@@ -151,17 +151,24 @@ public class CropActivity extends AppCompatActivity{
         mPickerHorizontal.setData(bitmaps);
 
         cropImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        current_position = 0;
+
         mPickerHorizontal.setOnSelectedListener(new ScrollPickerView.OnSelectedListener() {
             @Override
             public void onSelected(ScrollPickerView scrollPickerView, int position) {
                 Log.d("position", "Current: " + position);
                 current_position = position;
-
+                for(int i = 0; i < bms.length; i++){
+                    if(bms[i] != null && !bms[i].isRecycled()){
+                        Log.d("recycle", "recycled" + i);
+                        bms[i].recycle();
+                    }
+                }
 //                Glide.with(CropActivity.this).load(newimages.get(position))
 //                        .into(cropImageView);
-                Bitmap bm = BitmapFactory.decodeFile(newimages.get(position));
-                cropImageView.setImageBitmap(bm);
+                bms[current_position] = BitmapFactory.decodeFile(newimages.get(position));
+                cropImageView.setImageBitmap(bms[current_position]);
+
+
                 Log.d("Height", "Height: " + cropImageView.getHeight());
                 Log.d("imageY", "imageX[current_position]: " + imageX[current_position]);
                 Log.d("imageY", "imageY[current_position]: " + imageY[current_position]);
