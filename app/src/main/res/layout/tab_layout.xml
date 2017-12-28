@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
         android:layout_gravity="center"/>
 
     <!--去除底部导航栏文字部分-->
