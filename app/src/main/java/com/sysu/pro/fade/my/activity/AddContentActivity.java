@@ -6,10 +6,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,13 +16,30 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.tool.UserTool;
+import com.sysu.pro.fade.beans.SimpleResponse;
+import com.sysu.pro.fade.beans.TokenModel;
+import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.PhotoUtils;
+import com.sysu.pro.fade.utils.RetrofitUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /*
 用户名+密码的注册界面
@@ -40,82 +56,10 @@ public class AddContentActivity extends AppCompatActivity {
     private EditText edUserName;
     private ImageView btnRegister;
     private RadioGroup radioGroup;
-    private String sex;
-
-    private String password;
-    private String telephone;
-
     private static final int PERMISSION_REQUEST_CODE = 0X00000060;
-    private boolean isToSettings = false;
-    private int ifSucess = 0;
     private ProgressDialog progressDialog;
     private SharedPreferences sharedPreferences;
-
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 1:{
-                    Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
-                    String fade_name = (String) ans_map.get(Const.FADE_NAME);
-                    Integer user_id = (Integer) ans_map.get(Const.USER_ID);
-                    String register_time = (String) ans_map.get(Const.REGISTER_TIME);
-                    String err = (String) ans_map.get(Const.ERR);
-                    if(err == null){
-                        Toast.makeText(AddContentActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
-                        //成功则发送图片,并存储昵称  fade号  电话  性别  密码 user_id head_image_url 注册时间
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(Const.NICKNAME,edUserName.getText().toString());
-                        editor.putInt(Const.USER_ID,user_id);
-                        editor.putString(Const.SEX,sex);
-                        editor.putString(Const.PASSWORD,password);
-                        editor.putString(Const.TELEPHONE,telephone);
-                        editor.putString(Const.FADE_NAME,fade_name);
-                        editor.putString(Const.REGISTER_TIME,register_time);
-                        //最后设置登陆类型 为账号密码登陆
-                        editor.putString(Const.LOGIN_TYPE,"0");
-                        editor.commit();
-                        //如果本地头像不为空的话，则上传到服务器
-                        if(PhotoUtils.imagePath != null)
-                            UserTool.uploadHeadImage(handler,user_id,PhotoUtils.imagePath);
-                        else{
-                            progressDialog.dismiss();
-                            startActivity(new Intent(AddContentActivity.this,MainActivity.class));
-                            finish();
-                        }
-
-                    }else {
-                        Toast.makeText(AddContentActivity.this,err,Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
-                    }
-                }
-                break;
-
-                case 2:{
-                    Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
-                    String head_image_url = (String) ans_map.get(Const.HEAD_IMAGE_URL);
-                    String err = (String) ans_map.get(Const.ERR);
-                    if(err == null){
-                        SharedPreferences.Editor editor2 = sharedPreferences.edit();
-                        editor2.putString(Const.HEAD_IMAGE_URL,head_image_url);
-                        editor2.commit();
-                        progressDialog.dismiss();
-                        //发送头像成功
-                        startActivity(new Intent(AddContentActivity.this,MainActivity.class));
-                        finish();
-                        progressDialog.dismiss();
-                    }else{
-                        Toast.makeText(AddContentActivity.this,err,Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AddContentActivity.this,MainActivity.class));
-                        finish();
-                        progressDialog.dismiss();
-                    }
-                }
-                break;
-            }
-            super.handleMessage(msg);
-        }
-    };
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,16 +74,18 @@ public class AddContentActivity extends AppCompatActivity {
         tvToRegister = (TextView) findViewById(R.id.tvOfBackBar);
         tvToRegister.setText("欢迎来到FADE");
 
-//        password = getIntent().getStringExtra(Const.PASSWORD);
-//        telephone = getIntent().getStringExtra(Const.TELEPHONE);
-        telephone = "189026675";
-        password = "hhh";
+        user = new User();
+        user.setPassword(getIntent().getStringExtra(Const.PASSWORD));
+        user.setTelephone(getIntent().getStringExtra(Const.TELEPHONE));
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.male)  sex = "男";
-                else sex = "女";
+                if(checkedId == R.id.male){
+                    user.setSex("男");
+                }else{
+                    user.setSex("女");
+                }
             }
         });
 
@@ -155,12 +101,78 @@ public class AddContentActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog .show();
                 String nickname = edUserName.getText().toString();
                 if(nickname.equals("")){
-                    Toast.makeText(AddContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();
-                }else{
-                    UserTool.sendToRegister(handler,nickname,password,sex,telephone);
+                    Toast.makeText(AddContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();;
+                }
+                else{
+                    progressDialog .show();
+                    user.setNickname(nickname);
+                    MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
+                            .addFormDataPart("user", JSON.toJSONString(user));
+                    if(PhotoUtils.imagePath != null){
+                        File file = new File(PhotoUtils.imagePath);
+                        builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+                    }
+                    RequestBody body = builder.build();
+                    Retrofit retrofit = RetrofitUtils.createRetrofit(Const.BASE_IP, null);
+                    final UserService userService = retrofit.create(UserService.class);
+                    userService.registerByName(body)
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<ResponseBody>() {
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.e("register","上传注册资料失败");
+                                    e.printStackTrace();
+                                }
+
+                                @Override
+                                public void onNext(ResponseBody responseBody) {
+                                    try {
+                                        progressDialog.dismiss();
+                                        SimpleResponse simpleResponse = JSON.parseObject(responseBody.string(),SimpleResponse.class);
+                                        if(simpleResponse.getErr() == null){
+                                            Log.d("register","上传注册资料成功");
+                                            Toast.makeText(AddContentActivity.this,"注册并登录成功",Toast.LENGTH_SHORT).show();
+                                            Map<String,Object>extra = simpleResponse.getExtra();
+                                            if(extra != null){
+                                                JSONObject jsonObject = (JSONObject) extra.get("tokenModel");
+                                                if(jsonObject != null){
+                                                    TokenModel tokenModel = jsonObject.toJavaObject(TokenModel.class);
+                                                    user.setTokenModel(tokenModel);
+                                                    if(tokenModel != null){
+                                                        user.setUser_id(tokenModel.getUser_id());
+                                                    }
+                                                }
+                                                user.setFade_name((String) extra.get("fade_name"));
+                                                user.setRegister_time((String) extra.get("register_time"));
+                                                user.setHead_image_url((String) extra.get("head_image_url"));
+                                            }
+                                            //存储用户信息
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putString("user",JSON.toJSONString(user));
+                                            //最后设置登陆类型 为账号密码登陆
+                                            editor.putString(Const.LOGIN_TYPE,"0");
+                                            editor.apply();
+                                            startActivity(new Intent(AddContentActivity.this,MainActivity.class));
+                                            finish();
+                                        }else {
+                                            Log.e("register","注册失败");
+                                            Toast.makeText(AddContentActivity.this,"注册失败："+ simpleResponse.getErr(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                        finish();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                 }
             }
         });

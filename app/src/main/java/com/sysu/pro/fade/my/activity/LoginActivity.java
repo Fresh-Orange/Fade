@@ -3,30 +3,33 @@ package com.sysu.pro.fade.my.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.squareup.picasso.Picasso;
-import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.MainActivity;
-import com.sysu.pro.fade.publish.imageselector.entry.Image;
-import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.MainActivity;
+import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.SimpleResponse;
+import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtils;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.sysu.pro.fade.Const.FANS_NUM;
-import static com.sysu.pro.fade.Const.WALLPAPER_URL;
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /*
 用户名密码方式的登录界面
@@ -41,92 +44,9 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private ProgressDialog progressDialog;
     private ImageView backIcon1;    //登录界面的返回键
-
     private String accountType = Const.TELEPHONE;
-
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if(msg.what == 1){
-                Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
-                String head_image_url = (String) ans_map.get(Const.HEAD_IMAGE_URL);
-                String nickname = (String) ans_map.get(Const.NICKNAME);
-                String fade_name = (String) ans_map.get(Const.FADE_NAME);
-                String telephone = (String) ans_map.get(Const.TELEPHONE);
-                String sex = (String) ans_map.get(Const.SEX);
-                String err  = (String) ans_map.get(Const.ERR);
-                String register_time= (String) ans_map.get(Const.REGISTER_TIME);
-                String summary = (String) ans_map.get(Const.SUMMARY);
-                String wallpaper_url = (String) ans_map.get(WALLPAPER_URL);
-                String aera = (String) ans_map.get(Const.AREA);
-                Integer user_id = (Integer) ans_map.get(Const.USER_ID);
-                Integer concern_num = (Integer) ans_map.get(Const.CONCERN_NUM);
-                Integer fans_num = (Integer) ans_map.get(FANS_NUM);
-                String wehcat_id = (String) ans_map.get(Const.WECHAT_ID);
-                String weibo_id = (String) ans_map.get(Const.WEIBO_ID);
-                String qq_id = (String) ans_map.get(Const.QQ_ID);
-                String school = (String) ans_map.get(Const.SCHOOL);
-
-                if(err == null){
-                    Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
-                    //更新存储数据
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(Const.LOGIN_TYPE,"0");
-
-                    if(accountType.equals(Const.TELEPHONE))
-                        editor.putString(Const.TELEPHONE,edAccount.getText().toString());
-                    if(accountType.equals(Const.FADE_NAME))
-                        editor.putString(Const.FADE_NAME,edAccount.getText().toString());
-
-                    editor.putString(Const.PASSWORD,edPassword.getText().toString());
-                    editor.putString(Const.HEAD_IMAGE_URL,head_image_url);
-                    editor.putString(Const.NICKNAME,nickname);
-                    editor.putString(Const.FADE_NAME,fade_name);
-                    editor.putString(Const.TELEPHONE,telephone);
-                    editor.putString(Const.SEX,sex);
-                    editor.putInt(Const.USER_ID,user_id);
-                    editor.putInt(Const.CONCERN_NUM,concern_num);
-                    editor.putInt(FANS_NUM,fans_num);
-                    editor.putString(Const.REGISTER_TIME,register_time);
-                    editor.putString(Const.SUMMARY,summary);
-                    editor.putString(WALLPAPER_URL,wallpaper_url);
-                    editor.putString(Const.WECHAT_ID,wehcat_id);
-                    editor.putString(Const.WEIBO_ID,weibo_id);
-                    editor.putString(Const.QQ_ID,qq_id);
-                    editor.putString(Const.AREA,aera);
-                    editor.putString(Const.SCHOOL,school);
-                    editor.commit();
-                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                    progressDialog.dismiss();
-                    finish();
-                }else{
-                    Toast.makeText(LoginActivity.this,err,Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-                }
-            }
-            else if(msg.what == 2){
-                Map<String,Object>ans_map = (Map<String, Object>) msg.obj;
-                String err = (String) ans_map.get(Const.ERR);
-                String head_image_url2 = (String) ans_map.get(Const.HEAD_IMAGE_URL);
-                if(err == null){
-                     if(head_image_url2 != null){
-                         Toast.makeText(LoginActivity.this,"成功获取用户头像",Toast.LENGTH_SHORT).show();
-                         Picasso.with(LoginActivity.this).load(head_image_url2).into(iv_personal_icon);
-                         btnLogin.setImageResource(R.drawable.login_btn_active);
-                     }else{
-                         Toast.makeText(LoginActivity.this,"使用默认头像",Toast.LENGTH_SHORT).show();
-                         iv_personal_icon.setImageResource(R.drawable.login_head_ic);
-                         btnLogin.setImageResource(R.drawable.login_btn_inactive);
-                     }
-                }else{
-                    iv_personal_icon.setImageResource(R.drawable.login_head_ic);
-                    btnLogin.setImageResource(R.drawable.login_btn_inactive);
-                    Toast.makeText(LoginActivity.this,err,Toast.LENGTH_SHORT).show();
-                }
-            }
-            super.handleMessage(msg);
-        }
-    };
+    private String telephone;
+    private String fade_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +62,8 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(LoginActivity.this);
         backIcon1 = (ImageView) findViewById(R.id.back_icon_1);
 
+        Retrofit retrofit = RetrofitUtils.createRetrofit(Const.BASE_IP,null);
+        final UserService userService = retrofit.create(UserService.class);
         edPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -150,7 +72,46 @@ public class LoginActivity extends AppCompatActivity {
                     String  accunt = edAccount.getText().toString();
                     if(accunt != ""){
                         judgeAccount(accunt);
-                        UserTool.getHeadImageUrl(handler,accunt,accountType);
+                        //UserTool.getHeadImageUrl(handler,accunt,accountType);
+                        if(accountType.equals("telephone")){
+                            telephone = accunt;
+                        }else {
+                            fade_name = accunt;
+                        }
+                        userService.getHeadImageUrl(telephone,fade_name,null)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<SimpleResponse>() {
+                                    @Override
+                                    public void onCompleted() {
+                                    }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e("获取头像","失败");
+                                        e.printStackTrace();
+                                    }
+                                    @Override
+                                    public void onNext(SimpleResponse simpleResponse) {
+                                        Map<String,Object>extra = simpleResponse.getExtra();
+                                        String head_image_url = (String) extra.get("head_image_url");
+                                        if(simpleResponse.getErr() == null){
+                                            if(head_image_url != null){
+                                                Toast.makeText(LoginActivity.this,"成功获取用户头像",Toast.LENGTH_SHORT).show();
+                                                Log.i("头像",Const.BASE_IP + head_image_url);
+                                                Picasso.with(LoginActivity.this).load(Const.BASE_IP + head_image_url).into(iv_personal_icon);
+                                                btnLogin.setImageResource(R.drawable.login_btn_active);
+                                            }else{
+                                                Toast.makeText(LoginActivity.this,"使用默认头像",Toast.LENGTH_SHORT).show();
+                                                iv_personal_icon.setImageResource(R.drawable.login_head_ic);
+                                                btnLogin.setImageResource(R.drawable.login_btn_inactive);
+                                            }
+                                        }else{
+                                            iv_personal_icon.setImageResource(R.drawable.login_head_ic);
+                                            btnLogin.setImageResource(R.drawable.login_btn_inactive);
+                                            Toast.makeText(LoginActivity.this,simpleResponse.getErr(),Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                     }
                 }
             }
@@ -173,14 +134,62 @@ public class LoginActivity extends AppCompatActivity {
                 if((!account.equals("")) && (!password.equals(""))){
                     progressDialog.show();
                     judgeAccount(account);
-                    UserTool.sendToLogin(handler,password,account,accountType);
+                    if(accountType.equals("telephone")){
+                        telephone = account;
+                        userService.loginUserByTel(telephone,password)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<User>() {
+                                    @Override
+                                    public void onCompleted() {
+
+                                    }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e("登录","失败");
+                                        Toast.makeText(LoginActivity.this,"登录失败,账号或密码错误",Toast.LENGTH_SHORT).show();
+                                        e.printStackTrace();
+                                    }
+                                    @Override
+                                    public void onNext(User user) {
+                                        Log.i("user",user.toString());
+                                        if(user.getUser_id() != null){
+                                            loginSuccess(user);
+                                        }else {
+                                            Toast.makeText(LoginActivity.this,"登录失败",Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                });
+                    }else {
+                        fade_name = account;
+                        userService.loginUserByName(fade_name,password)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<User>() {
+                                    @Override
+                                    public void onCompleted() {
+                                    }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e("登录","失败");
+                                    }
+                                    @Override
+                                    public void onNext(User user) {
+                                        if(user.getUser_id() != null){
+                                            loginSuccess(user);
+                                        }else {
+                                            Toast.makeText(LoginActivity.this,"登录失败",Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                });
+                    }
                 }else{
                     Toast.makeText(LoginActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
-
         //登录界面的返回icon
         backIcon1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,8 +197,6 @@ public class LoginActivity extends AppCompatActivity {
             finish();
             }
         });
-
-
     }
 
     private void judgeAccount(String account){
@@ -200,6 +207,18 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             accountType = Const.FADE_NAME;
         }
+    }
 
+    public void loginSuccess(User user){
+            Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
+            //更新存储数据
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("user", JSON.toJSONString(user));
+            //最后设置登陆类型 为账号密码登陆
+            editor.putString(Const.LOGIN_TYPE,"0");
+            editor.apply();
+            progressDialog.dismiss();
+            startActivity(new Intent(LoginActivity.this,MainActivity.class));
+            finish();
     }
 }

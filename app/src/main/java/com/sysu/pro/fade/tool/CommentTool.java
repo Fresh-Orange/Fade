@@ -5,14 +5,9 @@ import android.os.Message;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.utils.GsonUtil;
-import com.sysu.pro.fade.utils.HttpUtils;
-
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;

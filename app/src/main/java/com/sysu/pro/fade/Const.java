@@ -13,6 +13,8 @@ public class Const {
     public static final String IP = "https://sysufade.cn/fade"; //云服务器ip地址和端口号
     //public static final String IP = "http://192.168.137.1:8080/fade"; //本地ip地址和端口号
 
+    public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/";
+
     /*登录注册 个人信息有关
      */
     public static final String USER_SHARE="login_user"; //存储登录后的用户信息sp数据库
