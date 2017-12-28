@@ -18,7 +18,7 @@ import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.home.adapter.RecycleAdapter;
+import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
@@ -40,7 +40,7 @@ public class ContentHome {
     /*图片URL数组*/
     private List<Note> notes;
     /*信息流适配器*/
-    private RecycleAdapter adapter;
+    private NotesAdapter adapter;
     /*刷新控件*/
     private SwipeRefreshLayout swipeRefresh;
     /*上拉加载滑动监听*/
@@ -211,7 +211,7 @@ public class ContentHome {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new RecycleAdapter(context, handler, notes);
+        adapter = new NotesAdapter(context, handler, notes);
         recyclerView.setAdapter(adapter);
 
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
@@ -392,7 +392,8 @@ public class ContentHome {
         boolean isChange = false;
         for (Note note: notes){
             if (note.getUser_id() == user.getUser_id()){
-                if (!note.getHead_image_url().equals(user.getHead_image_url())){
+                if (!note.getHead_image_url().equals(user.getHead_image_url())
+                        || !note.getName().equals(user.getNickname())){
                     note.setHead_image_url(user.getHead_image_url());
                     note.setName(user.getNickname());
                     isChange = true;
