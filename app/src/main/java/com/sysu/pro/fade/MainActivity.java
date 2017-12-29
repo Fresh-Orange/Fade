@@ -1,5 +1,6 @@
 package com.sysu.pro.fade;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -20,18 +21,28 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
+import com.sysu.pro.fade.my.activity.LoginActivity;
 import com.sysu.pro.fade.publish.PublishActivity;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
 import java.util.List;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
 
@@ -42,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayoutMenu;
     public Toolbar mToolbar;
     private User user;
-
-
+    private Retrofit retrofit;
+    private UserService userService;
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -87,36 +98,51 @@ public class MainActivity extends AppCompatActivity {
                 //跳转到发布页
             }
         });
+        //初始化retrofit和service，用于上线和下线请求
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        userService = retrofit.create(UserService.class);
+        //上线请求
+        userService.online(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("用户上线","失败" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        Log.i("用户上线",simpleResponse.getSuccess());
+                    }
+                });
     }
 
     //设置底部导航栏图片
     private void setupTabIcon(){
         Resources res = getResources();
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.home_normal), "首页")));
+                createView(res.getDrawable(R.mipmap.home_normal), "首页")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.discover_normal), "发现")));
+                createView(res.getDrawable(R.mipmap.message_normal), "消息")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.add), "发布")));
+                createView(res.getDrawable(R.mipmap.add), "发布")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.message_normal), "消息")));
+                createView(res.getDrawable(R.mipmap.discover_normal), "发现")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.drawable.my_normal), "我的")));
+                createView(res.getDrawable(R.mipmap.my_normal), "我的")));
     }
 
     private View createView(Drawable icon, String tab) {
         View view = getLayoutInflater().inflate(R.layout.tab_layout, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.icon);
-        //TextView title = (TextView) view.findViewById(R.id.title);
         imageView.setImageDrawable(icon);
-
-        //发布的按钮稍微大一点
-        if (tab == "发布") {
-            imageView.setScaleX((float)1.4);
-            imageView.setScaleY((float)1.4);
-        }
-
-        //title.setText(tab);
+        imageView.setAlpha((float)0.5);
         return view;
     }
 
@@ -161,18 +187,15 @@ public class MainActivity extends AppCompatActivity {
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
         //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.home_selected));
             mViewPager.setCurrentItem(Const.HOME-1,false);
         } else if (tab.getPosition()==Const.DISCOVER-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.discover_selected));
             mViewPager.setCurrentItem(Const.DISCOVER-1,false);
         }else if (tab.getPosition() == Const.MESSAGE-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.message_selected));
             mViewPager.setCurrentItem(Const.MESSAGE-1,false);
         } else if(tab.getPosition() == Const.MY-1){
-            img_title.setImageDrawable(res.getDrawable(R.drawable.my_selected));
             mViewPager.setCurrentItem(Const.MY-1,false);
         }
+        img_title.setAlpha((float)1.0);
     }
 
     //设置还原tab图标
@@ -180,17 +203,7 @@ public class MainActivity extends AppCompatActivity {
         Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
-        //TextView txt_title = (TextView) view.findViewById(R.id.title);
-        //txt_title.setTextColor(Color.GRAY);
-        if (tab.getPosition() == Const.HOME -1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.home_normal));
-        }  else if (tab.getPosition() == Const.DISCOVER-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.discover_normal));
-        }else if (tab.getPosition() == Const.MESSAGE-1) {
-            img_title.setImageDrawable(res.getDrawable(R.drawable.message_normal));
-        }else if(tab.getPosition() == Const.MY-1){
-            img_title.setImageDrawable(res.getDrawable(R.drawable.my_normal));
-        }
+        img_title.setAlpha((float)0.5);
     }
 
 
@@ -389,8 +402,39 @@ public class MainActivity extends AppCompatActivity {
 
     private void gotoSearchActivity() {
         //TODO
+        final Context context = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(context).clearDiskCache();
+            }
+        }).start();
+
         Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        //下线请求
+        userService.offline(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>() {
+                    @Override
+                    public void onCompleted() {
 
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("用户下线","失败" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        Log.i("用户下线",simpleResponse.getSuccess());
+                    }
+                });
+        super.onDestroy();
+    }
 }

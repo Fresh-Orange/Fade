@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.service;
 
+import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 
@@ -51,6 +52,29 @@ public interface UserService {
     //注销登录
     @DELETE("logoutByToken/{tokenModel}")
     Observable<SimpleResponse> logoutUserByToken(@Path("tokenModel")String tokenModel);
+
+    //上线请求
+    @FormUrlEncoded
+    @POST("online")
+    Observable<SimpleResponse>online(@Field("user_id")String user_id);
+
+    //下线请求
+    @DELETE("offline/{user_id}")
+    Observable<SimpleResponse> offline(@Path("user_id")String  user_id);
+
+    //关注某人,fans_id为关注者，fans_id被关注者
+    @FormUrlEncoded
+    @POST("concern")
+    Observable<SimpleResponse> concern(@Field("fans_id")String  fans_id,@Field("star_id")String  star_id);
+
+    //取消关注某人
+    @DELETE("cancelConcern/{fans_id}/{star_id}")
+    Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
+
+    //得到某人的主页信息,user_id为别人的和my_id为自己的
+    @GET("getPersonPage/{user_id}/{my_id}")
+    Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
+
 
 
 

@@ -21,7 +21,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 /**
  * Created by road on 2017/7/30.
  */
-public class RetrofitUtils {
+public class RetrofitUtil {
 
     public static OkHttpClient createOkHttp(final TokenModel tokenModel){
         OkHttpClient client = new OkHttpClient.Builder()

@@ -30,7 +30,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
@@ -41,10 +40,6 @@ import com.sysu.pro.fade.publish.crop.util.PaintUtil;
 
 import static com.sysu.pro.fade.publish.crop.CropActivity.current_position;
 import static com.sysu.pro.fade.publish.crop.CropActivity.imageX;
-import static com.sysu.pro.fade.publish.crop.CropActivity.imageY;
-import static com.sysu.pro.fade.publish.crop.CropActivity.isSet;
-import static com.sysu.pro.fade.publish.crop.CropActivity.left;
-import static com.sysu.pro.fade.publish.crop.CropActivity.scrollView;
 
 
 /**
@@ -322,16 +317,16 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         // Calculate the crop window size relative to the ~original~ bitmap size.
         // Make sure the right and bottom edges are not outside the ImageView bounds (this is just to address rounding discrepancies).
-        final float cropWidth = Math.min(Edge.getWidth() / scaleX, originalBitmap.getWidth() - cropX);
-        final float cropHeight = Math.min(Edge.getHeight() / scaleY, originalBitmap.getHeight() - cropY);
+        final float cropWidth = originalBitmap.getWidth();
+        final float cropHeight = originalBitmap.getHeight();
 
         Log.d("Yellow","cropX: " + cropX);
         Log.d("Yellow","cropY: " + cropY);
         Log.d("Yellow","cropWidth: " + cropWidth);
         Log.d("Yellow","cropHeight: " + cropHeight);
 
-        imageX[CropActivity.current_position] = cropX;
-        CropActivity.imageY[CropActivity.current_position] = cropY;
+        imageX[CropActivity.current_position] = cropX / cropWidth;
+        CropActivity.imageY[CropActivity.current_position] = cropY / cropHeight;
         // Crop the subset from the original Bitmap.
 //        return Bitmap.createBitmap(originalBitmap,
 //                                   (int) cropX,

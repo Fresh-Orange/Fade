@@ -20,7 +20,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.service.UserService;
-import com.sysu.pro.fade.utils.RetrofitUtils;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(LoginActivity.this);
         backIcon1 = (ImageView) findViewById(R.id.back_icon_1);
 
-        Retrofit retrofit = RetrofitUtils.createRetrofit(Const.BASE_IP,null);
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,null);
         final UserService userService = retrofit.create(UserService.class);
         edPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -148,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onError(Throwable e) {
                                         Log.e("登录","失败");
                                         Toast.makeText(LoginActivity.this,"登录失败,账号或密码错误",Toast.LENGTH_SHORT).show();
+                                        progressDialog.dismiss();
                                         e.printStackTrace();
                                     }
                                     @Override

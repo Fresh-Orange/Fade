@@ -68,6 +68,7 @@ public class ContentHome {
     private List<Integer>latest_good_nums;   //更新之后的good_nums数组  对应列表的展示顺序
 
 
+
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {

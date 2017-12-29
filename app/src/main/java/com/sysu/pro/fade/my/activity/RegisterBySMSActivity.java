@@ -16,7 +16,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.tool.UserTool;
-import com.sysu.pro.fade.utils.RetrofitUtils;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -60,7 +60,7 @@ public class RegisterBySMSActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //先校验该手机号是否已经被注册
                 //UserTool.checkTel(handler,edTelphone.getText().toString());
-                Retrofit retrofit = RetrofitUtils.createRetrofit(Const.BASE_IP,null);
+                Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,null);
                 UserService userService = retrofit.create(UserService.class);
                 userService.registerQueryTel(edTelphone.getText().toString())
                         .subscribeOn(Schedulers.newThread())

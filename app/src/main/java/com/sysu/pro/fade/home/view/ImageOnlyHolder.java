@@ -52,16 +52,17 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 		double ratio;
 		int cutSize = bean.getImgCutSize();
 		if (cutSize == 1)
-			ratio = 5/4;
+			ratio = 5.0/4;
 		else if (cutSize == 2)
-			ratio = 8/15;
+			ratio = 8.0/15;
 		else{
 			ratio = 999;
 			for (double d:bean.getImgSizes()) {
-				Log.d("Ratio", " "+d);
+				Log.d("Ratio", "out "+d);
 				ratio = ratio < d ? ratio : d;
 			}
 		}
-		return 1;
+
+		return ratio;
 	}
 }

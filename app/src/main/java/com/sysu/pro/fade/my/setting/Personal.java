@@ -22,7 +22,7 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.PhotoUtils;
-import com.sysu.pro.fade.utils.RetrofitUtils;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.io.File;
@@ -67,7 +67,7 @@ public class Personal extends AppCompatActivity {
         settingSchool = (EditText) findViewById(R.id.setting_school);
         settingArea = (EditText) findViewById(R.id.setting_area);
 
-        retrofit = RetrofitUtils.createRetrofit(Const.BASE_IP,null);
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,null);
         userService = retrofit.create(UserService.class);
 
         //获取当前用户

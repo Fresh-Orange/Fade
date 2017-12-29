@@ -26,7 +26,7 @@ import com.sysu.pro.fade.beans.TokenModel;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.PhotoUtils;
-import com.sysu.pro.fade.utils.RetrofitUtils;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +115,7 @@ public class AddContentActivity extends AppCompatActivity {
                         builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
                     }
                     RequestBody body = builder.build();
-                    Retrofit retrofit = RetrofitUtils.createRetrofit(Const.BASE_IP, null);
+                    Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, null);
                     final UserService userService = retrofit.create(UserService.class);
                     userService.registerByName(body)
                             .subscribeOn(Schedulers.newThread())
