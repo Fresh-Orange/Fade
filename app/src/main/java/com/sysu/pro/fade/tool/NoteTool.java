@@ -2,18 +2,12 @@ package com.sysu.pro.fade.tool;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.utils.HttpUtils;
 import com.sysu.pro.fade.utils.GsonUtil;
-
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

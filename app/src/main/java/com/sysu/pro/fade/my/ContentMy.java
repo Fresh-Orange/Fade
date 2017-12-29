@@ -99,6 +99,7 @@ public class ContentMy {
                 //设置loginType
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
+                editor.remove("user");
                 editor.commit();
                 activity.startActivity(new Intent(activity, GuideActivity.class));
                 activity.finish();
@@ -118,14 +119,14 @@ public class ContentMy {
         if(login_type.equals("") || image_url == null || image_url.equals("")){
             ivShowHead.setImageResource(R.drawable.default_head);
         }else{
-            Picasso.with(context).load(image_url).into(ivShowHead);
+            Picasso.with(context).load(Const.BASE_IP + image_url).into(ivShowHead);
         }
-        if(nickname.equals("")){
+        if(nickname == null||nickname.equals("")){
             tvShowNickname.setText("未登录");
         }else{
             tvShowNickname.setText(nickname);
         }
-        if(summary.equals("")){
+        if(summary == null || summary.equals("")){
             tvShowSummary.setText("暂无个签，点击设置图标进行编辑");
         }else{
             tvShowSummary.setText(summary);

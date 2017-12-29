@@ -217,7 +217,8 @@ public class ContentHome {
 
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
 		/*刷新数据*/
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefresh.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshItems();

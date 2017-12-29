@@ -20,7 +20,7 @@ import java.util.List;
  * item的删除条件也在这个类里面
  */
 
-public class JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener {
+public class  JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener {
 	String logTag = "scroll";
 	private Context context;
 	private List<Note> notes;
