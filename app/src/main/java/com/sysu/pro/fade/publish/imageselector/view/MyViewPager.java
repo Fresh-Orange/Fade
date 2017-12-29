@@ -3,6 +3,7 @@ package com.sysu.pro.fade.publish.imageselector.view;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,7 +15,7 @@ import android.view.View;
 public class MyViewPager extends ViewPager {
 
     private OnItemClickListener mOnItemClickListener;
-
+    private GestureDetector tapGestureDetector;
     public MyViewPager(Context context) {
         super(context);
         setup();
@@ -29,18 +30,20 @@ public class MyViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         try {
-            return super.onInterceptTouchEvent(ev);
+            super.onInterceptTouchEvent(ev);
+            Log.d("Yellow", "touch");
+            return true;
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
 
     private void setup() {
-        final GestureDetector tapGestureDetector = new GestureDetector(getContext(), new TapGestureListener());
-
+        tapGestureDetector = new GestureDetector(getContext(), new TapGestureListener());
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                Log.d("Yellow", "onTouch");
                 tapGestureDetector.onTouchEvent(event);
                 return false;
             }
@@ -59,18 +62,14 @@ public class MyViewPager extends ViewPager {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.d("Yellow", "null");
             if(mOnItemClickListener != null) {
+                Log.d("Yellow", "notNull");
                 mOnItemClickListener.onItemClick(getCurrentItem());
             }
-            return true;
+            return false;
         }
     }
-
-//    public void destroyItem(ViewGroup container, int position, Object object) {
-//        View view = (View) object;
-//        container.removeView(view);
-//        view = null;
-//    }
 
 
 }

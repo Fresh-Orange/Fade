@@ -50,7 +50,8 @@
             android:theme="@style/imagePagerTheme" />
         <activity android:name=".publish.PublishActivity" />
         <activity android:name=".relay_publish.RelayPublishAcitivity" />
-        <activity android:name=".publish.imageselector.ImageSelectorActivity" />
+        <activity android:name=".publish.imageselector.ImageSelectorActivity"
+            android:launchMode="singleTask"/>
         <activity android:name=".publish.imageselector.PreviewActivity" />
         <activity android:name=".publish.crop.CropActivity" />
         <activity android:name=".home.activity.DetailActivity" />

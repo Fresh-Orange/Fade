@@ -132,10 +132,10 @@ public class AddContentActivity extends AppCompatActivity {
         tvToRegister = (TextView) findViewById(R.id.tvOfBackBar);
         tvToRegister.setText("欢迎来到FADE");
 
-//        password = getIntent().getStringExtra(Const.PASSWORD);
-//        telephone = getIntent().getStringExtra(Const.TELEPHONE);
-        telephone = "189026675";
-        password = "hhh";
+        password = getIntent().getStringExtra(Const.PASSWORD);
+        telephone = getIntent().getStringExtra(Const.TELEPHONE);
+//        telephone = "189026675";
+//        password = "hhh";
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

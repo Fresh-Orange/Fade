@@ -68,7 +68,8 @@
             android:layout_marginBottom="5dp"
             android:textColor="#000000"
             android:textSize="15sp"
-            android:hint="说说你的想法..." >
+            android:hint="说说你的想法..."
+            android:theme="@style/MyEditText">
         </EditText>
 
     </ScrollView>
