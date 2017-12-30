@@ -149,26 +149,22 @@ public class PublishActivity extends AppCompatActivity {
         //发送帖子的最后操作在这里
         //收集要发送的图片数据，包装一下,压缩好图片后，发送帖子
         if(images_files == null) images_files = new ArrayList<>();
-        File sd=Environment.getExternalStorageDirectory();
+        final File sd=Environment.getExternalStorageDirectory();
         String cache_path_root = sd.getPath() + "/chache_pic";
         File rootFile = new File(cache_path_root);
         if(!rootFile.exists())  rootFile.mkdir();
+
         for(int i = 0; i < images.size(); i++){
-            String image_path = images.get(i);
-            Bitmap bitmap_temp = ImageUtils.getBitmap(image_path);
-            Image image = new Image();
-            //获得宽高比
-            final Double size = new Integer(bitmap_temp.getWidth()).doubleValue()/ new Integer(bitmap_temp.getHeight()).doubleValue();
-            image.setImage_size(size.toString());
-            image.setImage_cut_size(crop_size + "");
+            final Image image = new Image();
             //获得坐标
             int x = (int) (imageX[i] * 1000);
             String xStr = "" + x;
             int y = (int) (imageY[i] * 1000);
             String yStr = "" + y;
             image.setImage_coordinate(xStr + ":" + yStr);
-            //添加到图片队列
-            imageArray.add(image);
+            image.setImage_cut_size(crop_size + "");
+
+            String image_path = images.get(i);
             //然后压缩图片
             Luban.with(this)
                     .load(new File(image_path))
@@ -179,6 +175,13 @@ public class PublishActivity extends AppCompatActivity {
                 }
                 @Override
                 public void onSuccess(File file) {
+                    Bitmap bitmap_temp = ImageUtils.getBitmap(file.getPath());
+                    //获得宽高比
+                    final Double size = new Integer(bitmap_temp.getWidth()).doubleValue()/ new Integer(bitmap_temp.getHeight()).doubleValue();
+                    bitmap_temp.recycle();
+                    image.setImage_size(size.toString());
+                    //添加到图片队列
+                    imageArray.add(image);
                     images_files.add(new File(file.getPath()));
                     have_compress_num++;
                     Log.i("压缩图片","成功");
@@ -249,7 +252,6 @@ public class PublishActivity extends AppCompatActivity {
                     //Toast.makeText(PublishActivity.this,e.getMessage().toString(),Toast.LENGTH_SHORT).show();
                 }
             }).launch();
-            bitmap_temp.recycle();
            // File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
         }
         if(images.size() == 0){
