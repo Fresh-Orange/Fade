@@ -33,7 +33,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
 import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
@@ -419,7 +418,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
         newCount = mMaxCount - newimages.size();
         CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-
+        finish();
     }
 
     private void cropConfirm() {
