@@ -55,6 +55,9 @@ public class Const {
     //当前用户是否点赞
     public static final String IS_GOOD          = "isGood";
 
+    //是否是点击评论进入的
+    public static final String IS_COMMENT       = "isComment";
+
     //note请求有关
     public static final String START        = "start";
     public static final String RESULT       = "result";

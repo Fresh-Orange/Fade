@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Note implements Serializable {
@@ -30,6 +31,16 @@ public class Note implements Serializable {
 	private Note origin;// 原贴
 
 	private Integer baseComment_num; //一级评论数量，后端缓存判断用到，数据库不保存
+
+	private long fetchTime;
+
+	public long getFetchTime() {
+		return fetchTime;
+	}
+
+	public void setFetchTime(long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
 	
 	public Integer getNote_id() {
 		return note_id;
@@ -119,6 +130,35 @@ public class Note implements Serializable {
 
 	public List<Image> getImages() {
 		return images;
+	}
+
+	public List<String> getImgCoordinates() {
+		List<String> imgCoordinates = new ArrayList<>();
+		for (Image image: images){
+			imgCoordinates.add(image.getImage_coordinate());
+		}
+		return imgCoordinates;
+	}
+
+	public List<String> getImgUrls() {
+		List<String> imgUrls = new ArrayList<>();
+		for (Image image: images){
+			imgUrls.add(image.getImage_url());
+		}
+		return imgUrls;
+	}
+
+	public List<Double> getImgSizes() {
+		List<Double> imgSizes = new ArrayList<>();
+		for (Image image: images){
+			imgSizes.add(Double.parseDouble(image.getImage_size()));
+		}
+		return imgSizes;
+	}
+
+
+	public Integer getImgCutSize() {
+		return Integer.parseInt(images.get(0).getImage_cut_size());
 	}
 
 	public void setImages(List<Image> images) {

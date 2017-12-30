@@ -2,13 +2,11 @@ package com.sysu.pro.fade.home;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -22,7 +20,6 @@ import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
-import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -35,7 +32,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.sysu.pro.fade.R.id.edit_comment;
 
 /**
  * Created by road on 2017/7/14.
@@ -121,7 +117,7 @@ public class ContentHome {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NotesAdapter(context, notes);
+        adapter = new NotesAdapter((MainActivity) context, notes);
         recyclerView.setAdapter(adapter);
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
 		/*刷新数据*/
@@ -145,26 +141,7 @@ public class ContentHome {
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
-		SoftKeyboardStateWatcher watcher = new SoftKeyboardStateWatcher(rootView.getRootView(), context);
-		final TabLayout tabLayout = (TabLayout) rootView.getRootView().findViewById(R.id.tab_layout_menu);
-		watcher.addSoftKeyboardStateListener(
-				new SoftKeyboardStateWatcher.SoftKeyboardStateListener() {
-					@Override
-					public void onSoftKeyboardOpened(int keyboardHeightInPx) {
-					}
-					@Override
-					public void onSoftKeyboardClosed() {
-                        loadMoreScrollListener.setKeyBoardOpen(false);
-						tabLayout.setVisibility(View.VISIBLE);
-                        View focusView = recyclerView.getLayoutManager().getFocusedChild();
-                        LinearLayout linearLayout = null;
-                        if (focusView != null)
-                            linearLayout = (LinearLayout)focusView.findViewById(edit_comment);
-                        if (linearLayout != null)
-                            linearLayout.setVisibility(View.GONE);
-					}
-				}
-		);
+
     }
 
     /**

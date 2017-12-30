@@ -27,7 +27,7 @@ public class CompleteHolder extends ImageOnlyHolder{
 		final Note bean = data.get(position);
 		//因为继承了ImageOnlyHolder，所以这里只需要设置文字就可以
 		tvBody.setText(SpanStringUtils.getEmotionContent(EmotionUtils.EMOTION_CLASSIC_TYPE,context
-		,tvBody,bean.getText()));
+		,tvBody,bean.getNote_content()));
 
 	}
 
