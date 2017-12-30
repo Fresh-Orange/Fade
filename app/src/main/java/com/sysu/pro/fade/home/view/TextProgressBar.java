@@ -38,8 +38,8 @@ public class TextProgressBar extends ProgressBar {
 	protected synchronized void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		this.mPaint.getTextBounds(this.str, 0, this.str.length(), rect);
-		int x = (int)(getWidth()*(getProgress()*1.0/100) - rect.centerX());
-		int y = getHeight() - rect.centerY();
+		int x = (int)(getWidth()*((getProgress()-2)*1.0/100) - rect.right);//减2是为了文字左移一点
+		int y = getHeight() + rect.centerY();
 		canvas.drawText(this.str, x, y, this.mPaint);
 	}
 
@@ -48,7 +48,8 @@ public class TextProgressBar extends ProgressBar {
 		rect = new Rect();
 		this.mPaint = new Paint();
 		this.mPaint.setAntiAlias(true);
-		this.mPaint.setColor(Color.WHITE);
+		this.mPaint.setTextSize(32);
+		this.mPaint.setColor(Color.argb(122, 0,0,0));
 	}
 
 	// 设置文字内容

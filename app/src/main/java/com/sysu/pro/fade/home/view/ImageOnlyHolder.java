@@ -31,6 +31,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 
 		final Note bean = data.get(position);
 
+
 		if (data != null && data.size() > 0) {
 			/**
 			 * Whenever you need to dynamically add pagers, you need to set an ID for each pager using ViewPager.setId().
@@ -54,7 +55,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			ratio = 5.0/4;
 		else if (cutSize == 2)
 			ratio = 8.0/15;
-		else{
+		else{//USELESS!!
 			ratio = 999;
 			for (double d:bean.getImgSizes()) {
 				Log.d("Ratio", "out "+d);
