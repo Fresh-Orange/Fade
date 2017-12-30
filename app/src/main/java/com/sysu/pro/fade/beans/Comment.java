@@ -16,7 +16,7 @@ public class Comment implements Serializable{
 	private Integer to_comment_id;        //如果是0的话，则是对帖子的评论；如果不是0的话，则代表是对某个评论的回复,表示为原来那条评论的id
 	 
 	private Integer note_id;               //评论的帖子的id
-	private Date comment_time;          //评论时间
+	private String comment_time;          //评论时间
 	private String comment_content;       //评论内容
 	private Integer comment_good_num;     //评论点赞数
 	private Boolean comment_isGood;       //该用户是否对该评论点赞
@@ -87,11 +87,11 @@ public class Comment implements Serializable{
 		this.comment_good_num = comment_good_num;
 	}
 
-	public Date getComment_time() {
+	public String getComment_time() {
 		return comment_time;
 	}
 
-	public void setComment_time(Date comment_time) {
+	public void setComment_time(String comment_time) {
 		this.comment_time = comment_time;
 	}
 }

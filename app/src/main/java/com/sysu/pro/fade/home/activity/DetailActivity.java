@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
@@ -35,6 +36,7 @@ public class DetailActivity extends AppCompatActivity{
     public Integer note_id;
     private ImageView detailBack;   //返回按钮
     private ImageView detailSetting;    //三个点按钮
+    private TextView commentNum;
     private RecyclerView recyclerView;
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> allComment = new ArrayList<>();  //所有评论的列表
@@ -84,6 +86,7 @@ public class DetailActivity extends AppCompatActivity{
 
     private void initialComment() {
         Log.d("bug", "initialComment: "+allComment.size());
+
         //放直接评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
             @Override
@@ -97,7 +100,7 @@ public class DetailActivity extends AppCompatActivity{
                 holder.setGoodImage(R.id.comment_detail_good, data.getComment_isGood());
                 holder.setImage(R.id.comment_detail_head, data.getHead_image_url());
                 holder.setText(R.id.comment_detail_name, data.getNickname());
-                holder.setText(R.id.comment_detail_date, data.getComment_time().toString());
+                holder.setText(R.id.comment_detail_date, data.getComment_time());
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
 
                 List<Comment> respondent = getReplys(position); //评论者对应的回复者列表
@@ -112,7 +115,7 @@ public class DetailActivity extends AppCompatActivity{
                     public void convert(ViewHolder holder, Comment data, int position) {
                         holder.setText(R.id.reply_name, data.getNickname());
                         holder.setText(R.id.reply_comment_name, data.getOriginComment().getNickname());
-                        holder.setText(R.id.reply_date, data.getComment_time().toString());
+                        holder.setText(R.id.reply_date, data.getComment_time());
                         holder.setText(R.id.reply_content, data.getComment_content());
                         if (data.getOriginComment().getUser_id() == comment.getUser_id()) {
                             holder.setWidgetVisibility(R.id.reply_reply, View.GONE);
