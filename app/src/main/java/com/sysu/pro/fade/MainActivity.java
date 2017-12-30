@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case Const.MESSAGE:
-                    rootView = inflater.inflate(R.layout.fragment_message,container,false);
+                    rootView = inflater.inflate(R.layout.fragment_notification,container,false);
                     break;
 
                 case Const.MY:
