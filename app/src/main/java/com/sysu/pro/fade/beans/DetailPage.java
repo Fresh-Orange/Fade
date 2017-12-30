@@ -18,6 +18,5 @@ public class DetailPage {
 	public void setComment_list(List<Comment> comment_list) {
 		this.comment_list = comment_list;
 	}
-	
-	
+
 }
