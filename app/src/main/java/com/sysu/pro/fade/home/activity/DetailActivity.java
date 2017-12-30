@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.home.activity;
 
+import android.graphics.Canvas;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.DetailPage;
+import com.sysu.pro.fade.beans.SecondComment;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
 import com.sysu.pro.fade.service.NoteService;
@@ -39,13 +41,14 @@ public class DetailActivity extends AppCompatActivity{
     private TextView commentNum;
     private RecyclerView recyclerView;
     private CommonAdapter<Comment> commentAdapter;
-    private List<Comment> allComment = new ArrayList<>();  //所有评论的列表
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        final int num = getIntent().getIntExtra(Const.COMMENT_NUM, 0);
+        commentNum = (TextView) findViewById(R.id.detail_comment_num);
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         UserUtil util = new UserUtil(this);
@@ -68,24 +71,15 @@ public class DetailActivity extends AppCompatActivity{
 
                     @Override
                     public void onNext(DetailPage detailPage) {
-                        allComment.addAll(detailPage.getComment_list());
-                        getDirectComment();
+                        commentator.addAll(detailPage.getComment_list());
+                        commentNum.setText(Integer.toString(num));
                         initialComment();
                     }
                 });
     }
 
-    //获取直接评论的评论
-    private void getDirectComment() {
-        for(int i = 0; i < allComment.size(); i++) {
-            if (allComment.get(i).getTo_comment_id() == 0) {
-                commentator.add(allComment.get(i));
-            }
-        }
-    }
-
     private void initialComment() {
-        Log.d("bug", "initialComment: "+allComment.size());
+
 
         //放直接评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
@@ -97,27 +91,27 @@ public class DetailActivity extends AppCompatActivity{
             @Override
             public void convert(CommonAdapter.ViewHolder holder, Comment data, int position) {
                 final Comment comment = data;
-                holder.setGoodImage(R.id.comment_detail_good, data.getComment_isGood());
-                holder.setImage(R.id.comment_detail_head, data.getHead_image_url());
+                holder.setGoodImage(R.id.comment_detail_good, data.getType()==0);
+                holder.setImage(R.id.comment_detail_head, Const.BASE_IP+data.getHead_image_url());
                 holder.setText(R.id.comment_detail_name, data.getNickname());
                 holder.setText(R.id.comment_detail_date, data.getComment_time());
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
 
-                List<Comment> respondent = getReplys(position); //评论者对应的回复者列表
+                List<SecondComment> respondent = getReplies(position); //评论者对应的回复者列表
                 //放回复内容的adapter
-                CommonAdapter<Comment> replyAdapter = new CommonAdapter<Comment>(respondent) {
+                CommonAdapter<SecondComment> replyAdapter = new CommonAdapter<SecondComment>(respondent) {
                     @Override
                     public int getLayoutId(int ViewType) {
                         return R.layout.item_reply;
                     }
 
                     @Override
-                    public void convert(ViewHolder holder, Comment data, int position) {
+                    public void convert(ViewHolder holder, SecondComment data, int position) {
                         holder.setText(R.id.reply_name, data.getNickname());
-                        holder.setText(R.id.reply_comment_name, data.getOriginComment().getNickname());
+                        holder.setText(R.id.reply_comment_name, data.getTo_nickname());
                         holder.setText(R.id.reply_date, data.getComment_time());
                         holder.setText(R.id.reply_content, data.getComment_content());
-                        if (data.getOriginComment().getUser_id() == comment.getUser_id()) {
+                        if (data.getTo_user_id() == comment.getUser_id()) {
                             holder.setWidgetVisibility(R.id.reply_reply, View.GONE);
                             holder.setWidgetVisibility(R.id.reply_comment_name, View.GONE);
                         }
@@ -133,14 +127,10 @@ public class DetailActivity extends AppCompatActivity{
     }
 
     //获取第pos个评论的所有回复
-    private List<Comment> getReplys(int pos) {
-        List<Comment> replys = new ArrayList<>();
-        for(int i = 0; i < allComment.size(); i++) {
-            if (allComment.get(i).getTo_comment_id() == commentator.get(pos).getComment_id()) {
-                replys.add(allComment.get(i));
-            }
-        }
-        return replys;
+    private List<SecondComment> getReplies(int pos) {
+        List<SecondComment> replies = new ArrayList<>();
+        replies.addAll(commentator.get(pos).getComments());
+        return replies;
     }
 
 }
