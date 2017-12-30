@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -47,7 +48,7 @@ public class DetailActivity extends AppCompatActivity{
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         UserUtil util = new UserUtil(this);
         User user = util.getUer();
-        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.IP, user.getTokenModel());
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
         NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id))
                 .subscribeOn(Schedulers.newThread())
@@ -60,17 +61,29 @@ public class DetailActivity extends AppCompatActivity{
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d("bug", e.toString());
                     }
 
                     @Override
                     public void onNext(DetailPage detailPage) {
                         allComment.addAll(detailPage.getComment_list());
+                        getDirectComment();
+                        initialComment();
                     }
                 });
+    }
 
-        getDirectComment();
+    //获取直接评论的评论
+    private void getDirectComment() {
+        for(int i = 0; i < allComment.size(); i++) {
+            if (allComment.get(i).getTo_comment_id() == 0) {
+                commentator.add(allComment.get(i));
+            }
+        }
+    }
 
+    private void initialComment() {
+        Log.d("bug", "initialComment: "+allComment.size());
         //放直接评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
             @Override
@@ -111,18 +124,9 @@ public class DetailActivity extends AppCompatActivity{
             }
         };
 
+        recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-    }
-
-    //获取直接评论的评论
-    private void getDirectComment() {
-        for(int i = 0; i < allComment.size(); i++) {
-            if (allComment.get(i).getTo_comment_id() == 0) {
-                commentator.add(allComment.get(i));
-            }
-        }
     }
 
     //获取第pos个评论的所有回复
