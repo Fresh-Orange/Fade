@@ -206,13 +206,13 @@ public class Note implements Serializable {
 	}
 
 	//如果note_id相等，则两个帖子相等
-	@Override
+/*	@Override
 	public int hashCode() {
 		if(note_id != null) return note_id.hashCode();
 		else return 0;
-	}
+	}*/
 	
-	@Override
+/*	@Override
 	public boolean equals(Object obj) {
 		Note note = (Note) obj;
 		if(this.note_id == note.getNote_id()){
@@ -220,5 +220,5 @@ public class Note implements Serializable {
 		}else {
 			return false;
 		}
-	}
+	}*/
 }

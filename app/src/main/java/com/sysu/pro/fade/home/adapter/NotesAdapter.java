@@ -64,7 +64,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		 */
 		Log.d("getType",String.valueOf(position));
 		Note bean = data.get(position);
-		if (bean.getImages() != null ||bean.getImages().isEmpty()) {
+		if (bean.getImages() == null || bean.getImages().isEmpty()) {
 			return TEXT_ONLY_ITEM;
 		}
 		if (bean.getNote_content() == null || bean.getNote_content().equals("")) {
