@@ -82,10 +82,11 @@ public class ContentHome {
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
         isEnd = true;
+        initViews();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         noteService = retrofit.create(NoteService.class);
-        noteService.getTenNoteByTime(user.getUser_id().toString(),"0")
+        noteService.getTenNoteByTime(user.getUser_id().toString(),"0","1")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NoteQuery>() {
@@ -108,7 +109,6 @@ public class ContentHome {
                         }
                         //更新start
                         start = noteQuery.getStart();
-                        initViews();
                         swipeRefresh.setRefreshing(false);
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                     }
@@ -172,7 +172,7 @@ public class ContentHome {
                         }else {
                             //加载更多
                             swipeRefresh.setRefreshing(true);
-                            noteService.getTenNoteByTime(user.getUser_id().toString(),start.toString())
+                            noteService.getTenNoteByTime(user.getUser_id().toString(),start.toString(),user.getConcern_num().toString())
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Subscriber<NoteQuery>() {

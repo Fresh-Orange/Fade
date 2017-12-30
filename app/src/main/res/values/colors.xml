@@ -10,7 +10,7 @@
     <color name="very_light_gray">#ececec</color>
     <color name="light_gray">#d6d6d6</color>
     <color name="dark_gray">#565656</color>
-    <color name="name_color">#3088e6</color>
+    <color name="name_color">#000000</color>
 
     <!--for Publish fragment-->
     <color name="white">#FFFFFF</color>

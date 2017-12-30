@@ -57,7 +57,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		//设置头像
 		checkAndSetCurUser(context, bean);
 		Glide.with(context)
-				.load(bean.getHead_image_url())
+				.load(Const.BASE_IP+bean.getHead_image_url())
 				.fitCenter()
 				.dontAnimate()
 				.into(userAvatar);

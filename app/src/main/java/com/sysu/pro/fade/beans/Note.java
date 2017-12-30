@@ -16,15 +16,15 @@ public class Note implements Serializable {
 	private String head_image_url;
 
 	private String note_content;
-	private String post_time;       //发布时间
-	private Integer is_die;         //是否死亡
+	private String post_time = "";       //发布时间
+	private Integer is_die = 1;         //是否死亡
 
 	private Integer comment_num;    //评论数量
 	private Integer sub_num;        //减一秒数量
 	private Integer add_num;        //增一秒数量
-	private Integer target_id;      //代表原贴id（不为0的话）
-	private Integer type;           //代表帖子是增/减/原创, 1/2/0
-	private Integer action;         //动作，0为没动作，1为对这个帖子增过，0为对这个帖子减过
+	private Integer target_id = 0;      //代表原贴id（不为0的话）
+	private Integer type = 0;           //代表帖子是增/减/原创, 1/2/0
+	private Integer action = 0;         //动作，0为没动作，1为对这个帖子增过，0为对这个帖子减过
 
 	private List<Image> images;     // 图片集合
 
