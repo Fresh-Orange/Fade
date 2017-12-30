@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
@@ -29,11 +29,16 @@ import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.publish.PublishActivity;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
-import java.util.List;
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
 
@@ -44,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayoutMenu;
     public Toolbar mToolbar;
     private User user;
-
-
+    private Retrofit retrofit;
+    private UserService userService;
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -89,6 +94,29 @@ public class MainActivity extends AppCompatActivity {
                 //跳转到发布页
             }
         });
+        //初始化retrofit和service，用于上线和下线请求
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        userService = retrofit.create(UserService.class);
+        //上线请求
+        userService.online(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("用户上线","失败" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        Log.i("用户上线",simpleResponse.getSuccess());
+                    }
+                });
     }
 
     //设置底部导航栏图片
@@ -241,24 +269,6 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
-
-
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            switch (requestCode){
-                case Const.PUBLISH_REQUEST_CODE:{
-                    if(resultCode == 1){
-                        //发布成功的话则刷新
-                        MainActivity activity = (MainActivity) getActivity();
-                        contentHome.reload(activity.getCurrentUser().getUser_id());
-                    }
-                }
-                break;
-            }
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
         /**
          * 当该fragment变为可见时回调的方法，例如从消息页跳回首页，则首页回调这个方法
          * by 赖贤城
@@ -344,12 +354,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
         //为fragment赋值
-        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();
+/*        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();
         Fragment fragmentHome = fragments.get(0);
         if(requestCode == Const.PUBLISH_REQUEST_CODE){
             //转交给fragmentHome处理
             fragmentHome.onActivityResult(requestCode,resultCode,data);
-        }
+        }*/
     }
 
     @Override
@@ -381,5 +391,26 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        //下线请求
+        userService.offline(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("用户下线","失败" + e.getMessage());
+                    }
 
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        Log.i("用户下线",simpleResponse.getSuccess());
+                    }
+                });
+        super.onDestroy();
+    }
 }

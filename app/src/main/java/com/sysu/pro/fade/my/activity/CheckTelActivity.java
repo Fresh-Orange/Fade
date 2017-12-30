@@ -29,7 +29,7 @@ public class CheckTelActivity extends AppCompatActivity {
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                //if(ans.equals("{}")){
 
                     //验证成功，跳转到输入密码界面
                     Intent intent = new Intent(CheckTelActivity.this,AddPasswordActivity.class);
@@ -37,7 +37,7 @@ public class CheckTelActivity extends AppCompatActivity {
                     startActivity(intent);
 
                     finish();
-                }
+                //}
             }
         }
     };
