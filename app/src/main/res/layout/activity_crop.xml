@@ -20,8 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="10dp"
-        android:background="@color/light_gray"
+        android:layout_marginTop="3dp"
         app:spv_center_item_background="@color/light_blue"
         app:spv_center_item_position="2"
         app:spv_max_scale="1.5"
@@ -37,17 +36,18 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="6"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
             >
 
             <com.sysu.pro.fade.publish.crop.util.NoScrollView
                 android:id="@+id/scrollview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 >
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
+                    android:layout_height="wrap_content"
                     tools:layout_editor_absoluteY="8dp"
                     tools:layout_editor_absoluteX="8dp"
                     >
@@ -55,7 +55,6 @@
                         android:id="@+id/CropImageView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_gravity="center_horizontal"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"

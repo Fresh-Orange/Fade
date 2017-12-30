@@ -7,10 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.Note;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,15 +22,15 @@ public class  JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener 
 	String logTag = "scroll";
 	private Context context;
 	private List<Note> notes;
-	private List<Integer>now_note_id;
+	private List<Note>updateList;
 
 
 
 	public JudgeRemoveOnScrollListener(Context context
-			, List<Note> notes, List<Integer> now_note_id) {
+			, List<Note> notes, List<Note>updateList) {
 		this.notes = notes;
 		this.context = context;
-		this.now_note_id = now_note_id;
+		this.updateList = updateList;
 	}
 
 
@@ -72,12 +70,13 @@ public class  JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener 
 	 */
 	private boolean matchRemoveCondition(int i) {
 		Note bean = notes.get(i);
-		Date dateNow = new Date(bean.getFetchTime());
+/*		Date dateNow = new Date(bean.getFetchTime());
 		Date datePost = bean.getPost_time();
 		//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
 		long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE + 5 * bean.getGood_num()
-				- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
-		return minuteLeft <= 0;
+				- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));*/
+		//return minuteLeft <= 0;
+		return bean.getIs_die() == 0;//帖子已死亡
 	}
 
 	/**
@@ -103,7 +102,7 @@ public class  JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener 
 		if (middleY < 0 || middleY > recyclerView.getHeight())
 			return;
 		notes.remove(position);
-		now_note_id.remove(position);
+		updateList.remove(position);
 		recyclerView.getAdapter().notifyItemRemoved(position);
 
 		//移除之后，会有新的item填充进来，填充进来之后要判断是否移除，条件成立则移除。这样就变成了递归移除

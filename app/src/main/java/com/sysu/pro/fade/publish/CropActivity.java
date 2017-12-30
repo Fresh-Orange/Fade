@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.publish.crop;
+package com.sysu.pro.fade.publish;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -18,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.crop.BitmapScrollPicker;
+import com.sysu.pro.fade.publish.crop.CropImageView;
+import com.sysu.pro.fade.publish.crop.ScrollPickerView;
 import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
 import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 import com.sysu.pro.fade.publish.crop.util.NoScrollView;
