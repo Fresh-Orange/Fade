@@ -30,105 +30,13 @@
         android:textColor="@color/pos_com_add_font_color"
         android:gravity="start|center_vertical"/>
 
-    <TextView
-        android:id="@+id/tv_time_left"
-        android:layout_marginTop="@dimen/item_head_margin"
-        android:text="@string/app_name"
-        android:textColor="@android:color/black"
+
+
+    <com.sysu.pro.fade.home.view.ClickableProgressBar
+        android:id="@+id/clickable_progressbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ProgressBar
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_margin="10dp"
-            android:max="100"
-            android:progress="50"
-            android:progressDrawable="@drawable/layer_list_progress_drawable" />
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="18dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="11dp"
-            android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/add_minus_line"
-            android:background="@drawable/add_or_minus_button_bg"/>
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_marginTop="@dimen/item_head_margin"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/item_tail_size">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/life_hint"
-            android:textSize="15sp"
-            android:textColor="@color/dark_gray"
-            android:layout_marginRight="10dp"/>
-        <TextView
-            android:id="@+id/tv_life"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="15sp"
-            android:layout_marginRight="150dp"
-            android:text="66s"/>
-
-
-        <ImageButton
-            android:id="@+id/ibtn_add_time"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:background="@android:color/transparent"
-            android:src="@drawable/add_time_unselected"/>
-        <ImageButton
-            android:id="@+id/ibtn_comment"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:background="@android:color/transparent"
-            android:src="@drawable/comment"/>
-        <ImageButton
-            android:id="@+id/ibtn_transmit"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/transmit"/>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/edit_comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-        <EditText
-            android:id="@+id/comment_edit_text_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="5"/>
-        <Button
-            android:id="@+id/send_comment_button"
-            android:layout_margin="@dimen/item_head_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/send_button_text"
-            android:background="@color/light_blue"/>
-    </LinearLayout>
 
 </LinearLayout>
