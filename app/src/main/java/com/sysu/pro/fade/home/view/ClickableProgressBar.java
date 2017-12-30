@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -53,12 +54,30 @@ public class ClickableProgressBar extends FrameLayout {
 	/* *************** 设置监听器 ***************/
 	public void setAddClickListener(onAddClickListener listener){
 		onAddClickListener = listener;
+		btAdd.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onAddClickListener.onClick();
+			}
+		});
 	}
 	public void setMinusClickListener(onMinusClickListener listener){
 		onMinusClickListener = listener;
+		btMinus.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onMinusClickListener.onClick();
+			}
+		});
 	}
 	public void setCommentClickListener(onCommentClickListener listener){
 		onCommentClickListener = listener;
+		btComment.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onCommentClickListener.onClick();
+			}
+		});
 	}
 	/* *************** 设置监听器 ***************/
 
@@ -76,6 +95,8 @@ public class ClickableProgressBar extends FrameLayout {
 		int actionResId = action == 0 ? R.drawable.minus : R.drawable.add;
 		ivAction.setVisibility(VISIBLE);
 		ivAction.setImageResource(actionResId);
+
+		ivContainer.setImageDrawable(null);
 	}
 
 	static public interface onAddClickListener{

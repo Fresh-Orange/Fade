@@ -10,7 +10,7 @@
     <dimen name="right_base_margin">16dp</dimen>
     <dimen name="common_margin">10dp</dimen>
     <dimen name="name_size">14sp</dimen>
-    <dimen name="text_size">15sp</dimen>
+    <dimen name="text_size">14sp</dimen>
     <dimen name="item_tail_size">25dp</dimen>
     <dimen name="foot_item_height">50dp</dimen>
     <dimen name="foot_item_text_size">15sp</dimen>
