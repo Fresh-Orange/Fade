@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
@@ -223,7 +223,8 @@ public class ContentHome {
                         loadMoreScrollListener.resetPreviousTotal();
                         //顶部下拉刷新
                         swipeRefresh.setRefreshing(true);
-                        noteService.getMoreNote(user.getUser_id().toString(), JSON.toJSONString(updateList))
+                        Log.i("test",updateList.toString());
+                        noteService.getMoreNote(user.getUser_id().toString(), new Gson().toJson(updateList))
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Subscriber<NoteQuery>() {
@@ -303,6 +304,12 @@ public class ContentHome {
 
     private void addToListTail(List<Note>list){
         //下翻加载数据
+        for(Note note : list){
+            note.setIs_die(1);
+            if(note.getComment_num() == null) note.setComment_num(0);
+            if(note.getAdd_num() == null) note.setAdd_num(0);
+            if(note.getSub_num() == null) note.setSub_num(0);
+        }
         notes.addAll(list);
         Note simpleNote = null;
         for(Note note : list){
@@ -318,6 +325,12 @@ public class ContentHome {
         //顶部下拉刷新加载数据
         Note getNote = null;
         Note simpleNote = null;
+        for(Note note : list){
+            note.setIs_die(1);
+            if(note.getComment_num() == null) note.setComment_num(0);
+            if(note.getAdd_num() == null) note.setAdd_num(0);
+            if(note.getSub_num() == null) note.setSub_num(0);
+        }
         for(int i = 0; i < list.size(); i++){
             getNote = list.get(i);
             notes.add(0,getNote);
@@ -333,6 +346,9 @@ public class ContentHome {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetNewNote(Note note) {
         //接收新的Note，加到头部
+        if(note.getComment_num() == null) note.setComment_num(0);
+        if(note.getAdd_num() == null) note.setAdd_num(0);
+        if(note.getSub_num() == null) note.setSub_num(0);
         notes.add(0,note);
         Note simpleNote = new Note();
         simpleNote.setNote_id(note.getNote_id());
