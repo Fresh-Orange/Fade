@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,15 +28,12 @@ import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
-import com.sysu.pro.fade.my.activity.LoginActivity;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
-
-import java.util.List;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -273,24 +269,6 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
-
-
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            switch (requestCode){
-                case Const.PUBLISH_REQUEST_CODE:{
-                    if(resultCode == 1){
-                        //发布成功的话则刷新
-                        MainActivity activity = (MainActivity) getActivity();
-                        contentHome.reload(activity.getCurrentUser().getUser_id());
-                    }
-                }
-                break;
-            }
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
         /**
          * 当该fragment变为可见时回调的方法，例如从消息页跳回首页，则首页回调这个方法
          * by 赖贤城
@@ -376,12 +354,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
         //为fragment赋值
-        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();
+/*        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();
         Fragment fragmentHome = fragments.get(0);
         if(requestCode == Const.PUBLISH_REQUEST_CODE){
             //转交给fragmentHome处理
             fragmentHome.onActivityResult(requestCode,resultCode,data);
-        }
+        }*/
     }
 
     @Override
@@ -422,9 +400,7 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Subscriber<SimpleResponse>() {
                     @Override
                     public void onCompleted() {
-
                     }
-
                     @Override
                     public void onError(Throwable e) {
                         Log.e("用户下线","失败" + e.getMessage());
