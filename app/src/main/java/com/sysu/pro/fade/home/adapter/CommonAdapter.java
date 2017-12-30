@@ -105,6 +105,10 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
             View view = getView(id);
             view.setOnClickListener(listener);
         }
+        public void setWidgetVisibility(int id, int visible) {
+            View view = getView(id);
+            view.setVisibility(visible);
+        }
     }
 
     public interface OnItemClickListener {
