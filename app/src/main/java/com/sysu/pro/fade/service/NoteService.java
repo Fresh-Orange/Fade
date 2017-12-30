@@ -24,8 +24,8 @@ public interface NoteService {
     Observable<SimpleResponse> addNote(@Body RequestBody body);
 
     //初次加载以及向下加载10条，按照时间顺序
-    @GET("getTenNoteByTime/{user_id}/{start}")
-    Observable<NoteQuery> getTenNoteByTime(@Path("user_id")String user_id, @Path("start")String start);
+    @GET("getTenNoteByTime/{user_id}/{start}/{concern_num}")
+    Observable<NoteQuery> getTenNoteByTime(@Path("user_id")String user_id, @Path("start")String start,@Path("concern_num")String concern_num);
 
     //顶部下拉刷新，更新已加载帖子的存活，顺便加载新数据
     //第二个参数实际是Set<Note>updateList, Note的每一项要包括note_id,target_id

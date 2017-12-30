@@ -13,12 +13,28 @@
         android:id="@+id/tv_name"
         android:gravity="center_vertical"
         android:layout_toRightOf="@id/civ_avatar"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="8dp"
         android:textSize="@dimen/name_size"
         android:text="刘德华"
         android:textColor="@color/name_color"
         android:layout_width="wrap_content"
         android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/tv_action"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@id/tv_name"
+        android:textSize="@dimen/name_size"
+        android:text="续了一秒"
+        android:textColor="#888888"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="2dp"
+        android:src="@drawable/add"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@+id/tv_action"/>
 
 
 </RelativeLayout>
