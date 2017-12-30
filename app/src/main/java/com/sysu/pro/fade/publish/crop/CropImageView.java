@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -40,6 +41,8 @@ import com.sysu.pro.fade.publish.crop.util.PaintUtil;
 
 import static com.sysu.pro.fade.publish.crop.CropActivity.current_position;
 import static com.sysu.pro.fade.publish.crop.CropActivity.imageX;
+import static com.sysu.pro.fade.publish.crop.CropActivity.imageY;
+import static com.sysu.pro.fade.publish.crop.CropActivity.isSet;
 
 
 /**
@@ -48,6 +51,13 @@ import static com.sysu.pro.fade.publish.crop.CropActivity.imageX;
 public class CropImageView extends android.support.v7.widget.AppCompatImageView {
 
     // Private Constants ///////////////////////////////////////////////////////////////////////////
+
+    public static float cropWidth = 0;
+    public static float cropHeight = 0;
+    private float cropX;
+    private float cropY;
+    private float cropBottom;
+    private float originY = 0;
 
     private static boolean longPicture;
     @SuppressWarnings("unused")
@@ -122,19 +132,19 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
     public CropImageView(Context context) {
         super(context);
         init(context, null);
-        getCroppedImage();
+//        getCroppedImage();
     }
 
     public CropImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
-        getCroppedImage();
+//        getCroppedImage();
     }
 
     public CropImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
-        getCroppedImage();
+//        getCroppedImage();
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -153,7 +163,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         mSurroundingAreaOverlayPaint = PaintUtil.newSurroundingAreaOverlayPaint(resources);
         mCornerPaint = PaintUtil.newCornerPaint(resources);
 
-        getCroppedImage();
+//        getCroppedImage();
 
 
         mHandleRadius = resources.getDimension(R.dimen.target_radius);
@@ -168,31 +178,22 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 
-        super.onLayout(changed, left, top, right, bottom);
+        super.onLayout(true, left, top, right, bottom);
 
-        /*mBitmapRect = getBitmapRect();
+        Log.d("layout", "OnLayout");
+        mBitmapRect = getBitmapRect();
         initCropWindow(mBitmapRect);
-        getCroppedImage();*/
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
+        getCroppedImage();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        mBitmapRect = getBitmapRect();
-        initCropWindow(mBitmapRect);
-        getCroppedImage();
-        super.onDraw(canvas);
 
+        super.onDraw(canvas);
 
 //        if (longPicture) {
 //            return;
 //        }
-
         drawDarkenedSurroundingArea(canvas);
         drawGuidelines(canvas);
         drawBorder(canvas);
@@ -213,7 +214,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
             case MotionEvent.ACTION_DOWN:
                 onActionDown(event.getX(), event.getY());
-                topY = (int) event.getRawY();
+//                topY = (int) event.getRawY();
                 return true;
 
             case MotionEvent.ACTION_UP:
@@ -223,14 +224,18 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                int y = (int) event.getRawY();
-                int offsety = y - topY;
-                Log.d("MotionEvent", "onTouchEvent: ");
                 onActionMove(event.getX(), event.getY());
                 getParent().requestDisallowInterceptTouchEvent(true);
-                Log.d("Scroll", "y: " + y);
-                Log.d("Scroll", "mTouchOffset.y: " + mTouchOffset.y);
-                CropActivity.outScroll.scrollBy(0, offsety / 4);
+//                float offsety = y - topY;
+                int y = (int) event.getRawY();
+                float offsety = (imageY[current_position] - originY) * cropHeight;
+
+                Log.d("MotionEvent", "onTouchEvent: ");
+
+//                Log.d("Scroll", "mTouchOffset.y: " + mTouchOffset.y);
+
+
+//                CropActivity.scrollY = CropActivity.outScroll.getY();
                 return true;
 
             default:
@@ -284,7 +289,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         if (mFixAspectRatio) {
             requestLayout(); // Request measure/layout to be run again.
-            getCroppedImage();
+//            getCroppedImage();
         }
     }
 
@@ -321,20 +326,30 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final Bitmap originalBitmap = ((BitmapDrawable) drawable).getBitmap();
 
         // Calculate the top-left corner of the crop window relative to the ~original~ bitmap size.
-        final float cropX = (bitmapLeft + Edge.LEFT.getCoordinate()) / scaleX;
-        final float cropY = (bitmapTop + Edge.TOP.getCoordinate()) / scaleY;
-
+        cropX = (bitmapLeft + Edge.LEFT.getCoordinate()) / scaleX;
+        cropY = (bitmapTop + Edge.TOP.getCoordinate()) / scaleY;
+        cropBottom = (bitmapTop + Edge.BOTTOM.getCoordinate()) / scaleY;
         // Calculate the crop window size relative to the ~original~ bitmap size.
         // Make sure the right and bottom edges are not outside the ImageView bounds (this is just to address rounding discrepancies).
-        final float cropWidth = originalBitmap.getWidth();
-        final float cropHeight = originalBitmap.getHeight();
+        cropWidth = originalBitmap.getWidth();
+        cropHeight = originalBitmap.getHeight();
 
         Log.d("Yellow","cropX: " + cropX);
         Log.d("Yellow","cropY: " + cropY);
         Log.d("Yellow","cropWidth: " + cropWidth);
         Log.d("Yellow","cropHeight: " + cropHeight);
 
-        imageX[CropActivity.current_position] = cropX / cropWidth;
+//        if (isSet[current_position])
+        originY = CropActivity.imageY[CropActivity.current_position] * cropHeight;
+//        else
+
+
+        CropActivity.left[current_position] = Edge.LEFT.getCoordinate();
+        CropActivity.right[current_position] = Edge.RIGHT.getCoordinate();
+        CropActivity.top[current_position] = Edge.TOP.getCoordinate();
+        CropActivity.bottom[current_position] = Edge.BOTTOM.getCoordinate();
+
+        CropActivity.imageX[CropActivity.current_position] = cropX / cropWidth;
         CropActivity.imageY[CropActivity.current_position] = cropY / cropHeight;
         // Crop the subset from the original Bitmap.
 //        return Bitmap.createBitmap(originalBitmap,
@@ -342,6 +357,27 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 //                                   (int) cropY,
 //                                   (int) cropWidth,
 //                                   (int) cropHeight);
+        Log.d("Scroll", "cropY: " + cropY);
+        Log.d("Scroll", "originY: " + cropY);
+        float originScrollY = CropActivity.outScroll.getScrollY();
+        Log.d("Scroll", "originScrollY: " + originScrollY);
+
+        Log.d("Scroll", "screenWidth: " + CropActivity.screenWidth);
+        //就是这行代码花了一天啊..这是按比例移动ScrollView！
+        CropActivity.outScroll.smoothScrollToSlow(0,(int) (cropY * CropActivity.screenWidth / cropWidth));
+
+
+        float originScrolltwoY = CropActivity.outScroll.getScrollY();
+        Log.d("Scroll", "originScrolltwoY: " + originScrolltwoY);
+        Log.d("Scroll", "cropHeight: " + cropHeight);
+        Log.d("Scroll","cropWidth: " + cropWidth);
+//        if (CropActivity.outScroll.getY() - originScrollY < 1) {
+//            //没运动，强制运动
+//            Log.d("Scroll", "强制");
+//            Log.d("Scroll", "originY: " + originY);
+//            CropActivity.outScroll.scrollBy(0, (int) (cropY - originY));
+//        }
+        originY = cropY;
         Pair<Float,Float> pair = new Pair<Float,Float>(cropX, cropY);
         return pair;
 
@@ -410,23 +446,24 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
      */
     private void initCropWindow(@NonNull RectF bitmapRect) {
 
-        if (mFixAspectRatio) {
+//        if (mFixAspectRatio) {
 
             // Initialize the crop window with the proper aspect ratio.
-            initCropWindowWithFixedAspectRatio(bitmapRect);
+        initCropWindowWithFixedAspectRatio(bitmapRect);
+//        getCroppedImage();
+//        } else {
+//
+//            Log.d("yellow", "mFixAspectRatio");
+//            // Initialize crop window to have 10% padding w/ respect to Drawable's bounds.
+//            final float horizontalPadding = 0.1f * bitmapRect.width();
+//            final float verticalPadding = 0.1f * bitmapRect.height();
+//
+//            Edge.LEFT.setCoordinate(bitmapRect.left + horizontalPadding);
+//            Edge.TOP.setCoordinate(bitmapRect.top + verticalPadding);
+//            Edge.RIGHT.setCoordinate(bitmapRect.right - horizontalPadding);
+//            Edge.BOTTOM.setCoordinate(bitmapRect.bottom - verticalPadding);
+//        }
 
-        } else {
-
-            // Initialize crop window to have 10% padding w/ respect to Drawable's bounds.
-            final float horizontalPadding = 0.1f * bitmapRect.width();
-            final float verticalPadding = 0.1f * bitmapRect.height();
-
-            Edge.LEFT.setCoordinate(bitmapRect.left + horizontalPadding);
-            Edge.TOP.setCoordinate(bitmapRect.top + verticalPadding);
-            Edge.RIGHT.setCoordinate(bitmapRect.right - horizontalPadding);
-            Edge.BOTTOM.setCoordinate(bitmapRect.bottom - verticalPadding);
-        }
-        getCroppedImage();
     }
 
     private void initCropWindowWithFixedAspectRatio(@NonNull RectF bitmapRect) {
@@ -442,6 +479,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
                 CropActivity.top[current_position] = bitmapRect.top;
                 CropActivity.right[current_position] = bitmapRect.centerX() + cropWidth / 2f;
                 CropActivity.bottom[current_position] = bitmapRect.bottom;
+                CropActivity.isSet[current_position] = true;
             }
 
             Log.d("position","left: " + CropActivity.left[current_position]);
@@ -465,6 +503,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
                 CropActivity.top[current_position] = bitmapRect.centerY() - cropHeight / 2f;
                 CropActivity.right[current_position] = bitmapRect.right;
                 CropActivity.bottom[current_position] = bitmapRect.centerY() + cropHeight / 2f;
+                CropActivity.isSet[current_position] = true;
             }
             Log.d("position","left: " + CropActivity.left[current_position]);
             Log.d("position","top: " + CropActivity.top[current_position]);
@@ -481,6 +520,7 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 //            Edge.RIGHT.setCoordinate(bitmapRect.right);
 //            Edge.BOTTOM.setCoordinate(bitmapRect.centerY() + cropHeight / 2f);
         }
+
     }
 
     private void drawDarkenedSurroundingArea(@NonNull Canvas canvas) {
@@ -625,8 +665,8 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
             CropActivity.right[current_position] = Edge.RIGHT.getCoordinate();
             CropActivity.top[current_position] = Edge.TOP.getCoordinate();
             CropActivity.bottom[current_position] = Edge.BOTTOM.getCoordinate();
-            CropActivity.isSet[current_position] = true;
-            getCroppedImage();
+
+//            getCroppedImage();
             invalidate();
         }
     }
@@ -648,15 +688,16 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         x += mTouchOffset.x;
         y += mTouchOffset.y;
 
-
-        getCroppedImage();
+        Log.d("scroll", "mTouchOffset.y: " + y);
         // Calculate the new crop window size/position.
         if (mFixAspectRatio) {
             mPressedHandle.updateCropWindow(x, y, getTargetAspectRatio(), mBitmapRect, mSnapRadius);
         } else {
             mPressedHandle.updateCropWindow(x, y, mBitmapRect, mSnapRadius);
         }
+//        getCroppedImage();
         invalidate();
+
 
     }
 

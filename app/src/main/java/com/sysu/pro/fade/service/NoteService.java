@@ -28,9 +28,9 @@ public interface NoteService {
     Observable<NoteQuery> getTenNoteByTime(@Path("user_id")String user_id, @Path("start")String start);
 
     //顶部下拉刷新，更新已加载帖子的存活，顺便加载新数据
-    //第二个参数实际是Set<Note>updateSet, Note的每一项要包括note_id,target_id
-    @GET("getMoreNote/{user_id}/{updateSet}")
-    Observable<NoteQuery> getMoreNote(@Path("user_id")String user_id, @Path("updateSet")String updateSet);
+    //第二个参数实际是Set<Note>updateList, Note的每一项要包括note_id,target_id
+    @GET("getMoreNote/{user_id}/{updateList}")
+    Observable<NoteQuery> getMoreNote(@Path("user_id")String user_id, @Path("updateList")String updateList);
 
     //改变续秒数，包括增一秒和减一秒
     @FormUrlEncoded
@@ -44,7 +44,5 @@ public interface NoteService {
     //删除帖子
     @DELETE("deleteNote/{note_id}/{user_id}")
     Observable<SimpleResponse> deleteNote(@Path("note_id")String note_id,@Path("user_id")String user_id);
-
-
 
 }

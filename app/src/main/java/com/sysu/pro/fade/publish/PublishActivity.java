@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.publish;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,12 +9,14 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -555,7 +558,7 @@ public class PublishActivity extends AppCompatActivity {
                     case 0:
 //                        Toast.makeText(PublishActivity.this,
 //                                "你点击了拍照", Toast.LENGTH_SHORT).show();
-                        takePhoto();
+                        takePhoto(PublishActivity.this);
                         break;
                     case 1:
 //                        Toast.makeText(PublishActivity.this,
@@ -563,6 +566,7 @@ public class PublishActivity extends AppCompatActivity {
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
 //                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
                         ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
+
                         break;
                 }
                 // which 下标从0开始
@@ -572,13 +576,11 @@ public class PublishActivity extends AppCompatActivity {
         });
         listDialog.show();
     }
-
-
-
-    public void takePhoto()
+    //适配7.0的拍照方法
+    private static void takePhoto(Activity activity)
     {
         Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
+//        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         File vFile = new File(Environment.getExternalStorageDirectory()
                 + "/myimage/", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
@@ -594,11 +596,20 @@ public class PublishActivity extends AppCompatActivity {
                 vFile.delete();
             }
         }
-        path = vFile.getPath();
-        Uri cameraUri = Uri.fromFile(vFile);
-        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
-        startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
+        Uri tempUri;
+        if (Build.VERSION.SDK_INT >= 24)
+            tempUri = FileProvider.getUriForFile(activity.getApplicationContext(),
+                    activity.getApplicationContext().getPackageName() +
+                            ".provider", vFile);
+        else tempUri = Uri.fromFile(vFile);
+        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        }
+        activity.startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
     }
+
+
 
     private void removeImg(int location)
     {

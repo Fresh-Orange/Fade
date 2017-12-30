@@ -33,7 +33,6 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private static final int FOOT_ITEM = 6;//最底部的“正在加载”
 	public static int viewPagerTag = 0;
 	private Context context;
-	private Handler handler;
 	private List<Note> data;
 	private boolean showFootView = true;
 	private String TAG = "footView";
@@ -41,10 +40,9 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	private FootViewHolder footViewHolder;
 
-	public NotesAdapter(Context context, Handler handler, List<Note> data) {
+	public NotesAdapter(Context context, List<Note> data) {
 		this.context = context;
 		this.data = data;
-		this.handler = handler;
 	}
 
 	/**
@@ -104,7 +102,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	@Override
 	public void onBindViewHolder(HomeBaseViewHolder holder, int position) {
-		holder.bindView(context, handler, data, position);    //利用多态性
+		holder.bindView(context, data, position);    //利用多态性
 	}
 
 	/**
