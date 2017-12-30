@@ -22,7 +22,6 @@ import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.adapter.GoodListAdapter;
 import com.sysu.pro.fade.beans.DetailGood;
 import com.sysu.pro.fade.tool.NoteTool;
-import com.sysu.pro.fade.utils.BeanConvertUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.util.ArrayList;

@@ -17,19 +17,29 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
 import com.sysu.pro.fade.home.listener.SoftKeyboardStateWatcher;
+import com.sysu.pro.fade.service.NoteService;
+import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.tool.NoteTool;
-import com.sysu.pro.fade.utils.BeanConvertUtil;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.edit_comment;
 
@@ -38,7 +48,7 @@ import static com.sysu.pro.fade.R.id.edit_comment;
  */
 public class ContentHome {
     /*图片URL数组*/
-    private List<Note> notes;
+    private List<Note> notes;//当前加载的帖子
     /*信息流适配器*/
     private NotesAdapter adapter;
     /*刷新控件*/
@@ -58,16 +68,14 @@ public class ContentHome {
      * add By 黄路 2017/8/18
      */
     private int start;                 //大请求起始点
-    private List<Integer> id_list;      //大请求带来的id，上限180条，用于小请求,20条一次拿去请求数据
-    private int flag = 0;              //代表小请求索要第几段（20条一段，初始为0）
 
     private Integer current_user_id;   //登录注册以后，当前使用者的user_id
     private User user;               //登录用户的全部信息
 
-    private List<Integer>now_note_id;         //要发给服务器的note_id
-    private List<Integer>latest_good_nums;   //更新之后的good_nums数组  对应列表的展示顺序
-
-
+    private Set<Note>updateSet;  //用于更新帖子情况
+    private Retrofit retrofit;
+    private UserService userService;
+    private NoteService noteService;
 
     private Handler handler = new Handler(){
         @Override
@@ -87,16 +95,7 @@ public class ContentHome {
                     if(notes == null)   notes = new ArrayList<>();
                     id_list = (List<Integer>) map.get(Const.ID_LIST);
                     if(start == 0){
-                        Toast.makeText(context,"大请求：首次加载",Toast.LENGTH_SHORT).show();
-                        notes.clear();
-                        for(Map<String,Object> one_note : result){
-                            Note note = BeanConvertUtil.convert2Note(one_note);
-                            notes.add(note);
-                            now_note_id.add(note.getNote_id());
-                        }
-                        initViews();
-                        swipeRefresh.setRefreshing(false);
-                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+
                     }else {
                         Toast.makeText(context,"大请求：继续加载数据",Toast.LENGTH_SHORT).show();
                         for(Map<String,Object> one_note : result){
@@ -193,7 +192,7 @@ public class ContentHome {
         }
     };
 
-    public ContentHome(Activity activity, Context context, View rootView){
+    public ContentHome(Activity activity, final Context context, View rootView){
         this.activity = activity;
         this.context = context;
         this.rootView = rootView;
@@ -202,10 +201,40 @@ public class ContentHome {
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
         current_user_id = user.getUser_id();
-        now_note_id = new ArrayList<>();
+        notes = new ArrayList<>();
+        updateSet = new HashSet<>();
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        userService = retrofit.create(UserService.class);
+        noteService = retrofit.create(NoteService.class);
+        noteService.getTenNoteByTime(user.getUser_id().toString(),"0")
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<NoteQuery>() {
+                    @Override
+                    public void onCompleted() {
 
-        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0"); //第一次大请求，handler里面调用initViews加载数据,暂时用user_id=8用户的测试一下 start=0
-        flag = 0;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("初次加载","失败");
+                    }
+
+                    @Override
+                    public void onNext(NoteQuery noteQuery) {
+                        Log.i("首次加载","成功");
+                        notes.clear();
+                        if(noteQuery.getList() != null && noteQuery.getList().size() != 0){
+                            notes.addAll(noteQuery.getList());
+                            updateSet.addAll(noteQuery.getUpdateSet());
+                        }
+                        initViews();
+                        swipeRefresh.setRefreshing(false);
+                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        start = 0;
     }
 
     private void initViews(){
@@ -329,14 +358,7 @@ public class ContentHome {
 //                        start = 0;
 //                        NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");
                         if(now_note_id.size() != 0){
-                            StringBuilder sb = new StringBuilder();
-                            for(int i =now_note_id.size() -1; i >=  0; i--){
-                                sb.append(now_note_id.get(i));
-                                sb.append(",");
-                            }
-                            sb.deleteCharAt(sb.length()-1);
-                            String bunch = sb.toString();
-                            NoteTool.topReload(handler,current_user_id,bunch);
+
                         }else{
                             //否则就是首次加载
                             NoteTool.getBigSectionHome(handler,current_user_id.toString(),"0");

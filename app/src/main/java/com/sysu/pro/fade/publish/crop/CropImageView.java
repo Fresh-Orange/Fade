@@ -170,15 +170,24 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         super.onLayout(changed, left, top, right, bottom);
 
-        mBitmapRect = getBitmapRect();
+        /*mBitmapRect = getBitmapRect();
         initCropWindow(mBitmapRect);
-        getCroppedImage();
+        getCroppedImage();*/
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
+        mBitmapRect = getBitmapRect();
+        initCropWindow(mBitmapRect);
+        getCroppedImage();
         super.onDraw(canvas);
+
 
 //        if (longPicture) {
 //            return;

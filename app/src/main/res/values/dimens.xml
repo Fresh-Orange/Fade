@@ -5,7 +5,9 @@
 
     <!--for Home fragment-->
     <dimen name="avatar">40dp</dimen>
-    <dimen name="item_head_margin">5dp</dimen>
+    <dimen name="item_head_margin">8dp</dimen>
+    <dimen name="left_base_margin">16dp</dimen>
+    <dimen name="right_base_margin">16dp</dimen>
     <dimen name="common_margin">10dp</dimen>
     <dimen name="name_size">17sp</dimen>
     <dimen name="text_size">15sp</dimen>

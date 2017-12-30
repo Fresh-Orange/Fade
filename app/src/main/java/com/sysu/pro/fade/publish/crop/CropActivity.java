@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -163,6 +164,8 @@ public class CropActivity extends AppCompatActivity{
                         bms[i].recycle();
                     }
                 }
+                ViewGroup.LayoutParams p = cropImageView.getLayoutParams();
+
 //                Glide.with(CropActivity.this).load(newimages.get(position))
 //                        .into(cropImageView);
                 bms[current_position] = BitmapFactory.decodeFile(newimages.get(position));

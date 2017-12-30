@@ -67,7 +67,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		addTimeButton = (ImageButton) itemView.findViewById(R.id.ibtn_add_time);
 		transmitButton = (ImageButton) itemView.findViewById(R.id.ibtn_transmit);
 		tailLinearLayout = (LinearLayout) itemView.findViewById(R.id.tail_linear_layout);
-		addCountTextView = (TextView) itemView.findViewById(R.id.tv_add_count);
+		addCountTextView = (TextView) itemView.findViewById(R.id.tv_comment_add_count);
 		timeLeftTextView = (TextView) itemView.findViewById(R.id.tv_time_left);
 
 		commentEdit = (LinearLayout) itemView.findViewById(R.id.edit_comment);

@@ -42,4 +42,8 @@
     <color name="corner">@android:color/white</color>
     <color name="surrounding_area">@color/black_translucent</color>
 
+    <color name="pos_com_add_font_color">#7b000000</color>
+
+
+
 </resources>
