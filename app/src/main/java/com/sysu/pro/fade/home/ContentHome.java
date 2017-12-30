@@ -27,6 +27,10 @@ import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,6 +127,8 @@ public class ContentHome {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new NotesAdapter(context, notes);
         recyclerView.setAdapter(adapter);
+        //EventBus订阅
+        EventBus.getDefault().register(this);
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
 		/*刷新数据*/
         swipeRefresh.setOnRefreshListener(
@@ -340,8 +346,20 @@ public class ContentHome {
             simpleNote = new Note();
             simpleNote.setNote_id(getNote.getNote_id());
             simpleNote.setTarget_id(getNote.getTarget_id());
-            updateList.add(simpleNote);
+            updateList.add(0,simpleNote);
         }
         adapter.notifyDataSetChanged();
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetNewNote(Note note) {
+        //接收新的Note，加到头部
+        notes.add(0,note);
+        Note simpleNote = new Note();
+        simpleNote.setNote_id(note.getNote_id());
+        simpleNote.setTarget_id(note.getTarget_id());
+        updateList.add(0,simpleNote);
+        adapter.notifyDataSetChanged();
+    }
+
 }
