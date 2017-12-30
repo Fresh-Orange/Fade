@@ -18,6 +18,7 @@ import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
+import com.sysu.pro.fade.home.event.itemChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
 import com.sysu.pro.fade.service.NoteService;
@@ -74,6 +75,8 @@ public class ContentHome {
         this.activity = activity;
         this.context = context;
         this.rootView = rootView;
+        //EventBus订阅
+        EventBus.getDefault().register(this);
         swipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
         swipeRefresh.setRefreshing(true);
         //初始化用户信息
@@ -123,8 +126,7 @@ public class ContentHome {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new NotesAdapter((MainActivity) context, notes);
         recyclerView.setAdapter(adapter);
-        //EventBus订阅
-        EventBus.getDefault().register(this);
+
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
 		/*刷新数据*/
         swipeRefresh.setOnRefreshListener(
@@ -353,6 +355,14 @@ public class ContentHome {
         simpleNote.setTarget_id(note.getTarget_id());
         updateList.add(0,simpleNote);
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * item发生变化，更新界面
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onItemChanged(itemChangeEvent itemChangeEvent) {
+        adapter.notifyItemChanged(itemChangeEvent.getPosition());
     }
 
 }

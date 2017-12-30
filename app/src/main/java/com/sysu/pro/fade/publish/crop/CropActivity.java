@@ -67,7 +67,7 @@ public class CropActivity extends AppCompatActivity{
         activity.startActivityForResult(intent, requestCode);
     }
 
-    private static int determineSize(String image) {
+    public static int determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         /**
          * 最关键在此，把options.inJustDecodeBounds = true;
