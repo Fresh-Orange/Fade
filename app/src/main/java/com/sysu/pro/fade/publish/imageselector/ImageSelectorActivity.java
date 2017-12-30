@@ -418,7 +418,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
         newCount = mMaxCount - newimages.size();
         CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-        finish();
+//        finish();
     }
 
     private void cropConfirm() {
