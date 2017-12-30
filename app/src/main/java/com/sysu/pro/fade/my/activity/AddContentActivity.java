@@ -153,6 +153,9 @@ public class AddContentActivity extends AppCompatActivity {
                                                 user.setFade_name((String) extra.get("fade_name"));
                                                 user.setRegister_time((String) extra.get("register_time"));
                                                 user.setHead_image_url((String) extra.get("head_image_url"));
+                                                user.setConcern_num(0);
+                                                user.setFans_num(0);
+                                                user.setFade_num(0);
                                             }
                                             //存储用户信息
                                             SharedPreferences.Editor editor = sharedPreferences.edit();

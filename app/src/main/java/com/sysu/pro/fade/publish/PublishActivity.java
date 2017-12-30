@@ -182,70 +182,70 @@ public class PublishActivity extends AppCompatActivity {
                 public void onSuccess(File file) {
                     images_files.add(file);
                     have_compress_num++;
-                    if(have_compress_num == images.size()){
-                        //直到这里，所有图片才生成本地的压缩文件，才能发送图片
-                        //TODO : 后面两个参数为 coordinate_list, cut_size_list
-                        //cut_size为裁剪比例，1代表宽图4:5, 2代表长图15:8
-                        //全部图片压缩完毕，发送帖子
-                        note.setImages(imageArray);
-                        MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
-                                .addFormDataPart("note", JSON.toJSONString(note));
-                        for(File temp : images_files){
-                            builder.addFormDataPart("file", temp.getName(), RequestBody.create(MediaType.parse("image/*"), temp));
-                        }
-                        RequestBody body = builder.build();
-                        noteService.addNote(body)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<SimpleResponse>() {
-                                    @Override
-                                    public void onCompleted() {
-                                    }
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        Log.e("发送帖子","出错");
-                                        Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
-                                        finish();
-                                    }
-
-                                    @Override
-                                    public void onNext(SimpleResponse simpleResponse) {
-                                        if(simpleResponse.getErr() == null){
-                                            Toast.makeText(PublishActivity.this,"发送成功",Toast.LENGTH_SHORT).show();
-                                            progressDialog.dismiss();
-                                            //添加一些服务器返回来的参数
-                                            Map<String,Object>extra = new HashMap<>();
-                                            List<String>imageUrls = (List<String>) extra.get("imageUrls");
-                                            for(int k = 0; k < imageUrls.size(); k++ ){
-                                                imageArray.get(k).setImage_url(imageUrls.get(k));
-                                            }
-                                            note.setImages(imageArray);
-                                            Integer note_id = (Integer) extra.get("note_id");
-                                            String post_time = (String) extra.get("post_time");
-                                            note.setNote_id(note_id);
-                                            note.setPost_time(post_time);
-                                            //通知主界面（ContentHome）更新
-                                            EventBus.getDefault().post(note);
-                                            finish();
-                                        }else {
-                                            Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
-                                        }
-                                        //最后要将所有缓存图片删除
-                                        for(File chache_file : images_files){
-                                            if(chache_file.exists()){
-                                                chache_file.delete();
-                                            }
-                                        }
-                                    }
-                                });
-                    }
                 }
                 @Override
                 public void onError(Throwable e) {
                     Toast.makeText(PublishActivity.this,e.getMessage().toString(),Toast.LENGTH_SHORT).show();
                 }
             }).launch();
+            if(images.size() == 0 || have_compress_num == images.size()){
+                //直到这里，所有图片才生成本地的压缩文件，才能发送图片
+                //TODO : 后面两个参数为 coordinate_list, cut_size_list
+                //cut_size为裁剪比例，1代表宽图4:5, 2代表长图15:8
+                //全部图片压缩完毕，发送帖子
+                note.setImages(imageArray);
+                MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
+                        .addFormDataPart("note", JSON.toJSONString(note));
+                for(File temp : images_files){
+                    builder.addFormDataPart("file", temp.getName(), RequestBody.create(MediaType.parse("image/*"), temp));
+                }
+                RequestBody body = builder.build();
+                noteService.addNote(body)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SimpleResponse>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e("发送帖子","出错");
+                                Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                finish();
+                            }
+
+                            @Override
+                            public void onNext(SimpleResponse simpleResponse) {
+                                if(simpleResponse.getErr() == null){
+                                    Toast.makeText(PublishActivity.this,"发送成功",Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    //添加一些服务器返回来的参数
+                                    Map<String,Object>extra = new HashMap<>();
+                                    List<String>imageUrls = (List<String>) extra.get("imageUrls");
+                                    for(int k = 0; k < imageUrls.size(); k++ ){
+                                        imageArray.get(k).setImage_url(imageUrls.get(k));
+                                    }
+                                    note.setImages(imageArray);
+                                    Integer note_id = (Integer) extra.get("note_id");
+                                    String post_time = (String) extra.get("post_time");
+                                    note.setNote_id(note_id);
+                                    note.setPost_time(post_time);
+                                    //通知主界面（ContentHome）更新
+                                    EventBus.getDefault().post(note);
+                                    finish();
+                                }else {
+                                    Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
+                                }
+                                //最后要将所有缓存图片删除
+                                for(File chache_file : images_files){
+                                    if(chache_file.exists()){
+                                        chache_file.delete();
+                                    }
+                                }
+                            }
+                        });
+            }
             bitmap_temp.recycle();
            // File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
         }

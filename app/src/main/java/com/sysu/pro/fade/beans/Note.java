@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Note implements Serializable {
@@ -15,21 +16,31 @@ public class Note implements Serializable {
 	private String head_image_url;
 
 	private String note_content;
-	private String post_time;       //发布时间
-	private Integer is_die;         //是否死亡
+	private String post_time = "";       //发布时间
+	private Integer is_die = 1;         //是否死亡
 
 	private Integer comment_num;    //评论数量
 	private Integer sub_num;        //减一秒数量
 	private Integer add_num;        //增一秒数量
-	private Integer target_id;      //代表原贴id（不为0的话）
-	private Integer type;           //代表帖子是增/减/原创, 1/2/0
-	private Integer action;         //动作，0为没动作，1为对这个帖子增过，0为对这个帖子减过
+	private Integer target_id = 0;      //代表原贴id（不为0的话）
+	private Integer type = 0;           //代表帖子是增/减/原创, 1/2/0
+	private Integer action = 0;         //动作，0为没动作，1为对这个帖子增过，0为对这个帖子减过
 
 	private List<Image> images;     // 图片集合
 
 	private Note origin;// 原贴
 
 	private Integer baseComment_num; //一级评论数量，后端缓存判断用到，数据库不保存
+
+	private long fetchTime;
+
+	public long getFetchTime() {
+		return fetchTime;
+	}
+
+	public void setFetchTime(long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
 	
 	public Integer getNote_id() {
 		return note_id;
@@ -119,6 +130,35 @@ public class Note implements Serializable {
 
 	public List<Image> getImages() {
 		return images;
+	}
+
+	public List<String> getImgCoordinates() {
+		List<String> imgCoordinates = new ArrayList<>();
+		for (Image image: images){
+			imgCoordinates.add(image.getImage_coordinate());
+		}
+		return imgCoordinates;
+	}
+
+	public List<String> getImgUrls() {
+		List<String> imgUrls = new ArrayList<>();
+		for (Image image: images){
+			imgUrls.add(image.getImage_url());
+		}
+		return imgUrls;
+	}
+
+	public List<Double> getImgSizes() {
+		List<Double> imgSizes = new ArrayList<>();
+		for (Image image: images){
+			imgSizes.add(Double.parseDouble(image.getImage_size()));
+		}
+		return imgSizes;
+	}
+
+
+	public Integer getImgCutSize() {
+		return Integer.parseInt(images.get(0).getImage_cut_size());
 	}
 
 	public void setImages(List<Image> images) {
