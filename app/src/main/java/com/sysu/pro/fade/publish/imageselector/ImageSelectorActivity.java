@@ -10,7 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -33,9 +37,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
 import com.sysu.pro.fade.publish.crop.CropActivity;
+import com.sysu.pro.fade.publish.crop.CropImageView;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Folder;
@@ -418,8 +422,13 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
 
         newCount = mMaxCount - newimages.size();
+        int size = determineSize(images.get(0));
+        Log.d("Yellow", "size: " + size);
+        float result[] = new float[2];
+        result = getInitialSize(images.get(0), size);
+        Log.d("Yellow", "result: " + result);
         CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-        finish();
+//        finish();
     }
 
     private void cropConfirm() {
@@ -612,4 +621,39 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    private static int determineSize(String image) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        /**
+         * 最关键在此，把options.inJustDecodeBounds = true;
+         * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
+         */
+        Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
+        /**
+         *options.outHeight为原始图片的高
+         */
+        float currentRatio = (float)options.outWidth / (float)options.outHeight;
+        if (currentRatio > 1.3375f)
+            return 0;
+        else
+            return 1;
+    }
+
+    public static float[] getInitialSize(String image, int size) {
+        float result[] = new float[2];
+        Bitmap bm = BitmapFactory.decodeFile(image);
+        CropImageView cropImageView2 = null;
+        cropImageView2.setImageBitmap(bm);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        if (size == 0)
+            cropImageView2.setAspectRatio(15, 8);
+        else
+            cropImageView2.setAspectRatio(4, 5);
+        RectF rectF = cropImageView2.getBitmapRect();
+        result = cropImageView2.getPara(rectF, bm);
+        Log.d("Result", "x: " + result[0]);
+        Log.d("Result", "y: " + result[1]);
+        return result;
+    }
+
 }

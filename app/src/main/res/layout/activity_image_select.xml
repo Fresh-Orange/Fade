@@ -57,7 +57,7 @@
                 android:id="@+id/tv_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/light_blue"
+                android:background="@color/main_blue"
                 android:gravity="center"
                 android:minWidth="50dp"
                 android:paddingBottom="5dp"
@@ -144,7 +144,7 @@
                     android:id="@+id/tv_folder_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/light_blue"
+                    android:textColor="@color/main_blue"
                     android:textSize="18sp"
                     android:text="camera"/>
 
@@ -175,7 +175,7 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:text="@string/preview"
-                android:textColor="@color/light_blue"
+                android:textColor="@color/main_blue"
                 android:textSize="18sp" />
 
         </FrameLayout>

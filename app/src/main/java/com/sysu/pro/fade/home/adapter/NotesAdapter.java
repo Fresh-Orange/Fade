@@ -1,13 +1,12 @@
 package com.sysu.pro.fade.home.adapter;
 
-import android.content.Context;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.view.CompleteHolder;
@@ -32,8 +31,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private static final int IMAGE_ONLY_ITEM = 2;//仅图片类型
 	private static final int FOOT_ITEM = 6;//最底部的“正在加载”
 	public static int viewPagerTag = 0;
-	private Context context;
-	private Handler handler;
+	private MainActivity context;
 	private List<Note> data;
 	private boolean showFootView = true;
 	private String TAG = "footView";
@@ -41,10 +39,9 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	private FootViewHolder footViewHolder;
 
-	public NotesAdapter(Context context, Handler handler, List<Note> data) {
+	public NotesAdapter(MainActivity context, List<Note> data) {
 		this.context = context;
 		this.data = data;
-		this.handler = handler;
 	}
 
 	/**
@@ -67,10 +64,10 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		 */
 		Log.d("getType",String.valueOf(position));
 		Note bean = data.get(position);
-		if (bean.getImgUrls().isEmpty()) {
+		if (bean.getImages() != null ||bean.getImages().isEmpty()) {
 			return TEXT_ONLY_ITEM;
 		}
-		if (bean.getText().equals("")) {
+		if (bean.getNote_content() == null || bean.getNote_content().equals("")) {
 			return IMAGE_ONLY_ITEM;
 		}
 		return COMPLETE_ITEM;
@@ -104,7 +101,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	@Override
 	public void onBindViewHolder(HomeBaseViewHolder holder, int position) {
-		holder.bindView(context, handler, data, position);    //利用多态性
+		holder.bindView(context, data, position);    //利用多态性
 	}
 
 	/**

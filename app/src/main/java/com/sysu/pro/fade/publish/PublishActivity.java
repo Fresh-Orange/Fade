@@ -34,8 +34,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.Image;
+import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
@@ -45,14 +49,25 @@ import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
-import com.sysu.pro.fade.tool.NoteTool;
+import com.sysu.pro.fade.service.NoteService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
@@ -74,8 +89,6 @@ public class PublishActivity extends AppCompatActivity {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-    private String coordinate_list;
-    private String cut_size_list;
     private final int maxCount = 9;
     private EditText et_emotion; //编辑器
     private EmotionMainFragment emotionMainFragment;
@@ -102,70 +115,23 @@ public class PublishActivity extends AppCompatActivity {
     public static float[] imageX = new float[10];
     public static float[] imageY = new float[10];
     private int crop_size = 1;
-    private String size_string;
 
     //2017.9.13 hl
     public Integer have_compress_num = 0;
-    public String image_size_list;
+    //public String image_size_list;
     public Integer note_id; //发送文本成功后得到的
     //add by hl
     private User user;
     private TextView publishTextView;
     private ProgressDialog progressDialog;
     private List<File> images_files;
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if(msg.what == 0x1){
-                //发送文本得到的相应
-                Map<String, Object> map = (Map<String, Object>) msg.obj;
-                //Toast.makeText(PublishActivity.this,map.toString(),Toast.LENGTH_LONG).show();
-                note_id = (Integer) map.get(Const.NOTE_ID);
-                String err = (String) map.get(Const.ERR);
-                if(err == null && note_id != null){
-                    if(images.size() == 0 || images == null){
-                        Toast.makeText(PublishActivity.this,"发送成功",Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
-                        setResult(1,getIntent());
-                        finish();
-                    }else {
-                        image_size_list = dealWithImagesToSend(images);
-                    }
-                }else{
-                    Toast.makeText(PublishActivity.this,err,Toast.LENGTH_SHORT).show();
-                    setResult(0,getIntent());
-                    progressDialog.dismiss();
-                    finish();
-                }
-            }
-            else if(msg.what == 0x22){
-                //发送图片得到的响应
-                Map<String, Object> map = (Map<String, Object>) msg.obj;
-                String err = (String) map.get(Const.ERR);
-                if(err != null){
-                    Toast.makeText(PublishActivity.this,err,Toast.LENGTH_SHORT).show();
-                    setResult(0,getIntent());
-                    progressDialog.dismiss();
-                    finish();
-                }else{
-                   // List<String>url_list = (List<String>) map.get(Const.IMAGE_LIST);
-                    Toast.makeText(PublishActivity.this,"发送成功",Toast.LENGTH_SHORT).show();
-                    setResult(1,getIntent());
-                    progressDialog.dismiss();
-                    finish();
-                }
-                //最后要将所有缓存图片删除
-                for(File chache_file : images_files){
-                    if(chache_file.exists()){
-                        chache_file.delete();
-                    }
-                }
+    /*add By huanglu 2017.2.30，统一到java bean里处理*/
+    private Note note;
+    private List<Image>imageArray;
+    //rxjava接入
+    private Retrofit retrofit;
+    private NoteService noteService;
 
-            }
-
-            super.handleMessage(msg);
-        }
-    };
 
     private Handler newhandler = new Handler(){
         @Override
@@ -180,52 +146,109 @@ public class PublishActivity extends AppCompatActivity {
         }
     };
 
-    private String dealWithImagesToSend(final List<String>images){
+    private void dealWithImagesToSend(final List<String>images){
+        //发送帖子的最后操作在这里
+        //收集要发送的图片数据，包装一下,压缩好图片后，发送帖子
         if(images_files == null) images_files = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         File sd=Environment.getExternalStorageDirectory();
         String cache_path_root = sd.getPath() + "/chache_pic";
         File rootFile = new File(cache_path_root);
         if(!rootFile.exists())  rootFile.mkdir();
-        for(String image_path : images){
+        for(int i = 0; i < images.size(); i++){
+            String image_path = images.get(i);
             Bitmap bitmap_temp = ImageUtils.getBitmap(image_path);
+            Image image = new Image();
             //获得宽高比
             Double size = new Integer(bitmap_temp.getWidth()).doubleValue()/ new Integer(bitmap_temp.getHeight()).doubleValue();
-            sb.append(size.toString());
-            sb.append(",");
+            image.setImage_size(size.toString());
+            image.setImage_cut_size(crop_size + "");
+            //获得坐标
+            int x = (int) (imageX[i] * 1000);
+            String xStr = "" + x;
+            int y = (int) (imageY[i] * 1000);
+            String yStr = "" + y;
+            image.setImage_coordinate(xStr + ":" + yStr);
+            //添加到图片队列
+            imageArray.add(image);
+            //然后压缩图片
             Luban.with(this)
                     .load(new File(image_path))
                     .setCompressListener(new OnCompressListener() {
                 @Override
                 public void onStart() {
                 }
-
                 @Override
                 public void onSuccess(File file) {
                     images_files.add(file);
                     have_compress_num++;
-                    if(have_compress_num == images.size()){
-                        //直到这里，所有图片才生成本地的压缩文件，才能发送图片
-                        //TODO : 后面两个参数为 coordinate_list, cut_size_list
-
-                        //coordinate_list为坐标用逗号连成的字符串，例如:"1:2,1:2,2:2"  横纵坐标之间用冒号隔开
-                        //cut_size为裁剪比例，1代表宽图4:5, 2代表长图15:8
-                        //顺序与images的顺序相同
-                        NoteTool.uploadNoteImage(handler,note_id,images_files,
-                                image_size_list,getString(),crop_size + "");
-                    }
                 }
                 @Override
                 public void onError(Throwable e) {
                     Toast.makeText(PublishActivity.this,e.getMessage().toString(),Toast.LENGTH_SHORT).show();
                 }
             }).launch();
+            if(images.size() == 0 || have_compress_num == images.size()){
+                //直到这里，所有图片才生成本地的压缩文件，才能发送图片
+                //TODO : 后面两个参数为 coordinate_list, cut_size_list
+                //cut_size为裁剪比例，1代表宽图4:5, 2代表长图15:8
+                //全部图片压缩完毕，发送帖子
+                note.setImages(imageArray);
+                MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
+                        .addFormDataPart("note", JSON.toJSONString(note));
+                for(File temp : images_files){
+                    builder.addFormDataPart("file", temp.getName(), RequestBody.create(MediaType.parse("image/*"), temp));
+                }
+                RequestBody body = builder.build();
+                noteService.addNote(body)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SimpleResponse>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e("发送帖子","出错");
+                                Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                finish();
+                            }
+
+                            @Override
+                            public void onNext(SimpleResponse simpleResponse) {
+                                if(simpleResponse.getErr() == null){
+                                    Toast.makeText(PublishActivity.this,"发送成功",Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    //添加一些服务器返回来的参数
+                                    Map<String,Object>extra = new HashMap<>();
+                                    List<String>imageUrls = (List<String>) extra.get("imageUrls");
+                                    for(int k = 0; k < imageUrls.size(); k++ ){
+                                        imageArray.get(k).setImage_url(imageUrls.get(k));
+                                    }
+                                    note.setImages(imageArray);
+                                    Integer note_id = (Integer) extra.get("note_id");
+                                    String post_time = (String) extra.get("post_time");
+                                    note.setNote_id(note_id);
+                                    note.setPost_time(post_time);
+                                    //通知主界面（ContentHome）更新
+                                    EventBus.getDefault().post(note);
+                                    finish();
+                                }else {
+                                    Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
+                                }
+                                //最后要将所有缓存图片删除
+                                for(File chache_file : images_files){
+                                    if(chache_file.exists()){
+                                        chache_file.delete();
+                                    }
+                                }
+                            }
+                        });
+            }
             bitmap_temp.recycle();
            // File cache_file = ImageUtils.saveBitmapFileByCompress(cache_path_root,bitmap_temp,50);
         }
-        //测试
-        sb.deleteCharAt(sb.length()-1);
-        return sb.toString();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -233,6 +256,10 @@ public class PublishActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
+        note = new Note();//本页面的note对象
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        noteService = retrofit.create(NoteService.class);
+        imageArray = new ArrayList<>();//图片对象数组
         progressDialog = new ProgressDialog(PublishActivity.this);
         show = CHOOSE;
         InitView();
@@ -245,7 +272,6 @@ public class PublishActivity extends AppCompatActivity {
             InputMethodManager im = ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE));
             im.showSoftInput(et_emotion, 0);
             InitListener();
-
             initEmotionMainFragment();
         }
 
@@ -266,24 +292,23 @@ public class PublishActivity extends AppCompatActivity {
         return str;
     }
     private void InitListener() {
-        imageButton = (ImageButton) findViewById(R.id.add_button);
         publishTextView = (TextView) findViewById(R.id.tv_confirm);
         publishTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //先发送文字，收到note_id后再接收图片
-                if(edit_temp.getText().toString().equals("") || edit_temp == null){
-                    Toast.makeText(PublishActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
-                }else {
-                    progressDialog.show();
-                    NoteTool.addNote(handler,user.getUser_id(),user.getNickname(),
-                            user.getHead_image_url(),edit_temp.getText().toString(),0,"1,2");
-                }
-
+                //发送帖子
+                progressDialog.show();
+                //设置Note对象的一些属性
+                note.setUser_id(user.getUser_id());
+                note.setNickname(user.getNickname());
+                note.setNote_content(edit_temp.getText().toString());
+                note.setHead_image_url(user.getHead_image_url());
+                //处理图片，发送后的回调处理
+                dealWithImagesToSend(images);
             }
         });
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.choose_view).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showListDialog();

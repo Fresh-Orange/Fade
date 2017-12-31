@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.activity.ImagePagerActivity;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
@@ -253,7 +254,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 				}
 			}
 
-			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, startX, startY, 23, 54);
+			ImageUtils.loadImage(getContext(), Const.BASE_IP+mImageUrl, mImageView, startX, startY, 23, 54);
 		}
 
 

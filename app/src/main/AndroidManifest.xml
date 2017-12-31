@@ -17,7 +17,6 @@
 
     <!-- 基础模块 END -->
     <application
-        android:name=".utils.MyLeanCloudApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

@@ -13,6 +13,8 @@ public class Const {
     public static final String IP = "https://sysufade.cn/fade"; //云服务器ip地址和端口号
     //public static final String IP = "http://192.168.137.1:8080/fade"; //本地ip地址和端口号
 
+    public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/";
+
     /*登录注册 个人信息有关
      */
     public static final String USER_SHARE="login_user"; //存储登录后的用户信息sp数据库
@@ -53,6 +55,9 @@ public class Const {
     //当前用户是否点赞
     public static final String IS_GOOD          = "isGood";
 
+    //是否是点击评论进入的
+    public static final String IS_COMMENT       = "isComment";
+
     //note请求有关
     public static final String START        = "start";
     public static final String RESULT       = "result";
@@ -90,8 +95,8 @@ public class Const {
     public static final String IMAGE_CUT_SIZE     = "image_cut_size";
     public static final int PAGE_SIZE = 5  ; //页面数量
     public static final int HOME = 1;
-    public static final int DISCOVER = 2;
-    public static final int MESSAGE = 4;
+    public static final int DISCOVER = 4;
+    public static final int MESSAGE = 2;
     public static final int MY = 5;
 
     //用于leancloud服务器的常量

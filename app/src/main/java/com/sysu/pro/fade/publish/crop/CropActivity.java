@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -18,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.crop.cropwindow.handle.Edge;
 import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 import com.sysu.pro.fade.publish.crop.util.NoScrollView;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CropActivity extends AppCompatActivity{
 
     private int newCount = 9;
+    private int mMaxCount;
 
     public static NoScrollView scrollView;
     private ArrayList<String> newimages;

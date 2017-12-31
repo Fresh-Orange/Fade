@@ -1,9 +1,14 @@
 package com.sysu.pro.fade.beans;
 
-public class User {
-	/**
-	 * 用户
-	 */
+import java.io.Serializable;
+
+/**
+ * 用户类
+ * @author huanglu
+ *
+ */
+public class User implements Serializable{
+	private static final long serialVersionUID = -2838701809575809429L;
 	private Integer user_id;
 	private String nickname;
 	private String telephone;
@@ -15,37 +20,13 @@ public class User {
 	private String head_image_url;
 	private String register_time;
 	private String summary;
-	//7月22日新增属性
-	private Integer concern_num;
-	private Integer fans_num;
-	private String area;
-	private String wallpapaer_url;
+	private String school;
+	
+	
+	private TokenModel tokenModel;
+	
 	//第三方提供的id
 	private String wechat_id;
-	private String weibo_id;
-	private String qq_id;
-
-	//9月3号新增属性
-	private String school;
-	//9月13号新增属性
-	private Integer fade_num; //fade数量
-
-	public Integer getFade_num() {
-		return fade_num;
-	}
-
-	public void setFade_num(Integer fade_num) {
-		this.fade_num = fade_num;
-	}
-
-	public String getSchool() {
-		return school;
-	}
-
-	public void setSchool(String school) {
-		this.school = school;
-	}
-
 	public Integer getConcern_num() {
 		return concern_num;
 	}
@@ -58,19 +39,46 @@ public class User {
 	public void setFans_num(Integer fans_num) {
 		this.fans_num = fans_num;
 	}
-	public String getArea() {
-		return area;
-	}
-	public void setArea(String area) {
-		this.area = area;
-	}
-	public String getWallpapaer_url() {
-		return wallpapaer_url;
-	}
-	public void setWallpapaer_url(String wallpapaer_url) {
-		this.wallpapaer_url = wallpapaer_url;
-	}
 
+	private String weibo_id;
+	private String qq_id;	
+	
+	//7月22日新增属性
+	private Integer concern_num;
+	private Integer fans_num;
+	private String area;
+	private String wallpaper_url;
+	
+	//fade数量
+	private Integer fade_num;
+	
+	//安全性新增：盐，登录时md5计算用
+	private String salt;
+	
+	public Integer getFade_num() {
+		return fade_num;
+	}
+	public void setFade_num(Integer fade_num) {
+		this.fade_num = fade_num;
+	}
+	public String getSex() {
+		return sex;
+	}
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+	public Integer getUser_id() {
+		return user_id;
+	}
+	public void setUser_id(Integer user_id) {
+		this.user_id = user_id;
+	}
+	public String getHead_image_url() {
+		return head_image_url;
+	}
+	public void setHead_image_url(String head_image_url) {
+		this.head_image_url = head_image_url;
+	}
 	public String getFade_name() {
 		return fade_name;
 	}
@@ -91,12 +99,7 @@ public class User {
 	}
 	
 	
-	public Integer getUser_id() {
-		return user_id;
-	}
-	public void setUser_id(Integer user_id) {
-		this.user_id = user_id;
-	}
+
 	public String getNickname() {
 		return nickname;
 	}
@@ -115,18 +118,14 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getSex() {
-		return sex;
-	}
-	public void setSex(String sex) {
-		this.sex = sex;
-	}
+	
 	public String getMail() {
 		return mail;
 	}
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
+
 	public String getRegister_time() {
 		return register_time;
 	}
@@ -145,12 +144,48 @@ public class User {
 	public void setWechat_id(String wechat_id) {
 		this.wechat_id = wechat_id;
 	}
-
-	public String getHead_image_url() {
-		return head_image_url;
+	
+	
+	public String getSchool() {
+		return school;
+	}
+	public void setSchool(String school) {
+		this.school = school;
+	}
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "nickname="+nickname
+				+"user_id="+user_id;
+	}
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	public String getWallpaper_url() {
+		return wallpaper_url;
+	}
+	public void setWallpaper_url(String wallpaper_url) {
+		this.wallpaper_url = wallpaper_url;
+	}
+	
+	public String getSalt() {
+		return salt;
+	}
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+	public TokenModel getTokenModel() {
+		return tokenModel;
+	}
+	public void setTokenModel(TokenModel tokenModel) {
+		this.tokenModel = tokenModel;
 	}
 
-	public void setHead_image_url(String head_image_url) {
-		this.head_image_url = head_image_url;
-	}
+	
 }

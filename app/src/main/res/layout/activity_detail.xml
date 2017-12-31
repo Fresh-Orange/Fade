@@ -57,7 +57,7 @@
                         android:id="@+id/tab_detail"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/avoscloud_blue"
+                        android:background="@color/main_blue"
                         app:tabIndicatorColor="@color/white"
                         app:tabSelectedTextColor="@color/light_gray"
                         app:tabTextColor="@color/white" />
