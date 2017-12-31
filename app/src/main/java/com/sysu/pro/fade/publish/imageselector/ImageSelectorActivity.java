@@ -146,6 +146,9 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
     }
 
+
+
+
     private void initView() {
         rvImage = (RecyclerView) findViewById(R.id.rv_image);
         rvFolder = (RecyclerView) findViewById(R.id.rv_folder);

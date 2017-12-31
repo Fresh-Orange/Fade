@@ -1,42 +1,21 @@
 package com.sysu.pro.fade.beans;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 public class Comment implements Serializable{
+	//一级评论
 
-	/**
-	 * 评论内容
-	 */
 	private static final long serialVersionUID = -2152733214028496361L;
-	private Integer comment_id;            //评论的id
-	private Integer user_id;                //评论者的id
-	private String  nickname;              //评论者的昵称
-	private String  head_image_url;       //评论者的头像
-	private Integer to_comment_id;        //如果是0的话，则是对帖子的评论；如果不是0的话，则代表是对某个评论的回复,表示为原来那条评论的id
-	 
-	private Integer note_id;               //评论的帖子的id
-	private Date comment_time;          //评论时间
-	private String comment_content;       //评论内容
-	private Integer comment_good_num;     //评论点赞数
-	private Boolean comment_isGood;       //该用户是否对该评论点赞
-	private OriginComment originComment;  //如果是对某条评论的回复的话，则不为null
-
-	public Boolean getComment_isGood() {
-		return comment_isGood;
-	}
-
-	public void setComment_isGood(Boolean comment_isGood) {
-		this.comment_isGood = comment_isGood;
-	}
-
-	public OriginComment getOriginComment() {
-		return originComment;
-	}
-
-	public void setOriginComment(OriginComment originComment) {
-		this.originComment = originComment;
-	}
+	private Integer comment_id;           
+	private Integer user_id;             
+	private String  nickname;            
+	private String  head_image_url;      	 
+	private Integer note_id;          
+	private String comment_time;      
+	private String comment_content;
+	private List<SecondComment>comments;//二级评论列表
+	private Integer type; //0代表增秒评论，1代表减秒评论
 
 	public Integer getComment_id() {
 		return comment_id;
@@ -68,11 +47,11 @@ public class Comment implements Serializable{
 	public void setNote_id(Integer note_id) {
 		this.note_id = note_id;
 	}
-	public Integer getTo_comment_id() {
-		return to_comment_id;
+	public String getComment_time() {
+		return comment_time;
 	}
-	public void setTo_comment_id(Integer to_comment_id) {
-		this.to_comment_id = to_comment_id;
+	public void setComment_time(String comment_time) {
+		this.comment_time = comment_time;
 	}
 	public String getComment_content() {
 		return comment_content;
@@ -80,18 +59,20 @@ public class Comment implements Serializable{
 	public void setComment_content(String comment_content) {
 		this.comment_content = comment_content;
 	}
-	public Integer getComment_good_num() {
-		return comment_good_num;
+	public List<SecondComment> getComments() {
+		return comments;
 	}
-	public void setComment_good_num(Integer comment_good_num) {
-		this.comment_good_num = comment_good_num;
+	public void setComments(List<SecondComment> comments) {
+		this.comments = comments;
 	}
-
-	public Date getComment_time() {
-		return comment_time;
+	public Integer getType() {
+		return type;
 	}
-
-	public void setComment_time(Date comment_time) {
-		this.comment_time = comment_time;
+	public void setType(Integer type) {
+		this.type = type;
+	}
+	@Override
+	public String toString() {
+		return "comment_id="+comment_id + ",comment_content="+comment_content;
 	}
 }

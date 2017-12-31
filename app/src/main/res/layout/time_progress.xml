@@ -17,14 +17,14 @@
 
         <ImageView
             android:id="@+id/iv_add_minus_container"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="18dp"
             android:layout_marginLeft="1dp"
             android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/add_minus_line"
             android:background="@drawable/add_or_minus_button_bg"/>
         <LinearLayout
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="18dp"
             android:layout_marginLeft="1dp"
             android:layout_gravity="center_vertical">
@@ -59,7 +59,7 @@
         android:id="@+id/iv_action_mark"
         android:layout_width="10dp"
         android:layout_height="10dp"
-        android:layout_marginLeft="65dp"
+        android:layout_marginLeft="85dp"
         android:layout_gravity="center_vertical"
         android:src="@drawable/add"
         android:visibility="gone"/>

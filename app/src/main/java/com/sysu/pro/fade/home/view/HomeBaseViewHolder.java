@@ -69,27 +69,22 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		Note bean = data.get(position);
 
 
-
-
-		//设置头像
+		/* ********* 设置界面 ***********/
 		checkAndSetCurUser(context, bean);
+		tvName.setText(bean.getNickname());
+		setActionIfNecessary(bean);
+		setCommentAndAddCountText(context, bean);
+		setTimeLeftTextAndProgress(context, bean);
 		Glide.with(context)
 				.load(Const.BASE_IP+bean.getHead_image_url())
 				.fitCenter()
 				.dontAnimate()
 				.into(userAvatar);
+
+		/* ********* 设置监听器 ***********/
 		setGoToDetailClickListener(context, bean);
-
 		setAddOrMinusListener(context, bean);
-
-		tvName.setText(bean.getNickname());
-
-		setActionIfNecessary(bean);
-
-
 		setCommentListener(context, bean);
-		setCommentAndAddCountText(context, bean);
-		setTimeLeftText(context, bean);
 
 	}
 
@@ -168,7 +163,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				sendAddOrMinusToServer(note, curUser, bean);
 				clickableProgressBar.showCommentButton(1);
 				bean.setAction(1);
-				//TODO : 改变长度
+				int curProgress = clickableProgressBar.getProgress();
+				int maxProgress = clickableProgressBar.getMaxProgress();
+				clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));
 			}
 		});
 		clickableProgressBar.setMinusClickListener(new ClickableProgressBar.onMinusClickListener() {
@@ -179,7 +176,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				sendAddOrMinusToServer(note, curUser, bean);
 				clickableProgressBar.showCommentButton(0);
 				bean.setAction(2);
-				//TODO : 改变长度
+				int curProgress = clickableProgressBar.getProgress();
+				int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+				clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));
 			}
 		});
 	}
@@ -249,11 +248,13 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	}
 
 
-	private void setTimeLeftText(Context context, Note bean) {
+	private void setTimeLeftTextAndProgress(Context context, Note bean) {
 		Date dateNow = new Date(bean.getFetchTime());
 		Date datePost = TimeUtil.getTimeDate(bean.getPost_time());
 		//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
-		long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE + 5 * bean.getAdd_num()
+		long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE
+				+ 5 * bean.getAdd_num()
+				- bean.getSub_num()
 				- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
 		String sTimeLeft;
 		if (minuteLeft < 60)
@@ -264,6 +265,13 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 1440)) + "天";
 
 		clickableProgressBar.setTimeText(context.getString(R.string.time_left_text, sTimeLeft));
+
+		if (minuteLeft < 60){
+			int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+			clickableProgressBar.setProgress((int)(halfProgress+(5.0/6)*minuteLeft));
+		}
+		else
+			clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());
 	}
 
 	/**
@@ -288,6 +296,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		Intent intent = new Intent(context, DetailActivity.class);
 		intent.putExtra(Const.NOTE_ID,bean.getNote_id());
 		intent.putExtra(Const.IS_COMMENT, false);
+		intent.putExtra(Const.COMMENT_NUM, bean.getComment_num());
 		context.startActivity(intent);
 	}
 

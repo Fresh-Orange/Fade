@@ -1,92 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/detail_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="详情"
-            android:layout_gravity="center" />
-    </android.support.v7.widget.Toolbar>
+    <ImageView
+        android:id="@+id/detail_back"
+        android:layout_width="11dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="10dp"
+        android:alpha="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back" />
 
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="9">
-    <com.sysu.pro.fade.home.view.ObservableScrollView
-        android:id="@+id/sv_contentView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none">
-        <LinearLayout
-            android:id="@+id/ll_contentView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_headerView"
-                android:layout_width="match_parent"
-                android:layout_height="600dp"
-                android:text="这个地方用来展示帖子"
-                android:textSize="30sp"
-                android:background="@color/white"
-                android:gravity="center"/>
+    <ImageView
+        android:id="@+id/detail_setting"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginRight="18dp"
+        app:layout_constraintBottom_toBottomOf="@+id/detail_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/setting" />
 
-            <LinearLayout
-                android:id="@+id/ll_topView"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:id="@+id/ll_tab"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal"
-                    android:background="#fff">
-                    <android.support.design.widget.TabLayout
-                        android:id="@+id/tab_detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/main_blue"
-                        app:tabIndicatorColor="@color/white"
-                        app:tabSelectedTextColor="@color/light_gray"
-                        app:tabTextColor="@color/white" />
-                </LinearLayout>
-            </LinearLayout>
-
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/vp_detail"
-                android:layout_width="fill_parent"
-                android:layout_height="600dp"
-                android:background="@color/white"
-                android:paddingTop="10dp"
-                />
-
-        </LinearLayout>
-    </com.sysu.pro.fade.home.view.ObservableScrollView>
     <LinearLayout
-        android:id="@+id/ll_fixedView"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:id="@+id/detail_note"
         android:orientation="vertical"
-        android:alpha="0"
-        android:layout_gravity="top">
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_back">
+        <!---帖子内容在这里展示，可以修改成其他类型的layout，但id不能改-->
     </LinearLayout>
-</FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/detail_commentator"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_note">
+        <!---评论人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
+    </LinearLayout>
 
+    <View
+        android:id="@+id/detail_divide1"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#cccccc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_commentator" />
 
+    <TextView
+        android:id="@+id/detail_text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="8dp"
+        android:text="评论"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
 
+    <TextView
+        android:id="@+id/detail_comment_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/detail_divide2"
+        app:layout_constraintStart_toEndOf="@+id/detail_text1"
+        app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
 
-</LinearLayout>
+    <View
+        android:id="@+id/detail_divide2"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="8dp"
+        android:background="#cccccc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_text1" />
+
+    <LinearLayout
+        android:id="@+id/detail_comment_wrapper"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_divide2">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/detail_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/detail_write_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:lines="1"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/detail_comment_wrapper"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
