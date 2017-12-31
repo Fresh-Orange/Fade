@@ -19,7 +19,17 @@ public class SimpleResponse {
 		this.err = err;
 		this.success = success;
 		this.extra = extra;
-	}	
+	}
+
+	private long fetchTime;
+
+	public long getFetchTime() {
+		return fetchTime;
+	}
+
+	public void setFetchTime(long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
 	
 	
 	public String getSuccess() {

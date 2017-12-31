@@ -40,7 +40,7 @@ import rx.schedulers.Schedulers;
  */
 
 abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
-	TextView tvName, tvBody;    //name为用户名，body为正文
+	TextView tvName, tvBody;    //name为用户名，body为正文 这里不写private是有原因的
 
 	private ImageView userAvatar;
 	private TextView tvHeadAction;
@@ -192,8 +192,13 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			@Override
 			public void onClick() {
 				Intent intent = new Intent(context, DetailActivity.class);
-				intent.putExtra(Const.NOTE_ID, bean.getNote_id());
+				if (bean.getType() != 0)	//非原贴的话，传入的是其原贴的id
+					intent.putExtra(Const.NOTE_ID,bean.getOrigin().getNote_id());
+				else
+					intent.putExtra(Const.NOTE_ID,bean.getNote_id());
 				intent.putExtra(Const.IS_COMMENT, true);
+				intent.putExtra(Const.COMMENT_NUM, bean.getComment_num());
+				intent.putExtra(Const.COMMENT_ENTITY, bean);
 				context.startActivity(intent);
 			}
 		});
@@ -217,7 +222,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					public void onCompleted() {}
 
 					@Override
-					public void onError(Throwable e) {}
+					public void onError(Throwable e) {
+						//TODO:帖子死掉
+					}
 
 					@Override
 					public void onNext(SimpleResponse simpleResponse) {
@@ -229,6 +236,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							bean.setComment_num(comment_num);
 							bean.setSub_num(sub_num);
 							bean.setAdd_num(add_num);
+							//TODO:fetchTime更新之后进度条更新
 							EventBus.getDefault().post(new itemChangeEvent(position));
 						}
 					}
@@ -285,7 +293,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		String addCntText = context.getString(R.string.add_count_text, sAddCount);
 		String sCommentCount = decimalFormat.format(bean.getComment_num());
 		String commentCntText = context.getString(R.string.comment_count_text, sCommentCount);
-		tvCount.setText(addCntText + "   "+commentCntText);
+		tvCount.setText(commentCntText + "   "+addCntText);
 	}
 
 	/**
@@ -294,9 +302,13 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 */
 	private void startDetailsActivity(Context context, Note bean) {
 		Intent intent = new Intent(context, DetailActivity.class);
-		intent.putExtra(Const.NOTE_ID,bean.getNote_id());
+		if (bean.getType() != 0)	//非原贴的话，传入的是其原贴的id
+			intent.putExtra(Const.NOTE_ID,bean.getOrigin().getNote_id());
+		else
+			intent.putExtra(Const.NOTE_ID,bean.getNote_id());
 		intent.putExtra(Const.IS_COMMENT, false);
 		intent.putExtra(Const.COMMENT_NUM, bean.getComment_num());
+		intent.putExtra(Const.COMMENT_ENTITY, bean);
 		context.startActivity(intent);
 	}
 

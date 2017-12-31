@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 public class ImageOnlyHolder extends HomeBaseViewHolder{
-	ViewPager pager;
+	ViewPager pager;//仅用于设置id
 	private imageAdaptiveIndicativeItemLayout imageLayout;
 	public ImageOnlyHolder(View itemView) {
 		super(itemView);

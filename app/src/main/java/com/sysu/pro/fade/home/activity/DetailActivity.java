@@ -1,8 +1,8 @@
 package com.sysu.pro.fade.home.activity;
 
-import android.graphics.Canvas;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,20 +13,25 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
+import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.DetailPage;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SecondComment;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
-import com.sysu.pro.fade.service.CommentService;
+import com.sysu.pro.fade.home.view.ClickableProgressBar;
+import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.TimeUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Retrofit;
@@ -52,6 +57,14 @@ public class DetailActivity extends AppCompatActivity{
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
+    /* ******** 帖子展示部分 by 赖贤城 *******/
+    Note note;//首页传入的帖子
+    private imageAdaptiveIndicativeItemLayout imageLayout;
+    private TextView tvName, tvBody;    //name为用户名，body为正文
+    private ImageView userAvatar;
+    private TextView tvCount;
+    private ClickableProgressBar clickableProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +72,22 @@ public class DetailActivity extends AppCompatActivity{
         final int num = getIntent().getIntExtra(Const.COMMENT_NUM, 0);
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
+
+        /* ******** 帖子展示部分 by 赖贤城 *******/
+        note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
+        imageLayout = (imageAdaptiveIndicativeItemLayout)findViewById(R.id.image_layout);
+        userAvatar = (ImageView) findViewById(R.id.civ_avatar);
+        tvName = (TextView) findViewById(R.id.tv_name);
+        tvBody = (TextView) findViewById(R.id.tv_title);
+        tvCount = (TextView) findViewById(R.id.tv_comment_add_count);
+        clickableProgressBar = (ClickableProgressBar) findViewById(R.id.clickable_progressbar);
+        initNoteView();
+        //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
+
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
+        int action = note.getAction();//TODO:伟杰，你要的加减秒类型
         UserUtil util = new UserUtil(this);
         User user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
@@ -83,7 +109,15 @@ public class DetailActivity extends AppCompatActivity{
                     @Override
                     public void onNext(DetailPage detailPage) {
                         commentator.addAll(detailPage.getComment_list());
-                        commentNum.setText(Integer.toString(num));
+                        commentNum.setText(Integer.toString(detailPage.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
+
+                        //更新续秒和评论数量
+                        Note tempNote = new Note();
+                        tempNote.setAdd_num(detailPage.getAdd_num());
+                        tempNote.setComment_num(detailPage.getComment_num());
+                        setCommentAndAddCountText(DetailActivity.this, tempNote);
+                        //TODO:fetchTime更新之后进度条更新
+
                         initialComment();
                         //是评论的话显示直接评论框
                         if (is_Comment) {
@@ -92,6 +126,65 @@ public class DetailActivity extends AppCompatActivity{
                     }
                 });
     }
+
+    private void setCommentAndAddCountText(Context context, Note bean) {
+        DecimalFormat decimalFormat = new DecimalFormat(",###");
+        String sAddCount = decimalFormat.format(bean.getAdd_num());
+        String addCntText = context.getString(R.string.add_count_text, sAddCount);
+        String sCommentCount = decimalFormat.format(bean.getComment_num());
+        String commentCntText = context.getString(R.string.comment_count_text, sCommentCount);
+        tvCount.setText(commentCntText + "   "+addCntText);
+    }
+
+    /**
+     * 帖子展示部分的初始设置，使用的是旧数据，等rxJava返回后才会再更新界面
+     */
+    private void initNoteView(){
+        checkAndSetOriginalNote();
+        tvName.setText(note.getNickname());
+        setCommentAndAddCountText(this, note);
+        setTimeLeftTextAndProgress(this, note);
+        Glide.with(this)
+                .load(Const.BASE_IP+note.getHead_image_url())
+                .fitCenter()
+                .dontAnimate()
+                .into(userAvatar);
+    }
+
+    private void checkAndSetOriginalNote(){
+        if (note.getType() != 0){
+            note.setNickname(note.getOrigin().getNickname());
+            note.setHead_image_url(note.getOrigin().getHead_image_url());
+            note.setUser_id(note.getOrigin().getUser_id());
+        }
+    }
+
+    private void setTimeLeftTextAndProgress(Context context, Note bean) {
+        Date dateNow = new Date(bean.getFetchTime());
+        Date datePost = TimeUtil.getTimeDate(bean.getPost_time());
+        //floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
+        long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE
+                + 5 * bean.getAdd_num()
+                - bean.getSub_num()
+                - Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
+        String sTimeLeft;
+        if (minuteLeft < 60)
+            sTimeLeft = String.valueOf(minuteLeft) + "分钟";
+        else if (minuteLeft < 1440)
+            sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 60)) + "小时";
+        else
+            sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 1440)) + "天";
+
+        clickableProgressBar.setTimeText(context.getString(R.string.time_left_text, sTimeLeft));
+
+        if (minuteLeft < 60){
+            int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+            clickableProgressBar.setProgress((int)(halfProgress+(5.0/6)*minuteLeft));
+        }
+        else
+            clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());
+    }
+
 
     private void initialComment() {
 
