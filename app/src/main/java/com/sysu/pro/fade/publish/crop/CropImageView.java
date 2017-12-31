@@ -332,6 +332,10 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         //就是这行代码花了一天啊..这是按比例移动ScrollView！
         CropActivity.outScroll.smoothScrollToSlow(0,(int) (cropY * CropActivity.screenWidth / cropWidth));
+
+        float result[] = new float[2];
+        result[0] = cropX / cropWidth;
+        result[1] = cropY / cropHeight;
     }
 
 
@@ -359,6 +363,8 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final float transX = matrixValues[Matrix.MTRANS_X];
         final float transY = matrixValues[Matrix.MTRANS_Y];
 
+        Log.d("position", "Rect transX: " + transX);
+        Log.d("position", "Rect transY: " + transY);
 
         // Get the width and height of the original bitmap.
         final int drawableIntrinsicWidth = drawable.getIntrinsicWidth();
@@ -373,10 +379,52 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final float right = Math.min(left + drawableDisplayWidth, getWidth());
         final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
 
+        Log.d("position", "left: " + left);
+        Log.d("position", "top: " + top);
         return new RectF(left, top, right, bottom);
 
     }
 
+    public RectF getInitBitmapRect(CropImageView imageView) {
+
+        final Drawable drawable = getDrawable();
+        if (imageView == null) {
+            Log.d("position", "null");
+            return new RectF();
+        }
+
+
+        // Get image matrix values and place them in an array.
+        final float[] matrixValues = new float[9];
+        imageView.getImageMatrix().getValues(matrixValues);
+
+        // Extract the scale and translation values from the matrix.
+        final float scaleX = matrixValues[Matrix.MSCALE_X];
+        final float scaleY = matrixValues[Matrix.MSCALE_Y];
+        final float transX = matrixValues[Matrix.MTRANS_X];
+        final float transY = matrixValues[Matrix.MTRANS_Y];
+
+        Log.d("position", "Rect transX: " + transX);
+        Log.d("position", "Rect transY: " + transY);
+
+        // Get the width and height of the original bitmap.
+        final int drawableIntrinsicWidth = drawable.getIntrinsicWidth();
+        final int drawableIntrinsicHeight = drawable.getIntrinsicHeight();
+
+        // Calculate the dimensions as seen on screen.
+        final int drawableDisplayWidth = Math.round(drawableIntrinsicWidth * scaleX);
+        final int drawableDisplayHeight = Math.round(drawableIntrinsicHeight * scaleY);
+
+        final float left = Math.max(transX, 0);
+        final float top = Math.max(transY, 0);
+        final float right = Math.min(left + drawableDisplayWidth, getWidth());
+        final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
+
+        Log.d("position", "left: " + left);
+        Log.d("position", "top: " + top);
+        return new RectF(left, top, right, bottom);
+
+    }
     /**
      * Initialize the crop window by setting the proper {@link Edge} values.
      * <p/>
@@ -621,6 +669,12 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         float result[] = new float[2];
         float left;
         float top;
+        if (bitmap == null) {
+            Log.d("position", "bitmap null!!!!");
+        }
+        if (bitmapRect == null) {
+            Log.d("position", "bitmapRect null!!!!");
+        }
         if (AspectRatioUtil.calculateAspectRatio(bitmapRect) > getTargetAspectRatio()) {
             final float cropWidth = AspectRatioUtil.calculateWidth(bitmapRect.height(), getTargetAspectRatio());
             left = bitmapRect.centerX() - cropWidth / 2f;
@@ -642,6 +696,8 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final float transX = matrixValues[Matrix.MTRANS_X];
         final float transY = matrixValues[Matrix.MTRANS_Y];
 
+        Log.d("position", "transX: " + transX);
+        Log.d("position", "transY: " + transY);
         // Ensure that the left and top edges are not outside of the ImageView bounds.
         final float bitmapLeft = (transX < 0) ? Math.abs(transX) : 0;
         final float bitmapTop = (transY < 0) ? Math.abs(transY) : 0;

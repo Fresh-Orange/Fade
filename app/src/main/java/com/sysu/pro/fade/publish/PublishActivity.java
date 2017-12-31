@@ -635,7 +635,6 @@ public class PublishActivity extends AppCompatActivity {
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
 //                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
                         ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
-
                         break;
                 }
                 // which 下标从0开始
