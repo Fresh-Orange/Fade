@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:background="#e6e6e6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/reply_guildLine1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="24dp" />
+
+    <TextView
+        android:id="@+id/reply_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="Name"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/reply_guildLine1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/reply_reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.5"
+        android:text=" 回复 "
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/reply_name"
+        app:layout_constraintStart_toEndOf="@+id/reply_name" />
+
+    <TextView
+        android:id="@+id/reply_comment_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/reply_reply"
+        app:layout_constraintStart_toEndOf="@+id/reply_reply" />
+
+    <TextView
+        android:id="@+id/reply_dot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.5"
+        android:text=" · "
+        android:textColor="#000000"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/reply_comment_name"
+        app:layout_constraintStart_toEndOf="@+id/reply_comment_name" />
+
+    <TextView
+        android:id="@+id/reply_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.5"
+        android:text="date"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/reply_comment_name"
+        app:layout_constraintStart_toEndOf="@+id/reply_dot" />
+
+    <TextView
+        android:id="@+id/reply_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="content"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/reply_guildLine1"
+        app:layout_constraintTop_toBottomOf="@+id/reply_name" />
+
+</android.support.constraint.ConstraintLayout>

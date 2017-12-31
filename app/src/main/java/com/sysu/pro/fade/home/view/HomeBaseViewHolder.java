@@ -296,6 +296,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		Intent intent = new Intent(context, DetailActivity.class);
 		intent.putExtra(Const.NOTE_ID,bean.getNote_id());
 		intent.putExtra(Const.IS_COMMENT, false);
+		intent.putExtra(Const.COMMENT_NUM, bean.getComment_num());
 		context.startActivity(intent);
 	}
 

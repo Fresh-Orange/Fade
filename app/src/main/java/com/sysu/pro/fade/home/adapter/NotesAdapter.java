@@ -74,6 +74,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
 		 */
 		Log.d("getType",String.valueOf(position));
+
 		if (bean.getImages() == null || bean.getImages().isEmpty()) {
 			return TEXT_ONLY_ITEM;
 		}
