@@ -84,12 +84,12 @@ public class ContentHome {
         notes = new ArrayList<>();
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
-        isEnd = false;
+        isEnd = false ;
         initViews();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         noteService = retrofit.create(NoteService.class);
-        noteService.getTenNoteByTime(user.getUser_id().toString(),"0","1")
+        noteService.getTenNoteByTime(user.getUser_id().toString(),"0",user.getConcern_num().toString())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NoteQuery>() {
@@ -171,7 +171,7 @@ public class ContentHome {
                             Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
                             setLoadingMore(false);
                             swipeRefresh.setRefreshing(false);
-                        }else {
+                        }else{
                             //加载更多
                             swipeRefresh.setRefreshing(true);
                             noteService.getTenNoteByTime(user.getUser_id().toString(),start.toString(),user.getConcern_num().toString())
@@ -193,9 +193,15 @@ public class ContentHome {
                                             if(addList.size() != 0){
                                                 if(addList.size() < 10) isEnd = true;
                                                 addToListTail(noteQuery.getList());
+                                                start = noteQuery.getStart();
+                                                Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                                                swipeRefresh.setRefreshing(false);
+                                            }else {
+                                                isEnd = true;
+                                                Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                                                setLoadingMore(false);
+                                                swipeRefresh.setRefreshing(false);
                                             }
-                                            Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
-                                            swipeRefresh.setRefreshing(false);
                                         }
                                     });
                         }
