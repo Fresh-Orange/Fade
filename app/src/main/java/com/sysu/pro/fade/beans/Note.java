@@ -24,9 +24,9 @@ public class Note implements Serializable {
 	private Integer add_num;        //增一秒数量
 	private Integer target_id = 0;      //代表原贴id（不为0的话）
 	private Integer type = 0;           //代表帖子是增/减/原创, 1/2/0
-	private Integer action = 0;         //动作，0为没动作，1为对这个帖子增过，0为对这个帖子减过
+	private Integer action = 0;         //动作，0为没动作，1为对这个帖子增过，2为对这个帖子减过
 
-	private List<Image> images;     // 图片集合
+	private List<Image> images = new ArrayList<>();     // 图片集合
 
 	private Note origin;// 原贴
 
@@ -158,7 +158,7 @@ public class Note implements Serializable {
 
 
 	public Integer getImgCutSize() {
-		return Integer.parseInt(images.get(0).getImage_cut_size());
+		return images.isEmpty()?0:Integer.parseInt(images.get(0).getImage_cut_size());
 	}
 
 	public void setImages(List<Image> images) {
@@ -206,13 +206,13 @@ public class Note implements Serializable {
 	}
 
 	//如果note_id相等，则两个帖子相等
-	@Override
+/*	@Override
 	public int hashCode() {
 		if(note_id != null) return note_id.hashCode();
 		else return 0;
-	}
+	}*/
 	
-	@Override
+/*	@Override
 	public boolean equals(Object obj) {
 		Note note = (Note) obj;
 		if(this.note_id == note.getNote_id()){
@@ -220,5 +220,5 @@ public class Note implements Serializable {
 		}else {
 			return false;
 		}
-	}
+	}*/
 }

@@ -59,12 +59,22 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		if (getItemCount() == position + 1 && showFootView)
 			return FOOT_ITEM;
 
+		final Note bean = data.get(position);
+		//将原贴的信息转移到转发帖，方便操作
+		if (bean.getType() != 0){
+			Log.d("trans_image", "position: "+position+
+					"\n"+bean.getOrigin().getImages());
+			bean.setImages(bean.getOrigin().getImages());
+			bean.setComment_num(bean.getOrigin().getComment_num());
+			bean.setAdd_num(bean.getOrigin().getAdd_num());
+			bean.setSub_num(bean.getOrigin().getSub_num());
+		}
 		/*
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
 		 */
 		Log.d("getType",String.valueOf(position));
-		Note bean = data.get(position);
-		if (bean.getImages() != null ||bean.getImages().isEmpty()) {
+
+		if (bean.getImages() == null || bean.getImages().isEmpty()) {
 			return TEXT_ONLY_ITEM;
 		}
 		if (bean.getNote_content() == null || bean.getNote_content().equals("")) {
@@ -125,7 +135,6 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 			notifyItemRemoved(getItemCount());
 		}
 	}
-
 
 }
 

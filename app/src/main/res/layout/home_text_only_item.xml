@@ -7,8 +7,6 @@
               android:foreground = "?attr/selectableItemBackground"
               android:clickable="true"
               android:focusable="true"
-              android:layout_marginBottom="5dp"
-              android:layout_marginTop="5dp"
               app:elevation="5dp">
 
     <LinearLayout
@@ -20,21 +18,24 @@
 
         <TextView
             android:textColor="#000"
-            android:layout_marginLeft="10dp"
+            android:textSize="@dimen/text_size"
+            android:id="@+id/tv_original_author"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="\@帅逼"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textColor="#000"
             android:textSize="@dimen/text_size"
             android:id="@+id/tv_title"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:text="asd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
-        <ViewStub
-            android:id="@+id/view_stub_relay"
-            android:layout_margin="@dimen/item_head_margin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout="@layout/home_item_text_relay">
-            <!--用于动态添加转发的textView-->
-        </ViewStub>
 
         <include layout="@layout/home_item_tail"></include>
     </LinearLayout>

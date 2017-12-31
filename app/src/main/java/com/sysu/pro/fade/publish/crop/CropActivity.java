@@ -72,7 +72,7 @@ public class CropActivity extends AppCompatActivity{
         activity.startActivityForResult(intent, requestCode);
     }
 
-    private static int determineSize(String image) {
+    public static int determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         /**
          * 最关键在此，把options.inJustDecodeBounds = true;
@@ -126,7 +126,7 @@ public class CropActivity extends AppCompatActivity{
                 for(int i = 0; i < bms.length; i++){
                     //回收bitmap避免OOM
                     if(bms[i] != null && !bms[i].isRecycled()){
-                        Log.d("recycle", "recycled" + i);
+                        Log.e("recycle", "recycled" + i);
                         bms[i].recycle();
                     }
                 }
@@ -142,7 +142,7 @@ public class CropActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < newimages.size(); i++) {
-                    Log.d("yellowsss",i + ": X: " + imageX[i] + " Y: " + imageY[i]);
+                    Log.e("yellowsss",i + ": X: " + imageX[i] + " Y: " + imageY[i]);
                 }
                 Intent intent = new Intent();
                 intent.putExtra(Constants.IMAGEX,imageX);

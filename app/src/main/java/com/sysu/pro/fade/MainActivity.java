@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("用户上线",simpleResponse.getSuccess());
                     }
                 });
+
     }
 
     //设置底部导航栏图片
@@ -214,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
         View rootView;
         FrameLayout frameBar;
-        ImageView shadow;
 
         private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -282,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             frameBar = (FrameLayout) getActivity().findViewById(R.id.frame_layout);
-            shadow = (ImageView) getActivity().findViewById(R.id.shadow);
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
                 case Const.HOME:
@@ -315,18 +314,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /**
-         * 设置显示或隐藏toolbar（以及阴影）
+         * 设置显示或隐藏toolbar
          * @param isShow 是否显示
          * by 赖贤城
          */
         private void setToolbarShow(boolean isShow){
             if (isShow){
                 frameBar.setVisibility(View.VISIBLE);
-                shadow.setVisibility(View.VISIBLE);
             }
             else{
                 frameBar.setVisibility(View.GONE);
-                shadow.setVisibility(View.GONE);
             }
         }
     }
