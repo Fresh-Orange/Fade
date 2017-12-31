@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.usage.UsageEvents;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -37,6 +38,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
+import com.sysu.pro.fade.publish.Event.PublishToImageSelector;
+import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
 import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.crop.CropImageView;
@@ -47,6 +51,10 @@ import com.sysu.pro.fade.publish.imageselector.entry.Image;
 import com.sysu.pro.fade.publish.imageselector.model.ImageModel;
 import com.sysu.pro.fade.publish.imageselector.utils.DateUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -71,7 +79,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 0X00000011;
 
     private int newCount = 9;
-    private ArrayList<String> newimages;
+    private ArrayList<String> newimages = new ArrayList<String>();
 
     private boolean isOpenFolder;
     private boolean isShowTime;
@@ -116,12 +124,12 @@ public class ImageSelectorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
 
+//        EventBus.getDefault().register(this);
         Intent intent = getIntent();
         mMaxCount = intent.getIntExtra(Constants.MAX_SELECT_COUNT, 0);
 //        isSingle = intent.getBooleanExtra(Constants.IS_SINGLE, false);
 
         newCount = intent.getIntExtra(Constants.NEW_COUNT, 9);
-        newimages = new ArrayList<String>();
         if (intent.getStringArrayListExtra(ImageSelectorUtils.SELECT_LAST) != null)
         {
             newimages = intent.getStringArrayListExtra(ImageSelectorUtils.SELECT_LAST);
@@ -430,8 +438,24 @@ public class ImageSelectorActivity extends AppCompatActivity {
         float result[] = new float[2];
         result = getInitialSize(newimages.get(0), size);
         Log.d("Yellow", "result: " + result);
-        CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-//        finish();
+//        CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                EventBus.getDefault().post(new PublishToImageSelector(9, images, newCount));
+//            }
+//        }).start();
+        //        finish();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(new ImageSelectorToPublish(9, newimages, newCount));
+                Log.d("Yellow", "SelectNewCount: " + newCount);
+            }
+        }).start();
+//        Intent intent = new Intent(ImageSelectorActivity.this, PublishActivity.class);
+//        startActivity(intent);
+        finish();
     }
 
     private void cropConfirm() {
@@ -660,4 +684,16 @@ public class ImageSelectorActivity extends AppCompatActivity {
         return result;
     }
 
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onEvent(PublishToImageSelector event) {
+//        mMaxCount = event.getMaxSelectcount();
+//        newimages = event.getImages();
+//        newCount = event.getNewCount();
+//    }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        EventBus.getDefault().unregister(this);
+//    }
 }

@@ -80,7 +80,7 @@
         <LinearLayout
             android:id="@+id/rl_editbar_bg"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_alignParentBottom="true"
             android:background="@color/bg_horizontal_line_color"
             android:orientation="horizontal"
@@ -93,7 +93,18 @@
                 android:layout_height="40dp"
                 android:layout_gravity="top"
                 android:clickable="true"
-                android:src="@drawable/ic_emotion" />
+                android:src="@drawable/ic_emotion"
+                />
+
+            <ImageView
+                android:id="@+id/keyboard_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="8dp"
+                android:clickable="true"
+                android:src="@drawable/keyboard"
+                android:visibility="gone"/>
         </LinearLayout>
 
     </RelativeLayout>
