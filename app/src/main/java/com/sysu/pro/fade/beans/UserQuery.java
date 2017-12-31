@@ -1,4 +1,4 @@
-package com.fade.domain;
+package com.sysu.pro.fade.beans;
 
 import java.util.List;
 

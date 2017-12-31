@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,12 +37,15 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Image;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
+import com.sysu.pro.fade.publish.Event.PublishToImageSelector;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
@@ -54,6 +58,8 @@ import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -299,6 +305,8 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
+        //注册
+        EventBus.getDefault().register(this);
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
         note = new Note();//本页面的note对象
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
@@ -409,7 +417,23 @@ public class PublishActivity extends AppCompatActivity {
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                AlertDialog.Builder builder = new AlertDialog.Builder(PublishActivity.this);
+                builder.setTitle("退出此次编辑?");
+                builder.setPositiveButton("确定",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.GRAY);
             }
         });
 
@@ -420,10 +444,14 @@ public class PublishActivity extends AppCompatActivity {
                 int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
                 if (heightDiff > dpToPx(PublishActivity.this, 200)) {
                     findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
+                    findViewById(R.id.emotion_button).setVisibility(View.VISIBLE);
+                    findViewById(R.id.keyboard_button).setVisibility(View.GONE);
                     choose_view.setVisibility(View.GONE);
                     pager.setVisibility(View.GONE);
                 }
                 else{
+                    findViewById(R.id.emotion_button).setVisibility(View.GONE);
+                    findViewById(R.id.keyboard_button).setVisibility(View.VISIBLE);
                     if (frameLayout.getVisibility() == View.GONE)
                       findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
                     if (show == CHOOSE)
@@ -481,6 +509,7 @@ public class PublishActivity extends AppCompatActivity {
         emotionMainFragment.bindToFramelayout(frameLayout);
         emotionMainFragment.bindToRl_editbar_bg(rl_editbar_bg);
         emotionMainFragment.bindToEmotion((ImageView)findViewById(R.id.emotion_button));
+        emotionMainFragment.bindToKeyboardEmotion((ImageView)findViewById(R.id.keyboard_button));
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         // Replace whatever is in thefragment_container view with this fragment,
         // and add the transaction to the backstack
@@ -652,7 +681,19 @@ public class PublishActivity extends AppCompatActivity {
 //                                "你点击了相册", Toast.LENGTH_SHORT).show();
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
 //                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
-                        ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
+//                        ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
+                        Intent intent = new Intent(PublishActivity.this, ImageSelectorActivity.class);
+                        intent.putExtra(Constants.MAX_SELECT_COUNT, 9);
+                        intent.putStringArrayListExtra(ImageSelectorUtils.SELECT_LAST, images);
+                        intent.putExtra(Constants.NEW_COUNT, newCount);
+                        startActivity(intent);
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                EventBus.getDefault().post(new PublishToImageSelector(9, images, newCount));
+//                                Log.d("Yellow", "PublishNewCount: " + newCount);
+//                            }
+//                        }).start();
                         break;
                 }
                 // which 下标从0开始
@@ -704,4 +745,17 @@ public class PublishActivity extends AppCompatActivity {
             images.remove(location);
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ImageSelectorToPublish event) {
+        images = event.getImages();
+        newCount = event.getNewCount();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);//反注册EventBus
+    }
+
 }

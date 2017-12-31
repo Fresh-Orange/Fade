@@ -159,6 +159,12 @@ public class CropActivity extends AppCompatActivity{
                 finish();
             }
         });
+        findViewById(R.id.picker_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void initLayout() {
