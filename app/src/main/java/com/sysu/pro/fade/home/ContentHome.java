@@ -84,7 +84,7 @@ public class ContentHome {
         notes = new ArrayList<>();
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
-        isEnd = true;
+        isEnd = false ;
         initViews();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
