@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.home.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -96,10 +98,9 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
             ImageView view = getView(id);
             Glide.with(view.getContext()).load(imageUrl).into(view);
         }
-        public void setReplyAdapter(int id, RecyclerView.Adapter adapter) {
-            RecyclerView view = getView(id);
-            view.setAdapter(adapter);
-            view.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        public void addView(int id, View view) {
+            LinearLayout layout = getView(id);
+            layout.addView(view);
         }
         public void onWidgetClick(int id, View.OnClickListener listener) {
             View view = getView(id);

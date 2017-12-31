@@ -11,6 +11,7 @@
         android:layout_height="10dp"
         android:layout_marginBottom="20dp"
         android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,6 +24,7 @@
         android:layout_height="20dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@+id/comment_detail_good"
@@ -35,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="UserName"
         android:textColor="#000000"
@@ -89,18 +92,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/comment_detail_content"
         app:layout_constraintTop_toBottomOf="@+id/comment_detail_content">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/comment_detail_reply"
-            android:layout_width="305dp"
-            android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="63dp"
-            tools:layout_editor_absoluteY="64dp" />
     </LinearLayout>
 
     <android.support.constraint.Guideline
