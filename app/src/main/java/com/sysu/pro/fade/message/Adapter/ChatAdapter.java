@@ -18,7 +18,7 @@ import android.net.Uri;
  * Created by yellow on 2017/12/30.
  */
 
-public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder>{
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     private List<NotificationUser> userList;
     static class ViewHolder extends RecyclerView.ViewHolder {
         View userView;
@@ -38,13 +38,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         }
     }
 
-    public NotificationAdapter(List<NotificationUser> userList) {
+    public ChatAdapter(List<NotificationUser> userList) {
         this.userList = userList;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.notification_item, parent, false);
+                .inflate(R.layout.item_chat, parent, false);
         final ViewHolder holder = new ViewHolder(view);
         holder.userView.setOnClickListener(new View.OnClickListener() {
             @Override

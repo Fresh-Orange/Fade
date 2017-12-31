@@ -67,7 +67,8 @@
         </provider>
 
         <activity android:name=".publish.crop.CropActivity" />
-        <activity android:name=".notification.NotificationActivity"></activity>
+        <activity android:name=".notification.NotificationActivity" />
+        <activity android:name=".message.Activity.ContributionActivity"></activity>
     </application>
 
 </manifest>
