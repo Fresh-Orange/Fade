@@ -27,7 +27,9 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 
 import com.sysu.pro.fade.R;
@@ -38,6 +40,9 @@ import com.sysu.pro.fade.publish.crop.util.HandleUtil;
 import com.sysu.pro.fade.publish.crop.util.PaintUtil;
 
 import static com.sysu.pro.fade.publish.crop.CropActivity.current_position;
+import static com.sysu.pro.fade.publish.crop.CropActivity.imageX;
+import static com.sysu.pro.fade.publish.crop.CropActivity.imageY;
+import static com.sysu.pro.fade.publish.crop.CropActivity.isSet;
 
 
 /**
@@ -327,6 +332,10 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
         //就是这行代码花了一天啊..这是按比例移动ScrollView！
         CropActivity.outScroll.smoothScrollToSlow(0,(int) (cropY * CropActivity.screenWidth / cropWidth));
+
+        float result[] = new float[2];
+        result[0] = cropX / cropWidth;
+        result[1] = cropY / cropHeight;
     }
 
 
@@ -354,6 +363,8 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final float transX = matrixValues[Matrix.MTRANS_X];
         final float transY = matrixValues[Matrix.MTRANS_Y];
 
+        Log.d("position", "Rect transX: " + transX);
+        Log.d("position", "Rect transY: " + transY);
 
         // Get the width and height of the original bitmap.
         final int drawableIntrinsicWidth = drawable.getIntrinsicWidth();
@@ -368,10 +379,52 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         final float right = Math.min(left + drawableDisplayWidth, getWidth());
         final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
 
+        Log.d("position", "left: " + left);
+        Log.d("position", "top: " + top);
         return new RectF(left, top, right, bottom);
 
     }
 
+    public RectF getInitBitmapRect(CropImageView imageView) {
+
+        final Drawable drawable = getDrawable();
+        if (imageView == null) {
+            Log.d("position", "null");
+            return new RectF();
+        }
+
+
+        // Get image matrix values and place them in an array.
+        final float[] matrixValues = new float[9];
+        imageView.getImageMatrix().getValues(matrixValues);
+
+        // Extract the scale and translation values from the matrix.
+        final float scaleX = matrixValues[Matrix.MSCALE_X];
+        final float scaleY = matrixValues[Matrix.MSCALE_Y];
+        final float transX = matrixValues[Matrix.MTRANS_X];
+        final float transY = matrixValues[Matrix.MTRANS_Y];
+
+        Log.d("position", "Rect transX: " + transX);
+        Log.d("position", "Rect transY: " + transY);
+
+        // Get the width and height of the original bitmap.
+        final int drawableIntrinsicWidth = drawable.getIntrinsicWidth();
+        final int drawableIntrinsicHeight = drawable.getIntrinsicHeight();
+
+        // Calculate the dimensions as seen on screen.
+        final int drawableDisplayWidth = Math.round(drawableIntrinsicWidth * scaleX);
+        final int drawableDisplayHeight = Math.round(drawableIntrinsicHeight * scaleY);
+
+        final float left = Math.max(transX, 0);
+        final float top = Math.max(transY, 0);
+        final float right = Math.min(left + drawableDisplayWidth, getWidth());
+        final float bottom = Math.min(top + drawableDisplayHeight, getHeight());
+
+        Log.d("position", "left: " + left);
+        Log.d("position", "top: " + top);
+        return new RectF(left, top, right, bottom);
+
+    }
     /**
      * Initialize the crop window by setting the proper {@link Edge} values.
      * <p/>
@@ -612,4 +665,60 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         invalidate();
     }
 
+    public float[] getPara(RectF bitmapRect, Bitmap bitmap) {
+        float result[] = new float[2];
+        float left;
+        float top;
+        if (bitmap == null) {
+            Log.d("position", "bitmap null!!!!");
+        }
+        if (bitmapRect == null) {
+            Log.d("position", "bitmapRect null!!!!");
+        }
+        if (AspectRatioUtil.calculateAspectRatio(bitmapRect) > getTargetAspectRatio()) {
+            final float cropWidth = AspectRatioUtil.calculateWidth(bitmapRect.height(), getTargetAspectRatio());
+            left = bitmapRect.centerX() - cropWidth / 2f;
+            top = bitmapRect.top;
+
+        } else {
+            final float cropHeight = AspectRatioUtil.calculateHeight(bitmapRect.width(), getTargetAspectRatio());
+            left = bitmapRect.left;
+            top = bitmapRect.centerY() - cropHeight / 2f;
+        }
+
+        // Get image matrix values and place them in an array.
+        final float[] matrixValues = new float[9];
+        getImageMatrix().getValues(matrixValues);
+
+        // Extract the scale and translation values. Note, we currently do not handle any other transformations (e.g. skew).
+        final float scaleX = matrixValues[Matrix.MSCALE_X];
+        final float scaleY = matrixValues[Matrix.MSCALE_Y];
+        final float transX = matrixValues[Matrix.MTRANS_X];
+        final float transY = matrixValues[Matrix.MTRANS_Y];
+
+        Log.d("position", "transX: " + transX);
+        Log.d("position", "transY: " + transY);
+        // Ensure that the left and top edges are not outside of the ImageView bounds.
+        final float bitmapLeft = (transX < 0) ? Math.abs(transX) : 0;
+        final float bitmapTop = (transY < 0) ? Math.abs(transY) : 0;
+
+
+        // Calculate the top-left corner of the crop window relative to the ~original~ bitmap size.
+        cropX = (bitmapLeft + left) / scaleX;
+        cropY = (bitmapTop + top) / scaleY;
+        // Calculate the crop window size relative to the ~original~ bitmap size.
+        // Make sure the right and bottom edges are not outside the ImageView bounds (this is just to address rounding discrepancies).
+        cropWidth = bitmap.getWidth();
+        cropHeight = bitmap.getHeight();
+
+        Log.d("Yellow","GetcropX: " + cropX);
+        Log.d("Yellow","GetcropY: " + cropY);
+        Log.d("Yellow","GetcropWidth: " + cropWidth);
+        Log.d("Yellow","GetcropHeight: " + cropHeight);
+
+        result[0] = cropX / cropWidth;
+        result[1] = cropY / cropHeight;
+
+        return result;
+    }
 }

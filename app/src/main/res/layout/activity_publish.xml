@@ -3,6 +3,7 @@
     android:id="@+id/activity_publish"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical">
 
 
@@ -12,12 +13,10 @@
 
     <LinearLayout
         android:id="@+id/choose_view"
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/bg_gray"
         android:orientation="vertical"
-        android:layout_weight="2.0"
+        android:layout_weight="0.5"
         android:visibility="visible">
 
         <View
@@ -44,7 +43,6 @@
     </com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout>
 
 
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1.5dp"
@@ -60,15 +58,16 @@
         <EditText
             android:id="@+id/my_et_emotion"
             android:layout_width="match_parent"
-            android:focusable="true"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
-            android:textColor="#000000"
-            android:textSize="15sp"
-            android:hint="说说你的想法..." >
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:hint="点按此处输入内容"
+            android:textColorHint="@color/black"
+            android:theme="@style/MyEditText">
         </EditText>
 
     </ScrollView>
