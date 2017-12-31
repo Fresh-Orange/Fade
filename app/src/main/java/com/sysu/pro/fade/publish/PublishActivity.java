@@ -504,6 +504,23 @@ public class PublishActivity extends AppCompatActivity {
         }
     }
 
+    private static int determineSize(String image) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        /**
+         * 最关键在此，把options.inJustDecodeBounds = true;
+         * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
+         */
+        Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
+        /**
+         *options.outHeight为原始图片的高
+         */
+        float currentRatio = (float)options.outWidth / (float)options.outHeight;
+        if (currentRatio > 1.3375f)
+            return 0;
+        else
+            return 1;
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && data != null) {
@@ -520,6 +537,7 @@ public class PublishActivity extends AppCompatActivity {
             {
                 images = (newDataList);
             }
+            int size = determineSize(images.get(0));
 //            ShowViewPager();
             flag = true;
             Log.d("My","string: " + getString());

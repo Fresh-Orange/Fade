@@ -50,6 +50,12 @@ public class ClickableProgressBar extends FrameLayout {
 	public void setProgress(int progress){
 		timeProgressBar.setProgress(progress);
 	}
+	public int getProgress(){
+		return timeProgressBar.getProgress();
+	}
+	public int getMaxProgress(){
+		return timeProgressBar.getMax();
+	}
 
 	/* *************** 设置监听器 ***************/
 	public void setAddClickListener(onAddClickListener listener){
