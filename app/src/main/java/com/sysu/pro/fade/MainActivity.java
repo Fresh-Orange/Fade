@@ -1,6 +1,5 @@
 package com.sysu.pro.fade;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -11,8 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -20,7 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
@@ -91,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PublishActivity.class);
                 startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
+                overridePendingTransition(R.anim.values, R.anim.out_left);
                 //跳转到发布页
             }
         });
@@ -258,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case Const.MESSAGE:
-                    rootView = inflater.inflate(R.layout.fragment_message,container,false);
+                    rootView = inflater.inflate(R.layout.fragment_notification,container,false);
                     break;
 
                 case Const.MY:
@@ -359,34 +356,6 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.search:
-                gotoSearchActivity();
-                break;
-        }
-        return true;
-    }
-
-    private void gotoSearchActivity() {
-        //TODO
-        final Context context = this;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Glide.get(context).clearDiskCache();
-            }
-        }).start();
-
-        Toast.makeText(this, "跳转",Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     protected void onDestroy() {

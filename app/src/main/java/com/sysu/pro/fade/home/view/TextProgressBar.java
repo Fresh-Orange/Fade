@@ -8,6 +8,8 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
+import com.sysu.pro.fade.publish.utils.DensityUtils;
+
 /**
  * Created by LaiXiancheng on 2017/12/30.
  * Email: lxc.sysu@qq.com
@@ -48,7 +50,7 @@ public class TextProgressBar extends ProgressBar {
 		rect = new Rect();
 		this.mPaint = new Paint();
 		this.mPaint.setAntiAlias(true);
-		this.mPaint.setTextSize(32);
+		this.mPaint.setTextSize(DensityUtils.sp2px(getContext(), 12));
 		this.mPaint.setColor(Color.argb(122, 0,0,0));
 	}
 
@@ -57,4 +59,5 @@ public class TextProgressBar extends ProgressBar {
 		this.str = text;
 		invalidate();
 	}
+
 }

@@ -1,110 +1,159 @@
 package com.sysu.pro.fade.home.activity;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
+import android.graphics.Canvas;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.home.adapter.DetailFragmentAdapter;
-import com.sysu.pro.fade.home.fragment.DetailPageFragment;
-import com.sysu.pro.fade.home.view.ObservableScrollView;
+import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.DetailPage;
+import com.sysu.pro.fade.beans.SecondComment;
+import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.adapter.CommonAdapter;
+import com.sysu.pro.fade.service.CommentService;
+import com.sysu.pro.fade.service.NoteService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.UserUtil;
 
-public class DetailActivity extends AppCompatActivity implements ObservableScrollView.OnObservableScrollViewScrollChanged{
+import java.util.ArrayList;
+import java.util.List;
 
-    //详情页上下滑动
-    private ObservableScrollView sv_contentView;
-    private LinearLayout ll_topView; //包住悬浮布局的
-   // private TextView tv_topView;
-    private LinearLayout ll_tab;  //悬浮的布局
-    private LinearLayout ll_fixedView;
-    //用来记录内层固定布局到屏幕顶部的距离
-    private int mHeight;
-    //配置viewpager相关
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/*
+ * rebuild by VJ 2017.12.30
+ */
+
+public class DetailActivity extends AppCompatActivity{
+
     public Integer note_id;
-
-    private Toolbar toolbar;
+    private boolean is_Comment;
+    private Retrofit retrofit;
+    private ImageView detailBack;   //返回按钮
+    private ImageView detailSetting;    //三个点按钮
+    private TextView commentNum;
+    private EditText writeComment;
+    private Button sendComment;
+    private RecyclerView recyclerView;
+    private CommonAdapter<Comment> commentAdapter;
+    private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        final int num = getIntent().getIntExtra(Const.COMMENT_NUM, 0);
+        commentNum = (TextView) findViewById(R.id.detail_comment_num);
+        writeComment = (EditText) findViewById(R.id.detail_write_comment);
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
-        sv_contentView= (ObservableScrollView) findViewById(R.id.sv_contentView);
-        ll_topView= (LinearLayout) findViewById(R.id.ll_topView);
-        ll_tab = (LinearLayout) findViewById(R.id.ll_tab);
-        ll_fixedView= (LinearLayout) findViewById(R.id.ll_fixedView);
-        ll_fixedView.setVisibility(View.INVISIBLE);
+        is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
+        UserUtil util = new UserUtil(this);
+        User user = util.getUer();
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+        NoteService noteService = retrofit.create(NoteService.class);
+        noteService.getNotePage(Integer.toString(note_id))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<DetailPage>() {
+                    @Override
+                    public void onCompleted() {
 
-        toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+                    }
 
-        //Fragment+ViewPager+FragmentViewPager组合的使用
-        ViewPager viewPager = (ViewPager) findViewById(R.id.vp_detail);
-        DetailFragmentAdapter adapter = new DetailFragmentAdapter(getSupportFragmentManager(),this);
-        viewPager.setAdapter(adapter);
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("bugErr", e.toString());
+                    }
 
-        //TabLayout
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_detail);
-        tabLayout.setupWithViewPager(viewPager);
-
-        sv_contentView.setOnObservableScrollViewScrollChanged(this);
+                    @Override
+                    public void onNext(DetailPage detailPage) {
+                        commentator.addAll(detailPage.getComment_list());
+                        commentNum.setText(Integer.toString(num));
+                        initialComment();
+                        //是评论的话显示直接评论框
+                        if (is_Comment) {
+                            showDirectComment();
+                        }
+                    }
+                });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //返回监听
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    private void initialComment() {
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if(hasFocus){
-            //获取HeaderView的高度，当滑动大于等于这个高度的时候，需要把topView移除当前布局，放入到外层布局
-            mHeight=ll_topView.getTop();
-        }
-    }
-
-    /**
-     * @param l Current horizontal scroll origin. 当前滑动的x轴距离
-     * @param t Current vertical scroll origin. 当前滑动的y轴距离
-     * @param oldl Previous horizontal scroll origin. 上一次滑动的x轴距离
-     * @param oldt Previous vertical scroll origin. 上一次滑动的y轴距离
-     */
-    @Override
-    public void onObservableScrollViewScrollChanged(int l, int t, int oldl, int oldt) {
-        if (t >= mHeight) {
-            if (ll_tab.getParent() != ll_fixedView) {
-                ll_topView.removeView(ll_tab);
-                ll_fixedView.addView(ll_tab);
-                ll_fixedView.setVisibility(View.VISIBLE);
-                ll_fixedView.setAlpha(1.0f);
+        //放直接评论的adapter
+        commentAdapter = new CommonAdapter<Comment>(commentator) {
+            @Override
+            public int getLayoutId(int ViewType) {
+                return R.layout.item_comment;
             }
-        } else {
-            if (ll_tab.getParent() != ll_topView) {
-                ll_fixedView.removeView(ll_tab);
-                ll_fixedView.setVisibility(View.INVISIBLE);
-                ll_fixedView.setAlpha(0.0f);
-                ll_topView.addView(ll_tab);
+
+            @Override
+            public void convert(CommonAdapter.ViewHolder holder, Comment data, int position) {
+                holder.setGoodImage(R.id.comment_detail_good, data.getType()==0);
+                holder.setImage(R.id.comment_detail_head, Const.BASE_IP+data.getHead_image_url());
+                holder.setText(R.id.comment_detail_name, data.getNickname());
+                holder.setText(R.id.comment_detail_date, data.getComment_time());
+                holder.setText(R.id.comment_detail_content, data.getComment_content());
+
+                List<SecondComment> respondent = new ArrayList<>(); //评论者对应的回复者列表
+                respondent.addAll(data.getComments());
+                if (respondent.size() == 0) {
+                    Log.d("bug", "convert: "+data.getComments().size());
+                    holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.GONE);
+                    holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
+                } else {
+                    //放回复内容
+                    Log.d("bug", "respond: "+respondent.size());
+                    for(int i = 0; i < data.getComments().size(); i++) {
+                        SecondComment reply = data.getComments().get(i);
+                        View view = LayoutInflater.from(DetailActivity.this).inflate(R.layout.item_reply, null);
+                        TextView name = (TextView) view.findViewById(R.id.reply_name);
+                        TextView word = (TextView) view.findViewById(R.id.reply_reply);
+                        TextView toName = (TextView) view.findViewById(R.id.reply_comment_name);
+                        TextView date = (TextView) view.findViewById(R.id.reply_date);
+                        TextView content = (TextView) view.findViewById(R.id.reply_content);
+                        name.setText(reply.getNickname());
+                        if (reply.getTo_user_id() == data.getUser_id()) {
+                            word.setVisibility(View.GONE);
+                            toName.setVisibility(View.GONE);
+                        }
+                        else toName.setText(reply.getTo_nickname());
+                        date.setText(reply.getComment_time());
+                        content.setText(reply.getComment_content());
+                        holder.addView(R.id.comment_detail_reply_wrapper, view);
+                    }
+                }
             }
-        }
+        };
+
+        recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
+        recyclerView.setAdapter(commentAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    private void showDirectComment() {
+        writeComment.setVisibility(View.VISIBLE);
+//        sendComment.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                CommentService send = retrofit.create(CommentService.class);
+//                send.addComment(JSON.toJSONString());
+//            }
+//        });
+    }
 }

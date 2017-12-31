@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/notification_process_contribution"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="10dp"
+        >
+        <ImageView
+            android:id="@+id/notification_process_iv"
+            android:layout_marginLeft="10dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/process_contribution"/>
+
+        <TextView
+            android:id="@+id/notification_process_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/notification_process_iv"
+            android:layout_centerInParent="true"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="进度贡献"/>
+
+        <ImageView
+            android:id="@+id/notification_process_back"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/notification_back"/>
+
+        <TextView
+            android:id="@+id/notification_process_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@id/notification_process_back"
+            android:layout_centerVertical="true"
+            android:background="@drawable/circle"
+            android:text="1"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        />
+    <RelativeLayout
+        android:id="@+id/notification_new_fan"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        >
+        <ImageView
+            android:id="@+id/notification_new_fan_iv"
+            android:layout_marginLeft="10dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/new_fans"/>
+
+        <TextView
+            android:id="@+id/notification_new_fan_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/notification_new_fan_iv"
+            android:layout_centerInParent="true"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="新的粉丝"/>
+
+        <ImageView
+            android:id="@+id/notification_new_fan_back"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/notification_back"/>
+
+        <TextView
+            android:id="@+id/notification_new_fan_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@id/notification_new_fan_back"
+            android:layout_centerVertical="true"
+            android:background="@drawable/circle"
+            android:text="1"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        />
+
+    <RelativeLayout
+        android:id="@+id/notification_comment"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        >
+        <ImageView
+            android:id="@+id/notification_comment_iv"
+            android:layout_marginLeft="10dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/notification_comment"/>
+
+        <TextView
+            android:id="@+id/notification_comment_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/notification_comment_iv"
+            android:layout_centerInParent="true"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="评论"/>
+
+        <ImageView
+            android:id="@+id/notification_comment_back"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/notification_back"/>
+
+        <TextView
+            android:id="@+id/notification_comment_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@id/notification_comment_back"
+            android:layout_centerVertical="true"
+            android:background="@drawable/circle"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:text="1"
+            android:textSize="14sp"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/notification_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>
