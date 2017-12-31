@@ -19,14 +19,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.activity.ImagePagerActivity;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
 
 import static com.sysu.pro.fade.utils.Screen.Dp2Px;
 import static com.sysu.pro.fade.utils.Screen.getScreenWidth;
@@ -57,7 +56,9 @@ import static com.sysu.pro.fade.utils.Screen.getScreenWidth;
 public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 	private int viewPagerMaxHeight = 400;
 	private ViewPager pager;
+	private imageAdaptiveIndicativeItemLayout.mImageItemPagerAdapter imgAdapter;
 	private LinearLayout dotLinearLayout;
+	List<String> imagePathList;
 	private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
 	public void setImgCoordinates(List<String> imgCoordinates) {
@@ -108,12 +109,18 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 
 	/**
 	 * 设置图片的路径，可以是本地路径，也可以是网络路径
-	 *
-	 * @param imagePathList
+	 * @param baseUrl 基地址，如果没有可以传入null
+	 * @param imagePathList 图片地址
 	 */
-	public void setPaths(List<String> imagePathList) {
-		mImageItemPagerAdapter imgAdapter = new mImageItemPagerAdapter(
-				((AppCompatActivity) this.getContext()).getSupportFragmentManager(), imagePathList, imgCoordinates);
+	public void setPaths(String baseUrl, List<String> imagePathList) {
+		this.imagePathList = new ArrayList<>();
+		if (baseUrl != null){
+			for (int i = 0; i < imagePathList.size(); i++){
+				this.imagePathList.add(baseUrl + imagePathList.get(i));
+			}
+		}
+		imgAdapter = new mImageItemPagerAdapter(
+				((AppCompatActivity) this.getContext()).getSupportFragmentManager(), this.imagePathList, imgCoordinates);
 		pager.setAdapter(imgAdapter);
 		addDots(getContext(), dotLinearLayout, imagePathList.size());
 		//viewPager滑动的时候，设置下方点的变化
@@ -125,6 +132,37 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 			@Override
 			public void onPageSelected(int position) {
 				setDot(getContext(), dotLinearLayout, position);
+			}
+
+
+		});
+	}
+
+	/**
+	 * 设置图片的路径，可以是本地路径，也可以是网络路径
+	 * @param imagePathList 图片url
+	 * @param position 当前显示位置
+	 */
+	public void setPaths(List<String> imagePathList,int position){
+		imgAdapter = new mImageItemPagerAdapter(
+				((AppCompatActivity)this.getContext()).getSupportFragmentManager(),imagePathList, imgCoordinates);
+//		imgAdapter.getItem(position);
+		pager.setAdapter(imgAdapter);
+		pager.setCurrentItem(position);
+		addDots(getContext(), dotLinearLayout,imagePathList.size());
+		setDot(getContext(),
+				dotLinearLayout,position >= imagePathList.size()-1 ? imagePathList.size()-1 : position);
+		//viewPager滑动的时候，设置下方点的变化
+		pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			}
+			@Override
+			public void onPageScrollStateChanged(int state) {
+			}
+			@Override
+			public void onPageSelected(int position) {
+				setDot(getContext(),dotLinearLayout,position);
 			}
 
 
@@ -158,6 +196,14 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 				dotsLinearLayout.addView(dotView);
 			}
 		}
+	}
+
+	public int getPosition() {
+		return pager.getCurrentItem();
+	}
+
+	public void notifyChanged() {
+		imgAdapter.notifyDataSetChanged();
 	}
 
 	/**
@@ -254,7 +300,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 				}
 			}
 
-			ImageUtils.loadImage(getContext(), Const.BASE_IP+mImageUrl, mImageView, startX, startY, 23, 54);
+			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, startX, startY, 23, 54);
 		}
 
 

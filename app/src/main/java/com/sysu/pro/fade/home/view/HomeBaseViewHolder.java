@@ -94,13 +94,15 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 */
 	private void setActionIfNecessary(Note bean) {
 		if (bean.getType() == 1){
-			ivHeadAction.setImageResource(R.drawable.add);
+			Glide.with(context).load(R.drawable.add).into(ivHeadAction);
+			//ivHeadAction.setImageResource(R.drawable.add);
 			tvHeadAction.setText(R.string.add_time);
 			tvAtUser.setVisibility(View.VISIBLE);
 			tvAtUser.setText(context.getString(R.string.at_user, bean.getOrigin().getNickname()));
 		}
 		else if (bean.getType() == 2){
-			ivHeadAction.setImageResource(R.drawable.minus);
+			Glide.with(context).load(R.drawable.minus).into(ivHeadAction);
+			//ivHeadAction.setImageResource(R.drawable.minus);
 			tvHeadAction.setText(R.string.minus_time);
 			tvAtUser.setVisibility(View.VISIBLE);
 			tvAtUser.setText(context.getString(R.string.at_user, bean.getOrigin().getNickname()));
@@ -233,6 +235,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							Integer comment_num = (Integer) simpleResponse.getExtra().get("comment_num");    //评论数量
 							Integer sub_num = (Integer) simpleResponse.getExtra().get("sub_num");    //评论数量
 							Integer add_num = (Integer) simpleResponse.getExtra().get("add_num");    //评论数量
+							Long fetchTime = (Long) simpleResponse.getExtra().get("fetchTime");
 							bean.setComment_num(comment_num);
 							bean.setSub_num(sub_num);
 							bean.setAdd_num(add_num);
@@ -276,7 +279,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 		if (minuteLeft < 60){
 			int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-			clickableProgressBar.setProgress((int)(halfProgress+(5.0/6)*minuteLeft));
+			clickableProgressBar.setProgress((int)Math.max((halfProgress+(5.0/6)*minuteLeft), halfProgress));
 		}
 		else
 			clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());

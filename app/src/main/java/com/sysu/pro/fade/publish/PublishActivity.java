@@ -12,8 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -31,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,8 +41,8 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
-import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
@@ -57,6 +56,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +98,9 @@ public class PublishActivity extends AppCompatActivity {
 
     private ImageButton imageButton;
 
-    private imageAdaptiveIndicativeLayout pager;
+    private imageAdaptiveIndicativeItemLayout pager;
+
+    private RelativeLayout pagerContainer;
 
     private boolean flag = true;
 
@@ -132,18 +134,6 @@ public class PublishActivity extends AppCompatActivity {
     private NoteService noteService;
 
 
-    private Handler newhandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE) {
-                if (show == CHOOSE)
-                    choose_view.setVisibility(View.VISIBLE);
-                if (show == PAGER)
-                    pager.setVisibility(View.VISIBLE);
-            }
-            super.handleMessage(msg);
-        }
-    };
 
     private void dealWithImagesToSend(final List<String>images){
         //发送帖子的最后操作在这里
@@ -318,10 +308,9 @@ public class PublishActivity extends AppCompatActivity {
             InitListener();
             initEmotionMainFragment();
         }
-
     }
 
-    private String getString() {
+    private String getCoordinateString() {
         String str = "";
         for (int i = 0; i < images.size(); i++) {
             int x = (int) (imageX[i] * 1000);
@@ -382,7 +371,7 @@ public class PublishActivity extends AppCompatActivity {
                                 images.clear();
                                 newCount = maxCount;
                                 choose_view.setVisibility(View.VISIBLE);
-                                pager.setVisibility(View.GONE);
+                                setHiddenPager(true);
                                 show = CHOOSE;
                             }
                             else {
@@ -421,7 +410,7 @@ public class PublishActivity extends AppCompatActivity {
                 if (heightDiff > dpToPx(PublishActivity.this, 200)) {
                     findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
                     choose_view.setVisibility(View.GONE);
-                    pager.setVisibility(View.GONE);
+                    setHiddenPager(true);
                 }
                 else{
                     if (frameLayout.getVisibility() == View.GONE)
@@ -458,9 +447,22 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
-        pager = (imageAdaptiveIndicativeLayout) findViewById(R.id.image_viewpager);
+        pager = (imageAdaptiveIndicativeItemLayout) findViewById(R.id.image_layout);
         choose_view = (LinearLayout) findViewById(R.id.choose_view);
         tv = (TextView) findViewById(R.id.tv);
+        pagerContainer = (RelativeLayout) findViewById(R.id.pager_container);
+        setHiddenPager(true);
+    }
+
+    /**
+     * 隐藏或是显示“Pager和增加和删除按钮”
+     * @param isHidden true为隐藏 ，false为显示
+     */
+    private void setHiddenPager(boolean isHidden){
+        if (isHidden)
+            pagerContainer.setVisibility(View.GONE);
+        else
+            pagerContainer.setVisibility(View.VISIBLE);
     }
 
     private void initEmotionMainFragment() {
@@ -512,26 +514,21 @@ public class PublishActivity extends AppCompatActivity {
     private void ShowViewPager() {
         if (images != null) {
             choose_view.setVisibility(View.GONE);
-            pager.setVisibility(View.VISIBLE);
+            setHiddenPager(false);
             show = PAGER;
             float maxRatio = 0;
-            for (String image : images)
-            {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                /**
-                 * 最关键在此，把options.inJustDecodeBounds = true;
-                 * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
-                 */
-                Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
-                /**
-                 *options.outHeight为原始图片的高
-                 */
-                float currentRatio = (float)options.outHeight / (float)options.outWidth;
-                if (currentRatio > maxRatio)
-                    maxRatio = currentRatio;
-            }
             pager.setViewPagerMaxHeight(280);
-            pager.setHeightByRatio(maxRatio);
+            double ratio;
+            int cutSize = determineSize(images.get(0));
+            if (cutSize == 1)
+                ratio = 5.0/4;
+            else
+                ratio = 8.0/15;
+            pager.setHeightByRatio((float)ratio);
+
+            String coordinateString = getCoordinateString();
+            String[] coordinates = coordinateString.split(",");
+            pager.setImgCoordinates(Arrays.asList(coordinates));
             pager.setPaths(images,images.size() - 1);
         }
     }
@@ -549,6 +546,7 @@ public class PublishActivity extends AppCompatActivity {
 
     private static int determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
         /**
          * 最关键在此，把options.inJustDecodeBounds = true;
          * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
@@ -580,10 +578,11 @@ public class PublishActivity extends AppCompatActivity {
             {
                 images = (newDataList);
             }
-            int size = determineSize(images.get(0));
-//            ShowViewPager();
+            
+
+            ShowViewPager();
             flag = true;
-            Log.d("My","string: " + getString());
+            Log.d("My","string: " + getCoordinateString());
             Log.d("My", "size: " + crop_size);
         }
         //仅剩一张还删了

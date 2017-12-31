@@ -101,6 +101,8 @@ public class ContentHome {
                     public void onError(Throwable e) {
                         Log.e("初次加载","失败");
                         e.printStackTrace();
+                        setLoadingMore(false);
+                        swipeRefresh.setRefreshing(false);
                     }
 
                     @Override
@@ -112,6 +114,7 @@ public class ContentHome {
                         }
                         //更新start
                         start = noteQuery.getStart();
+                        setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                     }
@@ -173,7 +176,6 @@ public class ContentHome {
                             swipeRefresh.setRefreshing(false);
                         }else {
                             //加载更多
-                            swipeRefresh.setRefreshing(true);
                             noteService.getTenNoteByTime(user.getUser_id().toString(),start.toString(),user.getConcern_num().toString())
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
@@ -185,17 +187,23 @@ public class ContentHome {
                                         public void onError(Throwable e) {
                                             Log.e("加载更多","失败");
                                             e.printStackTrace();
+                                            setLoadingMore(false);
                                         }
                                         @Override
                                         public void onNext(NoteQuery noteQuery) {
                                             Log.i("加载更多","成功");
                                             List<Note>addList = noteQuery.getList();
                                             if(addList.size() != 0){
-                                                if(addList.size() < 10) isEnd = true;
                                                 addToListTail(noteQuery.getList());
+                                                Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                                             }
-                                            Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                                            else{
+                                                Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                                            }
+                                            if(addList.size() < 10) isEnd = true;
+
                                             swipeRefresh.setRefreshing(false);
+                                            setLoadingMore(false);
                                         }
                                     });
                         }
@@ -235,6 +243,7 @@ public class ContentHome {
                                     public void onError(Throwable e) {
                                         Log.e("顶部加载","失败");
                                         e.printStackTrace();
+                                        swipeRefresh.setRefreshing(false);
                                     }
                                     @Override
                                     public void onNext(NoteQuery noteQuery) {
@@ -255,9 +264,9 @@ public class ContentHome {
                                              addToListHead(noteQuery.getList());
                                             judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
                                         }
+                                        swipeRefresh.setRefreshing(false);
                                     }
                                 });
-                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -284,7 +293,7 @@ public class ContentHome {
     public void refreshIfUserChange(){
         boolean isChange = false;
         for (Note note: notes){
-            if (note.getUser_id() == user.getUser_id()){
+            if (note.getUser_id().equals(user.getUser_id())){
                 if (!note.getHead_image_url().equals(user.getHead_image_url())
                         || !note.getNickname().equals(user.getNickname())){
                     note.setHead_image_url(user.getHead_image_url());
