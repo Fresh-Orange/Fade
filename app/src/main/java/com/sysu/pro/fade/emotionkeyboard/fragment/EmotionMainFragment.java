@@ -98,6 +98,8 @@ public class EmotionMainFragment extends BaseFragment{
         //获取判断绑定对象的参数
         isBindToBarEditText=args.getBoolean(EmotionMainFragment.BIND_TO_EDITTEXT);
         initView(rootView);
+        if (contentView == null)
+            return null;
         mEmotionKeyboard = EmotionKeyboard.with(getActivity())
                 .setEmotionView(rootView.findViewById(R.id.ll_emotion_layout))//绑定表情面板
                 //防止跳闪

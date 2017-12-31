@@ -21,7 +21,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="3dp"
-        app:spv_center_item_background="@color/light_blue"
+        app:spv_center_item_background="@color/main_blue"
         app:spv_center_item_position="2"
         app:spv_max_scale="1.5"
         app:spv_min_scale="0.8"

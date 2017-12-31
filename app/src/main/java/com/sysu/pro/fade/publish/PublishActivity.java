@@ -336,7 +336,6 @@ public class PublishActivity extends AppCompatActivity {
         return str;
     }
     private void InitListener() {
-        imageButton = (ImageButton) findViewById(R.id.add_button);
         publishTextView = (TextView) findViewById(R.id.tv_confirm);
         publishTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -353,7 +352,7 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.choose_view).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showListDialog();
@@ -654,7 +653,6 @@ public class PublishActivity extends AppCompatActivity {
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
 //                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
                         ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
-
                         break;
                 }
                 // which 下标从0开始

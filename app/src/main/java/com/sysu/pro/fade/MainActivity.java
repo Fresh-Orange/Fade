@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PublishActivity.class);
                 startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
+                overridePendingTransition(R.anim.values, R.anim.out_left);
                 //跳转到发布页
             }
         });
@@ -254,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case Const.MESSAGE:
-                    rootView = inflater.inflate(R.layout.fragment_message,container,false);
+                    rootView = inflater.inflate(R.layout.fragment_notification,container,false);
                     break;
 
                 case Const.MY:
