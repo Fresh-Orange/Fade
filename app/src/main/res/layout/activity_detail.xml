@@ -33,17 +33,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/setting" />
 
-        <ScrollView
-            android:id="@+id/detail_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_back">
+
             <LinearLayout
+                android:id="@+id/detail_note"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/detail_back"
                 android:orientation="vertical">
                 <!---帖子内容在这里展示，可以修改成其他类型的layout，但id不能改-->
 
@@ -102,7 +100,6 @@
 
                 <include layout="@layout/home_item_tail"></include>
             </LinearLayout>
-        </ScrollView>
 
 
         <LinearLayout
@@ -169,10 +166,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_divide2">
 
-            <android.support.v7.widget.RecyclerView
+            <com.sysu.pro.fade.home.view.GreedyRecyclerView
                 android:id="@+id/detail_comment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="350dp" />
         </LinearLayout>
 
         <EditText

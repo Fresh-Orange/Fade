@@ -20,7 +20,10 @@ import android.widget.LinearLayout;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.activity.ImagePagerActivity;
+import com.sysu.pro.fade.publish.Event.ClickToCropEvent;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,6 +62,8 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	private LinearLayout dotLinearLayout;
 	private LinearLayout rootLinearLayout;
 	List<String> imagePathList;
+	static public enum ClickMode { SHOW_PICTURE, EDIT }
+	private ClickMode clickMode = ClickMode.SHOW_PICTURE;//默认点击查看图片
 	private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
 	public void setImgCoordinates(List<String> imgCoordinates) {
@@ -82,6 +87,10 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	 */
 	public void setViewPagerMaxHeight(int newMaxHeight) {
 		viewPagerMaxHeight = newMaxHeight;
+	}
+
+	public void setClickMode(ClickMode newClickMode){
+		clickMode = newClickMode;
 	}
 
 	private void init() {
@@ -244,10 +253,12 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 		private String mNextUrl;
 		private ImageView mImageView;
 		private int fragmentIndex;
+		private ClickMode clickMode;
 		private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
 		public static mImageItemFragment newInstance(List<String> urlList, int position,
-													 String nextUrl, List<String> imgCoordinates) {
+													 String nextUrl, List<String> imgCoordinates,
+													 ClickMode clickMode) {
 			final mImageItemFragment f = new mImageItemFragment();
 			String imageUrl = urlList.get(position);
 			final Bundle args = new Bundle();
@@ -257,6 +268,7 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			f.urlList = urlList;
 			f.setArguments(args);
 			f.imgCoordinates = imgCoordinates;
+			f.clickMode = clickMode;
 
 			return f;
 		}
@@ -283,7 +295,10 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			mImageView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					startPictureActivity(v);
+					if (clickMode == ClickMode.SHOW_PICTURE)
+						startPictureActivity(v);
+					else
+						EventBus.getDefault().post(new ClickToCropEvent(fragmentIndex));
 				}
 			});
 			return v;
@@ -342,7 +357,7 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			String nextUrl = "";
 			if (position + 1 < imagePathList.size())
 				nextUrl = imagePathList.get(position + 1);
-			return mImageItemFragment.newInstance(imagePathList, position, nextUrl, imgCoordinates);
+			return mImageItemFragment.newInstance(imagePathList, position, nextUrl, imgCoordinates, clickMode);
 		}
 
 	}

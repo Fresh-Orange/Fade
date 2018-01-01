@@ -2,6 +2,7 @@ package com.sysu.pro.fade.home.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -71,6 +72,7 @@ public class DetailActivity extends AppCompatActivity{
     private imageAdaptiveIndicativeItemLayout imageLayout;
     private TextView tvName, tvBody;    //name为用户名，body为正文
     private ImageView userAvatar;
+    private TextView tvPostTime;
     private TextView tvCount;
     private ClickableProgressBar clickableProgressBar;
 
@@ -98,6 +100,7 @@ public class DetailActivity extends AppCompatActivity{
         tvName = (TextView) findViewById(R.id.tv_name);
         tvBody = (TextView) findViewById(R.id.tv_title);
         tvCount = (TextView) findViewById(R.id.tv_comment_add_count);
+        tvPostTime = (TextView) findViewById(R.id.tv_post_time);
         clickableProgressBar = (ClickableProgressBar) findViewById(R.id.clickable_progressbar);
         initNoteView();
         //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
@@ -165,14 +168,23 @@ public class DetailActivity extends AppCompatActivity{
         checkAndSetOriginalNote();
         tvName.setText(note.getNickname());
         tvBody.setText(note.getNote_content());
+        tvPostTime.setText(note.getPost_time());
         setImageView();
         setCommentAndAddCountText(this, note);
         setTimeLeftTextAndProgress(this, note);
+        if (note.getImages() == null || note.getImages().isEmpty()) {
+            imageLayout.setVisibility(View.GONE);
+        }
+        if (note.getNote_content() == null || note.getNote_content().equals("")) {
+            tvBody.setVisibility(View.GONE);
+        }
         Glide.with(this)
                 .load(Const.BASE_IP+note.getHead_image_url())
                 .fitCenter()
                 .dontAnimate()
                 .into(userAvatar);
+        setCommentListener(this, note);
+        setAddOrMinusListener(this, note);
     }
 
 
@@ -181,6 +193,7 @@ public class DetailActivity extends AppCompatActivity{
      */
     private void checkAndSetOriginalNote(){
         if (note.getType() != 0){
+            note.setPost_time(note.getOrigin().getPost_time());
             note.setNickname(note.getOrigin().getNickname());
             note.setHead_image_url(note.getOrigin().getHead_image_url());
             note.setUser_id(note.getOrigin().getUser_id());
@@ -233,15 +246,110 @@ public class DetailActivity extends AppCompatActivity{
 
         if (minuteLeft < 60){
             int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-            clickableProgressBar.setProgress((int)(halfProgress+(5.0/6)*minuteLeft));
+            clickableProgressBar.setProgress((int)Math.max((halfProgress+(5.0/6)*minuteLeft), halfProgress));
         }
         else
             clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());
     }
 
-    /**
-     * 首次进入详情页初始化评论区 by VJ
+     * 续秒或者减秒
      */
+    private void setAddOrMinusListener(final Context context, final Note bean) {
+        UserUtil userUtil = new UserUtil(this);
+        final User curUser = userUtil.getUer();
+        clickableProgressBar.setAddClickListener(new ClickableProgressBar.onAddClickListener() {
+            @Override
+            public void onClick() {
+                Note note = getNewNote(context, bean);
+                note.setType(1); // 1表示 续秒
+                sendAddOrMinusToServer(note, curUser, bean);
+                clickableProgressBar.showCommentButton(1);
+                bean.setAction(1);
+                int curProgress = clickableProgressBar.getProgress();
+                int maxProgress = clickableProgressBar.getMaxProgress();
+                clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));
+            }
+        });
+        clickableProgressBar.setMinusClickListener(new ClickableProgressBar.onMinusClickListener() {
+            @Override
+            public void onClick() {
+                Note note = getNewNote(context, bean);
+                note.setType(2); // 2表示 减秒
+                sendAddOrMinusToServer(note, curUser, bean);
+                clickableProgressBar.showCommentButton(0);
+                bean.setAction(2);
+                int curProgress = clickableProgressBar.getProgress();
+                int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+                clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));
+            }
+        });
+    }
+
+    private void setCommentListener(final Context context, final Note bean) {
+        if (bean.getAction() == 1)
+            clickableProgressBar.showCommentButton(1);
+        else if (bean.getAction() == 2)
+            clickableProgressBar.showCommentButton(0);
+        clickableProgressBar.setCommentClickListener(new ClickableProgressBar.onCommentClickListener() {
+            @Override
+            public void onClick() {
+                //TODO:伟杰，这里弹出评论编辑
+            }
+        });
+    }
+
+    /**
+     * 将包装好的note对象发到服务器，并更新本地的界面
+     * @param note 准备发往服务器的note
+     * @param curUser 当前用户
+     * @param bean 当前holder对应的bean
+     */
+    private void sendAddOrMinusToServer(Note note, User curUser, final Note bean) {
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
+        NoteService noteService = retrofit.create(NoteService.class);
+        noteService
+                .changeSecond(JSON.toJSONString(note))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>() {
+                    @Override
+                    public void onCompleted() {}
+
+                    @Override
+                    public void onError(Throwable e) {
+                        //TODO:帖子死掉
+                    }
+
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        if (simpleResponse.getErr() == null){
+                            //USELESS!! Integer newNoteId = (Integer) simpleResponse.getExtra().get("note_id");
+                            Integer comment_num = (Integer) simpleResponse.getExtra().get("comment_num");    //评论数量
+                            Integer sub_num = (Integer) simpleResponse.getExtra().get("sub_num");    //评论数量
+                            Integer add_num = (Integer) simpleResponse.getExtra().get("add_num");    //评论数量
+                            Long fetchTime = (Long) simpleResponse.getExtra().get("fetchTime");
+                            bean.setComment_num(comment_num);
+                            bean.setSub_num(sub_num);
+                            bean.setAdd_num(add_num);
+                            //TODO:fetchTime更新之后进度条更新
+                        }
+                    }
+                });
+    }
+
+    @NonNull
+    private Note getNewNote(Context context, Note bean) {
+        UserUtil userUtil = new UserUtil(this);
+        final User curUser = userUtil.getUer();
+        Note note = new Note();
+        note.setNickname(curUser.getNickname());
+        note.setUser_id(curUser.getUser_id());
+        note.setNote_content(bean.getNote_content());
+        note.setTarget_id(bean.getNote_id());
+        note.setHead_image_url(curUser.getHead_image_url());
+        return note;
+    }
+
     private void initialComment() {
 
         //放直接评论的adapter
