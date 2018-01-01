@@ -18,7 +18,6 @@ public class DetailPage {
 	public void setFetchTime(long fetchTime) {
 		this.fetchTime = fetchTime;
 	}
-
 	public List<Note> getSecond_list() {
 		return second_list;
 	}
@@ -49,4 +48,5 @@ public class DetailPage {
 	public void setSub_num(Integer sub_num) {
 		this.sub_num = sub_num;
 	}
+
 }

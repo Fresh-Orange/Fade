@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
 import com.sysu.pro.fade.home.view.ClickableProgressBar;
 import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
+import com.sysu.pro.fade.service.CommentService;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.TimeUtil;
@@ -36,6 +38,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -48,8 +51,10 @@ import rx.schedulers.Schedulers;
 
 public class DetailActivity extends AppCompatActivity{
 
+    private User user;
     public Integer note_id;
     private boolean is_Comment;
+    private Integer commentType;
     private Retrofit retrofit;
     private ImageView detailBack;   //返回按钮
     private ImageView detailSetting;    //三个点按钮
@@ -59,6 +64,8 @@ public class DetailActivity extends AppCompatActivity{
     private RecyclerView recyclerView;
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
+
+    private InputMethodManager imm; //管理软键盘
 
     /* ******** 帖子展示部分 by 赖贤城 *******/
     Note note;//首页传入的帖子
@@ -73,9 +80,18 @@ public class DetailActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        final int num = getIntent().getIntExtra(Const.COMMENT_NUM, 0);
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
+        sendComment = (Button) findViewById(R.id.detail_send_comment);
+        detailBack = (ImageView) findViewById(R.id.detail_back);
+        imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
+
+        detailBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         /* ******** 帖子展示部分 by 赖贤城 *******/
         note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
@@ -92,10 +108,11 @@ public class DetailActivity extends AppCompatActivity{
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
-        int action = note.getAction();//TODO:伟杰，你要的加减秒类型
+        commentType = note.getAction();//TODO:伟杰，你要的加减秒类型
         UserUtil util = new UserUtil(this);
-        User user = util.getUer();
+        user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+
         NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id))
                 .subscribeOn(Schedulers.newThread())
@@ -123,8 +140,9 @@ public class DetailActivity extends AppCompatActivity{
                         //TODO:fetchTime更新之后进度条更新
 
                         initialComment();
-                        //是评论的话显示直接评论框
+                        //是评论的话显示输入框
                         if (is_Comment) {
+                            Log.d("bug", "进来了");
                             showDirectComment();
                         }
                     }
@@ -276,7 +294,7 @@ public class DetailActivity extends AppCompatActivity{
         clickableProgressBar.setCommentClickListener(new ClickableProgressBar.onCommentClickListener() {
             @Override
             public void onClick() {
-                //TODO:伟杰，这里弹出评论编辑
+                showDirectComment();
             }
         });
     }
@@ -333,7 +351,6 @@ public class DetailActivity extends AppCompatActivity{
         return note;
     }
 
-
     private void initialComment() {
 
         //放直接评论的adapter
@@ -344,40 +361,38 @@ public class DetailActivity extends AppCompatActivity{
             }
 
             @Override
-            public void convert(CommonAdapter.ViewHolder holder, Comment data, int position) {
-                holder.setGoodImage(R.id.comment_detail_good, data.getType()==0);
+            public void convert(final CommonAdapter.ViewHolder holder, final Comment data, final int position) {
+                holder.setGoodImage(R.id.comment_detail_good, data.getType()==1);
                 holder.setImage(R.id.comment_detail_head, Const.BASE_IP+data.getHead_image_url());
                 holder.setText(R.id.comment_detail_name, data.getNickname());
                 holder.setText(R.id.comment_detail_date, data.getComment_time());
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
+                //一级评论内容的点击事件，点击之后弹出输入框
+                holder.onWidgetClick(R.id.comment_detail_content, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showSecondComment(commentator.get(position), holder, data.getUser_id());
+                    }
+                });
 
                 List<SecondComment> respondent = new ArrayList<>(); //评论者对应的回复者列表
-                respondent.addAll(data.getComments());
-                if (respondent.size() == 0) {
-                    Log.d("bug", "convert: "+data.getComments().size());
+                if(data.getComments() != null) {
+                    respondent.addAll(data.getComments());
+                    if (respondent.size() == 0) {
+                        holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.GONE);
+                        holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
+                    } else {
+                        //先清空线型布局中的所有View
+                        holder.removeAllViews(R.id.comment_detail_reply_wrapper);
+                        //放回复内容
+                        for(SecondComment reply : data.getComments()) {
+                            View view = createReplyItemView(reply, data.getUser_id(), holder);
+                            holder.addView(R.id.comment_detail_reply_wrapper, view);
+                        }
+                    }
+                } else {
                     holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.GONE);
                     holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
-                } else {
-                    //放回复内容
-                    Log.d("bug", "respond: "+respondent.size());
-                    for(int i = 0; i < data.getComments().size(); i++) {
-                        SecondComment reply = data.getComments().get(i);
-                        View view = LayoutInflater.from(DetailActivity.this).inflate(R.layout.item_reply, null);
-                        TextView name = (TextView) view.findViewById(R.id.reply_name);
-                        TextView word = (TextView) view.findViewById(R.id.reply_reply);
-                        TextView toName = (TextView) view.findViewById(R.id.reply_comment_name);
-                        TextView date = (TextView) view.findViewById(R.id.reply_date);
-                        TextView content = (TextView) view.findViewById(R.id.reply_content);
-                        name.setText(reply.getNickname());
-                        if (reply.getTo_user_id() == data.getUser_id()) {
-                            word.setVisibility(View.GONE);
-                            toName.setVisibility(View.GONE);
-                        }
-                        else toName.setText(reply.getTo_nickname());
-                        date.setText(reply.getComment_time());
-                        content.setText(reply.getComment_content());
-                        holder.addView(R.id.comment_detail_reply_wrapper, view);
-                    }
                 }
             }
         };
@@ -387,14 +402,188 @@ public class DetailActivity extends AppCompatActivity{
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    //创建回复的View
+    private View createReplyItemView(final SecondComment reply, final int userId, final CommonAdapter.ViewHolder holder) {
+        View view = LayoutInflater.from(DetailActivity.this).inflate(R.layout.item_reply, null);
+        TextView name = (TextView) view.findViewById(R.id.reply_name);
+        TextView word = (TextView) view.findViewById(R.id.reply_reply);
+        TextView toName = (TextView) view.findViewById(R.id.reply_comment_name);
+        TextView date = (TextView) view.findViewById(R.id.reply_date);
+        TextView content = (TextView) view.findViewById(R.id.reply_content);
+        name.setText(reply.getNickname());
+        if (reply.getTo_user_id() == userId) {
+            word.setVisibility(View.GONE);
+            toName.setVisibility(View.GONE);
+        }
+        else toName.setText(reply.getTo_nickname());
+        date.setText(reply.getComment_time());
+        content.setText(reply.getComment_content());
+        view.findViewById(R.id.reply_content).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSecondReply(reply, holder, userId);
+            }
+        });
+        return view;
+    }
+
+    //显示评论输入框
     private void showDirectComment() {
         writeComment.setVisibility(View.VISIBLE);
-//        sendComment.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                CommentService send = retrofit.create(CommentService.class);
-//                send.addComment(JSON.toJSONString());
-//            }
-//        });
+        sendComment.setVisibility(View.VISIBLE);
+        writeComment.requestFocus();
+        sendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //收起软键盘
+                if(imm != null) {
+                    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                }
+                writeComment.setVisibility(View.GONE);
+                sendComment.setVisibility(View.GONE);
+                final Comment userComment = new Comment();
+                userComment.setUser_id(user.getUser_id());
+                userComment.setNickname(user.getNickname());
+                userComment.setComment_content(writeComment.getText().toString());
+                userComment.setHead_image_url(user.getHead_image_url());
+                userComment.setNote_id(note_id);
+                userComment.setType(commentType);
+                CommentService send = retrofit.create(CommentService.class);
+                //提交到服务器，并返回评论的id等内容
+                send.addComment(JSON.toJSONString(userComment))
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SimpleResponse>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.d("firstBugErr", "onError: "+e.toString());
+                            }
+
+                            @Override
+                            public void onNext(SimpleResponse simpleResponse) {
+                                Map<String, Object> map = simpleResponse.getExtra();
+                                userComment.setComment_id((Integer) map.get("comment_id"));
+                                userComment.setComment_time((String) map.get("comment_time"));
+                                commentator.add(userComment);
+                                commentAdapter.notifyDataSetChanged();
+                                writeComment.setText("");
+                            }
+                        });
+
+            }
+        });
     }
+    //显示二级评论输入框
+    private void showSecondComment(final Comment toComment, final CommonAdapter.ViewHolder holder, final int userId) {
+        writeComment.setVisibility(View.VISIBLE);
+        sendComment.setVisibility(View.VISIBLE);
+        writeComment.requestFocus();
+        sendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                //收起软键盘
+                if(imm != null) {
+                    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                }
+                writeComment.setVisibility(View.GONE);
+                sendComment.setVisibility(View.GONE);
+                final SecondComment secondComment = new SecondComment();
+                secondComment.setComment_content(writeComment.getText().toString());
+                secondComment.setNickname(user.getNickname());
+                secondComment.setNote_id(note_id);
+                secondComment.setUser_id(user.getUser_id());
+                secondComment.setComment_id(toComment.getComment_id());
+                secondComment.setTo_nickname(toComment.getNickname());
+                secondComment.setTo_user_id(toComment.getUser_id());
+                CommentService send = retrofit.create(CommentService.class);
+                //提交到服务器，并返回评论的id等内容
+                send.addSecondComment(JSON.toJSONString(secondComment))
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SimpleResponse>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.d("secondBugErr", "onError: "+e.toString());
+                            }
+
+                            @Override
+                            public void onNext(SimpleResponse simpleResponse) {
+                                Map<String, Object> map = simpleResponse.getExtra();
+                                secondComment.setSecond_id((Integer) map.get("second_id"));
+                                secondComment.setComment_time((String) map.get("comment_time"));
+                                View view = createReplyItemView(secondComment, userId, holder);
+                                holder.addView(R.id.comment_detail_reply_wrapper, view);
+                                holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+                                writeComment.setText("");
+                            }
+                        });
+            }
+        });
+    }
+
+    //显示二级回复输入框
+    private void showSecondReply(final SecondComment toComment, final CommonAdapter.ViewHolder holder, final int userId) {
+        writeComment.setVisibility(View.VISIBLE);
+        sendComment.setVisibility(View.VISIBLE);
+        writeComment.requestFocus();
+        sendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                //收起软键盘
+                if(imm != null) {
+                    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                }
+                writeComment.setVisibility(View.GONE);
+                sendComment.setVisibility(View.GONE);
+                final SecondComment secondComment = new SecondComment();
+                secondComment.setComment_content(writeComment.getText().toString());
+                secondComment.setNickname(user.getNickname());
+                secondComment.setNote_id(note_id);
+                secondComment.setUser_id(user.getUser_id());
+                secondComment.setComment_id(toComment.getComment_id());
+                secondComment.setTo_nickname(toComment.getNickname());
+                secondComment.setTo_user_id(toComment.getUser_id());
+                CommentService send = retrofit.create(CommentService.class);
+                //提交到服务器，并返回评论的id等内容
+                send.addSecondComment(JSON.toJSONString(secondComment))
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SimpleResponse>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.d("secondReplyBugErr", "onError: "+e.toString());
+                            }
+
+                            @Override
+                            public void onNext(SimpleResponse simpleResponse) {
+                                Map<String, Object> map = simpleResponse.getExtra();
+                                secondComment.setSecond_id((Integer) map.get("second_id"));
+                                secondComment.setComment_time((String) map.get("comment_time"));
+                                View view = createReplyItemView(secondComment, userId, holder);
+                                holder.addView(R.id.comment_detail_reply_wrapper, view);
+                                holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+                                writeComment.setText("");
+                            }
+                        });
+            }
+        });
+    }
+
 }
