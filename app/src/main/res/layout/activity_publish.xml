@@ -14,9 +14,8 @@
     <LinearLayout
         android:id="@+id/choose_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="100dp"
         android:orientation="vertical"
-        android:layout_weight="0.5"
         android:visibility="visible">
 
         <View
@@ -28,6 +27,7 @@
             android:id="@+id/add_bar"
             layout="@layout/add_bar"/>
     </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/pager_container"
         android:layout_width="match_parent"
@@ -80,8 +80,7 @@
     <ScrollView
         android:id="@+id/mScrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2.0"
+        android:layout_height="250dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:descendantFocusability="beforeDescendants">
@@ -104,8 +103,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.7">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/rl_editbar_bg"
@@ -146,8 +144,7 @@
         android:focusable="true"
         android:descendantFocusability="beforeDescendants"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2.5"
+        android:layout_height="250dp"
         android:visibility="gone"
         />
 

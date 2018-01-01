@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -53,11 +52,12 @@ import static com.sysu.pro.fade.utils.Screen.getScreenWidth;
  * @author LaiXiancheng/(lxc.sysu@qq.com)/
  * @version 1.1 修复布局上顶问题
  */
-public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
+public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	private int viewPagerMaxHeight = 400;
 	private ViewPager pager;
 	private imageAdaptiveIndicativeItemLayout.mImageItemPagerAdapter imgAdapter;
 	private LinearLayout dotLinearLayout;
+	private LinearLayout rootLinearLayout;
 	List<String> imagePathList;
 	private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
@@ -88,6 +88,7 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 		inflate(getContext(), R.layout.home_image_pager_layout, this);
 		this.pager = (ViewPager) findViewById(R.id.pager);
 		this.dotLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_dots);
+		this.rootLinearLayout = (LinearLayout) findViewById(R.id.pager_root);
 	}
 
 	/**
@@ -106,6 +107,17 @@ public class imageAdaptiveIndicativeItemLayout extends FrameLayout {
 		layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
 		pager.setLayoutParams(layoutParams);
 	}
+
+	public int getPagerRootHeight() {
+		//ViewGroup.LayoutParams layoutParams = rootLinearLayout.getLayoutParams();
+		return rootLinearLayout.getMeasuredHeight();
+	}
+
+	public int getPagerRootWidth() {
+		//ViewGroup.LayoutParams layoutParams = rootLinearLayout.getLayoutParams();
+		return rootLinearLayout.getMeasuredWidth();
+	}
+
 
 	/**
 	 * 设置图片的路径，可以是本地路径，也可以是网络路径

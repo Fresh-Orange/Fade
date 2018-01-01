@@ -98,7 +98,6 @@ public class DetailActivity extends AppCompatActivity{
                 .subscribe(new Subscriber<DetailPage>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
@@ -127,6 +126,9 @@ public class DetailActivity extends AppCompatActivity{
                 });
     }
 
+    /**
+     * 帖子展示部分的续秒数和评论数显示 ---by 赖贤城
+     */
     private void setCommentAndAddCountText(Context context, Note bean) {
         DecimalFormat decimalFormat = new DecimalFormat(",###");
         String sAddCount = decimalFormat.format(bean.getAdd_num());
@@ -137,11 +139,13 @@ public class DetailActivity extends AppCompatActivity{
     }
 
     /**
-     * 帖子展示部分的初始设置，使用的是旧数据，等rxJava返回后才会再更新界面
+     * 帖子展示部分的初始设置，使用的是旧数据，等rxJava返回后才会再更新界面 ---by 赖贤城
      */
     private void initNoteView(){
         checkAndSetOriginalNote();
         tvName.setText(note.getNickname());
+        tvBody.setText(note.getNote_content());
+        setImageView();
         setCommentAndAddCountText(this, note);
         setTimeLeftTextAndProgress(this, note);
         Glide.with(this)
@@ -151,12 +155,42 @@ public class DetailActivity extends AppCompatActivity{
                 .into(userAvatar);
     }
 
+
+    /**
+     * 如果是转发帖，那么将原贴（Origin）的信息转移到note里面，方便后续操作 ---by 赖贤城
+     */
     private void checkAndSetOriginalNote(){
         if (note.getType() != 0){
             note.setNickname(note.getOrigin().getNickname());
             note.setHead_image_url(note.getOrigin().getHead_image_url());
             note.setUser_id(note.getOrigin().getUser_id());
         }
+    }
+
+    private double getNoteRatio(Note bean) {
+        double ratio;
+        int cutSize = bean.getImgCutSize();
+        if (cutSize == 1)
+            ratio = 5.0/4;
+        else if (cutSize == 2)
+            ratio = 8.0/15;
+        else{//USELESS!!
+            ratio = 999;
+            for (double d:bean.getImgSizes()) {
+                Log.d("Ratio", "out "+d);
+                ratio = ratio < d ? ratio : d;
+            }
+        }
+        return ratio;
+    }
+
+    private void setImageView(){
+        double ratio = getNoteRatio(note);
+        imageLayout.setViewPagerMaxHeight(600);
+        //imageLayout.setHeightByRatio(((float) (1.0/ratio)));
+        imageLayout.setImgCoordinates(note.getImgCoordinates());
+        imageLayout.setHeightByRatio((float)ratio);
+        imageLayout.setPaths(Const.BASE_IP, note.getImgUrls());
     }
 
     private void setTimeLeftTextAndProgress(Context context, Note bean) {

@@ -8,12 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -23,6 +22,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -31,22 +31,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Image;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
-import com.sysu.pro.fade.publish.Event.PublishToImageSelector;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
-import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
@@ -114,6 +113,8 @@ public class PublishActivity extends AppCompatActivity {
     public PostArticleImgAdapter postArticleImgAdapter;
     private TextView tv;//删除区域提示
     private Context mContext;
+    ImageButton icon_add_pic;
+    ImageButton icon_sub_pic;
     private int show;
     private static int CHOOSE = 0;
     private static int PAGER = 1;
@@ -357,7 +358,6 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton icon_add_pic = (ImageButton) findViewById(R.id.icon_add_pic);
         icon_add_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -365,7 +365,6 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton icon_sub_pic = (ImageButton) findViewById(R.id.icon_sub_pic);
         icon_sub_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -457,7 +456,7 @@ public class PublishActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
-                                    choose_view.setVisibility(View.VISIBLE);
+                                    setHiddenPager(false);
                             }
                         }, 3000);
                 }
@@ -476,6 +475,8 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
+        icon_sub_pic = (ImageButton) findViewById(R.id.icon_sub_pic);
+        icon_add_pic = (ImageButton) findViewById(R.id.icon_add_pic);
         pager = (imageAdaptiveIndicativeItemLayout) findViewById(R.id.image_layout);
         choose_view = (LinearLayout) findViewById(R.id.choose_view);
         tv = (TextView) findViewById(R.id.tv);
@@ -512,6 +513,7 @@ public class PublishActivity extends AppCompatActivity {
         emotionMainFragment.bindToFramelayout(frameLayout);
         emotionMainFragment.bindToRl_editbar_bg(rl_editbar_bg);
         emotionMainFragment.bindToEmotion((ImageView)findViewById(R.id.emotion_button));
+        emotionMainFragment.bindToKeyboardEmotion((ImageView)findViewById(R.id.keyboard_button));
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         // Replace whatever is in thefragment_container view with this fragment,
         // and add the transaction to the backstack
@@ -546,7 +548,7 @@ public class PublishActivity extends AppCompatActivity {
             setHiddenPager(false);
             show = PAGER;
             float maxRatio = 0;
-            pager.setViewPagerMaxHeight(280);
+            pager.setViewPagerMaxHeight(600);
             double ratio;
             int cutSize = determineSize(images.get(0));
             if (cutSize == 1)
@@ -554,6 +556,31 @@ public class PublishActivity extends AppCompatActivity {
             else
                 ratio = 8.0/15;
             pager.setHeightByRatio((float)ratio);
+            pager.invalidate();
+            pager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                boolean isLayouted = false;
+                @Override
+                public void onGlobalLayout() {
+                    if (isLayouted == true)
+                        return;
+                    isLayouted = true;
+                    ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
+                    layoutParams.height = pager.getPagerRootHeight();
+                    layoutParams.width = pager.getPagerRootWidth();
+                    pagerContainer.setLayoutParams(layoutParams);
+                    pagerContainer.invalidate();
+                    icon_add_pic.invalidate();
+                    icon_sub_pic.invalidate();
+                }
+            });
+            //ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
+            //layoutParams.height = pager.getPagerRootHeight();
+            //layoutParams.width = pager.getPagerRootWidth();
+            //pagerContainer.setLayoutParams(layoutParams);
+            //pagerContainer.invalidate();
+            //icon_add_pic.invalidate();
+            //icon_sub_pic.invalidate();
+
 
             String coordinateString = getCoordinateString();
             String[] coordinates = coordinateString.split(",");
@@ -749,6 +776,7 @@ public class PublishActivity extends AppCompatActivity {
     public void onEvent(ImageSelectorToPublish event) {
         images = event.getImages();
         newCount = event.getNewCount();
+        ShowViewPager();
     }
 
     @Override
