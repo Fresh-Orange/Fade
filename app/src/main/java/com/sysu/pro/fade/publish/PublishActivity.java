@@ -1,11 +1,15 @@
 package com.sysu.pro.fade.publish;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -45,8 +50,10 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
 import com.sysu.pro.fade.publish.Event.ClickToCropEvent;
+import com.sysu.pro.fade.publish.Event.CropToClickEvent;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
+import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
@@ -86,7 +93,7 @@ public class PublishActivity extends AppCompatActivity {
 
     private String path = null;
 
-    private LinearLayout rl_editbar_bg;
+    private RelativeLayout rl_editbar_bg;
     private View activityRootView;
     private int newCount = 9;
     private ArrayList<String> images = new ArrayList<String>();
@@ -121,8 +128,8 @@ public class PublishActivity extends AppCompatActivity {
     private static int PAGER = 1;
 
     //2017.9.29
-    public static float[] imageX = new float[10];
-    public static float[] imageY = new float[10];
+    public static float[] imageX;
+    public static float[] imageY;
     private int crop_size = 1;
 
     //2017.9.13 hl
@@ -142,6 +149,8 @@ public class PublishActivity extends AppCompatActivity {
     private NoteService noteService;
 
     int cutSize; // 比例类型，1表示4:5， 0表示15:8
+    int cut_size;   //1表示4:5,2表示15:8
+    int curShowPosition = 0;
 
 
 
@@ -149,6 +158,7 @@ public class PublishActivity extends AppCompatActivity {
         //发送帖子的最后操作在这里
         //收集要发送的图片数据，包装一下,压缩好图片后，发送帖子
         if(images_files == null) images_files = new ArrayList<>();
+        else images_files.clear();
         final File sd=Environment.getExternalStorageDirectory();
         String cache_path_root = sd.getPath() + "/chache_pic";
         File rootFile = new File(cache_path_root);
@@ -162,7 +172,7 @@ public class PublishActivity extends AppCompatActivity {
             int y = (int) (imageY[i] * 1000);
             String yStr = "" + y;
             image.setImage_coordinate(xStr + ":" + yStr);
-            image.setImage_cut_size(crop_size + "");
+            image.setImage_cut_size(cut_size + "");
 
             String image_path = images.get(i);
             //然后压缩图片
@@ -237,11 +247,11 @@ public class PublishActivity extends AppCompatActivity {
                                             Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
                                         }
                                         //最后要将所有缓存图片删除
-                                        for(File chache_file : images_files){
+/*                                        for(File chache_file : images_files){
                                             if(chache_file.exists()){
                                                 chache_file.delete();
                                             }
-                                        }
+                                        }*/
                                     }
                                 });
                     }
@@ -299,6 +309,8 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
+        imageX = new float[10];
+        imageY = new float[10];
         //注册
         EventBus.getDefault().register(this);
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
@@ -461,7 +473,7 @@ public class PublishActivity extends AppCompatActivity {
                                 if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
                                     setHiddenPager(false);
                             }
-                        }, 3000);
+                        }, 200);
                 }
 
             }
@@ -510,7 +522,7 @@ public class PublishActivity extends AppCompatActivity {
         //替换fragment
         //创建修改实例
         frameLayout = (FrameLayout) findViewById(R.id.fl_memotionview_main);
-        rl_editbar_bg = (LinearLayout) findViewById(R.id.rl_editbar_bg);
+        rl_editbar_bg = (RelativeLayout) findViewById(R.id.rl_editbar_bg);
         emotionMainFragment = EmotionMainFragment.newInstance(EmotionMainFragment.class,bundle);
         emotionMainFragment.bindToContentView(et_emotion);
         emotionMainFragment.bindToFramelayout(frameLayout);
@@ -551,13 +563,18 @@ public class PublishActivity extends AppCompatActivity {
             setHiddenPager(false);
             show = PAGER;
             float maxRatio = 0;
-            pager.setViewPagerMaxHeight(300);
+            pager.setViewPagerMaxHeight(800);
             double ratio;
             cutSize = determineSize(images.get(0));
-            if (cutSize == 1)
+            if (cutSize == 1) {
                 ratio = 5.0/4;
-            else
+                cut_size = 1;
+            }
+            else {
                 ratio = 8.0/15;
+                cut_size = 2;
+            }
+
             pager.setClickMode(imageAdaptiveIndicativeItemLayout.ClickMode.EDIT);
             pager.setHeightByRatio((float)ratio);
             pager.invalidate();
@@ -588,8 +605,10 @@ public class PublishActivity extends AppCompatActivity {
 
             String coordinateString = getCoordinateString();
             String[] coordinates = coordinateString.split(",");
+            Log.d("yellowsss", "coordinates: " + coordinateString);
             pager.setImgCoordinates(Arrays.asList(coordinates));
-            pager.setPaths(images,images.size() - 1);
+            pager.setPaths(images,curShowPosition);
+            pager.invalidate();
         }
     }
 
@@ -624,27 +643,25 @@ public class PublishActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && data != null) {
-            newCount = data.getIntExtra(Constants.NEW_COUNT, maxCount);
-            imageX = data.getFloatArrayExtra(Constants.IMAGEX);
-            imageY = data.getFloatArrayExtra(Constants.IMAGEY);
-            crop_size = data.getIntExtra(Constants.CUT_SIZE, 1);
-            newDataList = new ArrayList<String>();
-            if (data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT) != null)
-            {
-                newDataList = data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT);
-            }
-            if (newDataList != null)
-            {
-                images = (newDataList);
-            }
-
-
-            ShowViewPager();
-            flag = true;
-            Log.d("My","string: " + getCoordinateString());
-            Log.d("My", "size: " + crop_size);
-        }
+//        if (requestCode == REQUEST_CODE && data != null) {
+//            newCount = data.getIntExtra(Constants.NEW_COUNT, maxCount);
+//            imageX = data.getFloatArrayExtra(Constants.IMAGEX);
+//            imageY = data.getFloatArrayExtra(Constants.IMAGEY);
+//            crop_size = data.getIntExtra(Constants.CUT_SIZE, 1);
+//            newDataList = new ArrayList<String>();
+//            if (data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT) != null)
+//            {
+//                newDataList = data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT);
+//            }
+//            if (newDataList != null)
+//            {
+//                images = (newDataList);
+//            }
+//            ShowViewPager();
+//            flag = true;
+//            Log.d("My","string: " + getCoordinateString());
+//            Log.d("My", "size: " + crop_size);
+//        }
         //仅剩一张还删了
 //        if (data != null && data.getBooleanExtra(Constants.IS_ALL_DELETED, false)
 //                && requestCode == Constants.CLICK_RESULT_CODE) {
@@ -684,12 +701,17 @@ public class PublishActivity extends AppCompatActivity {
 
         if (requestCode == Constants.TAKE_PICTURE  && resultCode == RESULT_OK)
         {
+            Log.d("yellow", "path3: " + path);
+            Log.d("yellow", "images: " + images.get(0));
+            Log.d("yellow", "getExternalStorageDirectory: " + Environment.getExternalStorageDirectory());
             if (path != null) {
+//                path = Environment.getExternalStorageDirectory() + path;
+                Log.d("yellow", "path2: " + path);
                 images.add(path);
                 newCount--;
                 ShowViewPager();
              }
-            }
+        }
     }
 
     private void showListDialog() {
@@ -734,32 +756,27 @@ public class PublishActivity extends AppCompatActivity {
         listDialog.show();
     }
     //适配7.0的拍照方法
-    private static void takePhoto(Activity activity)
+    private void takePhoto(Activity activity)
     {
         Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Log.d("yellow", "getExternalCacheDir()" + getExternalCacheDir());
+        Log.d("yellow", "OldEnvironment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
         File vFile = new File(Environment.getExternalStorageDirectory()
-                + "/myimage/", String.valueOf(System.currentTimeMillis())
+                + "/Fade/", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
-        if (!vFile.exists())
+        if (vFile.exists())
         {
-            File vDirPath = vFile.getParentFile();
-            vDirPath.mkdirs();
+            vFile.delete();
         }
-        else
-        {
-            if (vFile.exists())
-            {
-                vFile.delete();
-            }
-        }
-        Uri tempUri;
+        Uri uri;
         if (Build.VERSION.SDK_INT >= 24)
-            tempUri = FileProvider.getUriForFile(activity.getApplicationContext(),
+            uri = FileProvider.getUriForFile(activity.getApplicationContext(),
                     activity.getApplicationContext().getPackageName() +
                             ".provider", vFile);
-        else tempUri = Uri.fromFile(vFile);
-        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+        else uri = Uri.fromFile(vFile);
+        openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        path = getImagePath(uri, this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
         }
@@ -780,13 +797,28 @@ public class PublishActivity extends AppCompatActivity {
     public void onEvent(ImageSelectorToPublish event) {
         images = event.getImages();
         newCount = event.getNewCount();
+        curShowPosition = images.size() - 1;
+        ShowViewPager();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(CropToClickEvent event) {
+        String message = event.getMessage();
+        curShowPosition = event.getPosition();
+        Log.d("yellowsss", message);
         ShowViewPager();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ClickToCropEvent event) {
         int curPosition = event.getCurPosition();
+        Intent intent = new Intent(PublishActivity.this, CropActivity.class);
+        intent.putStringArrayListExtra(ImageSelectorUtils.CROP_LAST, images);
+        intent.putExtra(Constants.FLAG,cutSize);
+        intent.putExtra(Constants.CURRENT_CROP_POSITION, curPosition);
+        intent.putExtra(Constants.CROP_COUNT, newCount);
         //TODO:跳转裁剪
+        startActivity(intent);
     }
 
     @Override
@@ -794,5 +826,166 @@ public class PublishActivity extends AppCompatActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);//反注册EventBus
     }
+    public static String getRealFilePath( final Context context, final Uri uri ) {
+        if ( null == uri ) {
+            Log.d("yellow", "null");
+            return null;
+        }
+        final String scheme = uri.getScheme();
+        String data = null;
+        if ( scheme == null )
+            data = uri.getPath();
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
+            data = uri.getPath();
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
+    }
 
+    @TargetApi(19)
+    public static String getImageAbsolutePath(Context context, Uri imageUri) {
+        if (context == null || imageUri == null)
+            return null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, imageUri)) {
+            if (isExternalStorageDocument(imageUri)) {
+                String docId = DocumentsContract.getDocumentId(imageUri);
+                String[] split = docId.split(":");
+                String type = split[0];
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+            } else if (isDownloadsDocument(imageUri)) {
+                String id = DocumentsContract.getDocumentId(imageUri);
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                return getDataColumn(context, contentUri, null, null);
+            } else if (isMediaDocument(imageUri)) {
+                String docId = DocumentsContract.getDocumentId(imageUri);
+                String[] split = docId.split(":");
+                String type = split[0];
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+                String selection = MediaStore.Images.Media._ID + "=?";
+                String[] selectionArgs = new String[] { split[1] };
+                return getDataColumn(context, contentUri, selection, selectionArgs);
+            }
+        } // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(imageUri.getScheme())) {
+            // Return the remote address
+            if (isGooglePhotosUri(imageUri))
+                return imageUri.getLastPathSegment();
+            return getDataColumn(context, imageUri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
+            return imageUri.getPath();
+        }
+        return null;
+    }
+
+    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+        Cursor cursor = null;
+        String column = MediaStore.Images.Media.DATA;
+        String[] projection = { column };
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is ExternalStorageProvider.
+     */
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is DownloadsProvider.
+     */
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is MediaProvider.
+     */
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is Google Photos.
+     */
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+
+    public static String getImagePath(Uri uri, Context context) {
+        String[] column = { MediaStore.Images.Media.DATA };
+        if (null == uri) {
+            return null;
+        }
+        final String scheme = uri.getScheme();
+        String path = null;
+        if (scheme == null)
+            path = uri.getPath();
+        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+            path = uri.getPath();
+        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                String wholeID = DocumentsContract.getDocumentId(uri);
+                String id = wholeID.split(":")[1];
+                String sel = MediaStore.Images.Media._ID + "=?";
+                Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column,
+                        sel, new String[] { id }, null);
+                int columnIndex = cursor.getColumnIndex(column[0]);
+                if (cursor.moveToFirst()) {
+                    path = cursor.getString(columnIndex);
+                }
+                cursor.close();
+            } else {
+                Cursor cursor = context.getContentResolver().query(uri, column, null, null, null);
+                if (null != cursor) {
+                    if (cursor.moveToFirst()) {
+                        int index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                        if (index > -1) {
+                            path = cursor.getString(index);
+                        }
+                    }
+                    cursor.close();
+                }
+            }
+
+        }
+        return path;
+    }
 }

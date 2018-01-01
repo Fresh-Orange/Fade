@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.message;
+package com.sysu.pro.fade.message.Class;
 
 import android.net.Uri;
 import android.widget.ImageView;
@@ -20,7 +20,7 @@ public class NotificationUser
     private String user_content;  //聊天内容
     private String user_time;     //聊天时间
 
-    NotificationUser(Uri user_icon, int user_count, String user_id, String user_content, String user_time) {
+    public NotificationUser(Uri user_icon, int user_count, String user_id, String user_content, String user_time) {
         this.user_icon = user_icon;
         this.user_count = user_count;
         this.user_id = user_id;
