@@ -1,13 +1,17 @@
 package com.sysu.pro.fade.my;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,22 +23,29 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
+import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
+import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.utils.UserUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by road on 2017/7/14.
  */
 public class ContentMy {
-    private Activity activity;
+    private FragmentActivity activity;
     private Context context;
     private View rootview;
     private SharedPreferences sharedPreferences;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
+    private TextView tvShowUserId;
     private TextView tvShowSummary; //个性签名
     private ImageView mySetting;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
     private User user;
     private Handler handler = new Handler(){
         @Override
@@ -70,7 +81,7 @@ public class ContentMy {
         }
     };
 
-    public ContentMy(final Activity activity, Context context, View rootview){
+    public ContentMy(final FragmentActivity activity, Context context, View rootview){
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
@@ -79,6 +90,7 @@ public class ContentMy {
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
         ivShowHead = (ImageView) rootview.findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
+        tvShowUserId = (TextView) rootview.findViewById(R.id.tvShowUserId);
         tvShowSummary = (TextView) rootview.findViewById(R.id.tvShowSummary);
         loadData();
 
@@ -92,7 +104,9 @@ public class ContentMy {
             }
         });
 
-
+        tabLayout = (TabLayout) rootview.findViewById(R.id.my_tab_layout);
+        viewPager = (ViewPager) rootview.findViewById(R.id.my_view_pager);
+        loadFragment();
 
     }
 
@@ -112,8 +126,10 @@ public class ContentMy {
         }
         if(nickname == null||nickname.equals("")){
             tvShowNickname.setText("未登录");
+            tvShowUserId.setVisibility(View.INVISIBLE);
         }else{
             tvShowNickname.setText(nickname);
+            tvShowUserId.setText(Integer.toString(user.getUser_id()));
         }
         if(summary == null || summary.equals("")){
             tvShowSummary.setText("暂无个签，点击设置图标进行编辑");
@@ -123,5 +139,28 @@ public class ContentMy {
 
     }
 
+    private void loadFragment() {
+        String[] mTitles = new String[]{"Fade", "关注", "粉丝"};
+        String[] allNums = new String[]{Integer.toString(user.getFade_num())
+                , Integer.toString(user.getConcern_num()), Integer.toString(user.getFans_num())};
+        Fragment fade = new TempFragment();
+        Fragment concern = new TempFragment();
+        Fragment fans = new TempFragment();
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(fade);
+        fragments.add(concern);
+        fragments.add(fans);
+        MyFragmentAdapter adapter = new MyFragmentAdapter(activity.getSupportFragmentManager(), fragments);
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        for (int i = 0; i < adapter.getCount(); i++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+            tab.setCustomView(R.layout.my_tablayout_item);
+            TextView text1 = (TextView) tab.getCustomView().findViewById(R.id.my_tab_layout_text1);
+            TextView text2 = (TextView) tab.getCustomView().findViewById(R.id.my_tab_layout_text2);
+            text1.setText(mTitles[i]);
+            text2.setText(allNums[i]);
+        }
+    }
 
 }
