@@ -109,11 +109,15 @@ public class ContentHome {
                         notes.clear();
                         if(noteQuery.getList() != null && noteQuery.getList().size() != 0){
                             addToListTail(noteQuery.getList());
+                            //更新start
+                            start = noteQuery.getStart();
+                            swipeRefresh.setRefreshing(false);
+                            Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            isEnd = true;
+                            Toast.makeText(context,"往下没有了",Toast.LENGTH_SHORT).show();
                         }
-                        //更新start
-                        start = noteQuery.getStart();
-                        swipeRefresh.setRefreshing(false);
-                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+
                     }
                 });
 

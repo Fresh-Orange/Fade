@@ -1,10 +1,12 @@
 package com.sysu.pro.fade.beans;
 
+import java.util.List;
+
 public class PersonPage {
 	//个人界面所需要数据
 	private User user;
 	private Integer isConcern; //0为没关注，1为已关注
-	
+	private List<Note>list;//fade列表，10条一次
 	
 	public User getUser() {
 		return user;

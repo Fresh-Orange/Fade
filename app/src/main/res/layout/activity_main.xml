@@ -22,9 +22,6 @@
             android:theme="@style/AppTheme.AppBarOverlay"
             app:title=" "
             app:popupTheme="@style/AppTheme.PopupOverlay">
-
-
-
         </android.support.v7.widget.Toolbar>
 
         <RelativeLayout

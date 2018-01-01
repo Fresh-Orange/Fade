@@ -95,26 +95,24 @@ public class MainActivity extends AppCompatActivity {
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         //上线请求
-        userService.online(user.getUser_id().toString())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SimpleResponse>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("用户上线","失败" + e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(SimpleResponse simpleResponse) {
-                        Log.i("用户上线",simpleResponse.getSuccess());
-                    }
-                });
-
+        if(user.getUser_id() != null){
+            userService.online(user.getUser_id().toString())
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<SimpleResponse>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e("用户上线","失败" + e.getMessage());
+                        }
+                        @Override
+                        public void onNext(SimpleResponse simpleResponse) {
+                            Log.i("用户上线",simpleResponse.getSuccess());
+                        }
+                    });
+        }
     }
 
     //设置底部导航栏图片
@@ -289,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case Const.DISCOVER:
-                    setToolbarShow(true);
+                    setToolbarShow(false);
                     if (!mHasLoadedOnce)
                         contentDiscover = new ContentDiscover(getActivity(),getContext(),rootView);
                     break;
@@ -356,27 +354,29 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
-
     @Override
     protected void onDestroy() {
         //下线请求
-        userService.offline(user.getUser_id().toString())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SimpleResponse>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("用户下线","失败" + e.getMessage());
-                    }
+        if(user.getUser_id() != null){
+            userService.offline(user.getUser_id().toString())
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<SimpleResponse>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e("用户下线","失败" + e.getMessage());
+                        }
 
-                    @Override
-                    public void onNext(SimpleResponse simpleResponse) {
-                        Log.i("用户下线",simpleResponse.getSuccess());
-                    }
-                });
-        super.onDestroy();
+                        @Override
+                        public void onNext(SimpleResponse simpleResponse) {
+                            Log.i("用户下线",simpleResponse.getSuccess());
+                        }
+                    });
+            super.onDestroy();
+        }
     }
+
 }
