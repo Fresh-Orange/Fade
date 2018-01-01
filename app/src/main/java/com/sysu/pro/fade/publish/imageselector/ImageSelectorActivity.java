@@ -6,7 +6,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.usage.UsageEvents;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,7 +13,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +27,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -39,11 +36,7 @@ import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
-import com.sysu.pro.fade.publish.Event.PublishToImageSelector;
-import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
-import com.sysu.pro.fade.publish.crop.CropActivity;
-import com.sysu.pro.fade.publish.crop.CropImageView;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Folder;
@@ -53,8 +46,6 @@ import com.sysu.pro.fade.publish.imageselector.utils.DateUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -433,26 +424,10 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
 
         newCount = mMaxCount - newimages.size();
-        int size = determineSize(newimages.get(0));
-        Log.d("Yellow", "size: " + size);
-        float result[] = new float[2];
-        result = getInitialSize(newimages.get(0), size);
-        Log.d("Yellow", "result: " + result);
-//        CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                EventBus.getDefault().post(new PublishToImageSelector(9, images, newCount));
-//            }
-//        }).start();
-        //        finish();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                EventBus.getDefault().post(new ImageSelectorToPublish(9, newimages, newCount));
-                Log.d("Yellow", "SelectNewCount: " + newCount);
-            }
-        }).start();
+
+        //CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
+
+        EventBus.getDefault().post(new ImageSelectorToPublish(9, newimages, newCount));
 //        Intent intent = new Intent(ImageSelectorActivity.this, PublishActivity.class);
 //        startActivity(intent);
         finish();
@@ -666,34 +641,5 @@ public class ImageSelectorActivity extends AppCompatActivity {
             return 1;
     }
 
-    public float[] getInitialSize(String image, int size) {
-        float result[] = new float[2];
-        Bitmap bm = BitmapFactory.decodeFile(image);
-        CropImageView cropImageView2 = new CropImageView(ImageSelectorActivity.this);
-        cropImageView2.setImageBitmap(bm);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        if (size == 0)
-            cropImageView2.setAspectRatio(15, 8);
-        else
-            cropImageView2.setAspectRatio(4, 5);
-        RectF rectF = new RectF();
-        rectF = cropImageView2.getInitBitmapRect(cropImageView2);
-        result = cropImageView2.getPara(rectF, bm);
-        Log.d("Result", "x: " + result[0]);
-        Log.d("Result", "y: " + result[1]);
-        return result;
-    }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onEvent(PublishToImageSelector event) {
-//        mMaxCount = event.getMaxSelectcount();
-//        newimages = event.getImages();
-//        newCount = event.getNewCount();
-//    }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        EventBus.getDefault().unregister(this);
-//    }
 }

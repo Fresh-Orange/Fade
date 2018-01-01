@@ -57,6 +57,7 @@ public class Const {
 
     //是否是点击评论进入的
     public static final String IS_COMMENT       = "isComment";
+    public static final String COMMENT_ENTITY       = "commentEntity";
 
     //note请求有关
     public static final String START        = "start";
