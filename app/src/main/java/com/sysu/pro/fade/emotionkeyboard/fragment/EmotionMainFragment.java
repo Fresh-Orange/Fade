@@ -82,7 +82,8 @@ public class EmotionMainFragment extends BaseFragment{
 
     private View emotionView;
     private ImageView emotion_button;
-
+    private ImageView keyboard_button;
+    private ImageView real_button;
 
     /**
      * 创建与Fragment对象关联的View视图时调用
@@ -98,6 +99,14 @@ public class EmotionMainFragment extends BaseFragment{
         //获取判断绑定对象的参数
         isBindToBarEditText=args.getBoolean(EmotionMainFragment.BIND_TO_EDITTEXT);
         initView(rootView);
+        if (contentView == null)
+            return null;
+        if (emotion_button.getVisibility() == View.GONE) {
+            real_button = keyboard_button;
+        }
+        else {
+            real_button = emotion_button;
+        }
         mEmotionKeyboard = EmotionKeyboard.with(getActivity())
                 .setEmotionView(rootView.findViewById(R.id.ll_emotion_layout))//绑定表情面板
                 //防止跳闪
@@ -108,6 +117,7 @@ public class EmotionMainFragment extends BaseFragment{
                 .bindToRl_editbar_bg(rl_editbar_bg)
                 //点击了表情按钮的情况下，不同情况的讨论
                 .bindToEmotionButton(emotion_button)//绑定表情按钮
+                .bindToKeyboardButton(keyboard_button)
                 .build();
 
         initListener();
@@ -205,6 +215,10 @@ public class EmotionMainFragment extends BaseFragment{
 
     public void bindToRl_editbar_bg(LinearLayout rl_editbar_bg) {
         this.rl_editbar_bg = rl_editbar_bg;
+    }
+
+    public void bindToKeyboardEmotion(ImageView keyboard_button) {
+        this.keyboard_button = keyboard_button;
     }
 }
 

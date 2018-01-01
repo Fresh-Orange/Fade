@@ -10,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -33,8 +35,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
-import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Folder;
@@ -42,6 +44,8 @@ import com.sysu.pro.fade.publish.imageselector.entry.Image;
 import com.sysu.pro.fade.publish.imageselector.model.ImageModel;
 import com.sysu.pro.fade.publish.imageselector.utils.DateUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -66,7 +70,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 0X00000011;
 
     private int newCount = 9;
-    private ArrayList<String> newimages;
+    private ArrayList<String> newimages = new ArrayList<String>();
 
     private boolean isOpenFolder;
     private boolean isShowTime;
@@ -111,12 +115,12 @@ public class ImageSelectorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
 
+//        EventBus.getDefault().register(this);
         Intent intent = getIntent();
         mMaxCount = intent.getIntExtra(Constants.MAX_SELECT_COUNT, 0);
 //        isSingle = intent.getBooleanExtra(Constants.IS_SINGLE, false);
 
         newCount = intent.getIntExtra(Constants.NEW_COUNT, 9);
-        newimages = new ArrayList<String>();
         if (intent.getStringArrayListExtra(ImageSelectorUtils.SELECT_LAST) != null)
         {
             newimages = intent.getStringArrayListExtra(ImageSelectorUtils.SELECT_LAST);
@@ -140,6 +144,9 @@ public class ImageSelectorActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.parseColor("#373c3d"));
         }
     }
+
+
+
 
     private void initView() {
         rvImage = (RecyclerView) findViewById(R.id.rv_image);
@@ -417,8 +424,13 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
 
         newCount = mMaxCount - newimages.size();
-        CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-//        finish();
+
+        //CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
+
+        EventBus.getDefault().post(new ImageSelectorToPublish(9, newimages, newCount));
+//        Intent intent = new Intent(ImageSelectorActivity.this, PublishActivity.class);
+//        startActivity(intent);
+        finish();
     }
 
     private void cropConfirm() {
@@ -611,4 +623,23 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    private static int determineSize(String image) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        /**
+         * 最关键在此，把options.inJustDecodeBounds = true;
+         * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
+         */
+        Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
+        /**
+         *options.outHeight为原始图片的高
+         */
+        float currentRatio = (float)options.outWidth / (float)options.outHeight;
+        if (currentRatio > 1.3375f)
+            return 0;
+        else
+            return 1;
+    }
+
+
 }

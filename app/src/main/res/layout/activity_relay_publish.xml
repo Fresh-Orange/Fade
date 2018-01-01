@@ -59,7 +59,7 @@
             <View
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
-                android:background="@color/light_blue"/>
+                android:background="@color/main_blue"/>
             <TextView
                 android:id="@+id/tv_original_name_and_text"
                 android:layout_marginLeft="10dp"

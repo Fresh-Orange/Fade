@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
 
 /**
@@ -49,6 +50,12 @@ public class ClickableProgressBar extends FrameLayout {
 	}
 	public void setProgress(int progress){
 		timeProgressBar.setProgress(progress);
+	}
+	public int getProgress(){
+		return timeProgressBar.getProgress();
+	}
+	public int getMaxProgress(){
+		return timeProgressBar.getMax();
 	}
 
 	/* *************** 设置监听器 ***************/
@@ -94,7 +101,8 @@ public class ClickableProgressBar extends FrameLayout {
 		//设置续秒或减秒图标
 		int actionResId = action == 0 ? R.drawable.minus : R.drawable.add;
 		ivAction.setVisibility(VISIBLE);
-		ivAction.setImageResource(actionResId);
+		Glide.with(getContext()).load(actionResId).into(ivAction);
+		//ivAction.setImageResource(actionResId);
 
 		ivContainer.setImageDrawable(null);
 	}

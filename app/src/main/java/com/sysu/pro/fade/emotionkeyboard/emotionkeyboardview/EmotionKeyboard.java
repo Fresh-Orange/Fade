@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -41,8 +42,9 @@ public class EmotionKeyboard {
 
 	private FrameLayout frameLayout;
 	private LinearLayout rl_editbar_bg;
+    private ImageView keyboard_button;
 
-	private EmotionKeyboard(){
+    private EmotionKeyboard(){
 
 	}
 
@@ -56,7 +58,40 @@ public class EmotionKeyboard {
 		return this;
 	}
 
-	private class MyScrollView extends ScrollView {
+    public EmotionKeyboard bindToKeyboardButton(ImageView keyboard_button) {
+        if (keyboard_button == null) {
+            return null;
+        }
+        keyboard_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //表情布局情况下按下表情按钮
+//				mEditText.setFocusable(false);
+
+                if (mEmotionLayout.isShown()) {
+//					lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
+                    mEditText.setFocusable(true);
+                    hideEmotionLayout(true);//隐藏表情布局，显示软件盘
+//					unlockContentHeightDelayed();//软件盘显示后，释放内容高度
+                } else {
+                    //软键盘显示情况下按下表情按钮
+                    if (isSoftInputShown()) {//同上
+//						lockContentHeight();
+                        showEmotionLayout();
+//						unlockContentHeightDelayed();
+                    }
+                    //在初始布局直接按下表情按钮
+                    else {
+//						showEmotionLayout();//两者都没显示，直接显示表情布局
+                    }
+                }
+            }
+        });
+        return this;
+    }
+
+
+    private class MyScrollView extends ScrollView {
 
 		public MyScrollView(Context context) {
 			super(context);
@@ -99,26 +134,28 @@ public class EmotionKeyboard {
 	@SuppressLint("ClickableViewAccessibility")
 	public EmotionKeyboard bindToEditText(EditText editText) {
 		mEditText = editText;
-		mEditText.requestFocus();
-		mEditText.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_UP && mEmotionLayout.isShown()) {
+		if (mEditText != null) {
+            mEditText.requestFocus();
+            mEditText.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_UP && mEmotionLayout.isShown()) {
 //					lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
-					hideEmotionLayout(true);//隐藏表情布局，显示软件盘
+                        hideEmotionLayout(true);//隐藏表情布局，显示软件盘
 
 //					mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-					//软件盘显示后，释放内容高度
-					mEditText.postDelayed(new Runnable() {
-						@Override
-						public void run() {
+                        //软件盘显示后，释放内容高度
+                        mEditText.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
 //							unlockContentHeightDelayed();
-						}
-					}, 200L);
-				}
-				return false;
-			}
-		});
+                            }
+                        }, 200L);
+                    }
+                    return false;
+                }
+            });
+        }
 		return this;
 	}
 
@@ -128,6 +165,9 @@ public class EmotionKeyboard {
 	 * @return
 	 */
 	public EmotionKeyboard bindToEmotionButton(View emotionButton) {
+	    if (emotionButton == null) {
+	        return null;
+        }
 		emotionButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -196,6 +236,7 @@ public class EmotionKeyboard {
 		hideSoftInput();
 		frameLayout.setVisibility(View.VISIBLE);
 		rl_editbar_bg.setVisibility(View.VISIBLE);
+
 		mEmotionLayout.getLayoutParams().height = softInputHeight;
 		mEmotionLayout.setVisibility(View.VISIBLE);
 

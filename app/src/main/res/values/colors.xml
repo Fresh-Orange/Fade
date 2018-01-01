@@ -44,6 +44,8 @@
 
     <color name="pos_com_add_font_color">#7b000000</color>
 
+    <!--for Publish Main Color-->
+    <color name="main_blue">#29abe2</color>
 
 
 </resources>

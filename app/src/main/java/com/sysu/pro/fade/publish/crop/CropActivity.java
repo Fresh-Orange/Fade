@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CropActivity extends AppCompatActivity{
 
     private int newCount = 9;
+    private int mMaxCount;
 
     public static NoScrollView scrollView;
     private ArrayList<String> newimages;
@@ -69,6 +70,7 @@ public class CropActivity extends AppCompatActivity{
 
     public static int determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
         /**
          * 最关键在此，把options.inJustDecodeBounds = true;
          * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
@@ -152,6 +154,12 @@ public class CropActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        findViewById(R.id.picker_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }

@@ -9,7 +9,15 @@ public class DetailPage {
 	private Integer comment_num; //这三个数量用于更新
 	private Integer add_num;
 	private Integer sub_num;
-	
+	private long fetchTime;//当前的服务器时间，用于计算剩余时间
+
+	public long getFetchTime() {
+		return fetchTime;
+	}
+
+	public void setFetchTime(long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
 	public List<Note> getSecond_list() {
 		return second_list;
 	}
@@ -40,6 +48,5 @@ public class DetailPage {
 	public void setSub_num(Integer sub_num) {
 		this.sub_num = sub_num;
 	}
-	
-	
+
 }

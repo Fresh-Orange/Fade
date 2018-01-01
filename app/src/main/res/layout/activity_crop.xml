@@ -15,22 +15,37 @@
     <include
         android:id="@+id/title_bar"
         layout="@layout/header_titlebar" />
-    <com.sysu.pro.fade.publish.crop.BitmapScrollPicker
-        android:id="@+id/picker_04_horizontal"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="3dp"
-        app:spv_center_item_background="@color/light_blue"
-        app:spv_center_item_position="2"
-        app:spv_max_scale="1.5"
-        app:spv_min_scale="0.8"
-        app:spv_draw_bitmap_width="50dp"
-        app:spv_disallow_intercept_touch="true"
-        app:spv_draw_bitmap_mode="fill"
-        app:spv_is_circulation="false"
-        app:spv_orientation="horizontal"
-        app:spv_visible_item_count="5" />
+        android:orientation="horizontal">
+        <com.sysu.pro.fade.publish.crop.BitmapScrollPicker
+            android:id="@+id/picker_04_horizontal"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:layout_marginTop="3dp"
+            app:spv_center_item_background="@color/main_blue"
+            app:spv_center_item_position="2"
+            app:spv_max_scale="1.5"
+            app:spv_min_scale="0.8"
+            app:spv_draw_bitmap_width="40dp"
+            app:spv_disallow_intercept_touch="true"
+            app:spv_draw_bitmap_mode="fill"
+            app:spv_is_circulation="false"
+            app:spv_orientation="horizontal"
+            app:spv_visible_item_count="4" />
+
+        <ImageView
+            android:id="@+id/picker_add"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_addpic"/>
+    </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
