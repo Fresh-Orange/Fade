@@ -16,7 +16,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp">
             <ImageView
-                android:id="@+id/notification_user_icon"
+                android:id="@+id/follow_user_icon"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/notification_comment"/>

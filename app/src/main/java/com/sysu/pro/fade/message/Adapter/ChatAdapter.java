@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.message.NotificationUser;
+import com.sysu.pro.fade.message.Class.NotificationUser;
 
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         String user_id = user.getUser_id();       //用户名字
         String user_content = user.getUser_content();  //聊天内容
         String user_time = user.getUser_time();     //聊天时间
-        holder.user_icon.setImageURI(user_icon);
+//        holder.user_icon.setImageURI(user_icon);
         if (user_count > 0) {
             holder.user_count.setVisibility(View.VISIBLE);
             holder.user_count.setText(String.valueOf(user_count));

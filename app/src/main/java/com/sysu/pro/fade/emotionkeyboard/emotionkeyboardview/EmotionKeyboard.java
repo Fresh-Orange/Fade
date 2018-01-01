@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.sysu.pro.fade.emotionkeyboard.utils.LogUtils;
@@ -41,7 +42,7 @@ public class EmotionKeyboard {
 	private View mContentView;//内容布局view,即除了表情布局或者软键盘布局以外的布局，用于固定bar的高度，防止跳闪
 
 	private FrameLayout frameLayout;
-	private LinearLayout rl_editbar_bg;
+	private RelativeLayout rl_editbar_bg;
     private ImageView keyboard_button;
 
     private EmotionKeyboard(){
@@ -53,7 +54,7 @@ public class EmotionKeyboard {
 		return this;
 	}
 
-	public EmotionKeyboard bindToRl_editbar_bg(LinearLayout rl_editbar_bg) {
+	public EmotionKeyboard bindToRl_editbar_bg(RelativeLayout rl_editbar_bg) {
 		this.rl_editbar_bg = rl_editbar_bg;
 		return this;
 	}

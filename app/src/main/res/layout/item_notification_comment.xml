@@ -43,7 +43,7 @@
 
 
         <ImageView
-            android:id="@+id/contribution_image"
+            android:id="@+id/comment_image"
             android:layout_width="30dp"
             android:layout_height="30dp"
             app:layout_constraintRight_toRightOf="parent"
@@ -69,7 +69,7 @@
             android:text="你们这些人就是tooyong,hahahahahahhaahhaha"/>
 
         <TextView
-            android:id="@+id/contribution_time"
+            android:id="@+id/comment_time"
             app:layout_constraintLeft_toRightOf="@id/comment_icon"
             android:layout_width="wrap_content"
             android:layout_height="15dp"
