@@ -13,15 +13,17 @@ public class DateUtils {
         imageTime.setTimeInMillis(time);
         if (sameDay(calendar, imageTime)) {
             return "今天";
-        } else if (sameWeek(calendar, imageTime)) {
-            return "本周";
-        } else if (sameMonth(calendar, imageTime)) {
-            return "本月";
-        } else {
+        } else if (Yesterday(calendar, imageTime)) {
+            return "昨天";
+        }  else {
             Date date = new Date(time);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM");
             return sdf.format(date);
         }
+    }
+
+    private static boolean Yesterday(Calendar calendar, Calendar imageTime) {
+        return true;
     }
 
     public static boolean sameDay(Calendar calendar1, Calendar calendar2) {
