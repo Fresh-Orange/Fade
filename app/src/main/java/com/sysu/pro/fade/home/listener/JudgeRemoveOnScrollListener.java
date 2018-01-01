@@ -57,7 +57,7 @@ public class  JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener 
 					removeItem(recyclerView, i);
 				}
 			}
-		else if (lastVisible < notes.size() && matchRemoveCondition(lastVisible)) {
+		else if (lastVisible < notes.size() && lastVisible >= 0 && matchRemoveCondition(lastVisible)) {
 			removeItem(recyclerView, lastVisible);
 		}
 	}
