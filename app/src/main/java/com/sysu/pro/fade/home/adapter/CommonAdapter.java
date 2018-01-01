@@ -98,6 +98,10 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
             ImageView view = getView(id);
             Glide.with(view.getContext()).load(imageUrl).into(view);
         }
+        public void removeAllViews(int id) {
+            LinearLayout layout = getView(id);
+            layout.removeAllViews();
+        }
         public void addView(int id, View view) {
             LinearLayout layout = getView(id);
             layout.addView(view);

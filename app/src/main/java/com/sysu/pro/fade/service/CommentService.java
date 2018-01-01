@@ -18,7 +18,7 @@ public interface CommentService {
     //添加评论
     @FormUrlEncoded
     @POST("addComment")
-    SimpleResponse addComment(@Field("comment")String comment);
+    Observable<SimpleResponse> addComment(@Field("comment")String comment);
 
     //获取10条评论
     @GET("getTenComment/{note_id}/{start}")
@@ -27,7 +27,7 @@ public interface CommentService {
     //添加二级评论
     @FormUrlEncoded
     @POST("addSecondComment")
-    SimpleResponse addSecondComment(@Field("secondComment")String secondComment);
+    Observable<SimpleResponse> addSecondComment(@Field("secondComment")String secondComment);
 
 
 }
