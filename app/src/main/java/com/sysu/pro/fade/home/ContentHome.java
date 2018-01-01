@@ -375,4 +375,19 @@ public class ContentHome {
         adapter.notifyItemChanged(itemChangeEvent.getPosition());
     }
 
+    /**
+     * 修改用户信息，更新主界面
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public  void onGetUser(User user){
+        Integer user_id = user.getUser_id();
+        for(Note note : notes){
+            if(note.getUser_id() == user_id){
+                note.setHead_image_url(Const.BASE_IP + user.getHead_image_url());
+                note.setNickname(user.getNickname());
+            }
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 }
