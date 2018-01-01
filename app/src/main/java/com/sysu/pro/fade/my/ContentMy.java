@@ -91,20 +91,7 @@ public class ContentMy {
             }
         });
 
-        //退出登录
-        Button btnLogout = (Button) rootview.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //设置loginType
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
-                editor.remove("user");
-                editor.commit();
-                activity.startActivity(new Intent(activity, GuideActivity.class));
-                activity.finish();
-         }
-        });
+
 
     }
 

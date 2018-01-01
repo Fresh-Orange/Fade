@@ -19,6 +19,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.SecondComment;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
 import com.sysu.pro.fade.service.CommentService;
@@ -28,6 +29,7 @@ import com.sysu.pro.fade.utils.UserUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -40,8 +42,10 @@ import rx.schedulers.Schedulers;
 
 public class DetailActivity extends AppCompatActivity{
 
+    private User user;
     public Integer note_id;
     private boolean is_Comment;
+    private Integer commentType;
     private Retrofit retrofit;
     private ImageView detailBack;   //返回按钮
     private ImageView detailSetting;    //三个点按钮
@@ -63,8 +67,9 @@ public class DetailActivity extends AppCompatActivity{
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
         UserUtil util = new UserUtil(this);
-        User user = util.getUer();
+        user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+
         NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id))
                 .subscribeOn(Schedulers.newThread())
@@ -87,6 +92,7 @@ public class DetailActivity extends AppCompatActivity{
                         initialComment();
                         //是评论的话显示直接评论框
                         if (is_Comment) {
+                            Log.d("bug", "进来了");
                             showDirectComment();
                         }
                     }
@@ -148,12 +154,25 @@ public class DetailActivity extends AppCompatActivity{
 
     private void showDirectComment() {
         writeComment.setVisibility(View.VISIBLE);
-//        sendComment.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                CommentService send = retrofit.create(CommentService.class);
-//                send.addComment(JSON.toJSONString());
-//            }
-//        });
+        sendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Comment userComment = new Comment();
+                userComment.setUser_id(user.getUser_id());
+                userComment.setNickname(user.getNickname());
+                userComment.setComment_content(writeComment.getText().toString());
+                userComment.setHead_image_url(user.getHead_image_url());
+                userComment.setNote_id(note_id);
+                userComment.setType(commentType);
+                CommentService send = retrofit.create(CommentService.class);
+                SimpleResponse response = send.addComment(JSON.toJSONString(userComment));
+                Map<String, Object> map = response.getExtra();
+                userComment.setComment_id(Integer.parseInt((String) map.get("comment_id")));
+                userComment.setComment_time((String) map.get("comment_time"));
+                commentator.add(userComment);
+                commentAdapter.notifyDataSetChanged();
+                writeComment.setVisibility(View.GONE);
+            }
+        });
     }
 }
