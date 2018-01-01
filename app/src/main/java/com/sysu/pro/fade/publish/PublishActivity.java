@@ -44,6 +44,7 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
+import com.sysu.pro.fade.publish.Event.ClickToCropEvent;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
@@ -139,6 +140,8 @@ public class PublishActivity extends AppCompatActivity {
     //rxjava接入
     private Retrofit retrofit;
     private NoteService noteService;
+
+    int cutSize; // 比例类型，1表示4:5， 0表示15:8
 
 
 
@@ -548,25 +551,26 @@ public class PublishActivity extends AppCompatActivity {
             setHiddenPager(false);
             show = PAGER;
             float maxRatio = 0;
-            pager.setViewPagerMaxHeight(600);
+            pager.setViewPagerMaxHeight(300);
             double ratio;
-            int cutSize = determineSize(images.get(0));
+            cutSize = determineSize(images.get(0));
             if (cutSize == 1)
                 ratio = 5.0/4;
             else
                 ratio = 8.0/15;
+            pager.setClickMode(imageAdaptiveIndicativeItemLayout.ClickMode.EDIT);
             pager.setHeightByRatio((float)ratio);
             pager.invalidate();
             pager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 boolean isLayouted = false;
                 @Override
                 public void onGlobalLayout() {
-                    if (isLayouted == true)
+                    if (isLayouted)
                         return;
                     isLayouted = true;
                     ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
-                    layoutParams.height = pager.getPagerRootHeight();
-                    layoutParams.width = pager.getPagerRootWidth();
+                    layoutParams.height = pager.getMeasuredHeight();
+                    layoutParams.width = pager.getMeasuredWidth();
                     pagerContainer.setLayoutParams(layoutParams);
                     pagerContainer.invalidate();
                     icon_add_pic.invalidate();
@@ -777,6 +781,12 @@ public class PublishActivity extends AppCompatActivity {
         images = event.getImages();
         newCount = event.getNewCount();
         ShowViewPager();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ClickToCropEvent event) {
+        int curPosition = event.getCurPosition();
+        //TODO:跳转裁剪
     }
 
     @Override
