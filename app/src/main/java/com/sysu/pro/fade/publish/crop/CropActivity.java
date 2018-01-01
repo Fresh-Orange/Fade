@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -19,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 import com.sysu.pro.fade.publish.crop.util.NoScrollView;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
@@ -74,6 +70,7 @@ public class CropActivity extends AppCompatActivity{
 
     public static int determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
         /**
          * 最关键在此，把options.inJustDecodeBounds = true;
          * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
@@ -157,6 +154,12 @@ public class CropActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        findViewById(R.id.picker_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }

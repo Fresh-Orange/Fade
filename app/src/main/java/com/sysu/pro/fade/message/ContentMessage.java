@@ -6,12 +6,10 @@ import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.message.Adapter.NotificationAdapter;
+import com.sysu.pro.fade.message.Adapter.ChatAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class ContentMessage {
     private View rootview;
 
     private RecyclerView notification_Rv;
-    private NotificationAdapter adapter;
+    private ChatAdapter adapter;
     private List<NotificationUser> userList = new ArrayList<NotificationUser>();
 
     private int processCount;
@@ -75,7 +73,7 @@ public class ContentMessage {
         String user_content2 =  "中国的小云，比你们不知道高到哪里去了，你们还是太年轻";
         String user_time2 = "2017-2-28";
         userList.add(new NotificationUser(uri2, user_count2, user_id2, user_content2, user_time2));
-        adapter = new NotificationAdapter(userList);
+        adapter = new ChatAdapter(userList);
         notification_Rv.setLayoutManager(new LinearLayoutManager(context));
         notification_Rv.setAdapter(adapter);
         processCountTv.setVisibility(View.VISIBLE);

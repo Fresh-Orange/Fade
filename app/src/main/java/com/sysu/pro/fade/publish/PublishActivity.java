@@ -8,12 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -23,6 +22,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,8 +43,9 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
+import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
-import com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
@@ -54,9 +56,12 @@ import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +103,9 @@ public class PublishActivity extends AppCompatActivity {
 
     private ImageButton imageButton;
 
-    private imageAdaptiveIndicativeLayout pager;
+    private imageAdaptiveIndicativeItemLayout pager;
+
+    private RelativeLayout pagerContainer;
 
     private boolean flag = true;
 
@@ -106,6 +113,8 @@ public class PublishActivity extends AppCompatActivity {
     public PostArticleImgAdapter postArticleImgAdapter;
     private TextView tv;//删除区域提示
     private Context mContext;
+    ImageButton icon_add_pic;
+    ImageButton icon_sub_pic;
     private int show;
     private static int CHOOSE = 0;
     private static int PAGER = 1;
@@ -132,18 +141,6 @@ public class PublishActivity extends AppCompatActivity {
     private NoteService noteService;
 
 
-    private Handler newhandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE) {
-                if (show == CHOOSE)
-                    choose_view.setVisibility(View.VISIBLE);
-                if (show == PAGER)
-                    pager.setVisibility(View.VISIBLE);
-            }
-            super.handleMessage(msg);
-        }
-    };
 
     private void dealWithImagesToSend(final List<String>images){
         //发送帖子的最后操作在这里
@@ -299,6 +296,8 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
+        //注册
+        EventBus.getDefault().register(this);
         user = new UserUtil(PublishActivity.this).getUer();//从本地存储初始化用户信息
         note = new Note();//本页面的note对象
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
@@ -321,7 +320,7 @@ public class PublishActivity extends AppCompatActivity {
 
     }
 
-    private String getString() {
+    private String getCoordinateString() {
         String str = "";
         for (int i = 0; i < images.size(); i++) {
             int x = (int) (imageX[i] * 1000);
@@ -359,7 +358,6 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton icon_add_pic = (ImageButton) findViewById(R.id.icon_add_pic);
         icon_add_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -367,7 +365,6 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton icon_sub_pic = (ImageButton) findViewById(R.id.icon_sub_pic);
         icon_sub_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -382,7 +379,7 @@ public class PublishActivity extends AppCompatActivity {
                                 images.clear();
                                 newCount = maxCount;
                                 choose_view.setVisibility(View.VISIBLE);
-                                pager.setVisibility(View.GONE);
+                                setHiddenPager(true);
                                 show = CHOOSE;
                             }
                             else {
@@ -409,7 +406,23 @@ public class PublishActivity extends AppCompatActivity {
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                AlertDialog.Builder builder = new AlertDialog.Builder(PublishActivity.this);
+                builder.setTitle("退出此次编辑?");
+                builder.setPositiveButton("确定",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.GRAY);
             }
         });
 
@@ -420,10 +433,14 @@ public class PublishActivity extends AppCompatActivity {
                 int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
                 if (heightDiff > dpToPx(PublishActivity.this, 200)) {
                     findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
+                    findViewById(R.id.emotion_button).setVisibility(View.VISIBLE);
+                    findViewById(R.id.keyboard_button).setVisibility(View.GONE);
                     choose_view.setVisibility(View.GONE);
-                    pager.setVisibility(View.GONE);
+                    setHiddenPager(true);
                 }
                 else{
+                    findViewById(R.id.emotion_button).setVisibility(View.GONE);
+                    findViewById(R.id.keyboard_button).setVisibility(View.VISIBLE);
                     if (frameLayout.getVisibility() == View.GONE)
                       findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
                     if (show == CHOOSE)
@@ -439,7 +456,7 @@ public class PublishActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
-                                    choose_view.setVisibility(View.VISIBLE);
+                                    setHiddenPager(false);
                             }
                         }, 3000);
                 }
@@ -458,9 +475,24 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
-        pager = (imageAdaptiveIndicativeLayout) findViewById(R.id.image_viewpager);
+        icon_sub_pic = (ImageButton) findViewById(R.id.icon_sub_pic);
+        icon_add_pic = (ImageButton) findViewById(R.id.icon_add_pic);
+        pager = (imageAdaptiveIndicativeItemLayout) findViewById(R.id.image_layout);
         choose_view = (LinearLayout) findViewById(R.id.choose_view);
         tv = (TextView) findViewById(R.id.tv);
+        pagerContainer = (RelativeLayout) findViewById(R.id.pager_container);
+        setHiddenPager(true);
+    }
+
+    /**
+     * 隐藏或是显示“Pager和增加和删除按钮”
+     * @param isHidden true为隐藏 ，false为显示
+     */
+    private void setHiddenPager(boolean isHidden){
+        if (isHidden)
+            pagerContainer.setVisibility(View.GONE);
+        else
+            pagerContainer.setVisibility(View.VISIBLE);
     }
 
     private void initEmotionMainFragment() {
@@ -481,6 +513,7 @@ public class PublishActivity extends AppCompatActivity {
         emotionMainFragment.bindToFramelayout(frameLayout);
         emotionMainFragment.bindToRl_editbar_bg(rl_editbar_bg);
         emotionMainFragment.bindToEmotion((ImageView)findViewById(R.id.emotion_button));
+        emotionMainFragment.bindToKeyboardEmotion((ImageView)findViewById(R.id.keyboard_button));
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         // Replace whatever is in thefragment_container view with this fragment,
         // and add the transaction to the backstack
@@ -512,26 +545,46 @@ public class PublishActivity extends AppCompatActivity {
     private void ShowViewPager() {
         if (images != null) {
             choose_view.setVisibility(View.GONE);
-            pager.setVisibility(View.VISIBLE);
+            setHiddenPager(false);
             show = PAGER;
             float maxRatio = 0;
-            for (String image : images)
-            {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                /**
-                 * 最关键在此，把options.inJustDecodeBounds = true;
-                 * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
-                 */
-                Bitmap bitmap = BitmapFactory.decodeFile(image, options); // 此时返回的bitmap为null
-                /**
-                 *options.outHeight为原始图片的高
-                 */
-                float currentRatio = (float)options.outHeight / (float)options.outWidth;
-                if (currentRatio > maxRatio)
-                    maxRatio = currentRatio;
-            }
-            pager.setViewPagerMaxHeight(280);
-            pager.setHeightByRatio(maxRatio);
+            pager.setViewPagerMaxHeight(600);
+            double ratio;
+            int cutSize = determineSize(images.get(0));
+            if (cutSize == 1)
+                ratio = 5.0/4;
+            else
+                ratio = 8.0/15;
+            pager.setHeightByRatio((float)ratio);
+            pager.invalidate();
+            pager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                boolean isLayouted = false;
+                @Override
+                public void onGlobalLayout() {
+                    if (isLayouted == true)
+                        return;
+                    isLayouted = true;
+                    ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
+                    layoutParams.height = pager.getPagerRootHeight();
+                    layoutParams.width = pager.getPagerRootWidth();
+                    pagerContainer.setLayoutParams(layoutParams);
+                    pagerContainer.invalidate();
+                    icon_add_pic.invalidate();
+                    icon_sub_pic.invalidate();
+                }
+            });
+            //ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
+            //layoutParams.height = pager.getPagerRootHeight();
+            //layoutParams.width = pager.getPagerRootWidth();
+            //pagerContainer.setLayoutParams(layoutParams);
+            //pagerContainer.invalidate();
+            //icon_add_pic.invalidate();
+            //icon_sub_pic.invalidate();
+
+
+            String coordinateString = getCoordinateString();
+            String[] coordinates = coordinateString.split(",");
+            pager.setImgCoordinates(Arrays.asList(coordinates));
             pager.setPaths(images,images.size() - 1);
         }
     }
@@ -549,6 +602,7 @@ public class PublishActivity extends AppCompatActivity {
 
     private static int determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
         /**
          * 最关键在此，把options.inJustDecodeBounds = true;
          * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
@@ -580,10 +634,11 @@ public class PublishActivity extends AppCompatActivity {
             {
                 images = (newDataList);
             }
-            int size = determineSize(images.get(0));
-//            ShowViewPager();
+
+
+            ShowViewPager();
             flag = true;
-            Log.d("My","string: " + getString());
+            Log.d("My","string: " + getCoordinateString());
             Log.d("My", "size: " + crop_size);
         }
         //仅剩一张还删了
@@ -652,7 +707,19 @@ public class PublishActivity extends AppCompatActivity {
 //                                "你点击了相册", Toast.LENGTH_SHORT).show();
 //                        ImageSelectorUtils.openPhoto(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
 //                        emotionMainFragment.bindToContentView(findViewById(R.id.picker_04_horizontal));
-                        ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
+//                        ImageSelectorActivity.openActivity(PublishActivity.this, REQUEST_CODE, 9, images, newCount);
+                        Intent intent = new Intent(PublishActivity.this, ImageSelectorActivity.class);
+                        intent.putExtra(Constants.MAX_SELECT_COUNT, 9);
+                        intent.putStringArrayListExtra(ImageSelectorUtils.SELECT_LAST, images);
+                        intent.putExtra(Constants.NEW_COUNT, newCount);
+                        startActivity(intent);
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                EventBus.getDefault().post(new PublishToImageSelector(9, images, newCount));
+//                                Log.d("Yellow", "PublishNewCount: " + newCount);
+//                            }
+//                        }).start();
                         break;
                 }
                 // which 下标从0开始
@@ -704,4 +771,18 @@ public class PublishActivity extends AppCompatActivity {
             images.remove(location);
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ImageSelectorToPublish event) {
+        images = event.getImages();
+        newCount = event.getNewCount();
+        ShowViewPager();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);//反注册EventBus
+    }
+
 }

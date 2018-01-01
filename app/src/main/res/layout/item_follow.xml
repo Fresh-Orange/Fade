@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/notification_user_layout"
+        android:layout_width="match_parent"
+        android:layout_height="54dp">
+        <RelativeLayout
+            android:id="@+id/follow_layout"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp">
+            <ImageView
+                android:id="@+id/notification_user_icon"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/notification_comment"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/follow_layout"
+            android:layout_centerInParent="true">
+            <TextView
+                android:id="@+id/follow_user_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                android:text="思瑶"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/follow_user_id"
+                android:text="关注了你"/>
+            <TextView
+                android:id="@+id/follow_user_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:maxEms="17"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="美国的华莱士，真的是比你们不知道高到哪里去"/>
+            <TextView
+                android:id="@+id/follow_status_no"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/blue_botton"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                android:text="关注"/>
+
+            <TextView
+                android:id="@+id/follow_status_yes"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:textSize="12sp"
+                android:background="@drawable/white_botton"
+                android:textColor="@color/main_blue"
+                android:text="已关注"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"/>
+</LinearLayout>

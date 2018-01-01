@@ -13,7 +13,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -37,9 +35,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
-import com.sysu.pro.fade.publish.crop.CropActivity;
-import com.sysu.pro.fade.publish.crop.CropImageView;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.entry.Folder;
@@ -47,6 +44,8 @@ import com.sysu.pro.fade.publish.imageselector.entry.Image;
 import com.sysu.pro.fade.publish.imageselector.model.ImageModel;
 import com.sysu.pro.fade.publish.imageselector.utils.DateUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -71,7 +70,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 0X00000011;
 
     private int newCount = 9;
-    private ArrayList<String> newimages;
+    private ArrayList<String> newimages = new ArrayList<String>();
 
     private boolean isOpenFolder;
     private boolean isShowTime;
@@ -116,12 +115,12 @@ public class ImageSelectorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
 
+//        EventBus.getDefault().register(this);
         Intent intent = getIntent();
         mMaxCount = intent.getIntExtra(Constants.MAX_SELECT_COUNT, 0);
 //        isSingle = intent.getBooleanExtra(Constants.IS_SINGLE, false);
 
         newCount = intent.getIntExtra(Constants.NEW_COUNT, 9);
-        newimages = new ArrayList<String>();
         if (intent.getStringArrayListExtra(ImageSelectorUtils.SELECT_LAST) != null)
         {
             newimages = intent.getStringArrayListExtra(ImageSelectorUtils.SELECT_LAST);
@@ -425,13 +424,13 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
 
         newCount = mMaxCount - newimages.size();
-        int size = determineSize(newimages.get(0));
-        Log.d("Yellow", "size: " + size);
-        float result[] = new float[2];
-        result = getInitialSize(newimages.get(0), size);
-        Log.d("Yellow", "result: " + result);
-        CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-//        finish();
+
+        //CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
+
+        EventBus.getDefault().post(new ImageSelectorToPublish(9, newimages, newCount));
+//        Intent intent = new Intent(ImageSelectorActivity.this, PublishActivity.class);
+//        startActivity(intent);
+        finish();
     }
 
     private void cropConfirm() {
@@ -642,22 +641,5 @@ public class ImageSelectorActivity extends AppCompatActivity {
             return 1;
     }
 
-    public float[] getInitialSize(String image, int size) {
-        float result[] = new float[2];
-        Bitmap bm = BitmapFactory.decodeFile(image);
-        CropImageView cropImageView2 = new CropImageView(ImageSelectorActivity.this);
-        cropImageView2.setImageBitmap(bm);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        if (size == 0)
-            cropImageView2.setAspectRatio(15, 8);
-        else
-            cropImageView2.setAspectRatio(4, 5);
-        RectF rectF = new RectF();
-        rectF = cropImageView2.getInitBitmapRect(cropImageView2);
-        result = cropImageView2.getPara(rectF, bm);
-        Log.d("Result", "x: " + result[0]);
-        Log.d("Result", "y: " + result[1]);
-        return result;
-    }
 
 }
