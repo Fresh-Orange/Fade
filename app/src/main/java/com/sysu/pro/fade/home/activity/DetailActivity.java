@@ -252,6 +252,7 @@ public class DetailActivity extends AppCompatActivity{
             clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());
     }
 
+    /**
      * 续秒或者减秒
      */
     private void setAddOrMinusListener(final Context context, final Note bean) {
@@ -293,7 +294,7 @@ public class DetailActivity extends AppCompatActivity{
         clickableProgressBar.setCommentClickListener(new ClickableProgressBar.onCommentClickListener() {
             @Override
             public void onClick() {
-                //TODO:伟杰，这里弹出评论编辑
+                showDirectComment();
             }
         });
     }
@@ -550,7 +551,7 @@ public class DetailActivity extends AppCompatActivity{
                 secondComment.setNickname(user.getNickname());
                 secondComment.setNote_id(note_id);
                 secondComment.setUser_id(user.getUser_id());
-                secondComment.setComment_id(toComment.getSecond_id());
+                secondComment.setComment_id(toComment.getComment_id());
                 secondComment.setTo_nickname(toComment.getNickname());
                 secondComment.setTo_user_id(toComment.getUser_id());
                 CommentService send = retrofit.create(CommentService.class);
