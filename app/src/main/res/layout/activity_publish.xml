@@ -32,6 +32,11 @@
         android:id="@+id/pager_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <!--图片以及图片下方点的封装-->
+        <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
+            android:id="@+id/image_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <ImageButton
             android:id="@+id/icon_add_pic"
             android:layout_width="40dp"
@@ -51,12 +56,7 @@
             android:background="#00000000"
             android:src="@drawable/ic_addpic"
             />
-        <!--图片以及图片下方点的封装-->
-        <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
-            android:id="@+id/image_layout"
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+
     </RelativeLayout>
 
     <!--com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout

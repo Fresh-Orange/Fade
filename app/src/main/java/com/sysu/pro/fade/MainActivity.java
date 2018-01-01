@@ -82,15 +82,16 @@ public class MainActivity extends AppCompatActivity {
         setupTabIcon();
         TabLayout.Tab publishTab = mTabLayoutMenu.getTabAt(2);
         View publishTabView = publishTab.getCustomView();
-        publishTabView.setOnClickListener(new View.OnClickListener() {
+        /*publishTabView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("publishTabView", "onClick: publishTabView");
                 Intent intent = new Intent(MainActivity.this, PublishActivity.class);
                 startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                 overridePendingTransition(R.anim.values, R.anim.out_left);
                 //跳转到发布页
             }
-        });
+        });*/
         //初始化retrofit和service，用于上线和下线请求
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
@@ -151,6 +152,11 @@ public class MainActivity extends AppCompatActivity {
                 //与pager 关联
 //                mViewPager.setCurrentItem(tab.getPosition(), true);
                 changeTabSelect(tab);
+                if (tab.getPosition() == Const.PUBLISH - 1){
+                    Intent intent = new Intent(MainActivity.this, PublishActivity.class);
+                    startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
+                    overridePendingTransition(R.anim.values, R.anim.out_left);
+                }
             }
 
             /**
@@ -168,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
              */
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == Const.PUBLISH - 1){
+                    Intent intent = new Intent(MainActivity.this, PublishActivity.class);
+                    startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
+                    overridePendingTransition(R.anim.values, R.anim.out_left);
+                }
             }
         });
     }

@@ -355,6 +355,7 @@ public class ContentHome {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetNewNote(Note note) {
         //接收新的Note，加到头部
+        note.setFetchTime(System.currentTimeMillis());
         if(note.getComment_num() == null) note.setComment_num(0);
         if(note.getAdd_num() == null) note.setAdd_num(0);
         if(note.getSub_num() == null) note.setSub_num(0);

@@ -98,6 +98,7 @@ public class Const {
     public static final int HOME = 1;
     public static final int DISCOVER = 4;
     public static final int MESSAGE = 2;
+    public static final int PUBLISH = 3;
     public static final int MY = 5;
 
     //用于leancloud服务器的常量

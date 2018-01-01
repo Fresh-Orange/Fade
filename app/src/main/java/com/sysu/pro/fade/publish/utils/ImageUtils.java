@@ -1614,6 +1614,7 @@ public final class ImageUtils {
         Glide.with(context)
                 .load(url)
                 .asBitmap()
+                .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .transform(new BitmapTransformation(context) {
                     @Override
@@ -1681,6 +1682,7 @@ public final class ImageUtils {
         Canvas canvas = new Canvas(result);
         Paint paint = new Paint(PAINT_FLAGS);
         canvas.drawBitmap(toCrop, m, paint);
+
         return result;
     }
 
