@@ -19,7 +19,8 @@ public class SimpleResponse {
 		this.err = err;
 		this.success = success;
 		this.extra = extra;
-	}	
+	}
+
 	
 	
 	public String getSuccess() {

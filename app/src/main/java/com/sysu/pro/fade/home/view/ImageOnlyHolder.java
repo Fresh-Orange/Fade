@@ -4,6 +4,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 
 public class ImageOnlyHolder extends HomeBaseViewHolder{
-	ViewPager pager;
+	ViewPager pager;//仅用于设置id
 	private imageAdaptiveIndicativeItemLayout imageLayout;
 	public ImageOnlyHolder(View itemView) {
 		super(itemView);
@@ -44,7 +45,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			//imageLayout.setHeightByRatio(((float) (1.0/ratio)));
 			imageLayout.setImgCoordinates(bean.getImgCoordinates());
 			imageLayout.setHeightByRatio((float)ratio);
-			imageLayout.setPaths(bean.getImgUrls());
+			imageLayout.setPaths(Const.BASE_IP, bean.getImgUrls());
 		}
 	}
 
