@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
@@ -91,20 +92,7 @@ public class ContentMy {
             }
         });
 
-        //退出登录
-        Button btnLogout = (Button) rootview.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //设置loginType
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
-                editor.remove("user");
-                editor.commit();
-                activity.startActivity(new Intent(activity, GuideActivity.class));
-                activity.finish();
-         }
-        });
+
 
     }
 
@@ -117,7 +105,8 @@ public class ContentMy {
         String summary = user.getSummary();
         Log.d("loadData", "loadData: "+user.getNickname());
         if(login_type.equals("") || image_url == null || image_url.equals("")){
-            ivShowHead.setImageResource(R.drawable.default_head);
+//            ivShowHead.setImageResource(R.drawable.default_head);
+            Picasso.with(context).load(R.drawable.default_head).into(ivShowHead);
         }else{
             Picasso.with(context).load(Const.BASE_IP + image_url).into(ivShowHead);
         }

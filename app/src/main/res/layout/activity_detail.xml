@@ -7,7 +7,9 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/detail_root_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <ImageView
             android:id="@+id/detail_back"
@@ -181,8 +183,16 @@
             android:textSize="14sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/detail_comment_wrapper"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/detail_send_comment"
             app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/detail_send_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发送"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/detail_write_comment"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
