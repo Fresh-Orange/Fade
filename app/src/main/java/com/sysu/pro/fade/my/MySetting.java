@@ -3,7 +3,6 @@ package com.sysu.pro.fade.my;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,11 +15,13 @@ import android.widget.Toast;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.MainActivitiesCollector;
+import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.my.setting.About;
 import com.sysu.pro.fade.my.setting.Personal;
 
-public class MySetting extends AppCompatActivity {
+public class MySetting extends MainBaseActivity {
 
     private ListView settingList;   //用于展示各个设置选项
     private String[] list = {"修改个人信息", "账号安全", "关于Fade", "有话对Fade说"};
@@ -67,10 +68,10 @@ public class MySetting extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
                 editor.remove("user");
-                editor.commit();
+                editor.apply();
                 startActivity(new Intent(MySetting.this, GuideActivity.class));
                 // TODO: 2017/12/31 这里应该要把MainActivity也结束掉 
-                finish();
+                MainActivitiesCollector.finishAll();
             }
         });
     }

@@ -31,7 +31,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -54,7 +54,7 @@
         <TextView
             android:id="@+id/tvShowUserId"
             android:layout_width="wrap_content"
-            android:layout_height="17dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:alpha="0.5"
@@ -65,115 +65,32 @@
             app:layout_constraintStart_toEndOf="@+id/ivShowHead"
             app:layout_constraintTop_toBottomOf="@+id/tvShowNickname" />
 
-        <TextView
-            android:id="@+id/tvShowSummary"
-            android:layout_width="wrap_content"
-            android:layout_height="17dp"
-            android:layout_gravity="center"
-            android:text="该用户没有个人简介"
-            android:textColor="#000000"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/tvShowUserId"
-            app:layout_constraintTop_toBottomOf="@+id/ivShowHead" />
+
 
     </android.support.constraint.ConstraintLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvShowSummary"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:layout_marginLeft="88dp"
+        android:text="该用户没有个人简介"
+        android:textColor="#000000"
+        android:textSize="14sp"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginLeft="10dp">
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginRight="15dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/my_detail"
-                android:layout_alignParentRight="true"/>
-        </RelativeLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <android.support.design.widget.TabLayout
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:id="@+id/my_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/tv_fade_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="123"
-                android:textSize="15dp"
-                android:textColor="#000000"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FADE"
-                android:textSize="13dp"
-                android:textColor="#8a8a8a"/>
-        </LinearLayout>
+        android:layout_height="35dp"
+        app:tabIndicatorColor="#29abe2"
+        app:tabIndicatorHeight="3dp"/>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/tv_concern_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="123"
-                android:textSize="15dp"
-                android:textColor="#000000"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="关注"
-                android:textSize="13dp"
-                android:textColor="#8a8a8a"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/tv_fans_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="123K"
-                android:textSize="15dp"
-                android:textColor="#000000"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="我的粉丝"
-                android:textSize="13dp"
-                android:textColor="#8a8a8a"/>
-        </LinearLayout>
-    </LinearLayout>
-
-
+    <android.support.v4.view.ViewPager
+        android:id="@+id/my_view_pager"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
