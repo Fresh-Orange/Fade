@@ -39,7 +39,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils;
-import com.sysu.pro.fade.utils.Screen;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1616,7 +1615,7 @@ public final class ImageUtils {
         Glide.with(context)
                 .load(url)
                 .asBitmap()
-                .override(Screen.getScreenWidth(context), viewPager.getMeasuredHeight())
+                //.override(Screen.getScreenWidth(context), viewPager.getMeasuredHeight())
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .transform(new BitmapTransformation(context) {

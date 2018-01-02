@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.sysu.pro.fade">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.sysu.pro.fade">
 
     <meta-data
         android:name="android.support.VERSION"
         android:value="25.3.1"
-        tools:replace="android:value" />
+        tools:replace="android:value"/>
 
     <!-- 基础模块（必须加入以下声明）START -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <!-- 基础模块 END -->
     <application
@@ -24,38 +24,38 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".my.activity.AddContentActivity"
-            android:theme="@style/registerTheme" />
+            android:theme="@style/registerTheme"/>
         <activity android:name=".my.activity.WelcomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".my.activity.LoginActivity"
-            android:theme="@style/imagePagerTheme" />
-        <activity android:name=".my.activity.RegisterBySMSActivity" />
-        <activity android:name=".my.activity.CheckTelActivity" />
-        <activity android:name=".my.activity.GuideActivity" />
-        <activity android:name=".my.activity.AddPasswordActivity" />
-        <activity android:name=".my.MySetting" />
-        <activity android:name=".my.setting.Personal" />
-        <activity android:name=".my.setting.Safety" />
-        <activity android:name=".my.setting.About" />
+            android:theme="@style/imagePagerTheme"/>
+        <activity android:name=".my.activity.RegisterBySMSActivity"/>
+        <activity android:name=".my.activity.CheckTelActivity"/>
+        <activity android:name=".my.activity.GuideActivity"/>
+        <activity android:name=".my.activity.AddPasswordActivity"/>
+        <activity android:name=".my.MySetting"/>
+        <activity android:name=".my.setting.Personal"/>
+        <activity android:name=".my.setting.Safety"/>
+        <activity android:name=".my.setting.About"/>
         <activity
             android:name=".home.activity.ImagePagerActivity"
-            android:theme="@style/imagePagerTheme" />
-        <activity android:name=".publish.PublishActivity" />
+            android:theme="@style/imagePagerTheme"/>
+        <activity android:name=".publish.PublishActivity"/>
         <activity
             android:name=".publish.imageselector.ImageSelectorActivity"
-            android:launchMode="singleTask" />
-        <activity android:name=".publish.imageselector.PreviewActivity" />
-        <activity android:name=".publish.crop.CropActivity" />
-        <activity android:name=".home.activity.DetailActivity" />
+            android:launchMode="singleTask"/>
+        <activity android:name=".publish.imageselector.PreviewActivity"/>
+        <activity android:name=".publish.crop.CropActivity"/>
+        <activity android:name=".home.activity.DetailActivity"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -64,16 +64,18 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
+                android:resource="@xml/filepaths"/>
         </provider>
 
-        <activity android:name=".publish.crop.CropActivity" />
-        <activity android:name=".notification.NotificationActivity" />
-        <activity android:name=".message.Activity.ContributionActivity" />
-        <activity android:name=".message.Activity.FansActivity" />
-        <activity android:name=".message.Activity.CommentActivity" />
-        <activity android:name=".baseactivity.MainBaseActivity" />
-        <activity android:name=".baseactivity.LoginBaseActivity"></activity>
+        <activity android:name=".publish.crop.CropActivity"/>
+        <activity android:name=".notification.NotificationActivity"/>
+        <activity android:name=".message.Activity.ContributionActivity"/>
+        <activity android:name=".message.Activity.FansActivity"/>
+        <activity android:name=".message.Activity.CommentActivity"/>
+        <activity android:name=".baseactivity.MainBaseActivity"/>
+        <activity android:name=".baseactivity.LoginBaseActivity"/>
+        <activity android:name=".home.activity.OtherActivity">
+        </activity>
     </application>
 
 </manifest>
