@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -17,6 +16,8 @@ import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.LoginActivitiesCollector;
+import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.service.UserService;
@@ -34,7 +35,7 @@ import rx.schedulers.Schedulers;
 /*
 用户名密码方式的登录界面
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends LoginBaseActivity {
 
     private ImageView iv_personal_icon;
     private EditText edAccount;
@@ -211,15 +212,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void loginSuccess(User user){
-            Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
-            //更新存储数据
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("user", JSON.toJSONString(user));
-            //最后设置登陆类型 为账号密码登陆
-            editor.putString(Const.LOGIN_TYPE,"0");
-            editor.commit();
-            progressDialog.dismiss();
-            startActivity(new Intent(LoginActivity.this,MainActivity.class));
-            finish();
+        Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
+        //更新存储数据
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user", JSON.toJSONString(user));
+        //最后设置登陆类型 为账号密码登陆
+        editor.putString(Const.LOGIN_TYPE,"0");
+        editor.commit();
+        progressDialog.dismiss();
+        startActivity(new Intent(LoginActivity.this,MainActivity.class));
+        LoginActivitiesCollector.finishAll();
     }
 }

@@ -3,20 +3,20 @@ package com.sysu.pro.fade.my.activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.Const;
 
 /*
 短信发出后输入验证码的界面
  */
-public class CheckTelActivity extends AppCompatActivity {
+public class CheckTelActivity extends LoginBaseActivity {
 
     private EditText edGetCheckNum;
     private Button btnToCheckNum;

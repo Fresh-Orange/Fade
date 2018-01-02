@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.tool.UserTool;
@@ -26,7 +26,7 @@ import rx.schedulers.Schedulers;
 /*
 验证手机号码界面
  */
-public class RegisterBySMSActivity extends AppCompatActivity {
+public class RegisterBySMSActivity extends LoginBaseActivity {
 
     private Button btnSubmitTel;
     private EditText edTelphone;

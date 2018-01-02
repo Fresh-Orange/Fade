@@ -1,6 +1,5 @@
 package com.sysu.pro.fade.message.Activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +7,7 @@ import android.view.View;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.AddMessage;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
@@ -29,7 +29,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ContributionActivity extends AppCompatActivity {
+public class ContributionActivity extends MainBaseActivity {
     private RecyclerView notification_Rv;
     private ContributionAdapter adapter;
     private List<Note> notes = new ArrayList<Note>();

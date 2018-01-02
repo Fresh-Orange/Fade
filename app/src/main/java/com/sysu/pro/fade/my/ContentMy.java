@@ -51,11 +51,8 @@ public class ContentMy {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private User user;
-
+    private String[] allNums;
     private TextView tvFadeName;//fade_id
-    private TextView tvFadeNum;
-    private TextView tvFansNum;
-    private TextView tvConcernNum;
 
     public ContentMy(final FragmentActivity activity, Context context, View rootview){
         this.activity = activity;
@@ -65,14 +62,10 @@ public class ContentMy {
         EventBus.getDefault().register(this);
         //获得本地存储的用户信息
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
-        tvShowUserId = (TextView) rootview.findViewById(R.id.tvShowUserId);
-        ivShowHead =  rootview.findViewById(R.id.ivShowHead);
-        tvShowNickname = rootview.findViewById(R.id.tvShowNickname);
-        tvShowSummary = rootview.findViewById(R.id.tvShowSummary);
-        tvFadeName = rootview.findViewById(R.id.tvShowUserId);
-        tvConcernNum = rootview.findViewById(R.id.tv_concern_num);
-        tvFansNum = rootview.findViewById(R.id.tv_fans_num);
-        tvFadeNum = rootview.findViewById(R.id.tv_fade_num);
+        ivShowHead =  (ImageView) rootview.findViewById(R.id.ivShowHead);
+        tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
+        tvShowSummary = (TextView) rootview.findViewById(R.id.tvShowSummary);
+        tvFadeName = (TextView) rootview.findViewById(R.id.tvShowUserId);
         loadData();
 
         //设置
@@ -99,9 +92,8 @@ public class ContentMy {
         String nickname = user.getNickname();
         String summary = user.getSummary();
         String fade_name = user.getFade_name();
-        Integer fade_num = user.getFade_num();
-        Integer concern_num = user.getConcern_num();
-        Integer fans_num = user.getFans_num();
+        allNums = new String[]{Integer.toString(user.getFade_num())
+                , Integer.toString(user.getConcern_num()), Integer.toString(user.getFans_num())};
         Log.d("loadData", "loadData: "+user.getNickname());
         if(login_type.equals("") || image_url == null || image_url.equals("")){
 //            ivShowHead.setImageResource(R.drawable.default_head);
@@ -111,10 +103,8 @@ public class ContentMy {
         }
         if(nickname == null||nickname.equals("")){
             tvShowNickname.setText("未登录");
-            tvShowUserId.setVisibility(View.INVISIBLE);
         }else{
             tvShowNickname.setText(nickname);
-            tvShowUserId.setText(Integer.toString(user.getUser_id()));
         }
         if(summary == null || summary.equals("")){
             tvShowSummary.setText("暂无个签，点击设置图标进行编辑");
@@ -122,15 +112,10 @@ public class ContentMy {
             tvShowSummary.setText(summary);
         }
         tvFadeName.setText(fade_name);
-        tvFadeNum.setText(fade_num.toString());
-        tvFansNum.setText(fans_num.toString());
-        tvConcernNum.setText(concern_num.toString());
     }
 
     private void loadFragment() {
         String[] mTitles = new String[]{"Fade", "关注", "粉丝"};
-        String[] allNums = new String[]{Integer.toString(user.getFade_num())
-                , Integer.toString(user.getConcern_num()), Integer.toString(user.getFans_num())};
         Fragment fade = new TempFragment();
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
@@ -152,15 +137,15 @@ public class ContentMy {
 	}
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public  void onGetUser(User user){
+    public  void onGetUser(User user) {
         //更新个人信息
         Glide.with(context).load(Const.BASE_IP + user.getHead_image_url()).into(ivShowHead);
         tvShowNickname.setText(user.getNickname());
         tvShowSummary.setText(user.getSummary());
         tvFadeName.setText(user.getFade_name());
-        tvFadeNum.setText(user.getFade_num().toString());
-        tvFansNum.setText(user.getFans_num().toString());
-        tvConcernNum.setText(user.getConcern_num().toString());
+        allNums = new String[] {user.getFade_num().toString(), user.getConcern_num().toString()
+                ,user.getFans_num().toString()};
+        loadFragment();
     }
 
 }

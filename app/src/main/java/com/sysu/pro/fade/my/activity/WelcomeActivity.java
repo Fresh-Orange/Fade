@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,10 +11,12 @@ import android.view.WindowManager;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
+
 /*
 app启动时的欢迎界面
  */
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends LoginBaseActivity {
 
     private Handler handler = new Handler(){
         @Override
