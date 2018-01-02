@@ -3,6 +3,7 @@ package com.sysu.pro.fade.service;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.beans.UserQuery;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -75,7 +76,9 @@ public interface UserService {
     @GET("getPersonPage/{user_id}/{my_id}")
     Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
 
-
+    //检索用户，分段加载
+    @GET("searchUser/{keyword}/{page}")
+    Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("page")String  page);
 
 
 

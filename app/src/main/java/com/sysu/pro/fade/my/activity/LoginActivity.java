@@ -217,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString("user", JSON.toJSONString(user));
             //最后设置登陆类型 为账号密码登陆
             editor.putString(Const.LOGIN_TYPE,"0");
-            editor.apply();
+            editor.commit();
             progressDialog.dismiss();
             startActivity(new Intent(LoginActivity.this,MainActivity.class));
             finish();

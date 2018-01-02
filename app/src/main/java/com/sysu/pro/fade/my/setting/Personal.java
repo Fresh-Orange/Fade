@@ -25,6 +25,8 @@ import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.Map;
 
@@ -59,6 +61,7 @@ public class Personal extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
+
         saveChange = (TextView) findViewById(R.id.tvOnRight);
         settingHead = (ImageView) findViewById(R.id.setting_head);
         settingName = (EditText) findViewById(R.id.setting_name);
@@ -170,6 +173,8 @@ public class Personal extends AppCompatActivity {
                                     user.setSchool(settingSchool.getText().toString());
                                     editor.putString("user",JSON.toJSONString(user));
                                     editor.apply();
+                                    //通知主界面
+                                    EventBus.getDefault().post(user);
                                     finish();
                                 }else {
                                     Toast.makeText(Personal.this, "保存修改失败", Toast.LENGTH_SHORT).show();
@@ -216,4 +221,7 @@ public class Personal extends AppCompatActivity {
             }
         }
     }
+
+
+
 }
