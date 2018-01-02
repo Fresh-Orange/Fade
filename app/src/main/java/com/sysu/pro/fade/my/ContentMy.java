@@ -45,7 +45,6 @@ public class ContentMy {
     private SharedPreferences sharedPreferences;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
-    private TextView tvShowUserId;
     private TextView tvShowSummary; //个性签名
     private ImageView mySetting;
     private TabLayout tabLayout;

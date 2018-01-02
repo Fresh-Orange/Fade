@@ -73,7 +73,8 @@
         <activity android:name=".message.Activity.FansActivity" />
         <activity android:name=".message.Activity.CommentActivity" />
         <activity android:name=".baseactivity.MainBaseActivity" />
-        <activity android:name=".baseactivity.LoginBaseActivity"></activity>
+        <activity android:name=".baseactivity.LoginBaseActivity" />
+        <activity android:name=".other.OtherActivity"></activity>
     </application>
 
 </manifest>
