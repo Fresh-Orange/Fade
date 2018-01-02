@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -21,6 +20,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.LoginActivitiesCollector;
+import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.TokenModel;
 import com.sysu.pro.fade.beans.User;
@@ -45,7 +46,7 @@ import rx.schedulers.Schedulers;
 用户名+密码的注册界面
  */
 
-public class AddContentActivity extends AppCompatActivity {
+public class AddContentActivity extends LoginBaseActivity {
 
     protected static final int TAKE_PICTURE = 1;
     protected static final int CHOOSE_PICTURE = 0;
@@ -164,7 +165,7 @@ public class AddContentActivity extends AppCompatActivity {
                                             editor.putString(Const.LOGIN_TYPE,"0");
                                             editor.apply();
                                             startActivity(new Intent(AddContentActivity.this,MainActivity.class));
-                                            finish();
+                                            LoginActivitiesCollector.finishAll();
                                         }else {
                                             Log.e("register","注册失败");
                                             Toast.makeText(AddContentActivity.this,"注册失败："+ simpleResponse.getErr(),

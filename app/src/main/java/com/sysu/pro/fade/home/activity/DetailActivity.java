@@ -3,7 +3,6 @@ package com.sysu.pro.fade.home.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
@@ -49,7 +49,7 @@ import rx.schedulers.Schedulers;
  * rebuild by VJ 2017.12.30
  */
 
-public class DetailActivity extends AppCompatActivity{
+public class DetailActivity extends MainBaseActivity{
 
     private User user;
     public Integer note_id;
@@ -108,7 +108,7 @@ public class DetailActivity extends AppCompatActivity{
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
-        commentType = note.getAction();//TODO:伟杰，你要的加减秒类型
+        commentType = note.getAction();
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
@@ -133,11 +133,12 @@ public class DetailActivity extends AppCompatActivity{
                         commentNum.setText(Integer.toString(detailPage.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
 
                         //更新续秒和评论数量
-                        Note tempNote = new Note();
-                        tempNote.setAdd_num(detailPage.getAdd_num());
-                        tempNote.setComment_num(detailPage.getComment_num());
-                        setCommentAndAddCountText(DetailActivity.this, tempNote);
-                        //TODO:fetchTime更新之后进度条更新
+                        //Note tempNote = new Note();
+                        note.setAdd_num(detailPage.getAdd_num());
+                        note.setComment_num(detailPage.getComment_num());
+                        note.setFetchTime(detailPage.getFetchTime());
+                        setCommentAndAddCountText(DetailActivity.this, note);
+                        setTimeLeftTextAndProgress(DetailActivity.this, note);
 
                         initialComment();
                         //是评论的话显示输入框
