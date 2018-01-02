@@ -136,6 +136,7 @@ public class OtherActivity extends MainBaseActivity {
 
                             @Override
                             public void onError(Throwable e) {
+                                Log.d("关注bug", "onError: "+e.toString());
                             }
 
                             @Override
@@ -163,6 +164,7 @@ public class OtherActivity extends MainBaseActivity {
 
                             @Override
                             public void onError(Throwable e) {
+                                Log.d("取关bug", "onError: "+e.toString());
                             }
 
                             @Override
@@ -176,7 +178,7 @@ public class OtherActivity extends MainBaseActivity {
                         });
             }
         });
-        tvConcernOk.setOnClickListener(new View.OnClickListener() {
+        tvContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO: 2018/1/2 跳转到私信对话界面 
