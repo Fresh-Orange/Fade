@@ -18,6 +18,7 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.event.itemChangeEvent;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -85,6 +86,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		setGoToDetailClickListener(context, bean);
 		setAddOrMinusListener(context, bean);
 		setCommentListener(context, bean);
+		setOnUserClickListener(context, bean);
 
 	}
 
@@ -124,6 +126,34 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			bean.setHead_image_url(curUser.getHead_image_url());
 			bean.setNickname(curUser.getNickname());
 		}
+	}
+
+	private void setOnUserClickListener(final MainActivity context, final Note bean) {
+		tvName.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(context, OtherActivity.class);
+				i.putExtra(Const.USER_ID, bean.getUser_id());
+				context.startActivity(i);
+			}
+		});
+		userAvatar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(context, OtherActivity.class);
+				i.putExtra(Const.USER_ID, bean.getUser_id());
+				context.startActivity(i);
+			}
+		});
+		// @原作者点击事件
+		tvAtUser.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(context, OtherActivity.class);
+				i.putExtra(Const.USER_ID, bean.getOrigin().getUser_id());
+				context.startActivity(i);
+			}
+		});
 	}
 
 	private void setGoToDetailClickListener(final Context context, final Note bean) {
@@ -190,6 +220,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			clickableProgressBar.showCommentButton(1);
 		else if (bean.getAction() == 2)
 			clickableProgressBar.showCommentButton(0);
+		else if (bean.getAction() == 0)
+			clickableProgressBar.hideCommentButton();
 		clickableProgressBar.setCommentClickListener(new ClickableProgressBar.onCommentClickListener() {
 			@Override
 			public void onClick() {
@@ -239,7 +271,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							bean.setComment_num(comment_num);
 							bean.setSub_num(sub_num);
 							bean.setAdd_num(add_num);
-							//TODO:fetchTime更新之后进度条更新
+							bean.setFetchTime(fetchTime);
 							EventBus.getDefault().post(new itemChangeEvent(position));
 						}
 					}

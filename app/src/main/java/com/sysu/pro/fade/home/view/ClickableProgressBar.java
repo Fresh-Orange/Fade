@@ -107,6 +107,19 @@ public class ClickableProgressBar extends FrameLayout {
 		ivContainer.setImageDrawable(null);
 	}
 
+	public void hideCommentButton(){
+		btAdd.setVisibility(VISIBLE);
+		btMinus.setVisibility(VISIBLE);
+		btComment.setVisibility(GONE);
+
+
+		ivAction.setVisibility(GONE);
+		//Glide.with(getContext()).load(actionResId).into(ivAction);
+		//ivAction.setImageResource(actionResId);
+
+		ivContainer.setImageResource(R.drawable.add_minus_line);
+	}
+
 	static public interface onAddClickListener{
 		void onClick();
 	}

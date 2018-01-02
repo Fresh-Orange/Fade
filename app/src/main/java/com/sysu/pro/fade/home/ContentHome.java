@@ -70,6 +70,7 @@ public class ContentHome {
     private UserService userService;
     private NoteService noteService;
     private Boolean isEnd; //记录向下是否到了结尾
+    private Boolean isLoading;
 
     public ContentHome(Activity activity, final Context context, View rootView){
         this.activity = activity;
@@ -85,6 +86,7 @@ public class ContentHome {
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
         isEnd = false;
+        isLoading = false;
         initViews();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
@@ -142,7 +144,10 @@ public class ContentHome {
         loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                addItems();
+                if(isLoading == false){
+                    isLoading = true;
+                    addItems();
+                }
             }
         };
         //TODO 监听器分离
@@ -193,6 +198,7 @@ public class ContentHome {
                                         public void onNext(NoteQuery noteQuery) {
                                             Log.i("加载更多","成功");
                                             List<Note>addList = noteQuery.getList();
+                                            start = noteQuery.getStart();
                                             if(addList.size() != 0){
                                                 addToListTail(noteQuery.getList());
                                                 Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
@@ -201,9 +207,9 @@ public class ContentHome {
                                                 Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
                                             }
                                             if(addList.size() < 10) isEnd = true;
-
                                             swipeRefresh.setRefreshing(false);
                                             setLoadingMore(false);
+                                            isLoading = false;
                                         }
                                     });
                         }
@@ -260,6 +266,7 @@ public class ContentHome {
                                                  origin.setSub_num(check.getSub_num());
                                                  origin.setComment_num(check.getComment_num());
                                                  origin.setIs_die(check.getIs_die());
+                                                 origin.setFetchTime(check.getFetchTime());
                                              }
                                              addToListHead(noteQuery.getList());
                                             judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
@@ -356,6 +363,7 @@ public class ContentHome {
     public void onGetNewNote(Note note) {
         //接收新的Note，加到头部
         note.setFetchTime(System.currentTimeMillis());
+        note.setAction(0);
         if(note.getComment_num() == null) note.setComment_num(0);
         if(note.getAdd_num() == null) note.setAdd_num(0);
         if(note.getSub_num() == null) note.setSub_num(0);

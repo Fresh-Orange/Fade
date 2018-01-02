@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -133,11 +134,12 @@ public class DetailActivity extends MainBaseActivity{
                         commentNum.setText(Integer.toString(detailPage.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
 
                         //更新续秒和评论数量
-                        Note tempNote = new Note();
-                        tempNote.setAdd_num(detailPage.getAdd_num());
-                        tempNote.setComment_num(detailPage.getComment_num());
-                        setCommentAndAddCountText(DetailActivity.this, tempNote);
-                        //TODO:fetchTime更新之后进度条更新
+                        //Note tempNote = new Note();
+                        note.setAdd_num(detailPage.getAdd_num());
+                        note.setComment_num(detailPage.getComment_num());
+                        note.setFetchTime(detailPage.getFetchTime());
+                        setCommentAndAddCountText(DetailActivity.this, note);
+                        setTimeLeftTextAndProgress(DetailActivity.this, note);
 
                         initialComment();
                         //是评论的话显示输入框
@@ -185,6 +187,7 @@ public class DetailActivity extends MainBaseActivity{
                 .into(userAvatar);
         setCommentListener(this, note);
         setAddOrMinusListener(this, note);
+        setOnUserClickListener(this, note);
     }
 
 
@@ -198,6 +201,25 @@ public class DetailActivity extends MainBaseActivity{
             note.setHead_image_url(note.getOrigin().getHead_image_url());
             note.setUser_id(note.getOrigin().getUser_id());
         }
+    }
+
+    private void setOnUserClickListener(final Context context, final Note bean) {
+        tvName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, OtherActivity.class);
+                i.putExtra(Const.USER_ID, bean.getUser_id());
+                context.startActivity(i);
+            }
+        });
+        userAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, OtherActivity.class);
+                i.putExtra(Const.USER_ID, bean.getUser_id());
+                context.startActivity(i);
+            }
+        });
     }
 
     private double getNoteRatio(Note bean) {

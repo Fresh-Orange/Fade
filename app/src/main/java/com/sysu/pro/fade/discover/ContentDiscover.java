@@ -2,6 +2,7 @@ package com.sysu.pro.fade.discover;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.lapism.searchview.SearchAdapter;
@@ -142,7 +142,10 @@ public class ContentDiscover {
        userAdapter.setOnClickItemListsner(new DBaseRecyclerViewAdapter.OnClickItemListsner() {
            @Override
            public void onClick(int poisiton) {
-               Toast.makeText(context, poisiton + "", Toast.LENGTH_SHORT).show();
+               //Toast.makeText(context, poisiton + "", Toast.LENGTH_SHORT).show();
+               Intent intent = new Intent(context,OtherActivity.class);
+               intent.putExtra("user_id",userList.get(poisiton).getUser_id());
+               activity.startActivity(intent);
            }
        });
        recyclerView_user.setAdapter(dRecyclerViewAdapter);
@@ -190,6 +193,7 @@ public class ContentDiscover {
                    mSearchView.close(false);
                    progressBar.setVisibility(View.VISIBLE);
                    if(start == 0) userList.clear();
+                   if(userList != null) userList.clear();
                    //rxjava遇到玄学问题，改用简单的okhttp
                    new Thread(){
                        @Override
