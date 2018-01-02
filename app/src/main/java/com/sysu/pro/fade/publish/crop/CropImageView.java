@@ -39,9 +39,9 @@ import com.sysu.pro.fade.publish.crop.util.AspectRatioUtil;
 import com.sysu.pro.fade.publish.crop.util.HandleUtil;
 import com.sysu.pro.fade.publish.crop.util.PaintUtil;
 
+import static com.sysu.pro.fade.publish.PublishActivity.imageX;
+import static com.sysu.pro.fade.publish.PublishActivity.imageY;
 import static com.sysu.pro.fade.publish.crop.CropActivity.current_position;
-import static com.sysu.pro.fade.publish.crop.CropActivity.imageX;
-import static com.sysu.pro.fade.publish.crop.CropActivity.imageY;
 import static com.sysu.pro.fade.publish.crop.CropActivity.isSet;
 
 
@@ -319,23 +319,20 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         Log.d("Yellow","cropWidth: " + cropWidth);
         Log.d("Yellow","cropHeight: " + cropHeight);
 
-        originY = CropActivity.imageY[CropActivity.current_position] * cropHeight;
+        originY = imageY[CropActivity.current_position] * cropHeight;
 
         CropActivity.left[current_position] = Edge.LEFT.getCoordinate();
         CropActivity.right[current_position] = Edge.RIGHT.getCoordinate();
         CropActivity.top[current_position] = Edge.TOP.getCoordinate();
         CropActivity.bottom[current_position] = Edge.BOTTOM.getCoordinate();
 
-        CropActivity.imageX[CropActivity.current_position] = cropX / cropWidth;
-        CropActivity.imageY[CropActivity.current_position] = cropY / cropHeight;
+        imageX[CropActivity.current_position] = cropX / cropWidth;
+        imageY[CropActivity.current_position] = cropY / cropHeight;
         // Crop the subset from the original Bitmap.
 
         //就是这行代码花了一天啊..这是按比例移动ScrollView！
         CropActivity.outScroll.smoothScrollToSlow(0,(int) (cropY * CropActivity.screenWidth / cropWidth));
 
-        float result[] = new float[2];
-        result[0] = cropX / cropWidth;
-        result[1] = cropY / cropHeight;
     }
 
 

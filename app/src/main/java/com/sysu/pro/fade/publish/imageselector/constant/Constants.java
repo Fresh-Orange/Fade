@@ -39,4 +39,7 @@ public interface Constants {
     String IMAGE_URI = "image_uri";
     String APPLICATION_NAME = "APPLICATION_NAME";
  String PREF_TEMP_IMAGES = "PREF_TEMP_IMAGES";
+
+    String CURRENT_CROP_POSITION  = "current_crop_position";
+
 }
