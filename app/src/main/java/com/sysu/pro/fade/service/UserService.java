@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.service;
 
+import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
@@ -80,6 +81,9 @@ public interface UserService {
     @GET("searchUser/{keyword}/{page}")
     Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("page")String  page);
 
+    //分页加载用户个人主页数据
+    @GET("getMyNote/{user_id}/{start}")
+    Observable<NoteQuery>getMyNote(@Path("user_id")String  user_id, @Path("start")String  start);
 
 
 

@@ -208,6 +208,14 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		});
 	}
 
+/*	private void setIAvatarListener(final MainActivity context, final Note bean){
+		ivHeadAction.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+			}
+		});
+	}*/
+
 	/**
 	 * 将包装好的note对象发到服务器，并更新本地的界面
 	 * @param note 准备发往服务器的note

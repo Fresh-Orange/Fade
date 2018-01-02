@@ -13,8 +13,6 @@ import android.widget.TextView;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
-import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.message.Activity.CommentActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
@@ -24,6 +22,10 @@ import com.sysu.pro.fade.message.Class.NotificationUser;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +64,7 @@ public class ContentMessage {
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
-
+        EventBus.getDefault().register(this);
         initNotification();
         initLayout();
         initListener();
@@ -93,6 +95,18 @@ public class ContentMessage {
                         newFanCount = addMessage.getAddFansNum();
                         commentCount = addMessage.getAddCommentNum();
                         Log.d("yellow", "contribution: " + contributionCount);
+                        if (contributionCount > 0) {
+                            processCountTv.setVisibility(View.VISIBLE);
+                            processCountTv.setText(String.valueOf(contributionCount));
+                        }
+                        if (newFanCount > 0) {
+                            newFanCountTv.setVisibility(View.VISIBLE);
+                            newFanCountTv.setText(String.valueOf(newFanCount));
+                        }
+                        if (commentCount > 0) {
+                            commentCountTv.setVisibility(View.VISIBLE);
+                            commentCountTv.setText(String.valueOf(commentCount));
+                        }
                     }
                 });
     }
@@ -128,18 +142,6 @@ public class ContentMessage {
         adapter = new ChatAdapter(userList);
         notification_Rv.setLayoutManager(new LinearLayoutManager(context));
         notification_Rv.setAdapter(adapter);
-        if (contributionCount > 0) {
-            processCountTv.setVisibility(View.VISIBLE);
-            processCountTv.setText(String.valueOf(contributionCount));
-        }
-        if (newFanCount > 0) {
-            newFanCountTv.setVisibility(View.VISIBLE);
-            newFanCountTv.setText(String.valueOf(newFanCount));
-        }
-        if (commentCount > 0) {
-            commentCountTv.setVisibility(View.VISIBLE);
-            commentCountTv.setText(String.valueOf(commentCount));
-        }
     }
 
     private void initListener() {
@@ -174,4 +176,12 @@ public class ContentMessage {
         });
     }
 
+    //根据msg消除通知
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public  void onGetUser(Integer msg){
+        if(msg == 1){
+            //消除贡献队列
+            processCountTv.setVisibility(View.GONE);
+        }
+    }
 }
