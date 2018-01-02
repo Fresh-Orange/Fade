@@ -89,7 +89,7 @@ public class ContentHome {
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         noteService = retrofit.create(NoteService.class);
-        noteService.getTenNoteByTime(user.getUser_id().toString(),"0","1")
+        noteService.getTenNoteByTime(user.getUser_id().toString(),"0",user.getConcern_num().toString())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NoteQuery>() {
@@ -119,8 +119,8 @@ public class ContentHome {
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                     }
                 });
-
         start = 0;
+
     }
 
     private void initViews(){
@@ -373,6 +373,21 @@ public class ContentHome {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onItemChanged(itemChangeEvent itemChangeEvent) {
         adapter.notifyItemChanged(itemChangeEvent.getPosition());
+    }
+
+    /**
+     * 修改用户信息，更新主界面
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public  void onGetUser(User user){
+        Integer user_id = user.getUser_id();
+        for(Note note : notes){
+            if(note.getUser_id() == user_id){
+                note.setHead_image_url(Const.BASE_IP + user.getHead_image_url());
+                note.setNickname(user.getNickname());
+            }
+            adapter.notifyDataSetChanged();
+        }
     }
 
 }

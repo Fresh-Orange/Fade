@@ -54,7 +54,10 @@ public class User implements Serializable{
 	
 	//安全性新增：盐，登录时md5计算用
 	private String salt;
-	
+
+	//uuid，数据库索引主键
+	private String uuid;
+
 	public Integer getFade_num() {
 		return fade_num;
 	}
@@ -187,5 +190,11 @@ public class User implements Serializable{
 		this.tokenModel = tokenModel;
 	}
 
-	
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 }
