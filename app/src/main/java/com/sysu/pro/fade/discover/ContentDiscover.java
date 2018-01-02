@@ -190,6 +190,7 @@ public class ContentDiscover {
                    mSearchView.close(false);
                    progressBar.setVisibility(View.VISIBLE);
                    if(start == 0) userList.clear();
+                   if(userList != null) userList.clear();
                    //rxjava遇到玄学问题，改用简单的okhttp
                    new Thread(){
                        @Override
