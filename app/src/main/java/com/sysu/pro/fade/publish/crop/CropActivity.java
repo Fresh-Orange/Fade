@@ -16,13 +16,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.Event.CropToClickEvent;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
+import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.crop.util.NoScrollView;
+import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.sysu.pro.fade.publish.PublishActivity.imageX;
+import static com.sysu.pro.fade.publish.PublishActivity.imageY;
 
 public class CropActivity extends AppCompatActivity{
 
@@ -36,8 +47,6 @@ public class CropActivity extends AppCompatActivity{
     private TextView publishTextView;
     public static int current_position = 0;
     private CropImageView cropImageView;
-    public static float[] imageX = new float[10];
-    public static float[] imageY = new float[10];
     public static float[] left = new float[10];
     public static float[] right = new float[10];
     public static float[] top = new float[10];
@@ -49,10 +58,12 @@ public class CropActivity extends AppCompatActivity{
     private boolean isOriginalHeight = true;
     private Bitmap[] bms = new Bitmap[10];
 
-    private boolean isFifteenToEight = false;
+    private int isFifteenToEight;
 
     static int FIFTEEN_DIV_EIGHT = 0;
     static int FOUR_DIV_FIVE = 1;
+
+    private ImageView addButton;
     public static void openActivity(Activity activity, int requestCode,
                                     int maxSelectCount, ArrayList<String> images,
                                     int newCount) {
@@ -100,8 +111,9 @@ public class CropActivity extends AppCompatActivity{
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         screenWidth = dm.widthPixels;
-        current_position = 0;
-        bms[current_position] = BitmapFactory.decodeFile(newimages.get(0));
+        // 初始化滑动
+        mPickerHorizontal.setSelectedPosition(current_position);
+        bms[current_position] = BitmapFactory.decodeFile(newimages.get(current_position));
         cropImageView.setImageBitmap(bms[current_position]);
         cropImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -141,12 +153,13 @@ public class CropActivity extends AppCompatActivity{
                 for (int i = 0; i < newimages.size(); i++) {
                     Log.e("yellowsss",i + ": X: " + imageX[i] + " Y: " + imageY[i]);
                 }
-                Intent intent = new Intent();
-                intent.putExtra(Constants.IMAGEX,imageX);
-                intent.putExtra(Constants.IMAGEY,imageY);
-                intent.putExtra(Constants.CUT_SIZE,cut_size);
-                intent.putExtra(Constants.IS_CROP, true);
-                setResult(Constants.CROP_RESULT_CODE, intent);
+//                Intent intent = new Intent();
+//                intent.putExtra(Constants.IMAGEX,imageX);
+//                intent.putExtra(Constants.IMAGEY,imageY);
+//                intent.putExtra(Constants.CUT_SIZE,cut_size);
+//                intent.putExtra(Constants.IS_CROP, true);
+//                setResult(Constants.CROP_RESULT_CODE, intent);
+                EventBus.getDefault().post(new CropToClickEvent("Success!", current_position));
                 finish();
             }
         });
@@ -156,30 +169,41 @@ public class CropActivity extends AppCompatActivity{
                 finish();
             }
         });
-        findViewById(R.id.picker_add).setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //开启相册选取活动
+                Intent intent = new Intent(CropActivity.this, ImageSelectorActivity.class);
+                intent.putExtra(Constants.MAX_SELECT_COUNT, 9);
+                intent.putStringArrayListExtra(ImageSelectorUtils.SELECT_LAST, newimages);
+                intent.putExtra(Constants.NEW_COUNT, newCount);
+                startActivity(intent);
             }
         });
     }
 
     private void initLayout() {
+        //注册
+        EventBus.getDefault().register(this);
         publishTextView = (TextView) findViewById(R.id.tv_confirm);
         cropImageView = (CropImageView) findViewById(R.id.CropImageView);
         outScroll = (NoScrollView) findViewById(R.id.scrollview);
+        addButton = (ImageView) findViewById(R.id.picker_add);
         for (int i = 0; i < isSet.length; i++)
             isSet[i] = false;
         Intent intent = getIntent();
-        newCount = intent.getIntExtra(Constants.CROP_COUNT, 9);
         //默认15:8
-        isFifteenToEight = intent.getBooleanExtra(Constants.FLAG,true);
+        isFifteenToEight = intent.getIntExtra(Constants.FLAG,0);
+        current_position = intent.getIntExtra(Constants.CURRENT_CROP_POSITION, 0);
+        newCount = intent.getIntExtra(Constants.CROP_COUNT, 9);
         newimages = new ArrayList<String>();
         if (intent.getStringArrayListExtra(ImageSelectorUtils.CROP_LAST) != null)
         {
             newimages = intent.getStringArrayListExtra(ImageSelectorUtils.CROP_LAST);
         }
-        if (isFifteenToEight) {
+        if (newimages.size() == 9)
+            addButton.setVisibility(View.GONE);
+        if (isFifteenToEight == 0) {
             cropImageView.setAspectRatio(15, 8);
             cut_size = 2;
         }
@@ -197,4 +221,35 @@ public class CropActivity extends AppCompatActivity{
     }
 
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ImageSelectorToPublish event) {
+        newimages = event.getImages();
+        newCount = event.getNewCount();
+        current_position = newimages.size() - 1;
+        Log.d("yellow", "current: " + current_position);
+        updateView();
+    }
+
+    private void updateView() {
+        if (newimages.size() == 9)
+            addButton.setVisibility(View.GONE);
+        final CopyOnWriteArrayList<Bitmap> bitmaps = new CopyOnWriteArrayList<Bitmap>();
+        for (int i = 0; i < newimages.size(); i++) {
+            Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(newimages.get(i), 50, 50);
+            bitmaps.add(newBp);
+        }
+        mPickerHorizontal.setData(bitmaps);
+
+        // 初始化滑动
+        mPickerHorizontal.setSelectedPosition(current_position);
+        bms[current_position] = BitmapFactory.decodeFile(newimages.get(current_position));
+        cropImageView.setImageBitmap(bms[current_position]);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //注册
+        EventBus.getDefault().unregister(this);
+    }
 }

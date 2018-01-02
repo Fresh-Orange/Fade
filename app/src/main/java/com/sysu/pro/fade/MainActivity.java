@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         userService = retrofit.create(UserService.class);
         //上线请求
         if(user.getUser_id() != null){
-            userService.online(user.getUser_id().toString())
+            userService.online(user.getUser_id() + "")
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<SimpleResponse>() {

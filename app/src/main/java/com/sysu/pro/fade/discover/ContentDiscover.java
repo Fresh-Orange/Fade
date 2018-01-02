@@ -189,12 +189,13 @@ public class ContentDiscover {
                   // mHistoryDatabase.addItem(new SearchItem(query));
                    mSearchView.close(false);
                    progressBar.setVisibility(View.VISIBLE);
+                   if(start == 0) userList.clear();
                    //rxjava遇到玄学问题，改用简单的okhttp
                    new Thread(){
                        @Override
                        public void run() {
                            Request.Builder builder = new Request.Builder();
-                           String url = Const.BASE_IP + "searchUser/" + query + "/" + "0";
+                           String url = Const.BASE_IP + "searchUser/" + query + "/" + start.toString();
                            builder.url(url);
                            Request request = builder.build();
                            try {

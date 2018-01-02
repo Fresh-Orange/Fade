@@ -1641,6 +1641,7 @@ public final class ImageUtils {
     }
 
     public static Bitmap customCrop(Bitmap recycled, Bitmap toCrop, int width, int height, int x_pos, int y_pos) {
+        Log.d("loadImage", "customCrop x = "+ x_pos + "  y = "+y_pos);
         if (toCrop == null) {
             return null;
         } else if (toCrop.getWidth() == width && toCrop.getHeight() == height) {
