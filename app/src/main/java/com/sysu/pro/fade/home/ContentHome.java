@@ -260,6 +260,7 @@ public class ContentHome {
                                                  origin.setSub_num(check.getSub_num());
                                                  origin.setComment_num(check.getComment_num());
                                                  origin.setIs_die(check.getIs_die());
+                                                 origin.setFetchTime(check.getFetchTime());
                                              }
                                              addToListHead(noteQuery.getList());
                                             judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
@@ -356,6 +357,7 @@ public class ContentHome {
     public void onGetNewNote(Note note) {
         //接收新的Note，加到头部
         note.setFetchTime(System.currentTimeMillis());
+        note.setAction(0);
         if(note.getComment_num() == null) note.setComment_num(0);
         if(note.getAdd_num() == null) note.setAdd_num(0);
         if(note.getSub_num() == null) note.setSub_num(0);

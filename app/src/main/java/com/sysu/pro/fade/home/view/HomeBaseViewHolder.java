@@ -190,6 +190,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			clickableProgressBar.showCommentButton(1);
 		else if (bean.getAction() == 2)
 			clickableProgressBar.showCommentButton(0);
+		else if (bean.getAction() == 0)
+			clickableProgressBar.hideCommentButton();
 		clickableProgressBar.setCommentClickListener(new ClickableProgressBar.onCommentClickListener() {
 			@Override
 			public void onClick() {
@@ -239,7 +241,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							bean.setComment_num(comment_num);
 							bean.setSub_num(sub_num);
 							bean.setAdd_num(add_num);
-							//TODO:fetchTime更新之后进度条更新
+							bean.setFetchTime(fetchTime);
 							EventBus.getDefault().post(new itemChangeEvent(position));
 						}
 					}
