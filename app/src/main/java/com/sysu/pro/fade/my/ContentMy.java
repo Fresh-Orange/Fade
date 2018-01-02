@@ -3,16 +3,12 @@ package com.sysu.pro.fade.my;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,20 +16,26 @@ import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
+import com.sysu.pro.fade.my.fragment.MyFadeFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
-import com.sysu.pro.fade.utils.UserUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by road on 2017/7/14.
@@ -54,6 +56,9 @@ public class ContentMy {
     private String[] allNums;
     private TextView tvFadeName;//fade_id
 
+    private Retrofit retrofit;
+    private UserService userService;
+
     public ContentMy(final FragmentActivity activity, Context context, View rootview){
         this.activity = activity;
         this.context = context;
@@ -66,6 +71,8 @@ public class ContentMy {
         tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
         tvShowSummary = (TextView) rootview.findViewById(R.id.tvShowSummary);
         tvFadeName = (TextView) rootview.findViewById(R.id.tvShowUserId);
+
+        user = new UserUtil(activity).getUer();
         loadData();
 
         //设置
@@ -81,12 +88,38 @@ public class ContentMy {
         tabLayout = (TabLayout) rootview.findViewById(R.id.my_tab_layout);
         viewPager = (ViewPager) rootview.findViewById(R.id.my_view_pager);
         loadFragment();
+        requestUser();
 
+    }
+
+    private void requestUser() {
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        userService = retrofit.create(UserService.class);
+        userService.getUserById(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<User>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(User newUser) {
+                        user = newUser;
+                        loadData();
+                        loadFragment();
+                    }
+                });
     }
 
     public  void loadData(){
         //获取本地用户信息举例
-        user = new UserUtil(activity).getUer(); //重新加载本地user数据
+        //重新加载本地user数据
+
         String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
         String image_url = user.getHead_image_url();
         String nickname = user.getNickname();
@@ -116,7 +149,7 @@ public class ContentMy {
 
     private void loadFragment() {
         String[] mTitles = new String[]{"Fade", "关注", "粉丝"};
-        Fragment fade = new TempFragment();
+        Fragment fade = new MyFadeFragment();
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();
@@ -146,6 +179,11 @@ public class ContentMy {
         allNums = new String[] {user.getFade_num().toString(), user.getConcern_num().toString()
                 ,user.getFans_num().toString()};
         loadFragment();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetNewNote(Note note) {
+        requestUser();
     }
 
 }
