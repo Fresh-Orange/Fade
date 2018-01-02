@@ -9,11 +9,10 @@ public class Const {
      */
     public static final int HOME_NODE_DEFAULT_LIFE = 60;    //单位：分钟
     public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
+    public static final String IP  = "https://sysufade.cn/fade"; //阿里云云服务器地址
 
-    public static final String IP = "https://sysufade.cn/fade"; //云服务器ip地址和端口号
-    //public static final String IP = "http://192.168.137.1:8080/fade"; //本地ip地址和端口号
-
-    public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/";
+    //public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/"; //本地地址
+    public static final String BASE_IP  = "https://sysufade.cn/fade_pro/"; //阿里云云服务器地址
 
     /*登录注册 个人信息有关
      */

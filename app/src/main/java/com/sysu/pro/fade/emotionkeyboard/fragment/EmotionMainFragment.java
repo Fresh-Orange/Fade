@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.emotionkeyboard.adapter.HorizontalRecyclerviewAdapter;
@@ -58,7 +59,7 @@ public class EmotionMainFragment extends BaseFragment{
     private EditText bar_edit_text;
     private ImageView bar_image_add_btn;
     private Button bar_btn_send;
-    private LinearLayout rl_editbar_bg;
+    private RelativeLayout rl_editbar_bg;
 
     //需要绑定的内容view
     private View contentView;
@@ -213,7 +214,7 @@ public class EmotionMainFragment extends BaseFragment{
         this.emotion_button = emotion_button;
     }
 
-    public void bindToRl_editbar_bg(LinearLayout rl_editbar_bg) {
+    public void bindToRl_editbar_bg(RelativeLayout rl_editbar_bg) {
         this.rl_editbar_bg = rl_editbar_bg;
     }
 

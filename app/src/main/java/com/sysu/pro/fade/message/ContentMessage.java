@@ -2,17 +2,36 @@ package com.sysu.pro.fade.message;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.AddMessage;
+import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.NoteQuery;
+import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.message.Activity.CommentActivity;
+import com.sysu.pro.fade.message.Activity.ContributionActivity;
+import com.sysu.pro.fade.message.Activity.FansActivity;
 import com.sysu.pro.fade.message.Adapter.ChatAdapter;
+import com.sysu.pro.fade.message.Class.NotificationUser;
+import com.sysu.pro.fade.service.MessageService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.UserUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by road on 2017/7/14.
@@ -26,7 +45,7 @@ public class ContentMessage {
     private ChatAdapter adapter;
     private List<NotificationUser> userList = new ArrayList<NotificationUser>();
 
-    private int processCount;
+    private int contributionCount;
     private int newFanCount;
     private int commentCount;
 
@@ -34,16 +53,49 @@ public class ContentMessage {
     private TextView newFanCountTv;
     private TextView commentCountTv;
 
+    private User user;
+    private Retrofit retrofit;
+    private MessageService messageService;
+    private Integer start;
+
     public ContentMessage(Activity activity, Context context, View rootview){
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
 
+        initNotification();
         initLayout();
         initListener();
         setNotification();  //设置消息数量
     }
 
+    private void initNotification() {
+        user = new UserUtil(activity).getUer();
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        messageService = retrofit.create(MessageService.class);
+        messageService.getAddMessage(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AddMessage>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(AddMessage addMessage) {
+                        contributionCount = addMessage.getAddContributeNum();
+                        newFanCount = addMessage.getAddFansNum();
+                        commentCount = addMessage.getAddCommentNum();
+                        Log.d("yellow", "contribution: " + contributionCount);
+                    }
+                });
+    }
 
 
     private void initLayout() {
@@ -61,9 +113,9 @@ public class ContentMessage {
         String user_id = "黄路";
         String user_content =  "美国的小雷，比你们不知道高到哪里去了，你们还是太年轻";
         String user_time = "16:22";
-        processCount = 33;
-        newFanCount = 29;
-        commentCount = 99;
+//        contributionCount = 33;
+//        newFanCount = 29;
+//        commentCount = 99;
         userList.add(new NotificationUser(uri, user_count, user_id, user_content, user_time));
         Uri uri2 = Uri.parse("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1514632966065&di=c3b195646" +
                 "3daaa6431d4cc26c04083a3&imgtype=0&src=http%3A%2F%2Fwww.ghost64.com%2" +
@@ -76,12 +128,18 @@ public class ContentMessage {
         adapter = new ChatAdapter(userList);
         notification_Rv.setLayoutManager(new LinearLayoutManager(context));
         notification_Rv.setAdapter(adapter);
-        processCountTv.setVisibility(View.VISIBLE);
-        newFanCountTv.setVisibility(View.VISIBLE);
-        commentCountTv.setVisibility(View.VISIBLE);
-        processCountTv.setText(String.valueOf(processCount));
-        newFanCountTv.setText(String.valueOf(newFanCount));
-        commentCountTv.setText(String.valueOf(commentCount));
+        if (contributionCount > 0) {
+            processCountTv.setVisibility(View.VISIBLE);
+            processCountTv.setText(String.valueOf(contributionCount));
+        }
+        if (newFanCount > 0) {
+            newFanCountTv.setVisibility(View.VISIBLE);
+            newFanCountTv.setText(String.valueOf(newFanCount));
+        }
+        if (commentCount > 0) {
+            commentCountTv.setVisibility(View.VISIBLE);
+            commentCountTv.setText(String.valueOf(commentCount));
+        }
     }
 
     private void initListener() {
@@ -89,6 +147,9 @@ public class ContentMessage {
             @Override
             public void onClick(View v) {
                 //进度贡献查看
+                Intent intent = new Intent(context, ContributionActivity.class);
+                activity.startActivity(intent);
+                contributionCount = 0;
             }
         });
 
@@ -96,6 +157,9 @@ public class ContentMessage {
             @Override
             public void onClick(View v) {
                 //新的粉丝查看
+                Intent intent = new Intent(context, FansActivity.class);
+                activity.startActivity(intent);
+                newFanCount = 0;
             }
         });
 
@@ -103,6 +167,9 @@ public class ContentMessage {
             @Override
             public void onClick(View v) {
                 //评论查看
+                Intent intent = new Intent(context, CommentActivity.class);
+                activity.startActivity(intent);
+                commentCount = 0;
             }
         });
     }

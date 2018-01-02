@@ -27,6 +27,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -35,6 +36,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.publish.Event.ImageSelectorToCrop;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;
@@ -73,7 +75,8 @@ public class ImageSelectorActivity extends AppCompatActivity {
     private ArrayList<String> newimages = new ArrayList<String>();
 
     private boolean isOpenFolder;
-    private boolean isShowTime;
+    private boolean isShowTime = true
+            ;
     private boolean isInitFolder;
 //    private boolean isSingle;
     private int mMaxCount;
@@ -158,6 +161,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         tvFolderName = (TextView) findViewById(R.id.tv_folder_name);
         tvTime = (TextView) findViewById(R.id.tv_time);
         masking = findViewById(R.id.masking);
+        hideTime();
     }
 
     private void initListener() {
@@ -377,7 +381,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
      */
     private void hideTime() {
         if (isShowTime) {
-            ObjectAnimator.ofFloat(tvTime, "alpha", 1, 0).setDuration(300).start();
+            ObjectAnimator.ofFloat(tvTime, "alpha", 1, 0).setDuration(100).start();
             isShowTime = false;
         }
     }
@@ -387,7 +391,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
      */
     private void showTime() {
         if (!isShowTime) {
-            ObjectAnimator.ofFloat(tvTime, "alpha", 0, 1).setDuration(300).start();
+            ObjectAnimator.ofFloat(tvTime, "alpha", 0, 1).setDuration(100).start();
             isShowTime = true;
         }
     }
@@ -401,10 +405,11 @@ public class ImageSelectorActivity extends AppCompatActivity {
         if (firstVisibleItem > 0 && firstVisibleItem < mAdapter.getData().size()) {
             Image image = mAdapter.getData().get(firstVisibleItem);
             String time = DateUtils.getImageTime(image.getTime() * 1000);
+            Log.d("time", "time: " + image.getTime() * 1000);
             tvTime.setText(time);
             showTime();
             mHideHandler.removeCallbacks(mHide);
-            mHideHandler.postDelayed(mHide, 1500);
+            mHideHandler.postDelayed(mHide, 200);
         }
     }
 
@@ -424,12 +429,8 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
 
         newCount = mMaxCount - newimages.size();
-
         //CropActivity.openActivity(ImageSelectorActivity.this, Constants.CROP_PICTURE, 9, newimages, newCount);
-
         EventBus.getDefault().post(new ImageSelectorToPublish(9, newimages, newCount));
-//        Intent intent = new Intent(ImageSelectorActivity.this, PublishActivity.class);
-//        startActivity(intent);
         finish();
     }
 
