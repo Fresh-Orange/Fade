@@ -68,7 +68,7 @@ public class MySetting extends MainBaseActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
                 editor.remove("user");
-                editor.commit();
+                editor.apply();
                 startActivity(new Intent(MySetting.this, GuideActivity.class));
                 // TODO: 2017/12/31 这里应该要把MainActivity也结束掉 
                 MainActivitiesCollector.finishAll();
