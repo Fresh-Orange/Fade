@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -186,6 +187,7 @@ public class DetailActivity extends MainBaseActivity{
                 .into(userAvatar);
         setCommentListener(this, note);
         setAddOrMinusListener(this, note);
+        setOnUserClickListener(this, note);
     }
 
 
@@ -199,6 +201,25 @@ public class DetailActivity extends MainBaseActivity{
             note.setHead_image_url(note.getOrigin().getHead_image_url());
             note.setUser_id(note.getOrigin().getUser_id());
         }
+    }
+
+    private void setOnUserClickListener(final Context context, final Note bean) {
+        tvName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, OtherActivity.class);
+                i.putExtra(Const.USER_ID, bean.getUser_id());
+                context.startActivity(i);
+            }
+        });
+        userAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, OtherActivity.class);
+                i.putExtra(Const.USER_ID, bean.getUser_id());
+                context.startActivity(i);
+            }
+        });
     }
 
     private double getNoteRatio(Note bean) {

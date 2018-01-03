@@ -29,6 +29,7 @@ import com.sysu.pro.fade.discover.adapter.UserPagerAdapter;
 import com.sysu.pro.fade.discover.drecyclerview.DBaseRecyclerViewAdapter;
 import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewAdapter;
 import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewScrollListener;
+import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;

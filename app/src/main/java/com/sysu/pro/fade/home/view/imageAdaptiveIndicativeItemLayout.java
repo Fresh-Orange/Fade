@@ -154,8 +154,6 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			public void onPageSelected(int position) {
 				setDot(getContext(), dotLinearLayout, position);
 			}
-
-
 		});
 	}
 
@@ -176,18 +174,22 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 		//viewPager滑动的时候，设置下方点的变化
 		pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-			}
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 			@Override
-			public void onPageScrollStateChanged(int state) {
-			}
+			public void onPageScrollStateChanged(int state) {}
 			@Override
 			public void onPageSelected(int position) {
 				setDot(getContext(),dotLinearLayout,position);
 			}
 
-
 		});
+	}
+
+	public void setCurrentPosition(int position){
+		pager.setCurrentItem(position);
+		setDot(getContext(),
+				dotLinearLayout,position >= imagePathList.size()-1 ? imagePathList.size()-1 : position);
+
 	}
 
 
@@ -254,11 +256,13 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 		private ImageView mImageView;
 		private int fragmentIndex;
 		private ClickMode clickMode;
+		private ViewPager viewPager;
 		private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
 
 		public static mImageItemFragment newInstance(List<String> urlList, int position,
 													 String nextUrl, List<String> imgCoordinates,
-													 ClickMode clickMode) {
+													 ClickMode clickMode,
+													 ViewPager viewPager) {
 			final mImageItemFragment f = new mImageItemFragment();
 			String imageUrl = urlList.get(position);
 			final Bundle args = new Bundle();
@@ -269,6 +273,7 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			f.setArguments(args);
 			f.imgCoordinates = imgCoordinates;
 			f.clickMode = clickMode;
+			f.viewPager = viewPager;
 
 			return f;
 		}
@@ -327,7 +332,7 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 				}
 			}
 
-			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, startX, startY, 23, 54);
+			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, viewPager, startX, startY, 0, 0);
 		}
 
 
@@ -357,7 +362,8 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			String nextUrl = "";
 			if (position + 1 < imagePathList.size())
 				nextUrl = imagePathList.get(position + 1);
-			return mImageItemFragment.newInstance(imagePathList, position, nextUrl, imgCoordinates, clickMode);
+			return mImageItemFragment.newInstance(imagePathList, position, nextUrl
+					, imgCoordinates, clickMode, pager);
 		}
 
 	}

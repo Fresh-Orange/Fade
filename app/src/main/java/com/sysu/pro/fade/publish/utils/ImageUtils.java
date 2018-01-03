@@ -29,6 +29,7 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -1608,12 +1609,13 @@ public final class ImageUtils {
      * 加载url处的图片进入imageView，只显示坐标起点为（x,y）宽为width，长为height的区域
      */
     static public void loadImage(final Context context, String url,
-                                 final ImageView imageView,
+                                 final ImageView imageView, final ViewPager viewPager,
                                  final int x, final int y, final int width, final int height) {
         Log.d("loadImage", "x = "+ x + "  y = "+y);
         Glide.with(context)
                 .load(url)
                 .asBitmap()
+                //.override(Screen.getScreenWidth(context), viewPager.getMeasuredHeight())
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .transform(new BitmapTransformation(context) {

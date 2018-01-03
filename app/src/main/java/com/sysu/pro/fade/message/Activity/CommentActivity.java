@@ -7,26 +7,18 @@ import android.support.v7.widget.RecyclerView;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
-import com.sysu.pro.fade.beans.AddMessage;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.CommentQuery;
-import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.message.Adapter.ChatAdapter;
 import com.sysu.pro.fade.message.Adapter.CommentAdapter;
-import com.sysu.pro.fade.message.Adapter.ContributionAdapter;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

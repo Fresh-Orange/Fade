@@ -14,11 +14,11 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.message.Adapter.ChatAdapter;
+import com.sysu.pro.fade.message.Class.NotificationUser;
 import com.sysu.pro.fade.message.Activity.CommentActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.message.Activity.FansActivity;
-import com.sysu.pro.fade.message.Adapter.ChatAdapter;
-import com.sysu.pro.fade.message.Class.NotificationUser;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -34,6 +34,7 @@ import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
 
 /**
  * Created by road on 2017/7/14.
