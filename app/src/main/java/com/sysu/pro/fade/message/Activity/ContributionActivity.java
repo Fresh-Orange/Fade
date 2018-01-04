@@ -5,6 +5,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
@@ -15,8 +18,6 @@ import com.sysu.pro.fade.message.Adapter.ContributionAdapter;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,10 @@ public class ContributionActivity extends MainBaseActivity {
     private User user;
     private Retrofit retrofit;
     private MessageService messageService;
-    private Integer start;
+    private Integer start = 0;
+    private RefreshLayout refreshLayout;
+    private Boolean isEnd = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,7 @@ public class ContributionActivity extends MainBaseActivity {
         adapter = new ContributionAdapter(ContributionActivity.this,notes);
         notification_Rv.setLayoutManager(new LinearLayoutManager(this));
         notification_Rv.setAdapter(adapter);
+        initLoadMore();
         user = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
@@ -51,12 +56,10 @@ public class ContributionActivity extends MainBaseActivity {
                 .subscribe(new Subscriber<NoteQuery>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
                     }
 
                     @Override
@@ -68,7 +71,6 @@ public class ContributionActivity extends MainBaseActivity {
                             adapter.notifyDataSetChanged();
                         }
                         start = noteQuery.getStart();
-                        EventBus.getDefault().post(1);
                     }
                 });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -79,4 +81,19 @@ public class ContributionActivity extends MainBaseActivity {
         });
     }
 
+    private void initLoadMore() {
+        //设置底部加载刷新
+        refreshLayout = (RefreshLayout) findViewById(R.id.refreshLayout);
+        refreshLayout.setEnableRefresh(false);    //取消下拉刷新功能
+        refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        //.setProgressResource(R.drawable.progress)
+        // .setArrowResource(R.drawable.arrow));
+        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(RefreshLayout refreshlayout) {
+
+            }
+        });
+    }
 }

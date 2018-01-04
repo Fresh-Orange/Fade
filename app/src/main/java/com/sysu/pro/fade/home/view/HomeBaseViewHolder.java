@@ -292,8 +292,11 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		Note note = new Note();
 		note.setNickname(curUser.getNickname());
 		note.setUser_id(curUser.getUser_id());
-		note.setNote_content(bean.getNote_content());
-		note.setTarget_id(bean.getNote_id());
+		if(bean.getTarget_id() != null && bean.getTarget_id() != 0){
+			note.setTarget_id(bean.getTarget_id());
+		}else {
+			note.setTarget_id(bean.getNote_id());
+		}
 		note.setHead_image_url(curUser.getHead_image_url());
 		return note;
 	}

@@ -126,7 +126,7 @@ public class OtherActivity extends MainBaseActivity {
             @Override
             public void onClick(View v) {
                 UserService service = retrofit.create(UserService.class);
-                service.concern(other.getUser_id().toString(), myself.getUser_id().toString())
+                service.concern(myself.getUser_id().toString(), other.getUser_id().toString())
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<SimpleResponse>() {
@@ -154,7 +154,7 @@ public class OtherActivity extends MainBaseActivity {
             @Override
             public void onClick(View v) {
                 UserService service = retrofit.create(UserService.class);
-                service.cancelConcern(other.getUser_id().toString(), myself.getUser_id().toString())
+                service.cancelConcern(myself.getUser_id().toString(),other.getUser_id().toString() )
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<SimpleResponse>() {

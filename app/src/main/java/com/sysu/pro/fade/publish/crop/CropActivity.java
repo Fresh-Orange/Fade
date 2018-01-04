@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.publish.Event.CropToClickEvent;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
-import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.crop.util.NoScrollView;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
@@ -213,7 +212,7 @@ public class CropActivity extends AppCompatActivity{
         }
         final CopyOnWriteArrayList<Bitmap> bitmaps = new CopyOnWriteArrayList<Bitmap>();
         for (int i = 0; i < newimages.size(); i++) {
-            Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(newimages.get(i), 50, 50);
+            Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(newimages.get(i), 150, 150);
             bitmaps.add(newBp);
         }
         mPickerHorizontal = (BitmapScrollPicker) findViewById(R.id.picker_04_horizontal);

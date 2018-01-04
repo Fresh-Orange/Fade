@@ -22,6 +22,7 @@ public class User implements Serializable{
 	private String summary;
 	private String school;
 	
+	private Integer relation_id; //后端用到的，用于得到start
 	
 	private TokenModel tokenModel;
 	
@@ -54,10 +55,10 @@ public class User implements Serializable{
 	
 	//安全性新增：盐，登录时md5计算用
 	private String salt;
-
+	
 	//uuid，数据库索引主键
 	private String uuid;
-
+	
 	public Integer getFade_num() {
 		return fade_num;
 	}
@@ -189,12 +190,18 @@ public class User implements Serializable{
 	public void setTokenModel(TokenModel tokenModel) {
 		this.tokenModel = tokenModel;
 	}
-
+	public Integer getRelation_id() {
+		return relation_id;
+	}
+	public void setRelation_id(Integer relation_id) {
+		this.relation_id = relation_id;
+	}
 	public String getUuid() {
 		return uuid;
 	}
-
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
+
+	
 }

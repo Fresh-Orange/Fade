@@ -3,6 +3,7 @@ package com.sysu.pro.fade.message.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
@@ -52,7 +53,8 @@ public class FansActivity extends MainBaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.i("新的粉丝","失败");
+                        e.printStackTrace();
                     }
 
                     @Override
