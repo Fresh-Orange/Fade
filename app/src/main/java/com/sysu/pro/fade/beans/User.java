@@ -20,7 +20,9 @@ public class User implements Serializable{
 	private String head_image_url;
 	private String register_time;
 	private String summary;
-	private String school;
+	
+	private Integer school_id;//学校id
+	private String school_name;//学校名称
 	
 	private Integer relation_id; //后端用到的，用于得到start
 	
@@ -48,8 +50,7 @@ public class User implements Serializable{
 	private Integer concern_num;
 	private Integer fans_num;
 	private String area;
-	private String wallpaper_url;
-	
+
 	//fade数量
 	private Integer fade_num;
 	
@@ -149,19 +150,13 @@ public class User implements Serializable{
 		this.wechat_id = wechat_id;
 	}
 	
-	
-	public String getSchool() {
-		return school;
-	}
-	public void setSchool(String school) {
-		this.school = school;
-	}
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "nickname="+nickname
 				+"user_id="+user_id;
 	}
+	
 	public String getArea() {
 		return area;
 	}
@@ -170,12 +165,6 @@ public class User implements Serializable{
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}
-	public String getWallpaper_url() {
-		return wallpaper_url;
-	}
-	public void setWallpaper_url(String wallpaper_url) {
-		this.wallpaper_url = wallpaper_url;
 	}
 	
 	public String getSalt() {
@@ -201,6 +190,18 @@ public class User implements Serializable{
 	}
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	public Integer getSchool_id() {
+		return school_id;
+	}
+	public void setSchool_id(Integer school_id) {
+		this.school_id = school_id;
+	}
+	public String getSchool_name() {
+		return school_name;
+	}
+	public void setSchool_name(String school_name) {
+		this.school_name = school_name;
 	}
 
 	

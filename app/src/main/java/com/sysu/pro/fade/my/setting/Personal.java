@@ -120,11 +120,11 @@ public class Personal extends AppCompatActivity {
             settingArea.setSelection(user.getArea().length());
         }
         //修改学校
-        if (user.getSchool() == null || user.getSchool().equals("")) {
+        if (user.getSchool_name() == null || user.getSchool_name().equals("")) {
             settingSchool.setHint("编辑学校");
         } else {
-            settingSchool.setText(user.getSchool());
-            settingSchool.setSelection(user.getSchool().length());
+            settingSchool.setText(user.getSchool_name());
+            settingSchool.setSelection(user.getSchool_name().length());
         }
 
         //保存修改
@@ -136,7 +136,7 @@ public class Personal extends AppCompatActivity {
                 user.setSummary(settingSummary.getText().toString());
                 user.setSex(settingSex.getText().toString());
                 user.setArea(settingArea.getText().toString());
-                user.setSchool(settingSchool.getText().toString());
+                user.setSchool_name(settingSchool.getText().toString());
                 MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
                         .addFormDataPart("user", JSON.toJSONString(user));
                 if(PhotoUtils.imagePath != null){
@@ -170,7 +170,7 @@ public class Personal extends AppCompatActivity {
                                     user.setSummary(settingSummary.getText().toString());
                                     user.setSex(settingSex.getText().toString());
                                     user.setArea(settingArea.getText().toString());
-                                    user.setSchool(settingSchool.getText().toString());
+                                    user.setSchool_name(settingSchool.getText().toString());
                                     editor.putString("user",JSON.toJSONString(user));
                                     editor.apply();
                                     //通知主界面
