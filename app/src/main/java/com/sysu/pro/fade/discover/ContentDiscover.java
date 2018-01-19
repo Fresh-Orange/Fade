@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.alibaba.fastjson.JSON;
@@ -84,6 +85,8 @@ public class ContentDiscover {
         this.rootview = rootview;
         progressBar = rootview.findViewById(R.id.progress_search_user);
         progressBar.setVisibility(View.INVISIBLE);
+        /*用以解决输入评论时底部导航栏被顶起的问题*/
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         initViewPager();
         initRecyclerView();
         initSearchView();
@@ -143,7 +146,6 @@ public class ContentDiscover {
        userAdapter.setOnClickItemListsner(new DBaseRecyclerViewAdapter.OnClickItemListsner() {
            @Override
            public void onClick(int poisiton) {
-               //Toast.makeText(context, poisiton + "", Toast.LENGTH_SHORT).show();
                Intent intent = new Intent(context,OtherActivity.class);
                intent.putExtra("user_id",userList.get(poisiton).getUser_id());
                activity.startActivity(intent);
@@ -200,7 +202,7 @@ public class ContentDiscover {
                        @Override
                        public void run() {
                            Request.Builder builder = new Request.Builder();
-                           String url = Const.BASE_IP + "searchUser/" + query + "/" + start.toString();
+                           String url = Const.BASE_IP + "searchUser/" + query + "/0 ";
                            builder.url(url);
                            Request request = builder.build();
                            try {

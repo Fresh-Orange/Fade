@@ -4,22 +4,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainActivitiesCollector;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
+import com.sysu.pro.fade.beans.SimpleResponse;
+import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.my.setting.About;
 import com.sysu.pro.fade.my.setting.Personal;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.UserUtil;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MySetting extends MainBaseActivity {
 
@@ -64,14 +74,36 @@ public class MySetting extends MainBaseActivity {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //设置loginType
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
-                editor.remove("user");
-                editor.apply();
-                startActivity(new Intent(MySetting.this, GuideActivity.class));
-                // TODO: 2017/12/31 这里应该要把MainActivity也结束掉 
-                MainActivitiesCollector.finishAll();
+                //发起退出登录请求
+                User user = new UserUtil((MySetting.this)).getUer();
+                Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+                UserService service = retrofit.create(UserService.class);
+                service.logoutUserByToken(JSON.toJSONString(user.getTokenModel()))
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SimpleResponse>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e("退出登录","失败");
+                                e.printStackTrace();
+                            }
+                            @Override
+                            public void onNext(SimpleResponse simpleResponse) {
+                                Toast.makeText(MySetting.this,"退出登录成功",Toast.LENGTH_SHORT).show();
+                                //设置loginType
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
+                                editor.remove("user");
+                                editor.apply();
+                                startActivity(new Intent(MySetting.this, GuideActivity.class));
+                                // TODO: 2017/12/31 这里应该要把MainActivity也结束掉
+                                MainActivitiesCollector.finishAll();
+                            }
+                        });
             }
         });
     }

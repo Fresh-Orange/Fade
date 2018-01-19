@@ -69,7 +69,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 			bean.setComment_num(bean.getOrigin().getComment_num());
 			bean.setAdd_num(bean.getOrigin().getAdd_num());
 			bean.setSub_num(bean.getOrigin().getSub_num());
-			bean.setAction(bean.getOrigin().getAction());
+			//bean.setAction(bean.getOrigin().getAction());
 		}
 		/*
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
