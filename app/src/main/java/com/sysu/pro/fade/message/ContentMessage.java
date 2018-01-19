@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.message.Adapter.ChatAdapter;
 import com.sysu.pro.fade.message.Class.NotificationUser;
@@ -22,6 +23,10 @@ import com.sysu.pro.fade.message.Activity.FansActivity;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +66,7 @@ public class ContentMessage {
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
-
+        EventBus.getDefault().register(this);
         initNotification();
         initLayout();
         initListener();
@@ -92,6 +97,18 @@ public class ContentMessage {
                         newFanCount = addMessage.getAddFansNum();
                         commentCount = addMessage.getAddCommentNum();
                         Log.d("yellow", "contribution: " + contributionCount);
+                        if (contributionCount > 0) {
+                            processCountTv.setVisibility(View.VISIBLE);
+                            processCountTv.setText(String.valueOf(contributionCount));
+                        }
+                        if (newFanCount > 0) {
+                            newFanCountTv.setVisibility(View.VISIBLE);
+                            newFanCountTv.setText(String.valueOf(newFanCount));
+                        }
+                        if (commentCount > 0) {
+                            commentCountTv.setVisibility(View.VISIBLE);
+                            commentCountTv.setText(String.valueOf(commentCount));
+                        }
                     }
                 });
     }
@@ -127,18 +144,6 @@ public class ContentMessage {
         adapter = new ChatAdapter(userList);
         notification_Rv.setLayoutManager(new LinearLayoutManager(context));
         notification_Rv.setAdapter(adapter);
-        if (contributionCount > 0) {
-            processCountTv.setVisibility(View.VISIBLE);
-            processCountTv.setText(String.valueOf(contributionCount));
-        }
-        if (newFanCount > 0) {
-            newFanCountTv.setVisibility(View.VISIBLE);
-            newFanCountTv.setText(String.valueOf(newFanCount));
-        }
-        if (commentCount > 0) {
-            commentCountTv.setVisibility(View.VISIBLE);
-            commentCountTv.setText(String.valueOf(commentCount));
-        }
     }
 
     private void initListener() {
@@ -149,6 +154,8 @@ public class ContentMessage {
                 Intent intent = new Intent(context, ContributionActivity.class);
                 activity.startActivity(intent);
                 contributionCount = 0;
+                //消除贡献队列
+                processCountTv.setVisibility(View.GONE);
             }
         });
 
@@ -159,6 +166,8 @@ public class ContentMessage {
                 Intent intent = new Intent(context, FansActivity.class);
                 activity.startActivity(intent);
                 newFanCount = 0;
+                //消除粉丝
+                newFanCountTv.setVisibility(View.GONE);
             }
         });
 
@@ -169,8 +178,34 @@ public class ContentMessage {
                 Intent intent = new Intent(context, CommentActivity.class);
                 activity.startActivity(intent);
                 commentCount = 0;
+                //消除评论
+                commentCountTv.setVisibility(View.GONE);
             }
         });
     }
 
+    //根据msg消除通知
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public  void onGetSimpleResponse(SimpleResponse response){
+        switch (response.getSuccess()){
+            case "00":
+                //贡献队列数量加一
+                contributionCount++;
+                processCountTv.setVisibility(View.VISIBLE);
+                processCountTv.setText(String.valueOf(contributionCount));
+                break;
+            case "01":
+                //粉丝队列数量加一
+                newFanCount++;
+                newFanCountTv.setVisibility(View.VISIBLE);
+                newFanCountTv.setText(String.valueOf(newFanCount));
+                break;
+            case "02":
+                //评论数量加一
+                commentCount++;
+                commentCountTv.setVisibility(View.VISIBLE);
+                commentCountTv.setText(String.valueOf(commentCount));
+                break;
+        }
+    }
 }

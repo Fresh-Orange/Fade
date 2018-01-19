@@ -110,7 +110,7 @@ public class ContentMy {
                     public void onNext(User newUser) {
                         user = newUser;
                         loadData();
-                        loadFragment();
+                        //loadFragment();
                     }
                 });
     }

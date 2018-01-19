@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
+import com.sysu.pro.fade.beans.TokenModel;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
@@ -26,10 +27,16 @@ import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.Client;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
+
+import org.java_websocket.drafts.Draft_6455;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -47,6 +54,7 @@ public class MainActivity extends MainBaseActivity {
     private User user;
     private Retrofit retrofit;
     private UserService userService;
+    private Client client;
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -63,6 +71,17 @@ public class MainActivity extends MainBaseActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         //初始化用户信息
         user = new UserUtil(this).getUer();
+        TokenModel tokenModel = user.getTokenModel();
+        //建立websocket连接
+        try {
+            String websocketUri = Const.WEBSOCKET_IP + "?user_id=" + user.getUser_id() + "&token=" + tokenModel.getToken();
+            client = new Client(new URI(websocketUri), new Draft_6455());
+            client.connect();
+            Log.i("websocket","websocket连接成功");
+        } catch (URISyntaxException e) {
+            Log.i("websocket","websocket连接失败");
+            e.printStackTrace();
+        }
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         /*
@@ -367,6 +386,11 @@ public class MainActivity extends MainBaseActivity {
 
     @Override
     protected void onDestroy() {
+        //关闭websocket连接
+        if(client != null && client.isOpen()){
+            client.close();
+            Log.d("连接已关闭", "连接已关闭");
+        }
         //下线请求
         if(user.getUser_id() != null){
             userService.offline(user.getUser_id().toString())

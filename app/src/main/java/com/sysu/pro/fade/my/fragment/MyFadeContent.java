@@ -77,14 +77,14 @@ public class MyFadeContent {
         //EventBus订阅
         EventBus.getDefault().register(this);
         swipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
-        swipeRefresh.setRefreshing(true);
+        swipeRefresh.setRefreshing(false);
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
         notes = new ArrayList<>();
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
         isEnd = false;
-        isLoading = false;
+        isLoading = true;
         initViews();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
@@ -117,6 +117,7 @@ public class MyFadeContent {
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                        isLoading = false;
                     }
                 });
         start = 0;
@@ -176,39 +177,40 @@ public class MyFadeContent {
                             swipeRefresh.setRefreshing(false);
                         }else {
                             //加载更多
-                            userService.getMyNote(user.getUser_id().toString(),start.toString())
-                                    .subscribeOn(Schedulers.newThread())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Subscriber<NoteQuery>() {
-                                        @Override
-                                        public void onCompleted() {
-                                        }
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            Log.e("加载更多","失败");
-                                            e.printStackTrace();
-                                            setLoadingMore(false);
-                                        }
-                                        @Override
-                                        public void onNext(NoteQuery noteQuery) {
-                                            Log.i("加载更多","成功");
-                                            List<Note>addList = noteQuery.getList();
-                                            start = noteQuery.getStart();
-                                            if(addList.size() != 0){
-                                                addToListTail(noteQuery.getList());
-                                                Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                                isLoading = true;
+                                userService.getMyNote(user.getUser_id().toString(),start.toString())
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Subscriber<NoteQuery>() {
+                                            @Override
+                                            public void onCompleted() {
                                             }
-                                            else{
-                                                Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                Log.e("加载更多","失败");
+                                                e.printStackTrace();
+                                                setLoadingMore(false);
                                             }
-                                            if(addList.size() < 10) isEnd = true;
-                                            swipeRefresh.setRefreshing(false);
-                                            setLoadingMore(false);
-                                            isLoading = false;
-                                        }
-                                    });
+                                            @Override
+                                            public void onNext(NoteQuery noteQuery) {
+                                                Log.i("加载更多","成功");
+                                                List<Note>addList = noteQuery.getList();
+                                                start = noteQuery.getStart();
+                                                if(addList.size() != 0){
+                                                    addToListTail(noteQuery.getList());
+                                                    Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                                                }
+                                                else{
+                                                    Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                                                }
+                                                if(addList.size() < 10) isEnd = true;
+                                                swipeRefresh.setRefreshing(false);
+                                                setLoadingMore(false);
+                                                isLoading = false;
+                                            }
+                                        });
+                            }
                         }
-                    }
                 });
             }
         }).start();

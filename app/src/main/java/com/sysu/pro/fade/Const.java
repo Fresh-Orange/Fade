@@ -11,9 +11,10 @@ public class Const {
     public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
     public static final String IP  = "https://sysufade.cn/fade"; //阿里云云服务器地址
 
-    //public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/"; //本地地址
     public static final String BASE_IP  = "https://sysufade.cn/fade_pro/"; //阿里云云服务器地址
-
+    public static final String WEBSOCKET_IP  = "ws://119.23.229.19:8080/fade_pro/webSocketServer"; //阿里云云服务器websocket地址
+    //public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/"; //本地地址
+    //public static final String WEBSOCKET_IP  = "ws://172.18.92.209:8080/fade_pro/webSocketServer"; //本地websocket地址
     /*登录注册 个人信息有关
      */
     public static final String USER_SHARE="login_user"; //存储登录后的用户信息sp数据库

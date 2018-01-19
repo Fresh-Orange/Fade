@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Fade.iml" filepath="$PROJECT_DIR$/Fade.iml" />
       <module fileurl="file://E:\study_and_work\android_and_java\Android\Fade-1\Fade.iml" filepath="E:\study_and_work\android_and_java\Android\Fade-1\Fade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Fade-1.iml" filepath="$PROJECT_DIR$/Fade-1.iml" />
+      <module fileurl="file://F:\Fade\Fade\Fade-1.iml" filepath="F:\Fade\Fade\Fade-1.iml" />
       <module fileurl="file://F:\AS\Fade\Fade-1.iml" filepath="F:\AS\Fade\Fade-1.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

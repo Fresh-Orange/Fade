@@ -12,26 +12,26 @@ import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Comment;
-import com.sysu.pro.fade.beans.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by yellow on 2017/12/30.
  */
 
-public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.FansViewHolder>{
-    private List<Comment> commentList;
+public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder>{
+    private List<Comment> commentList = new ArrayList<Comment>();
     private Context context;
 
-    static class FansViewHolder extends RecyclerView.ViewHolder {
+    static class CommentViewHolder extends RecyclerView.ViewHolder {
         View userView;
         ImageView user_icon;    //头像
         TextView user_id;       //用户名字
         ImageView user_image;   //详情图片
         TextView user_time;     //回复时间
         TextView user_content;  //回复内容
-        public FansViewHolder(View view) {
+        public CommentViewHolder(View view) {
             super(view);
             userView = view;
             user_icon = (ImageView) view.findViewById(R.id.comment_icon);
@@ -47,11 +47,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.FansView
         this.context = context;
     }
     @Override
-    public FansViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CommentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 //        context = parent.getContext();
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_follow, parent, false);
-        final FansViewHolder holder = new FansViewHolder(view);
+                .inflate(R.layout.item_notification_comment, parent, false);
+        final CommentViewHolder holder = new CommentViewHolder(view);
         holder.userView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +62,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.FansView
     }
 
     @Override
-    public void onBindViewHolder(final FansViewHolder holder, int position) {
+    public void onBindViewHolder(final CommentViewHolder holder, int position) {
         //对RecyclerView子项的数据进行赋值，在每个子项被滚动到屏幕内的时候执行
         //获得当前项的实例
         Comment comment = commentList.get(position);
