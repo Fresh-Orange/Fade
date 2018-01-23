@@ -58,7 +58,6 @@ public class GlobalOnItemClickManagerUtils {
                         // 获取当前光标位置,在指定位置上添加表情图片文本
                         int curPosition = mEditText.getSelectionStart();
                         StringBuilder sb = new StringBuilder(mEditText.getText().toString());
-//                        StringBuilder sb = new StringBuilder(mEditText);
                         sb.insert(curPosition, emotionName);
 
                         int curPositionEnd = mEditText.getSelectionStart();

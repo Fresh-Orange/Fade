@@ -23,13 +23,14 @@
         android:orientation="horizontal">
         <com.sysu.pro.fade.publish.crop.BitmapScrollPicker
             android:id="@+id/picker_04_horizontal"
+            android:background="@color/white"
             android:layout_width="0dp"
             android:layout_weight="4"
             android:layout_height="match_parent"
             android:layout_marginTop="3dp"
-            app:spv_center_item_background="@color/main_blue"
+            app:spv_center_item_background="@color/white"
             app:spv_center_item_position="2"
-            app:spv_max_scale="1.5"
+            app:spv_max_scale="1"
             app:spv_min_scale="0.8"
             app:spv_draw_bitmap_width="40dp"
             app:spv_disallow_intercept_touch="true"

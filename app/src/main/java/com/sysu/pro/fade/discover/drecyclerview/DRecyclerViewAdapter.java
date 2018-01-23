@@ -21,6 +21,7 @@ import java.util.List;
 
 public class DRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String Tag = DRecyclerViewAdapter.class.getName();
+    private Boolean isLoad = false;
     private RecyclerView.Adapter mInnerAdapter;
     public DRecyclerViewAdapter(DBaseRecyclerViewAdapter adapter) {
         setAdapter(adapter);
@@ -58,6 +59,7 @@ public class DRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.View
      */
     public void addFootView(View view) {
         mFootViews.add(view);
+        isLoad = true;
     }
 
     /**
@@ -72,28 +74,41 @@ public class DRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        DRecyclerViewHolder dRecyclerViewHolder;
+        final DRecyclerViewHolder dRecyclerViewHolder;
         Log.e(Tag, "当前type " + viewType);
         if (viewType < mHeadViews.size()) {
             Log.e(Tag, "headView" + viewType);
-            return new DRecyclerViewHolder(mHeadViews.get(viewType));
+            dRecyclerViewHolder = new DRecyclerViewHolder(mHeadViews.get(viewType));
 
         } else if (viewType >= mHeadViews.size() && viewType < mHeadViews.size() + mInnerAdapter.getItemCount()) {
 
             if (mRandomViews_position.get(viewType - mHeadViews.size())!=null) {
                 View view = mRandomViews.get(mRandomViews_position.get(viewType - mHeadViews.size()));
-                return new DRecyclerViewHolder(view);
+                dRecyclerViewHolder = new DRecyclerViewHolder(view);
             }
             return mInnerAdapter.onCreateViewHolder(parent, viewType - mHeadViews.size());
         } else {
             Log.e(Tag, "FootView" + viewType);
             int position = viewType - mHeadViews.size() - mInnerAdapter.getItemCount();
             if (position >= 0 && position < mFootViews.size()) {
-                return new DRecyclerViewHolder(mFootViews.get(position));
+                dRecyclerViewHolder = new DRecyclerViewHolder(mFootViews.get(position));
             } else {
-                return null;
+                dRecyclerViewHolder = null;
             }
         }
+        if (dRecyclerViewHolder != null && isLoad) {
+            dRecyclerViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = dRecyclerViewHolder.getAdapterPosition();
+                    if (position == getItemCount() - 1) {
+                        mFootViews.clear();
+                        notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+        return dRecyclerViewHolder;
     }
 
     @Override

@@ -320,17 +320,9 @@ public class ImageSelectorActivity extends AppCompatActivity {
             btnConfirm.setEnabled(true);
             btnPreview.setEnabled(true);
             tvPreview.setText("预览(" + count + ")");
-            //单选
-//            if (isSingle) {
-//                tvConfirm.setText("确定");
-//            } else
             if (newCount > 0) {
                 tvConfirm.setText("确定(" + count + "/" + newCount + ")");
-//                newCount = newCount - 1;
             }
-//            else {
-//                tvConfirm.setText("确定(" + count + ")");
-//            }
         }
 
     }
