@@ -176,16 +176,12 @@ public class EmotionKeyboard {
 //				mEditText.setFocusable(false);
 
 				if (mEmotionLayout.isShown()) {
-//					lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
 					mEditText.setFocusable(true);
 					hideEmotionLayout(true);//隐藏表情布局，显示软件盘
-//					unlockContentHeightDelayed();//软件盘显示后，释放内容高度
 				} else {
 					//软键盘显示情况下按下表情按钮
 					if (isSoftInputShown()) {//同上
-//						lockContentHeight();
 						showEmotionLayout();
-//						unlockContentHeightDelayed();
 					}
 					//在初始布局直接按下表情按钮
 					else {

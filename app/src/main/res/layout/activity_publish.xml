@@ -14,10 +14,8 @@
     <LinearLayout
         android:id="@+id/choose_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="100dp"
+        android:orientation="vertical">
 
         <View
             android:layout_width="match_parent"
@@ -27,25 +25,33 @@
         <include
             android:id="@+id/add_bar"
             layout="@layout/add_bar"/>
+
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/light_gray"/>
 
     <RelativeLayout
         android:id="@+id/pager_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         >
         <!--图片以及图片下方点的封装-->
         <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
             android:id="@+id/image_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
         <ImageButton
             android:id="@+id/icon_add_pic"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_alignParentBottom="true"
             android:layout_toLeftOf="@id/icon_sub_pic"
-            android:background="@color/white"
+            android:background="@drawable/circle_corner"
             android:src="@drawable/publish_add"
             android:alpha="0.5"
             android:layout_marginRight="12dp"
@@ -58,7 +64,7 @@
             android:layout_height="45dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:background="@color/white"
+            android:background="@drawable/circle_corner"
             android:layout_marginBottom="32dp"
             android:layout_marginRight="16dp"
             android:alpha="0.5"
@@ -81,18 +87,18 @@
     </com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout>
     -->
 
-    <ScrollView
-        android:id="@+id/mScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2.0"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:descendantFocusability="beforeDescendants">
+    <!--<ScrollView-->
+        <!--android:id="@+id/mScrollView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="2.0"-->
+        <!--android:focusable="true"-->
+        <!--android:focusableInTouchMode="true"-->
+        <!--android:descendantFocusability="beforeDescendants">-->
         <EditText
-            android:id="@+id/my_et_emotion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/my_et_emotion"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
@@ -104,56 +110,56 @@
             android:theme="@style/MyEditText">
         </EditText>
 
-    </ScrollView>
+    <!--</ScrollView>-->
 
-    <RelativeLayout
-        android:id="@+id/rl_editbar_bg"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.7"
-        android:visibility="gone">
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rl_editbar_bg"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="0.7"-->
+        <!--android:visibility="gone">-->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/bg_horizontal_line_color"
-            android:orientation="horizontal"
-            >
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:background="@color/bg_horizontal_line_color"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;-->
 
-            <ImageView
-                android:id="@+id/emotion_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="top"
-                android:clickable="true"
-                android:src="@drawable/ic_emotion"
-                />
+            <!--<ImageView-->
+                <!--android:id="@+id/emotion_button"-->
+                <!--android:layout_width="40dp"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:layout_gravity="top"-->
+                <!--android:clickable="true"-->
+                <!--android:src="@drawable/ic_emotion"-->
+                <!--/>-->
 
-            <ImageView
-                android:id="@+id/keyboard_button"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="8dp"
-                android:clickable="true"
-                android:src="@drawable/keyboard"
-                android:visibility="gone"/>
-        </LinearLayout>
+            <!--<ImageView-->
+                <!--android:id="@+id/keyboard_button"-->
+                <!--android:layout_width="30dp"-->
+                <!--android:layout_height="30dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:clickable="true"-->
+                <!--android:src="@drawable/keyboard"-->
+                <!--android:visibility="gone"/>-->
+        <!--</LinearLayout>-->
 
-    </RelativeLayout>
+    <!--</RelativeLayout>-->
 
 
-    <FrameLayout
-        android:id="@+id/fl_memotionview_main"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:descendantFocusability="beforeDescendants"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2.5"
-        android:visibility="gone"
-        />
+    <!--<FrameLayout-->
+        <!--android:id="@+id/fl_memotionview_main"-->
+        <!--android:focusableInTouchMode="true"-->
+        <!--android:focusable="true"-->
+        <!--android:descendantFocusability="beforeDescendants"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="2.5"-->
+        <!--android:visibility="gone"-->
+        <!--/>-->
 
 </LinearLayout>
 

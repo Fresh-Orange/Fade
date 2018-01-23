@@ -46,17 +46,8 @@ public class SpanStringUtils {
 				int size = (int) tv.getTextSize()*13/10;
 				Bitmap bitmap = BitmapFactory.decodeResource(res, imgRes);
 				Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
-
 				ImageSpan span = new ImageSpan(context, scaleBitmap);
-//                int startIndex = source.indexOf(key, mystart);
-//                int endIndex = startIndex + key.length();
-//                if (startIndex >= 0) {
-//                    spannableString.setSpan(span, startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                    break;
-//                }
 				spannableString.setSpan(span, start, start + key.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-//                mystart = endIndex - 1;
 			}
 		}
 		return spannableString;
