@@ -174,7 +174,6 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-
         super.onLayout(true, left, top, right, bottom);
         mBitmapRect = getBitmapRect();
         initCropWindow(mBitmapRect);
@@ -348,7 +347,6 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
             Log.d("position", "null");
             return new RectF();
         }
-
 
         // Get image matrix values and place them in an array.
         final float[] matrixValues = new float[9];

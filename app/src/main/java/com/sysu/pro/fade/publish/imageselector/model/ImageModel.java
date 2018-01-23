@@ -39,6 +39,7 @@ public class ImageModel {
                                 MediaStore.Images.Media._ID},
                         null,
                         null,
+                        //根据修改的时间来筛选图片
                         MediaStore.Images.Media.DATE_ADDED);
 
                 ArrayList<Image> images = new ArrayList<>();

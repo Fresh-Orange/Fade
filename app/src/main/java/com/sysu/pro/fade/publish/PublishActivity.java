@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.sysu.pro.fade.BuildConfig;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Image;
@@ -324,13 +326,13 @@ public class PublishActivity extends AppCompatActivity {
         if (flag) {
             et_emotion= (EditText) findViewById(R.id.my_et_emotion);
             //设置焦点，可被操作
-            et_emotion.setFocusable(true);
-            et_emotion.setFocusableInTouchMode(true);
-            et_emotion.requestFocus();
-            InputMethodManager im = ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE));
-            im.showSoftInput(et_emotion, 0);
+//            et_emotion.setFocusable(true);
+//            et_emotion.setFocusableInTouchMode(true);
+//            et_emotion.requestFocus();
+//            InputMethodManager im = ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE));
+//            im.showSoftInput(et_emotion, 0);
             InitListener();
-            initEmotionMainFragment();
+//            initEmotionMainFragment();
         }
 
     }
@@ -403,9 +405,11 @@ public class PublishActivity extends AppCompatActivity {
                                 removeImg(currentItem);
                                 newCount = maxCount - images.size();
                                 pager.setPaths(images,currentItem);
+                                updatePosition();
 //                                pager.removeViewAt(currentItem);
                             }
                             pager.notifyChanged();
+                            ShowViewPager();
                         }
                     });
                     dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -442,45 +446,52 @@ public class PublishActivity extends AppCompatActivity {
         });
 
         activityRootView = findViewById(R.id.activity_publish);
-        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
-                if (heightDiff > dpToPx(PublishActivity.this, 200)) {
-                    findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
-                    findViewById(R.id.emotion_button).setVisibility(View.VISIBLE);
-                    findViewById(R.id.keyboard_button).setVisibility(View.GONE);
-                    choose_view.setVisibility(View.GONE);
-                    setHiddenPager(true);
-                }
-                else{
-                    findViewById(R.id.emotion_button).setVisibility(View.GONE);
-                    findViewById(R.id.keyboard_button).setVisibility(View.VISIBLE);
-                    if (frameLayout.getVisibility() == View.GONE)
-                      findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
-                    if (show == CHOOSE)
-                        choose_view.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
-                             choose_view.setVisibility(View.VISIBLE);
-                        }
-                    }, 50);
-                    if (show == PAGER)
-                        pager.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
-                                    setHiddenPager(false);
-                            }
-                        }, 200);
-                }
+//        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+//                if (heightDiff > dpToPx(PublishActivity.this, 200)) {
+//                    findViewById(R.id.rl_editbar_bg).setVisibility(View.VISIBLE);
+//                    findViewById(R.id.emotion_button).setVisibility(View.VISIBLE);
+//                    findViewById(R.id.keyboard_button).setVisibility(View.GONE);
+//                    choose_view.setVisibility(View.GONE);
+//                    setHiddenPager(true);
+//                }
+//                else{
+//                    findViewById(R.id.emotion_button).setVisibility(View.GONE);
+//                    findViewById(R.id.keyboard_button).setVisibility(View.VISIBLE);
+//                    if (frameLayout.getVisibility() == View.GONE)
+//                     findViewById(R.id.rl_editbar_bg).setVisibility(View.GONE);
+//                    if (show == CHOOSE)
+//                        choose_view.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
+//                             choose_view.setVisibility(View.VISIBLE);
+//                        }
+//                    }, 50);
+//                    if (show == PAGER)
+//                        pager.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+////                                if (findViewById(R.id.rl_editbar_bg).getVisibility() == View.GONE)
+//                                    setHiddenPager(false);
+//                            }
+//                        }, 200);
+//                }
 
-            }
-        });
-
+//            }
+//        });
+//
         edit_temp = (EditText) findViewById(R.id.my_et_emotion);
 
+    }
+
+    private void updatePosition() {
+        for (int i = curShowPosition;i < images.size(); i++) {
+            imageX[i] = imageX[i+1];
+            imageY[i] = imageY[i+1];
+        }
     }
 
 
@@ -521,33 +532,33 @@ public class PublishActivity extends AppCompatActivity {
         bundle.putBoolean(EmotionMainFragment.EMOTION_HIDE,isHidden);
         //替换fragment
         //创建修改实例
-        frameLayout = (FrameLayout) findViewById(R.id.fl_memotionview_main);
-        rl_editbar_bg = (RelativeLayout) findViewById(R.id.rl_editbar_bg);
-        emotionMainFragment = EmotionMainFragment.newInstance(EmotionMainFragment.class,bundle);
-        emotionMainFragment.bindToContentView(et_emotion);
-        emotionMainFragment.bindToFramelayout(frameLayout);
-        emotionMainFragment.bindToRl_editbar_bg(rl_editbar_bg);
-        emotionMainFragment.bindToEmotion((ImageView)findViewById(R.id.emotion_button));
-        emotionMainFragment.bindToKeyboardEmotion((ImageView)findViewById(R.id.keyboard_button));
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        // Replace whatever is in thefragment_container view with this fragment,
-        // and add the transaction to the backstack
-        transaction.replace(R.id.fl_memotionview_main,emotionMainFragment);
+//        frameLayout = (FrameLayout) findViewById(R.id.fl_memotionview_main);
+//        rl_editbar_bg = (RelativeLayout) findViewById(R.id.rl_editbar_bg);
+//        emotionMainFragment = EmotionMainFragment.newInstance(EmotionMainFragment.class,bundle);
+//        emotionMainFragment.bindToContentView(et_emotion);
+//        emotionMainFragment.bindToFramelayout(frameLayout);
+//        emotionMainFragment.bindToRl_editbar_bg(rl_editbar_bg);
+//        emotionMainFragment.bindToEmotion((ImageView)findViewById(R.id.emotion_button));
+//        emotionMainFragment.bindToKeyboardEmotion((ImageView)findViewById(R.id.keyboard_button));
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        // Replace whatever is in thefragment_container view with this fragment,
+//        // and add the transaction to the backstack
+//        transaction.replace(R.id.fl_memotionview_main,emotionMainFragment);
         //返回栈
-        transaction.addToBackStack(null);
-        //提交修改
-        transaction.commit();
+//        transaction.addToBackStack(null);
+//        //提交修改
+//        transaction.commit();
     }
 
-    @Override
-    public void onBackPressed() {
-        /**
-         * 判断是否拦截返回键操作
-         */
-        if (!emotionMainFragment.isInterceptBackPress()) {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        /**
+//         * 判断是否拦截返回键操作
+//         */
+//        if (!emotionMainFragment.isInterceptBackPress()) {
+//            super.onBackPressed();
+//        }
+//    }
 
 
     @Override
@@ -574,7 +585,6 @@ public class PublishActivity extends AppCompatActivity {
                 ratio = 8.0/15;
                 cut_size = 2;
             }
-
             pager.setClickMode(imageAdaptiveIndicativeItemLayout.ClickMode.EDIT);
             pager.setHeightByRatio((float)ratio);
             pager.invalidate();
@@ -643,72 +653,19 @@ public class PublishActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_CODE && data != null) {
-//            newCount = data.getIntExtra(Constants.NEW_COUNT, maxCount);
-//            imageX = data.getFloatArrayExtra(Constants.IMAGEX);
-//            imageY = data.getFloatArrayExtra(Constants.IMAGEY);
-//            crop_size = data.getIntExtra(Constants.CUT_SIZE, 1);
-//            newDataList = new ArrayList<String>();
-//            if (data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT) != null)
-//            {
-//                newDataList = data.getStringArrayListExtra(ImageSelectorUtils.SELECT_RESULT);
-//            }
-//            if (newDataList != null)
-//            {
-//                images = (newDataList);
-//            }
-//            ShowViewPager();
-//            flag = true;
-//            Log.d("My","string: " + getCoordinateString());
-//            Log.d("My", "size: " + crop_size);
-//        }
-        //仅剩一张还删了
-//        if (data != null && data.getBooleanExtra(Constants.IS_ALL_DELETED, false)
-//                && requestCode == Constants.CLICK_RESULT_CODE) {
-//            images.clear();
-//            newCount = maxCount;
-//            postArticleImgAdapter.notifyDataSetChanged();
-//        }
-        //其他删除情况
-//        if (data != null && data.getBooleanExtra(Constants.IS_DELETED, false)
-//                && requestCode == Constants.CLICK_RESULT_CODE) {
-//            //既然删了就没满
-//            isFull = false;
-//            int clickPositionSize = data.getIntExtra(Constants.CURRENT_POSITION_SIZE,0);
-//            if (clickPositionSize >= images.size()) {
-//                newCount = maxCount;
-//                images.clear();
-//            }
-//            else if (clickPositionSize > 0) {
-//                Bundle bundle = data.getExtras();
-//                int[] clickPosition = new int[15];
-//                clickPosition = bundle.getIntArray(Constants.CURRENT_POSITION);
-//                for (int i = 0; i < clickPositionSize; i++) {
-//                    int removePosition = 0;
-//                    if (clickPosition != null) {
-//                        removePosition = clickPosition[i];
-//                    }
-//                    Log.d("Yellow", "" + removePosition);
-//                    if (removePosition < images.size())
-//                        images.remove(removePosition);
-//                }
-//                newCount = maxCount - images.size();
-//            }
-////            images.remove(data.getIntExtra(Constants.CURRENT_POSITION, 0));
-////            newCount -= newDataList.size();
-//            postArticleImgAdapter.notifyDataSetChanged();
-//        }
-
         if (requestCode == Constants.TAKE_PICTURE  && resultCode == RESULT_OK)
         {
-            Log.d("yellow", "path3: " + path);
-            Log.d("yellow", "images: " + images.get(0));
-            Log.d("yellow", "getExternalStorageDirectory: " + Environment.getExternalStorageDirectory());
+//            Log.d("yellow", "path3: " + path);
+//            Log.d("yellow", "images: " + images.get(0));
+//            Log.d("yellow", "getExternalStorageDirectory: " + Environment.getExternalStorageDirectory());
+
+            path = vFile.toString();
             if (path != null) {
 //                path = Environment.getExternalStorageDirectory() + path;
                 Log.d("yellow", "path2: " + path);
                 images.add(path);
                 newCount--;
+                curShowPosition = images.size() - 1;
                 ShowViewPager();
              }
         }
@@ -755,6 +712,8 @@ public class PublishActivity extends AppCompatActivity {
         });
         listDialog.show();
     }
+
+    private File vFile;
     //适配7.0的拍照方法
     private void takePhoto(Activity activity)
     {
@@ -762,28 +721,29 @@ public class PublishActivity extends AppCompatActivity {
 //        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Log.d("yellow", "getExternalCacheDir()" + getExternalCacheDir());
         Log.d("yellow", "OldEnvironment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
-        File vFile = new File(Environment.getExternalStorageDirectory()
+        vFile = new File(Environment.getExternalStorageDirectory()
                 + "/Fade/", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
         if (vFile.exists())
         {
             vFile.delete();
         }
+//        Log.d("vapth", vFile.toString());
         Uri uri;
+//        FileProvider.getUriForFile(mContext, BuildConfig.APP_PROVIDER, file)
         if (Build.VERSION.SDK_INT >= 24)
-            uri = FileProvider.getUriForFile(activity.getApplicationContext(),
+            uri = FileProvider.getUriForFile(getApplicationContext(),
                     activity.getApplicationContext().getPackageName() +
                             ".provider", vFile);
         else uri = Uri.fromFile(vFile);
         openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        path = getImagePath(uri, this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            // 7.0
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
-        activity.startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
+        startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
     }
-
-
 
     private void removeImg(int location)
     {
@@ -826,166 +786,13 @@ public class PublishActivity extends AppCompatActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);//反注册EventBus
     }
-    public static String getRealFilePath( final Context context, final Uri uri ) {
-        if ( null == uri ) {
-            Log.d("yellow", "null");
-            return null;
-        }
-        final String scheme = uri.getScheme();
-        String data = null;
-        if ( scheme == null )
-            data = uri.getPath();
-        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
-            data = uri.getPath();
-        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
-            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
-            if ( null != cursor ) {
-                if ( cursor.moveToFirst() ) {
-                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
-                    if ( index > -1 ) {
-                        data = cursor.getString( index );
-                    }
-                }
-                cursor.close();
-            }
-        }
-        return data;
-    }
-
-    @TargetApi(19)
-    public static String getImageAbsolutePath(Context context, Uri imageUri) {
-        if (context == null || imageUri == null)
-            return null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, imageUri)) {
-            if (isExternalStorageDocument(imageUri)) {
-                String docId = DocumentsContract.getDocumentId(imageUri);
-                String[] split = docId.split(":");
-                String type = split[0];
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
-            } else if (isDownloadsDocument(imageUri)) {
-                String id = DocumentsContract.getDocumentId(imageUri);
-                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                return getDataColumn(context, contentUri, null, null);
-            } else if (isMediaDocument(imageUri)) {
-                String docId = DocumentsContract.getDocumentId(imageUri);
-                String[] split = docId.split(":");
-                String type = split[0];
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-                String selection = MediaStore.Images.Media._ID + "=?";
-                String[] selectionArgs = new String[] { split[1] };
-                return getDataColumn(context, contentUri, selection, selectionArgs);
-            }
-        } // MediaStore (and general)
-        else if ("content".equalsIgnoreCase(imageUri.getScheme())) {
-            // Return the remote address
-            if (isGooglePhotosUri(imageUri))
-                return imageUri.getLastPathSegment();
-            return getDataColumn(context, imageUri, null, null);
-        }
-        // File
-        else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
-            return imageUri.getPath();
-        }
-        return null;
-    }
-
-    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
-        Cursor cursor = null;
-        String column = MediaStore.Images.Media.DATA;
-        String[] projection = { column };
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is ExternalStorageProvider.
-     */
-    public static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is DownloadsProvider.
-     */
-    public static boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is MediaProvider.
-     */
-    public static boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is Google Photos.
-     */
-    public static boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
-    }
 
 
-    public static String getImagePath(Uri uri, Context context) {
-        String[] column = { MediaStore.Images.Media.DATA };
-        if (null == uri) {
-            return null;
-        }
-        final String scheme = uri.getScheme();
-        String path = null;
-        if (scheme == null)
-            path = uri.getPath();
-        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-            path = uri.getPath();
-        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                String wholeID = DocumentsContract.getDocumentId(uri);
-                String id = wholeID.split(":")[1];
-                String sel = MediaStore.Images.Media._ID + "=?";
-                Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column,
-                        sel, new String[] { id }, null);
-                int columnIndex = cursor.getColumnIndex(column[0]);
-                if (cursor.moveToFirst()) {
-                    path = cursor.getString(columnIndex);
-                }
-                cursor.close();
-            } else {
-                Cursor cursor = context.getContentResolver().query(uri, column, null, null, null);
-                if (null != cursor) {
-                    if (cursor.moveToFirst()) {
-                        int index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                        if (index > -1) {
-                            path = cursor.getString(index);
-                        }
-                    }
-                    cursor.close();
-                }
-            }
-
-        }
-        return path;
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 }

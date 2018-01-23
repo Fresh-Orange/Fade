@@ -76,10 +76,13 @@ public class ImagePagerAdapter extends PagerAdapter {
 
         Glide.with(mContext)
                 .load(new File(image.getPath()))
+                .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
+
 //                .centerCrop()
 //                .fitCenter()
-                .crossFade()
+
+
                 .into(currentView);
         LayoutInflater inflater = (LayoutInflater) container.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

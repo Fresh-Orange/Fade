@@ -102,11 +102,11 @@ public abstract class ScrollPickerView<T> extends View {
             TypedArray typedArray = getContext().obtainStyledAttributes(attrs,
                     R.styleable.ScrollPickerView);
 
+            if (typedArray.hasValue(R.styleable.ScrollPickerView_spv_center_item_background)) {
+                setCenterItemBackground(typedArray.getDrawable(R.styleable.ScrollPickerView_spv_center_item_background));
+            }
 //            if (typedArray.hasValue(R.styleable.ScrollPickerView_spv_center_item_background)) {
-//                setCenterItemBackground(typedArray.getDrawable(R.styleable.ScrollPickerView_spv_center_item_background));
-//            }
-//            if (typedArray.hasValue(R.styleable.ScrollPickerView_spv_center_item_background)) {
-                setCenterItemBackground(R.drawable.bound);
+//                setCenterItemBackground(R.color.white);
 //            }
             setVisibleItemCount(typedArray.getInt(
                     R.styleable.ScrollPickerView_spv_visible_item_count,
