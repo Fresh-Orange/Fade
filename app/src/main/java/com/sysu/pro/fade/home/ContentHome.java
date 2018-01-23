@@ -183,6 +183,7 @@ public class ContentHome {
                         }else {
                             //加载更多
                                 isLoading = true;
+                                Log.i("加载更多打印start", start.toString());
                                 noteService.getTenNoteByTime(user.getUser_id().toString(),
                                         start.toString(),user.getConcern_num().toString())
                                         .subscribeOn(Schedulers.newThread())
@@ -241,7 +242,7 @@ public class ContentHome {
                         loadMoreScrollListener.resetPreviousTotal();
                         //顶部下拉刷新
                         swipeRefresh.setRefreshing(true);
-                        Log.i("test",updateList.toString());
+                        Log.i("updateList",new Gson().toJson(updateList));
                         noteService.getMoreNote(user.getUser_id().toString(), new Gson().toJson(updateList))
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())

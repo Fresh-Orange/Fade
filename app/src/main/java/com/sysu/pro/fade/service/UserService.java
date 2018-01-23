@@ -45,7 +45,8 @@ public interface UserService {
     //根据手机号或者fade_name获取头像
     @FormUrlEncoded
     @POST("getHeadImageUrl")
-    Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,@Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
+    Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,
+                                               @Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
 
     //更新用户信息
     @POST("updateUserById")
