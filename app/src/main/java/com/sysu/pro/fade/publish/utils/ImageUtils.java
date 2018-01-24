@@ -1612,17 +1612,16 @@ public final class ImageUtils {
                                  final ImageView imageView, final ViewPager viewPager,
                                  final int x, final int y, final int width, final int height) {
         Log.d("loadImage", "x = "+ x + "  y = "+y);
+
         Glide.with(context)
                 .load(url)
                 .asBitmap()
-                //.override(Screen.getScreenWidth(context), viewPager.getMeasuredHeight())
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .transform(new BitmapTransformation(context) {
                     @Override
                     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
 
-                        //以下为第一次试验代码
                         final Bitmap toReuse = pool.get(outWidth, outHeight, toTransform.getConfig() != null
                                 ? toTransform.getConfig() : Bitmap.Config.ARGB_8888);
 
@@ -1639,7 +1638,6 @@ public final class ImageUtils {
                     }
                 })
                 .into(imageView);
-        //Log.d("loadImage", "width = "+ ImageUtils.width + "  height = "+ImageUtils.height);
     }
 
     public static Bitmap customCrop(Bitmap recycled, Bitmap toCrop, int width, int height, int x_pos, int y_pos) {
@@ -1649,21 +1647,20 @@ public final class ImageUtils {
         } else if (toCrop.getWidth() == width && toCrop.getHeight() == height) {
             return toCrop;
         }
-        // From ImageView/Bitmap.createScaledBitmap.
         float scale;
         Matrix m = new Matrix();
+
         if (toCrop.getWidth() * height > width * toCrop.getHeight()) {
             scale = (float) height / (float) toCrop.getHeight();
         } else {
             scale = (float) width / (float) toCrop.getWidth();
         }
 
-        /////测试是不是因为百分比的原因
         float y_percent = y_pos;
         float x_percent = x_pos;
 
-        float y = - (float) (y_percent*1.0/1000*toCrop.getHeight()*scale);//(y_percent*1.0*toCrop.getHeight()/1000*scale);
-        float x = - (float) (x_percent*1.0/1000*toCrop.getWidth()*scale);//(x_percent*1.0*toCrop.getWidth()/1000*scale);
+        float y = - (float) (y_percent*1.0/1000*toCrop.getHeight()*scale);   //(y_percent*1.0*toCrop.getHeight()/1000*scale);
+        float x = - (float) (x_percent*1.0/1000*toCrop.getWidth()*scale);    //(x_percent*1.0*toCrop.getWidth()/1000*scale);
         ImageUtils.width = toCrop.getWidth();
         ImageUtils.height = toCrop.getHeight();
         Log.d("loadImage", "contain_width = "+ width + "  contain_height = "+height);
@@ -1671,6 +1668,7 @@ public final class ImageUtils {
         Log.d("loadImage", "image_width = "+ ImageUtils.width + "  image_height = "+ImageUtils.height);
         Log.d("loadImage", "y_percent = "+ y_percent + "  x_percent = "+x_percent);
         Log.d("loadImage", "transY = "+ y + "  transX = "+x);
+
         m.setScale(scale, scale);
         m.postTranslate((int) x, (int) y);
         final Bitmap result;

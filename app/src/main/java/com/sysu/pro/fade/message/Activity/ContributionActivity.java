@@ -3,7 +3,10 @@ package com.sysu.pro.fade.message.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -14,6 +17,9 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.discover.adapter.UserAdapter;
+import com.sysu.pro.fade.discover.drecyclerview.DBaseRecyclerViewAdapter;
+import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewAdapter;
 import com.sysu.pro.fade.message.Adapter.ContributionAdapter;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -38,6 +44,13 @@ public class ContributionActivity extends MainBaseActivity {
     private RefreshLayout refreshLayout;
     private Boolean isEnd = false;
 
+    private Boolean isLoad = false;
+    private UserAdapter userAdapter;
+
+    private DRecyclerViewAdapter dRecyclerViewAdapter;
+    private String point; //时间点，分段请求需要记录的
+
+    private View foot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +58,28 @@ public class ContributionActivity extends MainBaseActivity {
         notification_Rv = (RecyclerView) findViewById(R.id.contribution_recycler);
         adapter = new ContributionAdapter(ContributionActivity.this,notes);
         notification_Rv.setLayoutManager(new LinearLayoutManager(this));
-        notification_Rv.setAdapter(adapter);
+        dRecyclerViewAdapter = new DRecyclerViewAdapter(adapter);
+        dRecyclerViewAdapter.setAdapter(adapter);
+        notification_Rv.setAdapter(dRecyclerViewAdapter);
+
+        adapter.notifyDataSetChanged();
+
+        adapter.setOnClickItemListsner(new DBaseRecyclerViewAdapter.OnClickItemListsner() {
+            @Override
+            public void onClick(int position) {
+                Toast.makeText(ContributionActivity.this, "" + position,
+                        Toast.LENGTH_LONG).show();
+//                Intent intent = new Intent(this,OtherActivity.class);
+//                intent.putExtra("user_id",userList.get(poisiton).getUser_id());
+//                activity.startActivity(intent);
+            }
+        });
+
         initLoadMore();
         user = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
-        messageService.getAddContribute(user.getUser_id().toString(), "0")
+        messageService.getAddContribute(user.getUser_id().toString(), "0","null")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NoteQuery>() {
@@ -65,12 +94,15 @@ public class ContributionActivity extends MainBaseActivity {
                     @Override
                     public void onNext(NoteQuery noteQuery) {
                         start = noteQuery.getStart();
+                        point = noteQuery.getPoint();
                         List<Note>list = noteQuery.getList();
+                        Log.i("收到贡献" , "" + list.size());
                         if(list.size() != 0){
                             notes.addAll(list);
-                            adapter.notifyDataSetChanged();
+                            addFootviews();
+                            dRecyclerViewAdapter.notifyDataSetChanged();
+                            isLoad = true;
                         }
-                        start = noteQuery.getStart();
                     }
                 });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -91,9 +123,38 @@ public class ContributionActivity extends MainBaseActivity {
         // .setArrowResource(R.drawable.arrow));
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
+            public void onLoadmore(final RefreshLayout refreshlayout) {
+                messageService.getAddContribute(user.getUser_id().toString(), start.toString(),point)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<NoteQuery>() {
+                            @Override
+                            public void onCompleted() {
+                            }
 
+                            @Override
+                            public void onError(Throwable e) {
+                            }
+
+                            @Override
+                            public void onNext(NoteQuery noteQuery) {
+                                start = noteQuery.getStart();
+                                List<Note>list = noteQuery.getList();
+                                Log.i("收到贡献" , "" + list.size());
+                                if(list.size() != 0){
+                                    notes.addAll(list);
+                                    dRecyclerViewAdapter.notifyDataSetChanged();
+                                }
+                                refreshlayout.finishLoadmore();
+                            }
+                        });
             }
         });
+    }
+
+    private void addFootviews() {
+        foot = LayoutInflater.from(this).inflate(R.layout.foot, notification_Rv, false);
+        dRecyclerViewAdapter.addFootView(foot);
+//        dRecyclerViewAdapter.notifyDataSetChanged();
     }
 }

@@ -26,17 +26,14 @@ public class PreviewImageAdapter extends RecyclerView.Adapter<PreviewImageAdapte
     private OnImageSelectListener mSelectListener;
     private OnItemClickListener mItemClickListener;
     private int mMaxCount;
-//    private boolean isSingle;
 
     /**
      * @param maxCount 图片的最大选择数量，小于等于0时，不限数量，isSingle为false时才有用。
-//     * @param isSingle 是否单选
      */
     public PreviewImageAdapter(Context context, int maxCount) {
         mContext = context;
         this.mInflater = LayoutInflater.from(mContext);
         mMaxCount = maxCount;
-//        this.isSingle = isSingle;
     }
 
     @Override
@@ -48,7 +45,7 @@ public class PreviewImageAdapter extends RecyclerView.Adapter<PreviewImageAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Image image = mImages.get(position);
-        Glide.with(mContext).load(new File(image.getPath()))
+        Glide.with(mContext).load(new File(image.getPath())).asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.NONE).into(holder.ivImage);
 
         setItemSelect(holder, mSelectImages.contains(image));
@@ -61,12 +58,6 @@ public class PreviewImageAdapter extends RecyclerView.Adapter<PreviewImageAdapte
                     unSelectImage(image);
                     setItemSelect(holder, false);
                 }
-//                else if (isSingle) {
-//                    //如果是单选，就先清空已经选中的图片，再选中当前图片
-//                    clearImageSelect();
-//                    selectImage(image);
-//                    setItemSelect(holder,true);
-//                }
                 else if (mSelectImages.size() < mMaxCount) {
                     //如果不限制图片的选中数量，或者图片的选中数量
                     // 还没有达到最大限制，就直接选中当前图片。

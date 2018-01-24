@@ -20,6 +20,12 @@ public class PersonPage {
 	public void setIsConcern(Integer isConcern) {
 		this.isConcern = isConcern;
 	}
-	
-	
+
+	public List<Note> getList() {
+		return list;
+	}
+
+	public void setList(List<Note> list) {
+		this.list = list;
+	}
 }

@@ -145,7 +145,7 @@ public class ContentHome {
         loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                if(isLoading == false){
+                if(!isLoading){
                     isLoading = true;
                     addItems();
                 }
@@ -155,6 +155,7 @@ public class ContentHome {
         judgeRemoveScrollListener = new JudgeRemoveOnScrollListener(context, notes, updateList);
         recyclerView.addOnScrollListener(loadMoreScrollListener);
         recyclerView.addOnScrollListener(judgeRemoveScrollListener);
+
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
@@ -183,6 +184,7 @@ public class ContentHome {
                         }else {
                             //加载更多
                                 isLoading = true;
+                                Log.i("加载更多打印start", start.toString());
                                 noteService.getTenNoteByTime(user.getUser_id().toString(),
                                         start.toString(),user.getConcern_num().toString())
                                         .subscribeOn(Schedulers.newThread())
@@ -241,7 +243,7 @@ public class ContentHome {
                         loadMoreScrollListener.resetPreviousTotal();
                         //顶部下拉刷新
                         swipeRefresh.setRefreshing(true);
-                        Log.i("test",updateList.toString());
+                        Log.i("updateList",new Gson().toJson(updateList));
                         noteService.getMoreNote(user.getUser_id().toString(), new Gson().toJson(updateList))
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())

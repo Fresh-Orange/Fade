@@ -1,9 +1,7 @@
 package com.sysu.pro.fade.baseactivity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import com.sysu.pro.fade.R;
+import android.support.v7.app.AppCompatActivity;
 
 public class MainBaseActivity extends AppCompatActivity {
 

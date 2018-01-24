@@ -22,7 +22,7 @@ import rx.Observable;
  */
 
 public interface UserService {
-    //获得一个用户全部信息
+    //获得一个用户全部信息，密码除外
     @GET("getUserById/{user_id}")
     Observable<User> getUserById(@Path("user_id")String user_id);
 
@@ -45,7 +45,8 @@ public interface UserService {
     //根据手机号或者fade_name获取头像
     @FormUrlEncoded
     @POST("getHeadImageUrl")
-    Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,@Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
+    Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,
+                                               @Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
 
     //更新用户信息
     @POST("updateUserById")
@@ -81,8 +82,14 @@ public interface UserService {
     @GET("searchUser/{keyword}/{page}")
     Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("page")String  page);
 
+    //获取我自己的帖子
     @GET("getMyNote/{user_id}/{start}")
     Observable<NoteQuery>getMyNote(@Path("user_id")String  user_id, @Path("start")String  start);
+
+    //获取融云token,返回的string字符串即是token
+    @GET("getMessageToken/{user_id}")
+    Observable<String>getMessageToken(@Path("user_id")String  user_id);
+
 
 
 }
