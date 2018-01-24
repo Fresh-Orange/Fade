@@ -219,6 +219,7 @@ public class MainActivity extends MainBaseActivity {
                     public void onNext(ResponseBody responseBody) {
                         try {
                             String response = responseBody.string();
+                            Log.e("本地获取token", response);
                             //Toast.makeText(MainActivity.this, responseBody.string(), Toast.LENGTH_SHORT).show();
                             JSONObject jsonObject = JSON.parseObject(response);
                             if (((int)jsonObject.get("code")) == 200){ //返回码正常
@@ -231,7 +232,7 @@ public class MainActivity extends MainBaseActivity {
                         }
                     }
                 });
-        /*retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         userService.getMessageToken(user.getUser_id().toString())
                 .subscribeOn(Schedulers.newThread())
@@ -250,7 +251,7 @@ public class MainActivity extends MainBaseActivity {
                         Log.d("getTokenAndConnect", s);
                         connect(s);
                     }
-                });*/
+                });
     }
 
     //设置底部导航栏图片
