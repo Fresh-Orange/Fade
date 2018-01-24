@@ -1,13 +1,16 @@
 package com.sysu.pro.fade.message;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.Const;
@@ -15,11 +18,12 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.message.Adapter.ChatAdapter;
-import com.sysu.pro.fade.message.Class.NotificationUser;
 import com.sysu.pro.fade.message.Activity.CommentActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.message.Activity.FansActivity;
+import com.sysu.pro.fade.message.Adapter.ChatAdapter;
+import com.sysu.pro.fade.message.Adapter.ConversationListAdapterEx;
+import com.sysu.pro.fade.message.Class.NotificationUser;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -31,6 +35,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.rong.imkit.RongContext;
+import io.rong.imkit.fragment.ConversationListFragment;
+import io.rong.imlib.model.Conversation;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -41,7 +48,7 @@ import rx.schedulers.Schedulers;
  * Created by road on 2017/7/14.
  */
 public class ContentMessage {
-    private Activity activity;
+    private FragmentActivity activity;
     private Context context;
     private View rootview;
 
@@ -62,7 +69,20 @@ public class ContentMessage {
     private MessageService messageService;
     private Integer start;
 
-    public ContentMessage(Activity activity, Context context, View rootview){
+    public static ViewPager mViewPager;
+    private List<Fragment> mFragment = new ArrayList<>();
+    private ImageView moreImage, mImageChats, mImageContact, mImageFind, mImageMe, mMineRed;
+    private TextView mTextChats, mTextContact, mTextFind, mTextMe;
+    private ImageView mSearchImageView;
+    /**
+     * 会话列表的fragment
+     */
+    private ConversationListFragment mConversationListFragment = null;
+    private boolean isDebug;
+    private Context mContext;
+    private Conversation.ConversationType[] mConversationsTypes = null;
+
+    public ContentMessage(FragmentActivity activity, Context context, View rootview){
         this.activity = activity;
         this.context = context;
         this.rootview = rootview;
@@ -71,6 +91,76 @@ public class ContentMessage {
         initLayout();
         initListener();
         setNotification();  //设置消息数量
+        initMsgViewPager();
+    }
+
+    private void initMsgViewPager() {
+        Fragment conversationList = initConversationList();
+        mViewPager = (ViewPager) rootview.findViewById(R.id.msg_viewpager);
+
+
+        mFragment.add(conversationList);
+        FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(activity.getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return mFragment.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return mFragment.size();
+            }
+        };
+        mViewPager.setAdapter(fragmentPagerAdapter);
+        mViewPager.setOffscreenPageLimit(1);
+    }
+
+
+    private Fragment initConversationList() {
+        if (mConversationListFragment == null) {
+            ConversationListFragment listFragment = new ConversationListFragment();
+            listFragment.setAdapter(new ConversationListAdapterEx(RongContext.getInstance()));
+            Uri uri;
+            if (isDebug) {
+                uri = Uri.parse("rong://" + activity.getApplicationInfo().packageName).buildUpon()
+                        .appendPath("conversationlist")
+                        .appendQueryParameter(Conversation.ConversationType.PRIVATE.getName(), "true") //设置私聊会话是否聚合显示
+                        .appendQueryParameter(Conversation.ConversationType.GROUP.getName(), "true")//群组
+                        .appendQueryParameter(Conversation.ConversationType.PUBLIC_SERVICE.getName(), "false")//公共服务号
+                        .appendQueryParameter(Conversation.ConversationType.APP_PUBLIC_SERVICE.getName(), "false")//订阅号
+                        .appendQueryParameter(Conversation.ConversationType.SYSTEM.getName(), "true")//系统
+                        .appendQueryParameter(Conversation.ConversationType.DISCUSSION.getName(), "true")
+                        .build();
+                mConversationsTypes = new Conversation.ConversationType[]{Conversation.ConversationType.PRIVATE,
+                        Conversation.ConversationType.GROUP,
+                        Conversation.ConversationType.PUBLIC_SERVICE,
+                        Conversation.ConversationType.APP_PUBLIC_SERVICE,
+                        Conversation.ConversationType.SYSTEM,
+                        Conversation.ConversationType.DISCUSSION
+                };
+
+            } else {
+                uri = Uri.parse("rong://" + activity.getApplicationInfo().packageName).buildUpon()
+                        .appendPath("conversationlist")
+                        .appendQueryParameter(Conversation.ConversationType.PRIVATE.getName(), "false") //设置私聊会话是否聚合显示
+                        .appendQueryParameter(Conversation.ConversationType.GROUP.getName(), "false")//群组
+                        .appendQueryParameter(Conversation.ConversationType.PUBLIC_SERVICE.getName(), "false")//公共服务号
+                        .appendQueryParameter(Conversation.ConversationType.APP_PUBLIC_SERVICE.getName(), "false")//订阅号
+                        .appendQueryParameter(Conversation.ConversationType.SYSTEM.getName(), "true")//系统
+                        .build();
+                mConversationsTypes = new Conversation.ConversationType[]{Conversation.ConversationType.PRIVATE,
+                        Conversation.ConversationType.GROUP,
+                        Conversation.ConversationType.PUBLIC_SERVICE,
+                        Conversation.ConversationType.APP_PUBLIC_SERVICE,
+                        Conversation.ConversationType.SYSTEM
+                };
+            }
+            listFragment.setUri(uri);
+            mConversationListFragment = listFragment;
+            return listFragment;
+        } else {
+            return mConversationListFragment;
+        }
     }
 
     private void initNotification() {
@@ -118,7 +208,7 @@ public class ContentMessage {
         processCountTv = (TextView) rootview.findViewById(R.id.notification_process_count);
         newFanCountTv = (TextView) rootview.findViewById(R.id.notification_new_fan_count);
         commentCountTv = (TextView) rootview.findViewById(R.id.notification_comment_count);
-        notification_Rv = (RecyclerView) rootview.findViewById(R.id.notification_recyclerView);
+        //notification_Rv = (RecyclerView) rootview.findViewById(R.id.notification_recyclerView);
     }
 
     private void setNotification() {
@@ -142,8 +232,8 @@ public class ContentMessage {
         String user_time2 = "2017-2-28";
         userList.add(new NotificationUser(uri2, user_count2, user_id2, user_content2, user_time2));
         adapter = new ChatAdapter(userList);
-        notification_Rv.setLayoutManager(new LinearLayoutManager(context));
-        notification_Rv.setAdapter(adapter);
+        //notification_Rv.setLayoutManager(new LinearLayoutManager(context));
+        //notification_Rv.setAdapter(adapter);
     }
 
     private void initListener() {

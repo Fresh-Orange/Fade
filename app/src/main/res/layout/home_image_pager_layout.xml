@@ -11,15 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/black">
-
         <com.sysu.pro.fade.home.view.FixBugViewpager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
-
     </RelativeLayout>
-
 
     <LinearLayout
         android:id="@+id/linear_layout_dots"
@@ -28,7 +25,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:orientation="horizontal"
         >
-        <!--用于动态添加转发的图片导航点imageView-->
+        <!--用于动态添加图片导航点-->
     </LinearLayout>
 
 </LinearLayout>
