@@ -76,6 +76,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		 */
 		Log.d("getType",String.valueOf(position));
 
+
 		if (bean.getImages() == null || bean.getImages().isEmpty()) {
 			return TEXT_ONLY_ITEM;
 		}
@@ -115,6 +116,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	public void onBindViewHolder(HomeBaseViewHolder holder, int position) {
 		holder.bindView(context, data, position);    //利用多态性
 	}
+
 
 	/**
 	 * 加一是因为除了正常的图片展示item以外，还有一个footView用以展示“正在加载……”

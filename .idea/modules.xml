@@ -6,6 +6,10 @@
       <module fileurl="file://$PROJECT_DIR$/Fade-1.iml" filepath="$PROJECT_DIR$/Fade-1.iml" />
       <module fileurl="file://F:\Fade\Fade\Fade-1.iml" filepath="F:\Fade\Fade\Fade-1.iml" />
       <module fileurl="file://F:\AS\Fade\Fade-1.iml" filepath="F:\AS\Fade\Fade-1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IMKit/IMKit.iml" filepath="$PROJECT_DIR$/IMKit/IMKit.iml" />
+      <module fileurl="file://E:\study_and_work\android_and_java\Android\Fade-1\IMKit\IMKit.iml" filepath="E:\study_and_work\android_and_java\Android\Fade-1\IMKit\IMKit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IMLib/IMLib.iml" filepath="$PROJECT_DIR$/IMLib/IMLib.iml" />
+      <module fileurl="file://E:\study_and_work\android_and_java\Android\Fade-1\IMLib\IMLib.iml" filepath="E:\study_and_work\android_and_java\Android\Fade-1\IMLib\IMLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

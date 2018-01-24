@@ -89,7 +89,6 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 				previousTotal = totalItemCount;
 				Log.d("loadNow", "load");
 			}
-
 		}
 		if (!loading
 				&& (totalItemCount - visibleItemCount) <= firstVisibleItem) {
@@ -102,6 +101,8 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 			NotesAdapter recycleAdapter = (NotesAdapter) recyclerView.getAdapter();
 			recycleAdapter.setLoadingMore(true);
 		}
+
+
 		Log.d("loadMoreVar", "visible = " + String.valueOf(visibleItemCount) + "  total = " + String.valueOf(totalItemCount)
 				+ "pre = " + String.valueOf(previousTotal) + " first = " + String.valueOf(firstVisibleItem));
 	}

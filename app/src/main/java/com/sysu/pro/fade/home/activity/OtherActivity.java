@@ -1,8 +1,8 @@
 package com.sysu.pro.fade.home.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +25,7 @@ import com.sysu.pro.fade.utils.UserUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.rong.imkit.RongIM;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -73,6 +74,7 @@ public class OtherActivity extends MainBaseActivity {
         });
         
         Integer user_id = getIntent().getIntExtra(Const.USER_ID, -1);
+        Log.d("OtherActivity", user_id.toString());
         myself = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, myself.getTokenModel());
         UserService service = retrofit.create(UserService.class);
@@ -181,7 +183,8 @@ public class OtherActivity extends MainBaseActivity {
         tvContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: 2018/1/2 跳转到私信对话界面 
+                RongIM.getInstance().startPrivateChat(OtherActivity.this,
+                        other.getUser_id().toString(), other.getNickname());
             }
         });
     }
