@@ -56,7 +56,10 @@ public class User implements Serializable{
 	
 	//uuid，数据库索引主键
 	private String uuid;
-	
+
+	//融云token
+	private String messageToken;
+
 	public Integer getFade_num() {
 		return fade_num;
 	}
@@ -201,5 +204,11 @@ public class User implements Serializable{
 		this.school_name = school_name;
 	}
 
-	
+	public String getMessageToken() {
+		return messageToken;
+	}
+
+	public void setMessageToken(String messageToken) {
+		this.messageToken = messageToken;
+	}
 }

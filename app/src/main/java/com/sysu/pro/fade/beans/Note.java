@@ -34,6 +34,8 @@ public class Note implements Serializable {
 
 	private long fetchTime;
 
+	private String area; //发布时的地理位置
+
 	public long getFetchTime() {
 		return fetchTime;
 	}
@@ -203,6 +205,14 @@ public class Note implements Serializable {
 
 	public void setBaseComment_num(Integer baseComment_num) {
 		this.baseComment_num = baseComment_num;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
 	}
 
 	//如果note_id相等，则两个帖子相等
