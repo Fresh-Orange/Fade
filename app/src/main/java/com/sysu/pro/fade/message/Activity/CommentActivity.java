@@ -16,8 +16,6 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.CommentQuery;
-import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.drecyclerview.DBaseRecyclerViewAdapter;
 import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewAdapter;
@@ -44,6 +42,7 @@ public class CommentActivity extends MainBaseActivity {
     private Integer start;
     private DRecyclerViewAdapter dRecyclerViewAdapter;
     private RefreshLayout refreshLayout;
+    private String point; //时间点，分段请求需要记录的
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +66,12 @@ public class CommentActivity extends MainBaseActivity {
             }
         });
 
+        addFootviews();
         initLoadMore();
         user = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
-        messageService.getAddComment(user.getUser_id().toString(), "0")
+        messageService.getAddComment(user.getUser_id().toString(), "0", "null")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<CommentQuery>() {
@@ -88,10 +88,10 @@ public class CommentActivity extends MainBaseActivity {
                     @Override
                     public void onNext(CommentQuery commentQuery) {
                         start = commentQuery.getStart();
+                        point = commentQuery.getPoint();
                         List<Comment>list = commentQuery.getList();
                         if(list.size() != 0){
                             comments.addAll(list);
-                            addFootviews();
                             dRecyclerViewAdapter.notifyDataSetChanged();
                         }
                     }
@@ -114,8 +114,8 @@ public class CommentActivity extends MainBaseActivity {
         // .setArrowResource(R.drawable.arrow));
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
-                messageService.getAddComment(user.getUser_id().toString(), start.toString())
+            public void onLoadmore(final RefreshLayout refreshlayout) {
+                messageService.getAddComment(user.getUser_id().toString(), start.toString(),point)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<CommentQuery>() {
@@ -132,10 +132,19 @@ public class CommentActivity extends MainBaseActivity {
                                 start = commentQuery.getStart();
                                 List<Comment>list = commentQuery.getList();
                                 Log.i("收到贡献" , "" + list.size());
+                                refreshlayout.finishLoadmore();
                                 if(list.size() != 0){
                                     comments.addAll(list);
                                     dRecyclerViewAdapter.notifyDataSetChanged();
+                                    if(list.size() < 10){
+                                       // refreshlayout.setEnableLoadmore(false);
+                                        //addFootviews();
+                                    }
+                                }else {
+                                   // refreshlayout.setEnableLoadmore(false);
+                                    //addFootviews();
                                 }
+
                             }
                         });
             }
@@ -145,7 +154,7 @@ public class CommentActivity extends MainBaseActivity {
     private void addFootviews() {
         View foot = LayoutInflater.from(this).inflate(R.layout.foot, notification_Rv, false);
         dRecyclerViewAdapter.addFootView(foot);
-//        dRecyclerViewAdapter.notifyDataSetChanged();
+        //dRecyclerViewAdapter.notifyDataSetChanged();
     }
 
 }

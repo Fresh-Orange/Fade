@@ -14,8 +14,6 @@ import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
-import com.sysu.pro.fade.beans.Comment;
-import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.discover.drecyclerview.DBaseRecyclerViewAdapter;
@@ -43,6 +41,7 @@ public class FansActivity extends MainBaseActivity {
     private Integer start;
     private DRecyclerViewAdapter dRecyclerViewAdapter;
     private RefreshLayout refreshLayout;
+    private String point; //时间点，分段请求需要记录的
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +68,7 @@ public class FansActivity extends MainBaseActivity {
         user = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
-        messageService.getAddFans(user.getUser_id().toString(), "0")
+        messageService.getAddFans(user.getUser_id().toString(), "0","null")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserQuery>() {
@@ -94,6 +93,7 @@ public class FansActivity extends MainBaseActivity {
                             dRecyclerViewAdapter.notifyDataSetChanged();
 //                            adapter.notifyDataSetChanged();
                         }
+
                     }
                 });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -115,7 +115,7 @@ public class FansActivity extends MainBaseActivity {
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
-                messageService.getAddFans(user.getUser_id().toString(), start.toString())
+                messageService.getAddFans(user.getUser_id().toString(), start.toString(),point)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<UserQuery>() {
@@ -136,6 +136,7 @@ public class FansActivity extends MainBaseActivity {
                                     users.addAll(list);
                                     dRecyclerViewAdapter.notifyDataSetChanged();
                                 }
+                                refreshLayout.finishLoadmore();
                             }
                         });
             }

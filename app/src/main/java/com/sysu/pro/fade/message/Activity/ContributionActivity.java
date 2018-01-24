@@ -1,13 +1,11 @@
 package com.sysu.pro.fade.message.Activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -22,7 +20,6 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.adapter.UserAdapter;
 import com.sysu.pro.fade.discover.drecyclerview.DBaseRecyclerViewAdapter;
 import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewAdapter;
-import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.message.Adapter.ContributionAdapter;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -51,6 +48,7 @@ public class ContributionActivity extends MainBaseActivity {
     private UserAdapter userAdapter;
 
     private DRecyclerViewAdapter dRecyclerViewAdapter;
+    private String point; //时间点，分段请求需要记录的
 
     private View foot;
     @Override
@@ -81,7 +79,7 @@ public class ContributionActivity extends MainBaseActivity {
         user = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
-        messageService.getAddContribute(user.getUser_id().toString(), "0")
+        messageService.getAddContribute(user.getUser_id().toString(), "0","null")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NoteQuery>() {
@@ -96,6 +94,7 @@ public class ContributionActivity extends MainBaseActivity {
                     @Override
                     public void onNext(NoteQuery noteQuery) {
                         start = noteQuery.getStart();
+                        point = noteQuery.getPoint();
                         List<Note>list = noteQuery.getList();
                         Log.i("收到贡献" , "" + list.size());
                         if(list.size() != 0){
@@ -104,7 +103,6 @@ public class ContributionActivity extends MainBaseActivity {
                             dRecyclerViewAdapter.notifyDataSetChanged();
                             isLoad = true;
                         }
-                        start = noteQuery.getStart();
                     }
                 });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -125,8 +123,8 @@ public class ContributionActivity extends MainBaseActivity {
         // .setArrowResource(R.drawable.arrow));
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
-                messageService.getAddContribute(user.getUser_id().toString(), start.toString())
+            public void onLoadmore(final RefreshLayout refreshlayout) {
+                messageService.getAddContribute(user.getUser_id().toString(), start.toString(),point)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<NoteQuery>() {
@@ -147,6 +145,7 @@ public class ContributionActivity extends MainBaseActivity {
                                     notes.addAll(list);
                                     dRecyclerViewAdapter.notifyDataSetChanged();
                                 }
+                                refreshlayout.finishLoadmore();
                             }
                         });
             }

@@ -14,18 +14,15 @@ public class User implements Serializable{
 	private String telephone;
 	private String password;
 	private String fade_name;
-	
 	private String sex;
 	private String mail;
 	private String head_image_url;
 	private String register_time;
 	private String summary;
-	
 	private Integer school_id;//学校id
 	private String school_name;//学校名称
 	
 	private Integer relation_id; //后端用到的，用于得到start
-	
 	private TokenModel tokenModel;
 	
 	//第三方提供的id
