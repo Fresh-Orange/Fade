@@ -6,6 +6,8 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
+import java.util.Map;
+
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
@@ -88,7 +90,7 @@ public interface UserService {
 
     //获取融云token,返回的string字符串即是token
     @GET("getMessageToken/{user_id}")
-    Observable<String>getMessageToken(@Path("user_id")String  user_id);
+    Observable<Map<String,Object>>getMessageToken(@Path("user_id")String  user_id);
 
 
 
