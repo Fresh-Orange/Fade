@@ -7,6 +7,8 @@ public class NoteQuery {
 	private List<Note> list;// 查询得到的新数据,最多十条
 	private List<Note> updateList;// 已加载的帖子 再 经过服务器查询筛选出来的剩余贴子
 
+	private String point;//通知页面分段查询用到的,记录时间点
+
 	public Integer getStart() {
 		return start;
 	}
@@ -31,5 +33,11 @@ public class NoteQuery {
 		this.updateList = updateList;
 	}
 
-	
+	public String getPoint() {
+		return point;
+	}
+
+	public void setPoint(String point) {
+		this.point = point;
+	}
 }
