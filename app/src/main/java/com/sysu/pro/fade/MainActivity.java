@@ -226,7 +226,7 @@ public class MainActivity extends MainBaseActivity {
                                 String token = (String)jsonObject.get("token");
                                 connect(token);
                             }
-                            connect("UJWNywMqxIURSZUVrDvMeYXmBq98FHESTwFkzj26+w5rDw+ZqtUvPybf/6NpKAGYBrqo3wsWf4Jvn4AUx5UbTw==");
+                            //connect("UJWNywMqxIURSZUVrDvMeYXmBq98FHESTwFkzj26+w5rDw+ZqtUvPybf/6NpKAGYBrqo3wsWf4Jvn4AUx5UbTw==");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
