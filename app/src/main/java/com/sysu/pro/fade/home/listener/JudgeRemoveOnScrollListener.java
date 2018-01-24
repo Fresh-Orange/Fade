@@ -70,12 +70,6 @@ public class  JudgeRemoveOnScrollListener extends RecyclerView.OnScrollListener 
 	 */
 	private boolean matchRemoveCondition(int i) {
 		Note bean = notes.get(i);
-/*		Date dateNow = new Date(bean.getFetchTime());
-		Date datePost = bean.getPost_time();
-		//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
-		long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE + 5 * bean.getGood_num()
-				- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));*/
-		//return minuteLeft <= 0;
 		return bean.getIs_die() == 0;//帖子已死亡
 	}
 
