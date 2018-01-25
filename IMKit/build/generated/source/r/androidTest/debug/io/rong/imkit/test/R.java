@@ -1392,10 +1392,10 @@ public final class R {
   }
   public static final class style {
     public static final int RCTheme=0x7f0b0000;
+    public static final int RCTheme_MessageTime=0x7f0b0004;
     public static final int RCTheme_Message_RichContent_TextView=0x7f0b0001;
     public static final int RCTheme_Message_TextView=0x7f0b0002;
     public static final int RCTheme_Message_Username_TextView=0x7f0b0003;
-    public static final int RCTheme_MessageTime=0x7f0b0004;
     public static final int RCTheme_Notification=0x7f0b0005;
     public static final int RCTheme_TextView=0x7f0b0006;
     public static final int RCTheme_TextView_Large=0x7f0b0007;
@@ -1540,6 +1540,62 @@ public final class R {
         0x7f02000b, 0x7f02000c
       };
     /**
+     * Attributes that can be used with a FontFamilyFont.
+     * <p>Includes the following attributes:</p>
+     * <table>
+     * <colgroup align="left" />
+     * <colgroup align="left" />
+     * <tr><th>Attribute</th><th>Description</th></tr>
+     * <tr><td><code>{@link #FontFamilyFont_font io.rong.imkit.test:font}</code></td><td></td></tr>
+     * <tr><td><code>{@link #FontFamilyFont_fontStyle io.rong.imkit.test:fontStyle}</code></td><td></td></tr>
+     * <tr><td><code>{@link #FontFamilyFont_fontWeight io.rong.imkit.test:fontWeight}</code></td><td></td></tr>
+     * </table>
+     * @see #FontFamilyFont_font
+     * @see #FontFamilyFont_fontStyle
+     * @see #FontFamilyFont_fontWeight
+     */
+    public static final int[] FontFamilyFont={
+        0x7f020006, 0x7f02000d, 0x7f02000e
+      };
+    /**
+     * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#font}
+     * attribute's value can be found in the {@link #FontFamilyFont} array.
+     *
+     * <p>May be a reference to another resource, in the form
+     * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
+     * attribute in the form
+     * "<code>?[<i>package</i>:]<i>type</i>/<i>name</i></code>".
+     *
+     * @attr name io.rong.imkit.test:font
+     */
+    public static final int FontFamilyFont_font=0;
+    /**
+     * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#fontStyle}
+     * attribute's value can be found in the {@link #FontFamilyFont} array.
+     *
+     * <p>Must be one of the following constant values.</p>
+     * <table>
+     * <colgroup align="left" />
+     * <colgroup align="left" />
+     * <colgroup align="left" />
+     * <tr><th>Constant</th><th>Value</th><th>Description</th></tr>
+     * <tr><td>italic</td><td>1</td><td></td></tr>
+     * <tr><td>normal</td><td>0</td><td></td></tr>
+     * </table>
+     *
+     * @attr name io.rong.imkit.test:fontStyle
+     */
+    public static final int FontFamilyFont_fontStyle=1;
+    /**
+     * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#fontWeight}
+     * attribute's value can be found in the {@link #FontFamilyFont} array.
+     *
+     * <p>May be an integer value, such as "<code>100</code>".
+     *
+     * @attr name io.rong.imkit.test:fontWeight
+     */
+    public static final int FontFamilyFont_fontWeight=2;
+    /**
      * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#fontProviderAuthority}
      * attribute's value can be found in the {@link #FontFamily} array.
      *
@@ -1615,62 +1671,6 @@ public final class R {
      * @attr name io.rong.imkit.test:fontProviderQuery
      */
     public static final int FontFamily_fontProviderQuery=5;
-    /**
-     * Attributes that can be used with a FontFamilyFont.
-     * <p>Includes the following attributes:</p>
-     * <table>
-     * <colgroup align="left" />
-     * <colgroup align="left" />
-     * <tr><th>Attribute</th><th>Description</th></tr>
-     * <tr><td><code>{@link #FontFamilyFont_font io.rong.imkit.test:font}</code></td><td></td></tr>
-     * <tr><td><code>{@link #FontFamilyFont_fontStyle io.rong.imkit.test:fontStyle}</code></td><td></td></tr>
-     * <tr><td><code>{@link #FontFamilyFont_fontWeight io.rong.imkit.test:fontWeight}</code></td><td></td></tr>
-     * </table>
-     * @see #FontFamilyFont_font
-     * @see #FontFamilyFont_fontStyle
-     * @see #FontFamilyFont_fontWeight
-     */
-    public static final int[] FontFamilyFont={
-        0x7f020006, 0x7f02000d, 0x7f02000e
-      };
-    /**
-     * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#font}
-     * attribute's value can be found in the {@link #FontFamilyFont} array.
-     *
-     * <p>May be a reference to another resource, in the form
-     * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
-     * attribute in the form
-     * "<code>?[<i>package</i>:]<i>type</i>/<i>name</i></code>".
-     *
-     * @attr name io.rong.imkit.test:font
-     */
-    public static final int FontFamilyFont_font=0;
-    /**
-     * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#fontStyle}
-     * attribute's value can be found in the {@link #FontFamilyFont} array.
-     *
-     * <p>Must be one of the following constant values.</p>
-     * <table>
-     * <colgroup align="left" />
-     * <colgroup align="left" />
-     * <colgroup align="left" />
-     * <tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-     * <tr><td>italic</td><td>1</td><td></td></tr>
-     * <tr><td>normal</td><td>0</td><td></td></tr>
-     * </table>
-     *
-     * @attr name io.rong.imkit.test:fontStyle
-     */
-    public static final int FontFamilyFont_fontStyle=1;
-    /**
-     * <p>This symbol is the offset where the {@link io.rong.imkit.test.R.attr#fontWeight}
-     * attribute's value can be found in the {@link #FontFamilyFont} array.
-     *
-     * <p>May be an integer value, such as "<code>100</code>".
-     *
-     * @attr name io.rong.imkit.test:fontWeight
-     */
-    public static final int FontFamilyFont_fontWeight=2;
     /**
      * Attributes that can be used with a RongExtension.
      * <p>Includes the following attributes:</p>
