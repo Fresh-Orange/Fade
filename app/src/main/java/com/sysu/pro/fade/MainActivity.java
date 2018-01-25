@@ -17,8 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.TokenModel;
@@ -29,8 +27,6 @@ import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.publish.PublishActivity;
-import com.sysu.pro.fade.service.RongCloudHelper;
-import com.sysu.pro.fade.service.RongCloudService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.Client;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -40,18 +36,14 @@ import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
 import org.java_websocket.drafts.Draft_6455;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.UserInfo;
-import okhttp3.FormBody;
-import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -189,7 +181,7 @@ public class MainActivity extends MainBaseActivity {
     }
 
     private void getTokenAndConnect() {
-        Retrofit rongRetrofit = new Retrofit.Builder()
+/*        Retrofit rongRetrofit = new Retrofit.Builder()
                 .baseUrl(Const.RONG_CLOUD_BASE_IP)
                 .addConverterFactory(JacksonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -219,38 +211,41 @@ public class MainActivity extends MainBaseActivity {
                     public void onNext(ResponseBody responseBody) {
                         try {
                             String response = responseBody.string();
+                            Log.e("本地获取token", response);
                             //Toast.makeText(MainActivity.this, responseBody.string(), Toast.LENGTH_SHORT).show();
                             JSONObject jsonObject = JSON.parseObject(response);
                             if (((int)jsonObject.get("code")) == 200){ //返回码正常
                                 String token = (String)jsonObject.get("token");
                                 connect(token);
                             }
-                            connect("UJWNywMqxIURSZUVrDvMeYXmBq98FHESTwFkzj26+w5rDw+ZqtUvPybf/6NpKAGYBrqo3wsWf4Jvn4AUx5UbTw==");
+                            //connect("UJWNywMqxIURSZUVrDvMeYXmBq98FHESTwFkzj26+w5rDw+ZqtUvPybf/6NpKAGYBrqo3wsWf4Jvn4AUx5UbTw==");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-                });
-        /*retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+                });*/
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         userService.getMessageToken(user.getUser_id().toString())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Subscriber<Map<String,Object>>() {
                     @Override
                     public void onCompleted() {}
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e("获取token失败", e.getMessage());
+                        e.printStackTrace();
                     }
 
                     @Override
-                    public void onNext(String s) {
+                    public void onNext(Map<String,Object>map) {
+                        String s = (String) map.get("token");
                         Log.d("getTokenAndConnect", s);
                         connect(s);
                     }
-                });*/
+                });
     }
 
     //设置底部导航栏图片
