@@ -1,35 +1,14 @@
 package com.sysu.pro.fade.beans;
 
-import java.util.List;
-
 public class DetailPage {
 	//帖子详情页
-	private List<Note>second_list; //10条增减秒列表
-	private List<Comment>comment_list; //10条评论列表
+	private NoteQuery noteQuery; //包含10条增减秒列表，以及下一次分页查询的start
+	private CommentQuery commentQuery; //10条评论列表，以及下一次分页查询的start
 	private Integer comment_num; //这三个数量用于更新
 	private Integer add_num;
 	private Integer sub_num;
-	private long fetchTime;//当前的服务器时间，用于计算剩余时间
-
-	public long getFetchTime() {
-		return fetchTime;
-	}
-
-	public void setFetchTime(long fetchTime) {
-		this.fetchTime = fetchTime;
-	}
-	public List<Note> getSecond_list() {
-		return second_list;
-	}
-	public void setSecond_list(List<Note> second_list) {
-		this.second_list = second_list;
-	}
-	public List<Comment> getComment_list() {
-		return comment_list;
-	}
-	public void setComment_list(List<Comment> comment_list) {
-		this.comment_list = comment_list;
-	}
+	private Long fetchTime; 
+	
 	public Integer getComment_num() {
 		return comment_num;
 	}
@@ -48,5 +27,25 @@ public class DetailPage {
 	public void setSub_num(Integer sub_num) {
 		this.sub_num = sub_num;
 	}
-
+	
+	public Long getFetchTime() {
+		return fetchTime;
+	}
+	public void setFetchTime(Long fetchTime) {
+		this.fetchTime = fetchTime;
+	}
+	public NoteQuery getNoteQuery() {
+		return noteQuery;
+	}
+	public void setNoteQuery(NoteQuery noteQuery) {
+		this.noteQuery = noteQuery;
+	}
+	public CommentQuery getCommentQuery() {
+		return commentQuery;
+	}
+	public void setCommentQuery(CommentQuery commentQuery) {
+		this.commentQuery = commentQuery;
+	}
+	
+	
 }

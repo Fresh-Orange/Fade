@@ -130,7 +130,10 @@ public class DetailActivity extends MainBaseActivity{
 
                     @Override
                     public void onNext(DetailPage detailPage) {
-                        commentator.addAll(detailPage.getComment_list());
+                        commentator.addAll(detailPage.getCommentQuery().getList());
+                        //评论加载的流程，首先详情页加载头十条（通过请求getNotePage），CommentQuery中包含有十条数据list以及下次查询起点start
+                        // 后面的评论需要分段加载（通过请求getTenComment），每次10条，start填的是上次CommentQuery返回的
+
                         commentNum.setText(Integer.toString(detailPage.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
 
                         //更新续秒和评论数量
