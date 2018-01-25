@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="E:\study_and_work\android_and_java\Android\Fade-1\IMLib\src\main\shaders"/></dataSet><dataSet config="debug"><source path="E:\study_and_work\android_and_java\Android\Fade-1\IMLib\src\debug\shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="F:\Fade\Fade\IMLib\src\main\shaders"/></dataSet><dataSet config="debug"><source path="F:\Fade\Fade\IMLib\src\debug\shaders"/></dataSet></merger>

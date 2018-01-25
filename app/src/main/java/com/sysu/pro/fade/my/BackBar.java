@@ -2,12 +2,16 @@ package com.sysu.pro.fade.my;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.sysu.pro.fade.R;
 
@@ -21,13 +25,14 @@ public class BackBar extends LinearLayout {
     public BackBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.backbar, this);
-        ImageView back = (ImageView) findViewById(R.id.back);
+        RelativeLayout back = findViewById(R.id.back_bar_back);
         back.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((Activity) getContext()).finish();
             }
         });
+
     }
 
 }
