@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.service;
 
 import com.sysu.pro.fade.beans.DetailPage;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.SimpleResponse;
 
@@ -45,4 +46,7 @@ public interface NoteService {
     @DELETE("deleteNote/{note_id}/{user_id}")
     Observable<SimpleResponse> deleteNote(@Path("note_id")String note_id,@Path("user_id")String user_id);
 
+    //获取一个首页完整帖子的请求
+    @GET("getFullNote/{note_id}/{user_id}")
+    Observable<Note> getFullNote(@Path("note_id")String note_id, @Path("user_id")String user_id);
 }

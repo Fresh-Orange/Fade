@@ -1,12 +1,13 @@
 package com.sysu.pro.fade.message.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -17,11 +18,10 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.discover.adapter.UserAdapter;
-import com.sysu.pro.fade.discover.drecyclerview.DBaseRecyclerViewAdapter;
-import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewAdapter;
-import com.sysu.pro.fade.message.Adapter.ContributionAdapter;
+import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
 import com.sysu.pro.fade.service.MessageService;
+import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
@@ -35,50 +35,29 @@ import rx.schedulers.Schedulers;
 
 public class ContributionActivity extends MainBaseActivity {
     private RecyclerView notification_Rv;
-    private ContributionAdapter adapter;
     private List<Note> notes = new ArrayList<Note>();
     private User user;
     private Retrofit retrofit;
     private MessageService messageService;
     private Integer start = 0;
     private RefreshLayout refreshLayout;
-    private Boolean isEnd = false;
-
-    private Boolean isLoad = false;
-    private UserAdapter userAdapter;
-
-    private DRecyclerViewAdapter dRecyclerViewAdapter;
+    private ContributeAdapter adapter;
     private String point; //时间点，分段请求需要记录的
-
-    private View foot;
+    private Boolean isEnd = false;
+    private View footView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contribution);
         notification_Rv = (RecyclerView) findViewById(R.id.contribution_recycler);
-        adapter = new ContributionAdapter(ContributionActivity.this,notes);
         notification_Rv.setLayoutManager(new LinearLayoutManager(this));
-        dRecyclerViewAdapter = new DRecyclerViewAdapter(adapter);
-        dRecyclerViewAdapter.setAdapter(adapter);
-        notification_Rv.setAdapter(dRecyclerViewAdapter);
+        adapter = new ContributeAdapter(notes,this);
+        notification_Rv.setAdapter(adapter);
 
-        adapter.notifyDataSetChanged();
-
-        adapter.setOnClickItemListsner(new DBaseRecyclerViewAdapter.OnClickItemListsner() {
-            @Override
-            public void onClick(int position) {
-                Toast.makeText(ContributionActivity.this, "" + position,
-                        Toast.LENGTH_LONG).show();
-//                Intent intent = new Intent(this,OtherActivity.class);
-//                intent.putExtra("user_id",userList.get(poisiton).getUser_id());
-//                activity.startActivity(intent);
-            }
-        });
-
-        initLoadMore();
         user = new UserUtil(this).getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
+        initLoadAddMore();
         messageService.getAddContribute(user.getUser_id().toString(), "0","null")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -86,11 +65,9 @@ public class ContributionActivity extends MainBaseActivity {
                     @Override
                     public void onCompleted() {
                     }
-
                     @Override
                     public void onError(Throwable e) {
                     }
-
                     @Override
                     public void onNext(NoteQuery noteQuery) {
                         start = noteQuery.getStart();
@@ -99,9 +76,19 @@ public class ContributionActivity extends MainBaseActivity {
                         Log.i("收到贡献" , "" + list.size());
                         if(list.size() != 0){
                             notes.addAll(list);
-                            addFootviews();
-                            dRecyclerViewAdapter.notifyDataSetChanged();
-                            isLoad = true;
+                            adapter.notifyDataSetChanged();
+                            if(list.size() < 20) isEnd = true;
+                            else {
+                                refreshLayout.setEnableLoadmore(true);
+                            }
+                        }else {
+                            isEnd = true;
+                        }
+                        if(isEnd){
+                            refreshLayout.setEnableLoadmore(false);
+                            //显示footView
+                            addFootView();
+                            footViewListen(footView);
                         }
                     }
                 });
@@ -111,16 +98,47 @@ public class ContributionActivity extends MainBaseActivity {
                 finish();
             }
         });
+        //单项点击跳转监听
+        adapter.setOnItemClickListener(new ContributeAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if(notes.get(position).getViewType() == null){
+                    Note temp = notes.get(position);
+                    //请求完整note
+                    NoteService noteService = retrofit.create(NoteService.class);
+                    noteService.getFullNote(temp.getNote_id().toString(), user.getUser_id().toString())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<Note>() {
+                                @Override
+                                public void onCompleted() {
+                                }
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.e("获取完整note失败",e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                @Override
+                                public void onNext(Note note) {
+                                    Intent intent = new Intent(ContributionActivity.this, DetailActivity.class);
+                                    intent.putExtra(Const.NOTE_ID,note.getTarget_id());
+                                    intent.putExtra(Const.IS_COMMENT,true);
+                                    intent.putExtra(Const.COMMENT_NUM, note.getComment_num());
+                                    intent.putExtra(Const.COMMENT_ENTITY, note);
+                                    startActivity(intent);
+                                }
+                            });
+                }
+            }
+        });
     }
 
-    private void initLoadMore() {
-        //设置底部加载刷新
+    private void initLoadAddMore() {
+        //设置底部加载刷新,更新新通知
         refreshLayout = (RefreshLayout) findViewById(R.id.refreshLayout);
         refreshLayout.setEnableRefresh(false);    //取消下拉刷新功能
         refreshLayout.setEnableAutoLoadmore(false);
         refreshLayout.setRefreshFooter(new ClassicsFooter(this));
-        //.setProgressResource(R.drawable.progress)
-        // .setArrowResource(R.drawable.arrow));
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(final RefreshLayout refreshlayout) {
@@ -143,18 +161,125 @@ public class ContributionActivity extends MainBaseActivity {
                                 Log.i("收到贡献" , "" + list.size());
                                 if(list.size() != 0){
                                     notes.addAll(list);
-                                    dRecyclerViewAdapter.notifyDataSetChanged();
+                                    adapter.notifyDataSetChanged();
+                                    if(list.size() < 20) isEnd = true;
+                                }else {
+                                    isEnd = true;
                                 }
                                 refreshlayout.finishLoadmore();
+                                if(isEnd){
+                                    refreshLayout.setEnableLoadmore(false);
+                                    refreshlayout.setEnableAutoLoadmore(false);
+                                    addFootView();
+                                    footViewListen(footView);
+                            }
+                            }
+                        });
+            }
+        });
+    }
+    private void initLoadOldMore() {
+        //设置底部加载刷新，更新以前的旧通知
+        refreshLayout = (RefreshLayout) findViewById(R.id.refreshLayout);
+        refreshLayout.setEnableRefresh(false);    //取消下拉刷新功能
+        refreshLayout.setEnableAutoLoadmore(true);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(final RefreshLayout refreshlayout) {
+                messageService.getOldContribute(user.getUser_id().toString(), start.toString())
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<NoteQuery>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                            }
+                            @Override
+                            public void onNext(NoteQuery noteQuery) {
+                                start = noteQuery.getStart();
+                                List<Note>list = noteQuery.getList();
+                                Log.i("收到贡献" , "" + list.size());
+                                if(list.size() != 0){
+                                    notes.addAll(list);
+                                    adapter.notifyDataSetChanged();
+                                    if(list.size() < 20) isEnd = true;
+                                }else {
+                                    isEnd = true;
+                                }
+                                refreshlayout.finishLoadmore();
+                                if(isEnd){
+                                    refreshLayout.setEnableLoadmore(false);
+                                    refreshlayout.setEnableAutoLoadmore(false);
+                                    footViewEnd();
+                                }
                             }
                         });
             }
         });
     }
 
-    private void addFootviews() {
-        foot = LayoutInflater.from(this).inflate(R.layout.foot, notification_Rv, false);
-        dRecyclerViewAdapter.addFootView(foot);
-//        dRecyclerViewAdapter.notifyDataSetChanged();
+    public void footViewListen(final View footView){
+        footView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                   notes.remove(notes.size() - 1);
+                   adapter.notifyDataSetChanged();
+                   refreshLayout.setEnableLoadmore(true);
+                   refreshLayout.setEnableAutoLoadmore(true);
+                   isEnd = false;
+                   initLoadOldMore();
+                    Log.i("查看更多start=", start.toString());
+                    messageService.getOldContribute(user.getUser_id().toString(),start.toString())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<NoteQuery>() {
+                                @Override
+                                public void onCompleted() {
+                                }
+                                @Override
+                                public void onError(Throwable e) {
+                                    e.printStackTrace();
+                                }
+                                @Override
+                                public void onNext(NoteQuery noteQuery) {
+                                    start = noteQuery.getStart();
+                                    List<Note>list = noteQuery.getList();
+                                    Log.i("收到贡献" , "" + list.size());
+                                    if(list.size() != 0){
+                                        notes.addAll(list);
+                                        adapter.notifyDataSetChanged();
+                                        if(list.size() < 20) isEnd = true;
+                                    }else {
+                                        isEnd = true;
+                                        footViewEnd();
+                                    }
+                                    refreshLayout.finishLoadmore();
+                                }
+                            });
+            }
+        });
     }
+
+    private void footViewEnd(){
+        TextView tv_foot_end = footView.findViewById(R.id.tv_foot_end);
+        tv_foot_end.setText("已经到底部了");
+        footView.setOnClickListener(null);
+        addFootView();
+    }
+
+    public void addFootView(){
+        footView = LayoutInflater.from(ContributionActivity.this).
+                inflate(R.layout.foot,null);
+        adapter.VIEW_FOOTER = footView;
+        Note note = new Note();
+        note.setViewType(ContributeAdapter.TYPE_FOOTER);
+        notes.add(note);
+        adapter.notifyDataSetChanged();
+    }
+
+
 }
