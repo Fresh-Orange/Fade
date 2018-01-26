@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.message.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
+import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
 import com.sysu.pro.fade.message.Adapter.FansAdapter;
 import com.sysu.pro.fade.service.MessageService;
@@ -94,6 +96,19 @@ public class FansActivity extends MainBaseActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        //单项点击监听
+        adapter.setOnItemClickListener(new FansAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                User temp = users.get(position);
+                if(temp != null){
+                    Intent intent = new Intent(FansActivity.this, OtherActivity.class);
+                    intent.putExtra(Const.USER_ID , temp.getUser_id());
+                    startActivity(intent);
+                }
             }
         });
     }
