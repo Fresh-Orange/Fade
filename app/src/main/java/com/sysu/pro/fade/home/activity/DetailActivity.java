@@ -119,7 +119,7 @@ public class DetailActivity extends MainBaseActivity{
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
 
-        NoteService noteService = retrofit.create(NoteService.class);
+        final NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id),user.getUser_id().toString(),(getFull?"1":"0"))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -146,7 +146,8 @@ public class DetailActivity extends MainBaseActivity{
                         }
                         Note downloadNote = detailPage.getNote();
                         if(getFull){
-                            note = downloadNote;
+                            if(note.getOrigin() != null) note = downloadNote.getOrigin();
+                            else note = downloadNote;
                             initNoteView();
                         }
                         commentNum.setText(Integer.toString(downloadNote.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
