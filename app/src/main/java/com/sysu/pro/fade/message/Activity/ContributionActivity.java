@@ -21,7 +21,6 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
 import com.sysu.pro.fade.service.MessageService;
-import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
@@ -104,30 +103,13 @@ public class ContributionActivity extends MainBaseActivity {
             public void onItemClick(View view, int position) {
                 if(notes.get(position).getViewType() == null){
                     Note temp = notes.get(position);
-                    //请求完整note
-                    NoteService noteService = retrofit.create(NoteService.class);
-                    noteService.getFullNote(temp.getNote_id().toString(), user.getUser_id().toString())
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Subscriber<Note>() {
-                                @Override
-                                public void onCompleted() {
-                                }
-                                @Override
-                                public void onError(Throwable e) {
-                                    Log.e("获取完整note失败",e.getMessage());
-                                    e.printStackTrace();
-                                }
-                                @Override
-                                public void onNext(Note note) {
-                                    Intent intent = new Intent(ContributionActivity.this, DetailActivity.class);
-                                    intent.putExtra(Const.NOTE_ID,note.getTarget_id());
-                                    intent.putExtra(Const.IS_COMMENT,true);
-                                    intent.putExtra(Const.COMMENT_NUM, note.getComment_num());
-                                    intent.putExtra(Const.COMMENT_ENTITY, note);
-                                    startActivity(intent);
-                                }
-                            });
+                    Intent intent = new Intent(ContributionActivity.this, DetailActivity.class);
+                    intent.putExtra(Const.NOTE_ID,temp.getNote_id());
+                    intent.putExtra(Const.IS_COMMENT,false);
+                    intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
+                    intent.putExtra(Const.COMMENT_ENTITY, temp);
+                    intent.putExtra("getFull",true);
+                    startActivity(intent);
                 }
             }
         });
