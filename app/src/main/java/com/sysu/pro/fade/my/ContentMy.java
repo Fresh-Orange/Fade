@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -48,7 +49,7 @@ public class ContentMy {
     private ImageView ivShowHead;
     private TextView tvShowNickname;
     private TextView tvShowSummary; //个性签名
-    private ImageView mySetting;
+    private RelativeLayout mySetting;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private User user;
@@ -74,8 +75,12 @@ public class ContentMy {
         user = new UserUtil(activity).getUer();
         loadData();
 
-        //设置
-        mySetting = (ImageView)  rootview.findViewById(R.id.MySetting);
+        //隐藏backbar的返回按钮
+        RelativeLayout back = rootview.findViewById(R.id.back_bar_back);
+        back.setVisibility(View.GONE);
+        //进入设置界面的按钮
+        mySetting = rootview.findViewById(R.id.back_bar_menu);
+        mySetting.setVisibility(View.VISIBLE);
         mySetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

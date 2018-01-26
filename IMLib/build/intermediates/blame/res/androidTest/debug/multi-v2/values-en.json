@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "E:\\study_and_work\\android_and_java\\Android\\Fade-1\\IMLib\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-en\\values-en.xml",
+            "outputFile": "F:\\Fade\\Fade\\IMLib\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-en\\values-en.xml",
             "map": [
                 {
-                    "source": "E:\\study_and_work\\android_and_java\\Android\\Fade-1\\IMLib\\build\\intermediates\\bundles\\debug\\res\\values-en\\values-en.xml",
+                    "source": "F:\\Fade\\Fade\\IMLib\\build\\intermediates\\bundles\\debug\\res\\values-en\\values-en.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7",
                         "startColumns": "4,4,4,4,4,4",

@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -45,7 +46,6 @@ public class OtherActivity extends MainBaseActivity {
     private TextView tvUnConcern;
     private ImageView tvConcernOk;
     private TextView tvContact;
-    private ImageView otherBack;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     
@@ -54,6 +54,8 @@ public class OtherActivity extends MainBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other);
 
+        RelativeLayout backBar = findViewById(R.id.back_bar_menu);  //三个点的菜单按钮
+        backBar.setVisibility(View.VISIBLE);
         ivShowHead =  (ImageView) findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) findViewById(R.id.tvShowNickname);
         tvShowSummary = (TextView) findViewById(R.id.tvShowSummary);
@@ -61,17 +63,9 @@ public class OtherActivity extends MainBaseActivity {
         tvConcernOk = findViewById(R.id.other_concern_ok);
         tvUnConcern = findViewById(R.id.other_text1);
         tvContact = findViewById(R.id.other_text2);
-        otherBack = findViewById(R.id.other_back);
         tabLayout = findViewById(R.id.other_tab_layout);
         viewPager = findViewById(R.id.other_view_pager);
         Picasso.with(OtherActivity.this).load(R.id.other_concern_ok).into(tvConcernOk);
-        
-        otherBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
         
         Integer user_id = getIntent().getIntExtra(Const.USER_ID, -1);
         Log.d("OtherActivity", user_id.toString());

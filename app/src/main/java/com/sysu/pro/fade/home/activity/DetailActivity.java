@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -58,12 +61,12 @@ public class DetailActivity extends MainBaseActivity{
     private boolean is_Comment;
     private Integer commentType;
     private Retrofit retrofit;
-    private ImageView detailBack;   //返回按钮
-    private ImageView detailSetting;    //三个点按钮
+    private RelativeLayout detailSetting;    //三个点按钮
     private TextView commentNum;
     private EditText writeComment;
     private Button sendComment;
     private RecyclerView recyclerView;
+    private LinearLayout loadMore;
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
@@ -81,6 +84,7 @@ public class DetailActivity extends MainBaseActivity{
     /*add by hl*/
     private Boolean getFull = false;
     private Integer commentStart; //评论分页查询的起点
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,15 +92,11 @@ public class DetailActivity extends MainBaseActivity{
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
         sendComment = (Button) findViewById(R.id.detail_send_comment);
-        detailBack = (ImageView) findViewById(R.id.detail_back);
+        loadMore = findViewById(R.id.detail_load_more);
+        //设置back bar
+        detailSetting = findViewById(R.id.back_bar_menu);
+        detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
-
-        detailBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         /* ******** 帖子展示部分 by 赖贤城 *******/
         note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
@@ -392,8 +392,7 @@ public class DetailActivity extends MainBaseActivity{
     }
 
     private void initialComment() {
-
-        //放直接评论的adapter
+        //放一级评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
             @Override
             public int getLayoutId(int ViewType) {
@@ -440,6 +439,42 @@ public class DetailActivity extends MainBaseActivity{
         recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (commentator.size()%10==0 && recyclerView.canScrollVertically(1)) {
+                    loadMore.setVisibility(View.VISIBLE);
+                    loadTenMoreComment();
+                }
+            }
+        });
+    }
+
+    //上拉加载多10条评论
+    private void loadTenMoreComment() {
+        CommentService service = retrofit.create(CommentService.class);
+        service.getTenComment(note_id.toString(), commentStart.toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CommentQuery>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("loadMoreErr", "onError: "+e.toString());
+                    }
+
+                    @Override
+                    public void onNext(CommentQuery commentQuery) {
+                        commentStart = commentQuery.getStart(); //更新start
+                        commentator.addAll(commentQuery.getList());
+                        commentAdapter.notifyDataSetChanged();
+                        loadMore.setVisibility(View.GONE);
+                    }
+                });
     }
 
     //创建回复的View
@@ -451,7 +486,7 @@ public class DetailActivity extends MainBaseActivity{
         TextView date = (TextView) view.findViewById(R.id.reply_date);
         TextView content = (TextView) view.findViewById(R.id.reply_content);
         name.setText(reply.getNickname());
-        if (reply.getTo_user_id() == userId) {
+        if (reply.getTo_user_id() == null) {
             word.setVisibility(View.GONE);
             toName.setVisibility(View.GONE);
         }
@@ -467,7 +502,7 @@ public class DetailActivity extends MainBaseActivity{
         return view;
     }
 
-    //显示评论输入框
+    //显示一级评论输入框
     private void showDirectComment() {
         writeComment.setVisibility(View.VISIBLE);
         sendComment.setVisibility(View.VISIBLE);
@@ -512,6 +547,8 @@ public class DetailActivity extends MainBaseActivity{
                                 commentator.add(userComment);
                                 commentAdapter.notifyDataSetChanged();
                                 writeComment.setText("");
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
 
@@ -538,8 +575,8 @@ public class DetailActivity extends MainBaseActivity{
                 secondComment.setNote_id(note_id);
                 secondComment.setUser_id(user.getUser_id());
                 secondComment.setComment_id(toComment.getComment_id());
-                secondComment.setTo_nickname(toComment.getNickname());
-                secondComment.setTo_user_id(toComment.getUser_id());
+//                secondComment.setTo_nickname(toComment.getNickname());
+//                secondComment.setTo_user_id(toComment.getUser_id());
                 CommentService send = retrofit.create(CommentService.class);
                 //提交到服务器，并返回评论的id等内容
                 send.addSecondComment(JSON.toJSONString(secondComment))
@@ -566,6 +603,8 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
             }
@@ -620,6 +659,8 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
             }
