@@ -92,6 +92,9 @@ public interface UserService {
     @GET("getMessageToken/{user_id}")
     Observable<Map<String,Object>>getMessageToken(@Path("user_id")String  user_id);
 
+    //获取他人个人页的帖子
+    @GET("getOtherPersonNote/{user_id}/{my_id}/{start}")
+    Observable<NoteQuery>getOtherPersonNote(@Path("user_id")String  user_id, @Path("my_id")String my_id,@Path("start")String  start);
 
 
 }

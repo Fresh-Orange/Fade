@@ -36,6 +36,10 @@ public class Note implements Serializable {
 
 	private String area; //发布时的地理位置
 
+	private Integer viewType;
+
+	private String exampleImage;//示例图片，用于在通知中显示
+
 	public long getFetchTime() {
 		return fetchTime;
 	}
@@ -227,5 +231,21 @@ public class Note implements Serializable {
 		if(!(obj instanceof Note)) return false;
 		Note note = (Note) obj;
 		return note_id.equals(note.getNote_id());
+	}
+
+	public Integer getViewType() {
+		return viewType;
+	}
+
+	public void setViewType(Integer viewType) {
+		this.viewType = viewType;
+	}
+
+	public String getExampleImage() {
+		return exampleImage;
+	}
+
+	public void setExampleImage(String exampleImage) {
+		this.exampleImage = exampleImage;
 	}
 }

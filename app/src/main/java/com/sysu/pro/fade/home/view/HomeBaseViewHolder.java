@@ -233,6 +233,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				intent.putExtra(Const.IS_COMMENT, true);
 				intent.putExtra(Const.COMMENT_NUM, bean.getComment_num());
 				intent.putExtra(Const.COMMENT_ENTITY, bean);
+				intent.putExtra("getFull", false);
 				context.startActivity(intent);
 			}
 		});
@@ -355,6 +356,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		intent.putExtra(Const.IS_COMMENT, false);
 		intent.putExtra(Const.COMMENT_NUM, bean.getComment_num());
 		intent.putExtra(Const.COMMENT_ENTITY, bean);
+		intent.putExtra("getFull", false);
 		context.startActivity(intent);
 	}
 

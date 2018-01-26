@@ -24,6 +24,7 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SecondComment;
@@ -80,6 +81,9 @@ public class DetailActivity extends MainBaseActivity{
     private TextView tvCount;
     private ClickableProgressBar clickableProgressBar;
 
+    /*add by hl*/
+    private Boolean getFull = false;
+    private Integer commentStart; //评论分页查询的起点
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,19 +106,20 @@ public class DetailActivity extends MainBaseActivity{
         tvCount = (TextView) findViewById(R.id.tv_comment_add_count);
         tvPostTime = (TextView) findViewById(R.id.tv_post_time);
         clickableProgressBar = (ClickableProgressBar) findViewById(R.id.clickable_progressbar);
-        initNoteView();
+        getFull = getIntent().getBooleanExtra("getFull",false); //如果getFull为true的话，还要重新下载完整note信息
+        if(!getFull) initNoteView();
         //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
 
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
-        is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
+        is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);//是否是点击评论进来的？
         commentType = note.getAction();
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
 
         NoteService noteService = retrofit.create(NoteService.class);
-        noteService.getNotePage(Integer.toString(note_id))
+        noteService.getNotePage(Integer.toString(note_id),user.getUser_id().toString(),(getFull?"1":"0"))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<DetailPage>() {
@@ -129,14 +134,26 @@ public class DetailActivity extends MainBaseActivity{
 
                     @Override
                     public void onNext(DetailPage detailPage) {
-                        commentator.addAll(detailPage.getComment_list());
-                        commentNum.setText(Integer.toString(detailPage.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
-
+                        //1.评论加载的流程，首先详情页加载头十条（通过请求getNotePage），CommentQuery中包含有十条数据list以及下次查询起点start
+                        // 十条以后，后面的评论需要分段加载（通过请求CommentService的getTenComment），每次10条，start填的是上次CommentQuery返回的
+                        //2.续一秒列表的数据为noteQuery中的list，单项为一个Note
+                        //3.如果getFull为true，则等到下载完整note后才加载界面
+                        CommentQuery commentQuery = detailPage.getCommentQuery();
+                        if(commentQuery != null){
+                            commentator.addAll(commentQuery.getList());
+                            commentStart = commentQuery.getStart(); //下次第一次用CommentService的getTenComment请求获取评论start就填这个
+                        }
+                        Note downloadNote = detailPage.getNote();
+                        if(getFull){
+                            note = downloadNote;
+                            initNoteView();
+                        }
+                        commentNum.setText(Integer.toString(downloadNote.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
                         //更新续秒和评论数量
                         //Note tempNote = new Note();
-                        note.setAdd_num(detailPage.getAdd_num());
-                        note.setComment_num(detailPage.getComment_num());
-                        note.setFetchTime(detailPage.getFetchTime());
+                        note.setAdd_num(downloadNote.getAdd_num());
+                        note.setComment_num(downloadNote.getComment_num());
+                        note.setFetchTime(downloadNote.getFetchTime());
                         setCommentAndAddCountText(DetailActivity.this, note);
                         setTimeLeftTextAndProgress(DetailActivity.this, note);
 
