@@ -104,7 +104,7 @@ public class ContributionActivity extends MainBaseActivity {
                 if(notes.get(position).getViewType() == null){
                     Note temp = notes.get(position);
                     Intent intent = new Intent(ContributionActivity.this, DetailActivity.class);
-                    intent.putExtra(Const.NOTE_ID,temp.getNote_id());
+                    intent.putExtra(Const.NOTE_ID,temp.getTarget_id());
                     intent.putExtra(Const.IS_COMMENT,false);
                     intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
                     intent.putExtra(Const.COMMENT_ENTITY, temp);

@@ -34,11 +34,13 @@ public class Note implements Serializable {
 
 	private long fetchTime;
 
-	private String area; //发布时的地理位置
+	private String note_area; //发布时的地理位置
 
 	private Integer viewType;
 
 	private String exampleImage;//示例图片，用于在通知中显示
+
+	private String uuid;//后端索引用的
 
 	public long getFetchTime() {
 		return fetchTime;
@@ -211,14 +213,6 @@ public class Note implements Serializable {
 		this.baseComment_num = baseComment_num;
 	}
 
-	public String getArea() {
-		return area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
-
 	//如果note_id相等，则两个帖子相等
 	@Override
 	public int hashCode() {
@@ -247,5 +241,21 @@ public class Note implements Serializable {
 
 	public void setExampleImage(String exampleImage) {
 		this.exampleImage = exampleImage;
+	}
+
+	public String getNote_area() {
+		return note_area;
+	}
+
+	public void setNote_area(String note_area) {
+		this.note_area = note_area;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }
