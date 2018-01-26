@@ -84,6 +84,7 @@ public class DetailActivity extends MainBaseActivity{
     /*add by hl*/
     private Boolean getFull = false;
     private Integer commentStart; //评论分页查询的起点
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -442,11 +443,38 @@ public class DetailActivity extends MainBaseActivity{
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (recyclerView.canScrollVertically(1)) {
+                if (commentator.size()%10==0 && recyclerView.canScrollVertically(1)) {
                     loadMore.setVisibility(View.VISIBLE);
+                    loadTenMoreComment();
                 }
             }
         });
+    }
+
+    //上拉加载多10条评论
+    private void loadTenMoreComment() {
+        CommentService service = retrofit.create(CommentService.class);
+        service.getTenComment(note_id.toString(), commentStart.toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CommentQuery>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("loadMoreErr", "onError: "+e.toString());
+                    }
+
+                    @Override
+                    public void onNext(CommentQuery commentQuery) {
+                        commentStart = commentQuery.getStart(); //更新start
+                        commentator.addAll(commentQuery.getList());
+                        commentAdapter.notifyDataSetChanged();
+                        loadMore.setVisibility(View.GONE);
+                    }
+                });
     }
 
     //创建回复的View
@@ -474,7 +502,7 @@ public class DetailActivity extends MainBaseActivity{
         return view;
     }
 
-    //显示评论输入框
+    //显示一级评论输入框
     private void showDirectComment() {
         writeComment.setVisibility(View.VISIBLE);
         sendComment.setVisibility(View.VISIBLE);
@@ -519,7 +547,8 @@ public class DetailActivity extends MainBaseActivity{
                                 commentator.add(userComment);
                                 commentAdapter.notifyDataSetChanged();
                                 writeComment.setText("");
-                                commentNum.setText(Integer.parseInt(commentNum.getText().toString())+1);
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
 
@@ -574,7 +603,8 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
-                                commentNum.setText(Integer.parseInt(commentNum.getText().toString())+1);
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
             }
@@ -629,7 +659,8 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
-                                commentNum.setText(Integer.parseInt(commentNum.getText().toString())+1);
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
             }
