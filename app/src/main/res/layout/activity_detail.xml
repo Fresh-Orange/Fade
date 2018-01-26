@@ -5,32 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize"-->
-        <!--android:gravity="center_vertical">-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/detail_setting"-->
-            <!--android:layout_width="20dp"-->
-            <!--android:layout_height="20dp"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_marginRight="18dp"-->
-            <!--android:layout_alignBottom="@+id/detail_back"-->
-            <!--app:srcCompat="@drawable/setting" />-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/detail_back"-->
-            <!--android:layout_width="20dp"-->
-            <!--android:layout_height="20dp"-->
-            <!--android:layout_marginLeft="18dp"-->
-            <!--android:src="@drawable/back"-->
-            <!--android:scaleType="centerInside"-->
-            <!--android:alpha="0.5"-->
-            <!--android:background="@android:color/transparent"/>-->
-
-    <!--</RelativeLayout>-->
-
     <com.sysu.pro.fade.my.BackBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -121,7 +95,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/detail_note">
-                <!---评论人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
+                <!---续秒人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
             </LinearLayout>
 
             <View
@@ -175,11 +149,28 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/detail_divide2">
-
+                <!--暂时把高度改为wrap_content，有需要再改回350dp-->
                 <com.sysu.pro.fade.home.view.GreedyRecyclerView
                     android:id="@+id/detail_comment"
                     android:layout_width="match_parent"
-                    android:layout_height="350dp" />
+                    android:layout_height="wrap_content" />
+                <!--加载更多-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/detail_load_more"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:visibility="gone">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="正在加载更多"
+                        android:textSize="18sp"
+                        android:layout_marginLeft="10dp"
+                        />
+                </LinearLayout>
             </LinearLayout>
 
             <EditText

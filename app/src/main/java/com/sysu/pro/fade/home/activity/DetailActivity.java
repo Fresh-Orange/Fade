@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -63,6 +65,7 @@ public class DetailActivity extends MainBaseActivity{
     private EditText writeComment;
     private Button sendComment;
     private RecyclerView recyclerView;
+    private LinearLayout loadMore;
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
@@ -84,10 +87,11 @@ public class DetailActivity extends MainBaseActivity{
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
         sendComment = (Button) findViewById(R.id.detail_send_comment);
+        loadMore = findViewById(R.id.detail_load_more);
+        //设置back bar
         detailSetting = findViewById(R.id.back_bar_menu);
         detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
-
 
         /* ******** 帖子展示部分 by 赖贤城 *******/
         note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
@@ -369,8 +373,7 @@ public class DetailActivity extends MainBaseActivity{
     }
 
     private void initialComment() {
-
-        //放直接评论的adapter
+        //放一级评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
             @Override
             public int getLayoutId(int ViewType) {
@@ -417,6 +420,15 @@ public class DetailActivity extends MainBaseActivity{
         recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (recyclerView.canScrollVertically(1)) {
+                    loadMore.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     //创建回复的View
@@ -489,6 +501,7 @@ public class DetailActivity extends MainBaseActivity{
                                 commentator.add(userComment);
                                 commentAdapter.notifyDataSetChanged();
                                 writeComment.setText("");
+                                commentNum.setText(Integer.parseInt(commentNum.getText().toString())+1);
                             }
                         });
 
@@ -543,6 +556,7 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
+                                commentNum.setText(Integer.parseInt(commentNum.getText().toString())+1);
                             }
                         });
             }
@@ -597,6 +611,7 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
+                                commentNum.setText(Integer.parseInt(commentNum.getText().toString())+1);
                             }
                         });
             }
