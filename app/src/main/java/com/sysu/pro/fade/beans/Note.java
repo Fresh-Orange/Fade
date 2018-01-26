@@ -40,6 +40,8 @@ public class Note implements Serializable {
 
 	private String exampleImage;//示例图片，用于在通知中显示
 
+	private String uuid;//后端索引用的
+
 	public long getFetchTime() {
 		return fetchTime;
 	}
@@ -247,5 +249,13 @@ public class Note implements Serializable {
 
 	public void setNote_area(String note_area) {
 		this.note_area = note_area;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 }
