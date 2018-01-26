@@ -6,10 +6,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
+        android:id="@+id/tv_foot_end"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="54dp"
-        android:text="加载更多"/>
+        android:text="查看更早消息"/>
 
     <View
         android:layout_width="match_parent"
