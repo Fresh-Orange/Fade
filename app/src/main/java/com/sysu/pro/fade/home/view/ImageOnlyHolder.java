@@ -1,11 +1,11 @@
 package com.sysu.pro.fade.home.view;
 
+import android.app.Activity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
@@ -27,7 +27,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 	}
 
 	@Override
-	public void bindView(final MainActivity context, List<Note> data, int  position){
+	public void bindView(final Activity context, List<Note> data, int  position){
 		super.bindView(context, data, position);
 
 		final Note bean = data.get(position);

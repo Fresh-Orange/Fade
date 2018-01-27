@@ -17,6 +17,7 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
@@ -185,7 +186,7 @@ public class OtherActivity extends MainBaseActivity {
 
     private void loadFragment() {
         String[] mTitles = new String[]{"Fade", "关注", "粉丝"};
-        Fragment fade = new TempFragment();
+        Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();

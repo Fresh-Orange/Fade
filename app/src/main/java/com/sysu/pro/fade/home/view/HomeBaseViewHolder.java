@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,7 +13,6 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
@@ -23,6 +23,7 @@ import com.sysu.pro.fade.home.event.itemChangeEvent;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.TimeUtil;
+import com.sysu.pro.fade.utils.UserUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -50,7 +51,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	private TextView tvAtUser;
 	private ClickableProgressBar clickableProgressBar;
 	private int position;
-	MainActivity context;
+	Activity context;
+	private UserUtil userUtil;
 
 	public HomeBaseViewHolder(View itemView) {
 		super(itemView);
@@ -64,10 +66,12 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		clickableProgressBar = (ClickableProgressBar) itemView.findViewById(R.id.clickable_progressbar);
 	}
 
-	public void bindView(final MainActivity context, List<Note> data, int position) {
+	public void bindView(final Activity context, List<Note> data, int position) {
 		this.position = position;
 		this.context = context;
+		this.userUtil = new UserUtil(context);
 		Note bean = data.get(position);
+		Log.d("HomeBaseViewHolder", bean.toString());
 
 
 		/* ********* 设置界面 ***********/
@@ -120,15 +124,15 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 * 检查当前帖子是不是用户自己的，是的话，
 	 * 用用户自己的名字和头像（应对用户修改自己信息，回来后帖子信息没变的情况）
 	 */
-	private void checkAndSetCurUser(MainActivity context, Note bean) {
-		User curUser = context.getCurrentUser();
+	private void checkAndSetCurUser(Activity context, Note bean) {
+		User curUser = userUtil.getUer();
 		if (bean.getUser_id().equals(curUser.getUser_id())){
 			bean.setHead_image_url(curUser.getHead_image_url());
 			bean.setNickname(curUser.getNickname());
 		}
 	}
 
-	private void setOnUserClickListener(final MainActivity context, final Note bean) {
+	private void setOnUserClickListener(final Activity context, final Note bean) {
 		tvName.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -185,8 +189,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	/**
 	 * 续秒或者减秒
 	 */
-	private void setAddOrMinusListener(final MainActivity context, final Note bean) {
-		final User curUser = context.getCurrentUser();
+	private void setAddOrMinusListener(final Activity context, final Note bean) {
+		final User curUser = userUtil.getUer();
 		clickableProgressBar.setAddClickListener(new ClickableProgressBar.onAddClickListener() {
 			@Override
 			public void onClick() {
@@ -215,7 +219,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		});
 	}
 
-	private void setCommentListener(final MainActivity context, final Note bean) {
+	private void setCommentListener(final Activity context, final Note bean) {
 		if (bean.getAction() == 1)
 			clickableProgressBar.showCommentButton(1);
 		else if (bean.getAction() == 2)
@@ -288,8 +292,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	}
 
 	@NonNull
-	private Note getNewNote(MainActivity context, Note bean) {
-		User curUser = context.getCurrentUser();
+	private Note getNewNote(Activity context, Note bean) {
+		User curUser = userUtil.getUer();
 		Note note = new Note();
 		note.setNickname(curUser.getNickname());
 		note.setUser_id(curUser.getUser_id());

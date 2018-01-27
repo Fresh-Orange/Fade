@@ -43,6 +43,9 @@
     <string name="crop">Crop</string>
     <string name="croppedImageDesc">The cropped image.</string>
 
+    <!--for RongCloud IM-->
+    <string name="rc_msg_setting">设置</string>
+
     <string-array name="showGuidelinesArray">
         <item>Off</item>
         <item>On Touch</item>
