@@ -80,9 +80,9 @@ public interface UserService {
     @GET("getPersonPage/{user_id}/{my_id}")
     Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
 
-    //检索用户，分段加载
-    @GET("searchUser/{keyword}/{page}")
-    Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("page")String  page);
+    //检索用户，分段加载,start一开始填0，后面就填服务器返回的start
+    @GET("searchUser/{keyword}/{start}")
+    Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("start")String  page);
 
     //获取我自己的帖子
     @GET("getMyNote/{user_id}/{start}")
@@ -95,6 +95,8 @@ public interface UserService {
     //获取他人个人页的帖子
     @GET("getOtherPersonNote/{user_id}/{my_id}/{start}")
     Observable<NoteQuery>getOtherPersonNote(@Path("user_id")String  user_id, @Path("my_id")String my_id,@Path("start")String  start);
+
+
 
 
 }
