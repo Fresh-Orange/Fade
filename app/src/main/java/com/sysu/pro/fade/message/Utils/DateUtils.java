@@ -76,7 +76,7 @@ public class DateUtils {
         }
         try {
             if (IsSameYear(day)) {
-                //不同一年
+                //同一年
                 year = "";
             }
         } catch (ParseException e) {
