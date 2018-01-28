@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "F:\\Fade\\Fade\\IMKit\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-v21\\values-v21.xml",
+            "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMKit\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-v21\\values-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\12194\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.1.0.aar\\d30f3c2483f4b0f1ff51caa4822d0299\\res\\values-v21\\values-v21.xml",
+                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.1.0.aar\\f99fa3503b4e5bef68476467ccd884b4\\res\\values-v21\\values-v21.xml",
                     "from": {
                         "startLines": "2,5,8,11",
                         "startColumns": "4,4,4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\12194\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\51310879d860bde9694c987989020283\\res\\values-v21\\values-v21.xml",
+                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\f35c31e1bdc1f8d32088231fd3fd7e81\\res\\values-v21\\values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",

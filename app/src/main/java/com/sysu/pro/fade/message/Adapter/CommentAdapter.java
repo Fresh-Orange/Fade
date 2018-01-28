@@ -1,17 +1,24 @@
 package com.sysu.pro.fade.message.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.CommentMessage;
+import com.sysu.pro.fade.message.Utils.DateUtils;
+import com.sysu.pro.fade.utils.DisplayUtil;
+import com.sysu.pro.fade.view.DisplayParams;
+import com.sysu.pro.fade.view.MyTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +69,49 @@ public class CommentAdapter extends RecyclerView.Adapter< CommentAdapter.MyHolde
             ImageView user_image = (ImageView) holder.itemView.findViewById(R.id.comment_image);
             TextView user_time = (TextView) holder.itemView.findViewById(R.id.comment_time);
             TextView user_content = (TextView)holder.itemView.findViewById(R.id.comment_content);
+            TextView reply = (TextView)holder.itemView.findViewById(R.id.reply);
+            LinearLayout user_text = holder.itemView.findViewById(R.id.comment_text);
+
             String content = commentMessage.getComment_content(); //回复内容
             //String time = DateUtils.changeToDate(comment.getComment_time().substring(0,comment.getComment_time().length() - 2));
             Glide.with(mContext).load(Const.BASE_IP + commentMessage.getFrom_head()).into(user_icon);
             user_id.setText(commentMessage.getFrom_nickname());
            // user_time.setText(time);
             user_content.setText(content);
+            user_time.setText(DateUtils.changeToDate(commentMessage.getComment_time().substring(0,
+                    commentMessage.getComment_time().length() - 2)));
+            if (commentMessage.getExampleImage() == null) {
+                //TODO:article
+                user_image.setVisibility(View.GONE);
+                user_text.setVisibility(View.VISIBLE);
+                String result = commentMessage.getNote_content().substring(0, 1);
+                Log.d("yellow", "result: " + result);
+                Log.d("yellow", "getNote_content: " + commentMessage.getNote_content());
+                DisplayParams displayParams = DisplayParams.getInstance(mContext);
+                if (!commentMessage.getNote_content().isEmpty()) {
+                    MyTextView myTextView1 = new MyTextView(mContext);
+                    myTextView1.setText(result);
+                    myTextView1.setTextSize(18);
+                    myTextView1.setTextAlign(MyTextView.TEXT_ALIGN_CENTER_HORIZONTAL | MyTextView.TEXT_ALIGN_CENTER_VERTICAL);
+                    myTextView1.setTextColor(Color.DKGRAY);
+                    myTextView1.setBackgroundColor(Color.LTGRAY);
+                    user_text.addView(myTextView1, LinearLayout.
+                            LayoutParams.MATCH_PARENT, DisplayUtil.dip2px(30, displayParams.scale));
+                }
+            }
+            else {
+                Glide.with(mContext).load(Const.BASE_IP +
+                        commentMessage.getExampleImage()).into(user_image);
+            }
+
+            if (commentMessage.getComment_id() != null) {
+                Log.d("yellow", "一级！");
+                reply.setVisibility(View.GONE);
+            }
+            else if (commentMessage.getSecond_id() != null) {
+                Log.d("yellow", "二级！");
+                reply.setVisibility(View.VISIBLE);
+            }
         }
         holder.itemView.setTag(position);
     }

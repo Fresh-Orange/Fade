@@ -32,6 +32,7 @@
             android:textColor="@color/black"
             android:text="思瑶"/>
         <TextView
+            android:id="@+id/reply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
@@ -42,18 +43,32 @@
             android:text="回复了你"/>
 
 
-        <ImageView
-            android:id="@+id/comment_image"
+        <RelativeLayout
+            android:id="@+id/first_letter"
             android:layout_width="30dp"
             android:layout_height="30dp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="10dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/butterfly"
-            />
+            android:layout_marginRight="10dp">
+
+            <ImageView
+                android:id="@+id/comment_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/butterfly"
+                android:visibility="gone"
+                />
+            <LinearLayout
+                android:id="@+id/comment_text"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="visible"
+                android:orientation="vertical"/>
+        </RelativeLayout>
+
 
         <TextView
             android:id="@+id/comment_content"
@@ -72,7 +87,7 @@
             android:id="@+id/comment_time"
             app:layout_constraintLeft_toRightOf="@id/comment_icon"
             android:layout_width="wrap_content"
-            android:layout_height="15dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/comment_content"
             android:layout_marginTop="5dp"
             android:layout_centerVertical="true"
