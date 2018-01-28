@@ -36,6 +36,7 @@ public interface Constants {
     int CROP_PICTURE = 0x000040;
 
     int CROP_RESULT_CODE = 0x000044;
+    int MAP_RESULT_CODE = 0x000048;
     String IMAGE_URI = "image_uri";
     String APPLICATION_NAME = "APPLICATION_NAME";
  String PREF_TEMP_IMAGES = "PREF_TEMP_IMAGES";

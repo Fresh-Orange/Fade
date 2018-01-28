@@ -1,7 +1,7 @@
 package com.sysu.pro.fade.service;
 
 import com.sysu.pro.fade.beans.AddMessage;
-import com.sysu.pro.fade.beans.CommentQuery;
+import com.sysu.pro.fade.beans.CommentMessageQuery;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.UserQuery;
 
@@ -30,7 +30,7 @@ public interface MessageService {
 
     //"评论"页,请求一次获取10条评论，第一次请求start填0，后面start填服务器返回的
     @GET("getAddComment/{user_id}/{start}/{point}")
-    Observable<CommentQuery>getAddComment(@Path("user_id")String user_id, @Path("start")String start,@Path("point")String point);
+    Observable<CommentMessageQuery>getAddComment(@Path("user_id")String user_id, @Path("start")String start,@Path("point")String point);
 
     //查看更多系列,查看以前旧的消息
     //返回的一个Note包含的信息有user_id,nickname,head_image_url,post_time, type
@@ -43,6 +43,6 @@ public interface MessageService {
 
     //"评论"页,请求一次获取10条评论，第一次请求start填0，后面start填服务器返回的
     @GET("getOldComment/{user_id}/{start}")
-    Observable<CommentQuery>getOldComment(@Path("user_id")String user_id, @Path("start")String start);
+    Observable<CommentMessageQuery>getOldComment(@Path("user_id")String user_id, @Path("start")String start);
 
 }

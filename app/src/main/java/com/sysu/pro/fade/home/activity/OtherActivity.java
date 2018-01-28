@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.sysu.pro.fade.Const;
@@ -17,6 +18,7 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.TempFragment;
@@ -44,9 +46,9 @@ public class OtherActivity extends MainBaseActivity {
     private TextView tvShowNickname;
     private TextView tvFadeName;//fade_id
     private TextView tvShowSummary; //个性签名
-    private TextView tvUnConcern;
-    private ImageView tvConcernOk;
-    private TextView tvContact;
+    private TextView tvUnConcern;  //点击后关注
+    private ImageView tvConcernOk;  //点击后取消关注
+    private TextView tvContact;     //私信按钮
     private TabLayout tabLayout;
     private ViewPager viewPager;
     
@@ -94,6 +96,7 @@ public class OtherActivity extends MainBaseActivity {
                         //0为没关注
                         if (personPage.getIsConcern() == 1) {
                             tvConcernOk.setVisibility(View.VISIBLE);
+                            tvContact.setVisibility(View.VISIBLE);
                         } else {
                             tvUnConcern.setVisibility(View.VISIBLE);
                         }
@@ -108,9 +111,13 @@ public class OtherActivity extends MainBaseActivity {
         String nickname = other.getNickname();
         String summary = other.getSummary();
         String fade_name = other.getFade_name();
-        allNums = new String[]{Integer.toString(other.getFade_num())
-                , Integer.toString(other.getConcern_num()), Integer.toString(other.getFans_num())};
-        
+        //获取用户的关注、粉丝等的数量
+        String fade_num = (other.getFade_num()>999?(other.getFade_num()/1000+"K"):other.getFade_num().toString());
+        String fans_num = (other.getFans_num()>999?(other.getFans_num()/1000+"K"):other.getFans_num().toString());
+        String concern_num = (other.getConcern_num()>999?(other.getConcern_num()/1000+"K"):other.getConcern_num().toString());
+        // TODO: 2018/1/27 第一项是动态数量，暂时没搞
+        allNums = new String[]{"1", fade_num, fans_num, concern_num};
+
         Picasso.with(this).load(Const.BASE_IP + image_url).into(ivShowHead);
         tvShowNickname.setText(nickname);
         if(summary == null || summary.equals("")){
@@ -122,36 +129,41 @@ public class OtherActivity extends MainBaseActivity {
         tvUnConcern.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserService service = retrofit.create(UserService.class);
-                service.concern(myself.getUser_id().toString(), other.getUser_id().toString())
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<SimpleResponse>() {
-                            @Override
-                            public void onCompleted() {
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.d("关注bug", "onError: "+e.toString());
-                            }
-
-                            @Override
-                            public void onNext(SimpleResponse simpleResponse) {
-                                if (simpleResponse.getErr() == null) {
-                                    tvUnConcern.setVisibility(View.GONE);
-                                    tvConcernOk.setVisibility(View.VISIBLE);
-                                    loadFragment();
+                if (myself.getUser_id() == other.getUser_id()) {
+                    Toast.makeText(OtherActivity.this, "不能关注自己", Toast.LENGTH_SHORT).show();
+                } else {
+                    UserService service = retrofit.create(UserService.class);
+                    service.concern(myself.getUser_id().toString(), other.getUser_id().toString())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<SimpleResponse>() {
+                                @Override
+                                public void onCompleted() {
                                 }
-                            }
-                        });
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d("关注bug", "onError: " + e.toString());
+                                }
+
+                                @Override
+                                public void onNext(SimpleResponse simpleResponse) {
+                                    if (simpleResponse.getErr() == null) {
+                                        tvUnConcern.setVisibility(View.GONE);
+                                        tvConcernOk.setVisibility(View.VISIBLE);
+                                        tvContact.setVisibility(View.VISIBLE);
+                                        loadFragment();
+                                    }
+                                }
+                            });
+                }
             }
         });
         tvConcernOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UserService service = retrofit.create(UserService.class);
-                service.cancelConcern(myself.getUser_id().toString(),other.getUser_id().toString() )
+                service.cancelConcern(myself.getUser_id().toString(), other.getUser_id().toString())
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<SimpleResponse>() {
@@ -161,7 +173,7 @@ public class OtherActivity extends MainBaseActivity {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.d("取关bug", "onError: "+e.toString());
+                                Log.d("取关bug", "onError: " + e.toString());
                             }
 
                             @Override
@@ -169,6 +181,7 @@ public class OtherActivity extends MainBaseActivity {
                                 if (simpleResponse.getErr() == null) {
                                     tvUnConcern.setVisibility(View.VISIBLE);
                                     tvConcernOk.setVisibility(View.GONE);
+                                    tvContact.setVisibility(View.GONE);
                                     loadFragment();
                                 }
                             }
@@ -185,25 +198,49 @@ public class OtherActivity extends MainBaseActivity {
     }
 
     private void loadFragment() {
-        String[] mTitles = new String[]{"Fade", "关注", "粉丝"};
+        String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
+        Fragment dongTai = new TempFragment();
         Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();
+        fragments.add(dongTai);
         fragments.add(fade);
-        fragments.add(concern);
         fragments.add(fans);
+        fragments.add(concern);
         MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < adapter.getCount(); i++) {
             TabLayout.Tab tab = tabLayout.getTabAt(i);
-            tab.setCustomView(R.layout.my_tablayout_item);
+            if (i == 0) {
+                tab.setCustomView(R.layout.my_tablayout_first_item);
+            } else {
+                tab.setCustomView(R.layout.my_tablayout_item);
+            }
             TextView text1 = (TextView) tab.getCustomView().findViewById(R.id.my_tab_layout_text1);
             TextView text2 = (TextView) tab.getCustomView().findViewById(R.id.my_tab_layout_text2);
             text1.setText(mTitles[i]);
             text2.setText(allNums[i]);
         }
+        //设置下划线的颜色变化
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.getCustomView().findViewById(R.id.my_tab_layout_blue_line).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.getCustomView().findViewById(R.id.my_tab_layout_blue_line).setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                tab.getCustomView().findViewById(R.id.my_tab_layout_blue_line).setVisibility(View.VISIBLE);
+            }
+        });
+        tabLayout.getTabAt(0).select();
     }
     
 }

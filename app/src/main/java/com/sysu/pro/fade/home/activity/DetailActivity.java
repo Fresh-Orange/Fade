@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,6 +19,9 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
@@ -27,6 +29,7 @@ import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.SecondComment;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
@@ -65,8 +68,12 @@ public class DetailActivity extends MainBaseActivity{
     private TextView commentNum;
     private EditText writeComment;
     private Button sendComment;
+    private List<Note> forwardList = new ArrayList<>(); //续秒列表，用来获取头像
+    private CommonAdapter<Note> forwardAdapter;
+    private RecyclerView forwardRecycler;
     private RecyclerView recyclerView;
-    private LinearLayout loadMore;
+    private RefreshLayout refreshLayout;
+    private int loadMoreFlag;
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
@@ -92,7 +99,7 @@ public class DetailActivity extends MainBaseActivity{
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
         sendComment = (Button) findViewById(R.id.detail_send_comment);
-        loadMore = findViewById(R.id.detail_load_more);
+
         //设置back bar
         detailSetting = findViewById(R.id.back_bar_menu);
         detailSetting.setVisibility(View.VISIBLE);
@@ -159,7 +166,12 @@ public class DetailActivity extends MainBaseActivity{
                         setCommentAndAddCountText(DetailActivity.this, note);
                         setTimeLeftTextAndProgress(DetailActivity.this, note);
 
-                        initialComment();
+                        NoteQuery noteQuery = detailPage.getNoteQuery();
+                        forwardList.addAll(noteQuery.getList());
+                        // TODO: 2018/1/27 续秒列表的start还没存，等跳转页面设计好再搞
+
+                        initForwardList();  //初始化续秒列表
+                        initialComment();   //初始化评论区
                         //是评论的话显示输入框
                         if (is_Comment) {
                             Log.d("bug", "进来了");
@@ -391,6 +403,38 @@ public class DetailActivity extends MainBaseActivity{
         return note;
     }
 
+    //初始化续秒头像列表
+    private void initForwardList() {
+        forwardAdapter = new CommonAdapter<Note>(forwardList) {
+            @Override
+            public int getLayoutId(int ViewType) {
+                return R.layout.item_forward_head;
+            }
+
+            @Override
+            public void convert(ViewHolder holder, final Note data, int position) {
+                holder.setCircleImage(R.id.detail_forward_head, Const.BASE_IP+data.getHead_image_url());
+                holder.setGoodImage(R.id.detail_forward_good, data.getType()==1);
+                holder.onWidgetClick(R.id.detail_forward_head, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(DetailActivity.this, OtherActivity.class);
+                        i.putExtra(Const.USER_ID, data.getUser_id());
+                        startActivity(i);
+                    }
+                });
+            }
+        };
+        forwardRecycler = findViewById(R.id.detail_forward_list);
+        forwardRecycler.setAdapter(forwardAdapter);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        forwardRecycler.setLayoutManager(manager);
+        ImageView forwardMore = findViewById(R.id.detail_forward_more);
+        Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
+    }
+
+    //初始化评论区
     private void initialComment() {
         //放一级评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
@@ -406,6 +450,15 @@ public class DetailActivity extends MainBaseActivity{
                 holder.setText(R.id.comment_detail_name, data.getNickname());
                 holder.setText(R.id.comment_detail_date, data.getComment_time());
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
+                //头像点击事件
+                holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(DetailActivity.this, OtherActivity.class);
+                        i.putExtra(Const.USER_ID, data.getUser_id());
+                        startActivity(i);
+                    }
+                });
                 //一级评论内容的点击事件，点击之后弹出输入框
                 holder.onWidgetClick(R.id.comment_detail_content, new View.OnClickListener() {
                     @Override
@@ -421,6 +474,8 @@ public class DetailActivity extends MainBaseActivity{
                         holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.GONE);
                         holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
                     } else {
+                        holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                        holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                         //先清空线型布局中的所有View
                         holder.removeAllViews(R.id.comment_detail_reply_wrapper);
                         //放回复内容
@@ -436,15 +491,20 @@ public class DetailActivity extends MainBaseActivity{
             }
         };
 
+        loadMoreFlag = 1;
         recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        //设置上拉加载
+        refreshLayout = findViewById(R.id.detail_comment_refresh);
+        refreshLayout.setEnableRefresh(false);  //不需要下拉刷新功能
+        refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (commentator.size()%10==0 && recyclerView.canScrollVertically(1)) {
-                    loadMore.setVisibility(View.VISIBLE);
+            public void onLoadmore(RefreshLayout refreshlayout) {
+                if (commentator.size()%10==0 && loadMoreFlag == 1) {
+                    loadMoreFlag = 0;
                     loadTenMoreComment();
                 }
             }
@@ -472,7 +532,13 @@ public class DetailActivity extends MainBaseActivity{
                         commentStart = commentQuery.getStart(); //更新start
                         commentator.addAll(commentQuery.getList());
                         commentAdapter.notifyDataSetChanged();
-                        loadMore.setVisibility(View.GONE);
+                        refreshLayout.finishLoadmore();
+                        if (commentQuery.getList().size() == 10) {
+                            loadMoreFlag = 1;
+                            refreshLayout.setEnableLoadmore(true);
+                        } else {
+                            refreshLayout.setEnableLoadmore(false);
+                        }
                     }
                 });
     }
@@ -496,7 +562,11 @@ public class DetailActivity extends MainBaseActivity{
         view.findViewById(R.id.reply_content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSecondReply(reply, holder, userId);
+                if (reply.getUser_id() != userId) {
+                    showSecondReply(reply, holder, userId);
+                } else {
+                    // TODO: 2018/1/28 自己不能回复自己的二级评论，弹出删除、复制选项
+                }
             }
         });
         return view;
@@ -577,6 +647,7 @@ public class DetailActivity extends MainBaseActivity{
                 secondComment.setComment_id(toComment.getComment_id());
 //                secondComment.setTo_nickname(toComment.getNickname());
 //                secondComment.setTo_user_id(toComment.getUser_id());
+                secondComment.setFirst_id(toComment.getUser_id());
                 CommentService send = retrofit.create(CommentService.class);
                 //提交到服务器，并返回评论的id等内容
                 send.addSecondComment(JSON.toJSONString(secondComment))
@@ -667,4 +738,15 @@ public class DetailActivity extends MainBaseActivity{
         });
     }
 
+    //按返回键时，如果输入框还显示着，用户很大可能是想关掉这个输入框而不是想返回上一个界面
+    @Override
+    public void onBackPressed() {
+        if (writeComment.getVisibility() == View.VISIBLE) {
+            writeComment.setText("");
+            writeComment.setVisibility(View.GONE);
+            sendComment.setVisibility(View.GONE);
+        } else {
+            finish();
+        }
+    }
 }

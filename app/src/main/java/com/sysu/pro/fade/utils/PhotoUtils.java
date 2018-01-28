@@ -78,24 +78,16 @@ public class PhotoUtils {
 		Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		File vFile = new File(Environment.getExternalStorageDirectory()
-				+ "/myimage/", String.valueOf(System.currentTimeMillis())
+				+ "/Fade/Photo/Fade", String.valueOf(System.currentTimeMillis())
 				+ ".jpg");
-		if (!vFile.exists())
+		if (vFile.exists())
 		{
-			File vDirPath = vFile.getParentFile();
-			vDirPath.mkdirs();
-		}
-		else
-		{
-			if (vFile.exists())
-			{
-				vFile.delete();
-			}
+			vFile.delete();
 		}
 		if (Build.VERSION.SDK_INT >= 24)
 			tempUri = FileProvider.getUriForFile(activity.getApplicationContext(),
 					activity.getApplicationContext().getPackageName() +
-							".provider", vFile);
+							".FileProvider", vFile);
 		else tempUri = Uri.fromFile(vFile);
 		openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -148,8 +140,11 @@ public class PhotoUtils {
 			Bitmap photo = extras.getParcelable("data");
 			photo = PhotoUtils.toRoundBitmap(photo); // 这个时候的图片已经被处理成圆形的了
 			imageView.setImageBitmap(photo);
-			imagePath=PhotoUtils.savePhoto(photo, Environment
-					.getExternalStorageDirectory().getAbsolutePath(), String
+//			imagePath=PhotoUtils.savePhoto(photo, Environment
+//					.getExternalStorageDirectory().getAbsolutePath(), String
+//					.valueOf(System.currentTimeMillis()));
+			imagePath=PhotoUtils.savePhoto(photo, Environment.getExternalStorageDirectory()
+					+ "/Fade/Photo/Fade", String
 					.valueOf(System.currentTimeMillis()));
 		}
 	}
