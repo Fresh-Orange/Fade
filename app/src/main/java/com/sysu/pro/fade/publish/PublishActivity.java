@@ -186,10 +186,7 @@ public class PublishActivity extends AppCompatActivity {
         //收集要发送的图片数据，包装一下,压缩好图片后，发送帖子
         if(images_files == null) images_files = new ArrayList<>();
         else images_files.clear();
-        final File sd=Environment.getExternalStorageDirectory();
-        String cache_path_root = sd.getPath() + "/chache_pic";
-        File rootFile = new File(cache_path_root);
-        if(!rootFile.exists())  rootFile.mkdir();
+
 
         for(int i = 0; i < images.size(); i++){
             final Image image = new Image();
@@ -336,7 +333,7 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
-        getPermission();
+        requestLocation();
         imageX = new float[10];
         imageY = new float[10];
         //注册
@@ -780,24 +777,26 @@ public class PublishActivity extends AppCompatActivity {
     //适配7.0的拍照方法
     private void takePhoto(Activity activity)
     {
+
         Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Log.d("yellow", "getExternalCacheDir()" + getExternalCacheDir());
         Log.d("yellow", "OldEnvironment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
         vFile = new File(Environment.getExternalStorageDirectory()
-                + "/Fade/", String.valueOf(System.currentTimeMillis())
+                + "/Fade/Photo/Fade", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
         if (vFile.exists())
         {
             vFile.delete();
         }
+
 //        Log.d("vapth", vFile.toString());
         Uri uri;
 //        FileProvider.getUriForFile(mContext, BuildConfig.APP_PROVIDER, file)
         if (Build.VERSION.SDK_INT >= 24)
             uri = FileProvider.getUriForFile(getApplicationContext(),
                     activity.getApplicationContext().getPackageName() +
-                            ".provider", vFile);
+                            ".FileProvider", vFile);
         else uri = Uri.fromFile(vFile);
         openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -860,8 +859,10 @@ public class PublishActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy(){
-        mLocationClient.stopLocation();//停止定位后，本地定位服务并不会被销毁
-        mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();//停止定位后，本地定位服务并不会被销毁
+            mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
+        }
         EventBus.getDefault().unregister(this);//反注册EventBus
         super.onDestroy();
     }
@@ -967,57 +968,6 @@ public class PublishActivity extends AppCompatActivity {
 
     }
 
-    public void getPermission() {
-        List<String> permissionList = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
-                .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
-                .CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.CAMERA);
-        }
-        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
-                .READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.READ_PHONE_STATE);
-        }
-        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
-                .WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        if (!permissionList.isEmpty()) {
-            Log.d("yellow", "not Empty");
-            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(PublishActivity.this, permissions, 1);
-        }
-        else {
-            requestLocation();
-        }
-    }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0) {
-                    for (int result : grantResults) {
-                        if (result != PackageManager.PERMISSION_GRANTED) {
-                            Toast.makeText(this, "必须同意所有权限才能使用",
-                                    Toast.LENGTH_SHORT).show();
-                            finish();
-                            return;
-                        }
-                        requestLocation();
-                    }
-                }
-                else {
-                    Toast.makeText(this, "发生未知错误",
-                            Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-                break;
-        }
-    }
 
 }

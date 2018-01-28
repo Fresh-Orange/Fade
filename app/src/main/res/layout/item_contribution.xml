@@ -54,19 +54,32 @@
                 android:src="@drawable/add"/>
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/contribution_image"
+        <RelativeLayout
+            android:id="@+id/first_letter"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/butterfly"
-            />
+            android:layout_marginRight="10dp">
+            <ImageView
+                android:id="@+id/contribution_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/butterfly"
+                android:visibility="gone"
+                />
+            <LinearLayout
+                android:id="@+id/contribution_text"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="visible"
+                android:orientation="vertical"/>
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/contribution_time"
-            android:layout_toLeftOf="@id/contribution_image"
+            android:layout_toLeftOf="@id/first_letter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

@@ -1,12 +1,18 @@
 package com.sysu.pro.fade;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,8 +42,11 @@ import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
 import org.java_websocket.drafts.Draft_6455;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import io.rong.imkit.RongIM;
@@ -66,14 +75,22 @@ public class MainActivity extends MainBaseActivity {
      */
     private static long lastBackTime = 0;
     private final int BACK_INTERVAL = 1000;
-
+    private final int ACCESS_FINE_LOCATION = 101;
+    private final int CAMERA = 102;
+    private final int PERMISSION_WRITE_EXTERNAL_STORAGE = 103;
+    private final int READ_PHONE_STATE = 104;
+    private final int RECORD_AUDIO = 105;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        createFiles();
+
         /*用以解决输入评论时底部导航栏被顶起的问题*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getPermission();
         //初始化用户信息
         user = new UserUtil(this).getUer();
         TokenModel tokenModel = user.getTokenModel();
@@ -141,6 +158,19 @@ public class MainActivity extends MainBaseActivity {
 
         setUserProvider();
         getTokenAndConnect();
+    }
+
+    private void createFiles() {
+        //创建文件夹
+        final File sd= Environment.getExternalStorageDirectory();
+        String cache_path_photo = sd.getPath() + "/Fade/Photo/Fade";
+        File rootFile_photo = new File(cache_path_photo);
+        if(!rootFile_photo.exists())
+            rootFile_photo.mkdirs();
+        String cache_path_root = sd.getPath() + "/Fade/cache_pic";
+        File rootFile = new File(cache_path_root);
+        if(!rootFile.exists())
+            rootFile.mkdirs();
     }
 
     /**
@@ -566,6 +596,136 @@ public class MainActivity extends MainBaseActivity {
                     Toast.makeText(MainActivity.this, "失败……", Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+    }
+
+    public void getPermission() {
+        List<String> permissionList = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission
+                .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission
+                .CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.CAMERA);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+//                    CAMERA);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission
+                .READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE},
+//                    READ_PHONE_STATE);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission
+                .WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                    PERMISSION_WRITE_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission
+                .RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.RECORD_AUDIO);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
+//                    RECORD_AUDIO);
+        }
+        if (!permissionList.isEmpty()) {
+            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this, "您拒绝了其中一种权限，无法正常完整运行某些功能，请在后台权限管理打开此功能",
+                                    Toast.LENGTH_LONG).show();
+//                            finish();
+                            return;
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(this, "发生未知错误",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+//            case ACCESS_FINE_LOCATION:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了定位权限，无法进行帖子定位，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+//            case PERMISSION_WRITE_EXTERNAL_STORAGE:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了读写内存权限，无法访问内部相册，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+//            case READ_PHONE_STATE:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了手机状态权限，无法读取手机状态，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+//            case RECORD_AUDIO:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了访问麦克风权限，无法进行语音输入，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
         }
     }
 

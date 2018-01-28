@@ -1,11 +1,14 @@
 package com.sysu.pro.fade.message.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -13,6 +16,9 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.message.Utils.DateUtils;
+import com.sysu.pro.fade.utils.DisplayUtil;
+import com.sysu.pro.fade.view.DisplayParams;
+import com.sysu.pro.fade.view.MyTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +71,8 @@ public class ContributeAdapter extends RecyclerView.Adapter<ContributeAdapter.My
             TextView user_status_text = (TextView) holder.itemView.findViewById(R.id.contribution_status);
             ImageView user_image = (ImageView) holder.itemView.findViewById(R.id.contribution_status_image);
             TextView user_time = (TextView) holder.itemView.findViewById(R.id.contribution_time);
+            ImageView user_note_image = holder.itemView.findViewById(R.id.contribution_image);
+            LinearLayout user_text = holder.itemView.findViewById(R.id.contribution_text);
             //对RecyclerView子项的数据进行赋值，在每个子项被滚动到屏幕内的时候执行
             //获得当前项的实例
             Integer status = note.getType();    //1是增2是减
@@ -78,8 +86,40 @@ public class ContributeAdapter extends RecyclerView.Adapter<ContributeAdapter.My
                 user_status_text.setText("减");
                 user_image.setImageResource(R.drawable.minus);
             }
+            if (note.getExampleImage() == null) {
+                //TODO:article
+//                drawText();
+                user_note_image.setVisibility(View.GONE);
+                user_text.setVisibility(View.VISIBLE);
+                String result = note.getNote_content().substring(0,1);
+                Log.d("yellow", "result: " + result);
+                Log.d("yellow", "getNote_content: " + note.getNote_content());
+                DisplayParams displayParams = DisplayParams.getInstance(mContext);
+                if (!note.getNote_content().isEmpty()) {
+                    MyTextView myTextView1 = new MyTextView(mContext);
+                    myTextView1.setText(result);
+                    myTextView1.setTextSize(18);
+                    myTextView1.setTextAlign(MyTextView.TEXT_ALIGN_CENTER_HORIZONTAL | MyTextView.TEXT_ALIGN_CENTER_VERTICAL);
+                    myTextView1.setTextColor(Color.DKGRAY);
+                    myTextView1.setBackgroundColor(Color.LTGRAY);
+                    user_text.addView(myTextView1, LinearLayout.
+                            LayoutParams.MATCH_PARENT, DisplayUtil.dip2px(30, displayParams.scale));
+                }
+            }
+
+            else {
+                user_note_image.setVisibility(View.VISIBLE);
+                user_text.setVisibility(View.GONE);
+                Glide.with(mContext).load(Const.BASE_IP + note.getExampleImage()).into(user_note_image);
+            }
+
+
         }
         holder.itemView.setTag(position);
+    }
+
+    private void drawText() {
+
     }
 
     @Override
