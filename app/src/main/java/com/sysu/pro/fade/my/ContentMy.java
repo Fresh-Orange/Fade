@@ -129,12 +129,14 @@ public class ContentMy {
         String nickname = user.getNickname();
         String summary = user.getSummary();
         String fade_name = user.getFade_name();
-        // TODO: 2018/1/27 第一项是动态数量，暂时没搞，下面有个地方也是先设成了1 
-        allNums = new String[]{"1", Integer.toString(user.getFade_num())
-                , Integer.toString(user.getConcern_num()), Integer.toString(user.getFans_num())};
+        //获取用户的关注、粉丝等的数量
+        String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
+        String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
+        String concern_num = (user.getConcern_num()>999?(user.getConcern_num()/1000+"K"):user.getConcern_num().toString());
+        // TODO: 2018/1/27 第一项是动态数量，暂时没搞，下面有个地方也是allNum先设成了1
+        allNums = new String[]{"1", fade_num, fans_num, concern_num};
         Log.d("loadData", "loadData: "+user.getNickname());
         if(login_type.equals("") || image_url == null || image_url.equals("")){
-//            ivShowHead.setImageResource(R.drawable.default_head);
             Picasso.with(context).load(R.drawable.default_head).into(ivShowHead);
         }else{
             Picasso.with(context).load(Const.BASE_IP + image_url).into(ivShowHead);
@@ -145,7 +147,7 @@ public class ContentMy {
             tvShowNickname.setText(nickname);
         }
         if(summary == null || summary.equals("")){
-            tvShowSummary.setText("暂无个签，点击设置图标进行编辑");
+            tvShowSummary.setText("暂无个签，点击设置进入编辑");
         }else{
             tvShowSummary.setText(summary);
         }
@@ -153,7 +155,7 @@ public class ContentMy {
     }
 
     private void loadFragment() {
-        String[] mTitles = new String[]{"动态","Fade", "关注", "粉丝"};
+        String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
         Fragment dongTai = new TempFragment();
         Fragment fade = new MyFadeFragment();
         Fragment concern = new TempFragment();
@@ -161,19 +163,42 @@ public class ContentMy {
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(dongTai);
         fragments.add(fade);
-        fragments.add(concern);
         fragments.add(fans);
+        fragments.add(concern);
         MyFragmentAdapter adapter = new MyFragmentAdapter(activity.getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(3); //缓存3个选项卡，这样就不会每次都重新加载
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < adapter.getCount(); i++) {
             TabLayout.Tab tab = tabLayout.getTabAt(i);
-            tab.setCustomView(R.layout.my_tablayout_item);
+            if (i == 0) {
+                tab.setCustomView(R.layout.my_tablayout_first_item);
+            } else {
+                tab.setCustomView(R.layout.my_tablayout_item);
+            }
             TextView text1 = (TextView) tab.getCustomView().findViewById(R.id.my_tab_layout_text1);
             TextView text2 = (TextView) tab.getCustomView().findViewById(R.id.my_tab_layout_text2);
             text1.setText(mTitles[i]);
             text2.setText(allNums[i]);
         }
+        //设置下划线的颜色变化
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.getCustomView().findViewById(R.id.my_tab_layout_blue_line).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.getCustomView().findViewById(R.id.my_tab_layout_blue_line).setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                tab.getCustomView().findViewById(R.id.my_tab_layout_blue_line).setVisibility(View.VISIBLE);
+            }
+        });
+        tabLayout.getTabAt(0).select();
 	}
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -183,8 +208,11 @@ public class ContentMy {
         tvShowNickname.setText(user.getNickname());
         tvShowSummary.setText(user.getSummary());
         tvFadeName.setText(user.getFade_name());
-        allNums = new String[] {"1", user.getFade_num().toString(), user.getConcern_num().toString()
-                ,user.getFans_num().toString()};
+        String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
+        String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
+        String concern_num = (user.getConcern_num()>999?(user.getConcern_num()/1000+"K"):user.getConcern_num().toString());
+        // TODO: 2018/1/27 第一项是动态数量，暂时没搞，下面有个地方也是先设成了1
+        allNums = new String[]{"1", fade_num, fans_num, concern_num};
         loadFragment();
     }
 

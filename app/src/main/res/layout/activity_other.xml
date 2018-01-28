@@ -6,26 +6,6 @@
     android:orientation="vertical"
     android:background="#fff">
 
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize">-->
-        <!--<ImageView-->
-            <!--android:id="@+id/other_back"-->
-            <!--android:layout_width="20dp"-->
-            <!--android:layout_height="20dp"-->
-            <!--android:layout_marginLeft="16dp"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:src="@drawable/icon_back"/>-->
-        <!--<ImageView-->
-            <!--android:id="@+id/other_menu"-->
-            <!--android:layout_width="20dp"-->
-            <!--android:layout_height="20dp"-->
-            <!--android:layout_marginRight="16dp"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:src="@drawable/setting"/>-->
-    <!--</RelativeLayout>-->
     <com.sysu.pro.fade.my.BackBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -42,7 +22,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="30dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -81,7 +61,7 @@
             android:layout_width="48dp"
             android:layout_height="20dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/concern_bg"
             android:gravity="center"
@@ -90,21 +70,22 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/other_text2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/other_concern_ok"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:visibility="gone"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/concern_ok"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/other_text2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"  />
 
         <TextView
             android:id="@+id/other_text2"
@@ -116,6 +97,7 @@
             android:background="@drawable/contact_border"
             android:gravity="center"
             android:text="私信"
+            android:visibility="gone"
             android:textColor="#29abe2"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -128,20 +110,32 @@
         android:id="@+id/tvShowSummary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="88dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:text="该用户没有个人简介"
+        android:textColor="#000000"
+        android:textSize="14sp"/>
+    <TextView
+        android:id="@+id/tvShowSchool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="中山大学·历史学系"
         android:textColor="#000000"
         android:textSize="14sp"/>
 
     <android.support.design.widget.TabLayout
-        android:layout_marginTop="6dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginRight="60dp"
+        android:layout_marginTop="16dp"
+        app:tabPaddingStart="-1dp"
+        app:tabPaddingEnd="-1dp"
         android:id="@+id/other_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         app:tabIndicatorColor="#29abe2"
-        app:tabIndicatorHeight="3dp"/>
+        app:tabIndicatorHeight="0dp"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/other_view_pager"

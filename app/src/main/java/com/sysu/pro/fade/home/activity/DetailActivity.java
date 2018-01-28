@@ -403,7 +403,7 @@ public class DetailActivity extends MainBaseActivity{
         return note;
     }
 
-    //初始化续秒列表
+    //初始化续秒头像列表
     private void initForwardList() {
         forwardAdapter = new CommonAdapter<Note>(forwardList) {
             @Override
@@ -412,9 +412,17 @@ public class DetailActivity extends MainBaseActivity{
             }
 
             @Override
-            public void convert(ViewHolder holder, Note data, int position) {
+            public void convert(ViewHolder holder, final Note data, int position) {
                 holder.setCircleImage(R.id.detail_forward_head, Const.BASE_IP+data.getHead_image_url());
                 holder.setGoodImage(R.id.detail_forward_good, data.getType()==1);
+                holder.onWidgetClick(R.id.detail_forward_head, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(DetailActivity.this, OtherActivity.class);
+                        i.putExtra(Const.USER_ID, data.getUser_id());
+                        startActivity(i);
+                    }
+                });
             }
         };
         forwardRecycler = findViewById(R.id.detail_forward_list);
@@ -442,6 +450,15 @@ public class DetailActivity extends MainBaseActivity{
                 holder.setText(R.id.comment_detail_name, data.getNickname());
                 holder.setText(R.id.comment_detail_date, data.getComment_time());
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
+                //头像点击事件
+                holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(DetailActivity.this, OtherActivity.class);
+                        i.putExtra(Const.USER_ID, data.getUser_id());
+                        startActivity(i);
+                    }
+                });
                 //一级评论内容的点击事件，点击之后弹出输入框
                 holder.onWidgetClick(R.id.comment_detail_content, new View.OnClickListener() {
                     @Override
@@ -545,7 +562,11 @@ public class DetailActivity extends MainBaseActivity{
         view.findViewById(R.id.reply_content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSecondReply(reply, holder, userId);
+                if (reply.getUser_id() != userId) {
+                    showSecondReply(reply, holder, userId);
+                } else {
+                    // TODO: 2018/1/28 自己不能回复自己的二级评论，弹出删除、复制选项
+                }
             }
         });
         return view;
