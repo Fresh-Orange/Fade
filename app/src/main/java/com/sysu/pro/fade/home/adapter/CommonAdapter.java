@@ -3,6 +3,7 @@ package com.sysu.pro.fade.home.adapter;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,8 @@ import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by 12194 on 2017/12/17.
@@ -38,7 +41,6 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-
         convert(holder, mItemsList.get(position), position);
 
         if (mListener != null) {
@@ -96,6 +98,10 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
         }
         public void setImage(int id, String imageUrl) {
             ImageView view = getView(id);
+            Glide.with(view.getContext()).load(imageUrl).into(view);
+        }
+        public void setCircleImage(int id, String imageUrl) {
+            CircleImageView view = getView(id);
             Glide.with(view.getContext()).load(imageUrl).into(view);
         }
         public void removeAllViews(int id) {

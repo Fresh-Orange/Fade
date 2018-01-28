@@ -11,7 +11,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         >
         <android.support.constraint.ConstraintLayout
             android:id="@+id/detail_root_view"
@@ -86,17 +86,40 @@
             </LinearLayout>
 
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:id="@+id/detail_commentator"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/detail_note">
                 <!---续秒人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
-            </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/detail_forward_list"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/detail_forward_more"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/detail_forward_more"
+                    android:layout_width="40dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
 
             <View
                 android:id="@+id/detail_divide1"
@@ -150,27 +173,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/detail_divide2">
 
-                <com.sysu.pro.fade.home.view.GreedyRecyclerView
-                    android:id="@+id/detail_comment"
+                <com.scwang.smartrefresh.layout.SmartRefreshLayout
+                    android:id="@+id/detail_comment_refresh"
                     android:layout_width="match_parent"
-                    android:layout_height="350dp" />
-                <!--加载更多-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/detail_load_more"
-                    android:padding="5dp"
-                    android:gravity="center"
-                    android:visibility="gone">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="正在加载更多"
-                        android:textSize="18sp"
-                        android:layout_marginLeft="10dp"
-                        />
-                </LinearLayout>
+                    android:layout_height="wrap_content">
+                    <com.sysu.pro.fade.home.view.GreedyRecyclerView
+                        android:id="@+id/detail_comment"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp" />
+                </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
             </LinearLayout>
 
             <EditText
