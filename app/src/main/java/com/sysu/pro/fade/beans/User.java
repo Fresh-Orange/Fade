@@ -63,6 +63,9 @@ public class User implements Serializable{
 	//通知页显示判断用的
 	private Integer viewType;
 
+	//是否已经关注了这个人
+	private Integer isConcern;
+
 	public Integer getFade_num() {
 		return fade_num;
 	}
@@ -221,5 +224,13 @@ public class User implements Serializable{
 
 	public void setViewType(Integer viewType) {
 		this.viewType = viewType;
+	}
+
+	public Integer getIsConcern() {
+		return isConcern;
+	}
+
+	public void setIsConcern(Integer isConcern) {
+		this.isConcern = isConcern;
 	}
 }
