@@ -92,7 +92,8 @@ public class CommentAdapter extends RecyclerView.Adapter< CommentAdapter.MyHolde
                     MyTextView myTextView1 = new MyTextView(mContext);
                     myTextView1.setText(result);
                     myTextView1.setTextSize(18);
-                    myTextView1.setTextAlign(MyTextView.TEXT_ALIGN_CENTER_HORIZONTAL | MyTextView.TEXT_ALIGN_CENTER_VERTICAL);
+                    myTextView1.setTextAlign(MyTextView.TEXT_ALIGN_CENTER_HORIZONTAL |
+                            MyTextView.TEXT_ALIGN_CENTER_VERTICAL);
                     myTextView1.setTextColor(Color.DKGRAY);
                     myTextView1.setBackgroundColor(Color.LTGRAY);
                     user_text.addView(myTextView1, LinearLayout.
