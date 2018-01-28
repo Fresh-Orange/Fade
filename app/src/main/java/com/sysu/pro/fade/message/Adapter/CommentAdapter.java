@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.CommentMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public class CommentAdapter extends RecyclerView.Adapter< CommentAdapter.MyHolder>
         implements View.OnClickListener,View.OnLongClickListener{
 
-    private List<Comment> data = new ArrayList<>();
+    private List<CommentMessage> data = new ArrayList<>();
     private Context mContext;
 
     public View VIEW_FOOTER;
@@ -34,7 +34,7 @@ public class CommentAdapter extends RecyclerView.Adapter< CommentAdapter.MyHolde
     private int TYPE_HEADER = 1001;
     private int TYPE_FOOTER = 1002;
 
-    public CommentAdapter(List<Comment> data, Context mContext) {
+    public CommentAdapter(List<CommentMessage> data, Context mContext) {
         this.data = data;
         this.mContext = mContext;
     }
@@ -56,16 +56,16 @@ public class CommentAdapter extends RecyclerView.Adapter< CommentAdapter.MyHolde
     @Override
     public void onBindViewHolder( CommentAdapter.MyHolder holder, int position) {
         if (data.get(position).getViewType() == null) {
-            Comment comment = data.get(position);
+            CommentMessage commentMessage = data.get(position);
             ImageView user_icon = (ImageView)holder.itemView.findViewById(R.id.comment_icon);
             TextView user_id = (TextView) holder.itemView.findViewById(R.id.comment_user_id);
             ImageView user_image = (ImageView) holder.itemView.findViewById(R.id.comment_image);
             TextView user_time = (TextView) holder.itemView.findViewById(R.id.comment_time);
             TextView user_content = (TextView)holder.itemView.findViewById(R.id.comment_content);
-            String content = comment.getComment_content(); //回复内容
+            String content = commentMessage.getComment_content(); //回复内容
             //String time = DateUtils.changeToDate(comment.getComment_time().substring(0,comment.getComment_time().length() - 2));
-            Glide.with(mContext).load(Const.BASE_IP + comment.getHead_image_url()).into(user_icon);
-            user_id.setText(comment.getNickname());
+            Glide.with(mContext).load(Const.BASE_IP + commentMessage.getFrom_head()).into(user_icon);
+            user_id.setText(commentMessage.getFrom_nickname());
            // user_time.setText(time);
             user_content.setText(content);
         }

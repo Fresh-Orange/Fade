@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -577,6 +576,7 @@ public class DetailActivity extends MainBaseActivity{
                 secondComment.setComment_id(toComment.getComment_id());
 //                secondComment.setTo_nickname(toComment.getNickname());
 //                secondComment.setTo_user_id(toComment.getUser_id());
+                secondComment.setFirst_id(toComment.getUser_id());
                 CommentService send = retrofit.create(CommentService.class);
                 //提交到服务器，并返回评论的id等内容
                 send.addSecondComment(JSON.toJSONString(secondComment))
