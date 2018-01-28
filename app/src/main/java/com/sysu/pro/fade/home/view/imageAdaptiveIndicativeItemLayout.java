@@ -296,6 +296,7 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			final View v = inflater.inflate(R.layout.image_item_fragment, container, false);
+
 			mImageView = (ImageView) v.findViewById(R.id.full_image);
 			mImageView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -318,7 +319,6 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
 
-			//Glide.with(this).load(mImageUrl).fitCenter().into(mImageView);
 			int startX = 0;
 			int startY = 0;
 			if (imgCoordinates!=null && !imgCoordinates.isEmpty()){
@@ -365,6 +365,8 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			return mImageItemFragment.newInstance(imagePathList, position, nextUrl
 					, imgCoordinates, clickMode, pager);
 		}
+
+
 
 	}
 }

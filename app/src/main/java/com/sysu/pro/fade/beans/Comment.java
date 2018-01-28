@@ -17,6 +17,8 @@ public class Comment implements Serializable{
 	private List<SecondComment>comments;//二级评论列表
 	private Integer type; //0代表增秒评论，1代表减秒评论
 
+	private Integer viewType;
+
 	public Integer getComment_id() {
 		return comment_id;
 	}
@@ -74,5 +76,13 @@ public class Comment implements Serializable{
 	@Override
 	public String toString() {
 		return "comment_id="+comment_id + ",comment_content="+comment_content;
+	}
+
+	public Integer getViewType() {
+		return viewType;
+	}
+
+	public void setViewType(Integer viewType) {
+		this.viewType = viewType;
 	}
 }

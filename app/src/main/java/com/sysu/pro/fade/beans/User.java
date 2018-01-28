@@ -60,6 +60,9 @@ public class User implements Serializable{
 	//融云token
 	private String messageToken;
 
+	//通知页显示判断用的
+	private Integer viewType;
+
 	public Integer getFade_num() {
 		return fade_num;
 	}
@@ -210,5 +213,13 @@ public class User implements Serializable{
 
 	public void setMessageToken(String messageToken) {
 		this.messageToken = messageToken;
+	}
+
+	public Integer getViewType() {
+		return viewType;
+	}
+
+	public void setViewType(Integer viewType) {
+		this.viewType = viewType;
 	}
 }

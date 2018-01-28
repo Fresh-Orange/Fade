@@ -72,7 +72,7 @@
             android:id="@+id/comment_time"
             app:layout_constraintLeft_toRightOf="@id/comment_icon"
             android:layout_width="wrap_content"
-            android:layout_height="15dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/comment_content"
             android:layout_marginTop="5dp"
             android:layout_centerVertical="true"

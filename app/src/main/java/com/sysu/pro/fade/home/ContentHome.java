@@ -145,7 +145,7 @@ public class ContentHome {
         loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                if(isLoading == false){
+                if(!isLoading){
                     isLoading = true;
                     addItems();
                 }
@@ -155,6 +155,7 @@ public class ContentHome {
         judgeRemoveScrollListener = new JudgeRemoveOnScrollListener(context, notes, updateList);
         recyclerView.addOnScrollListener(loadMoreScrollListener);
         recyclerView.addOnScrollListener(judgeRemoveScrollListener);
+
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
         recyclerView.setItemAnimator(fadeItemAnimator);
@@ -209,8 +210,11 @@ public class ContentHome {
                                                 }
                                                 else{
                                                     Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+                                                    isEnd = true;
                                                 }
-                                                if(addList.size() < 10) isEnd = true;
+                                                if(addList.size() < 10){
+                                                    isEnd = true;
+                                                }
                                                 swipeRefresh.setRefreshing(false);
                                                 setLoadingMore(false);
                                                 isLoading = false;

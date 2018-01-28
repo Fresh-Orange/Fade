@@ -11,6 +11,8 @@ public class Const {
     public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
     public static final String IP  = "https://sysufade.cn/fade"; //阿里云云服务器地址
 
+    public static final String RONG_CLOUD_BASE_IP  = "http://api.cn.ronghub.com/"; //阿里云云服务器地址
+
     public static final String BASE_IP  = "https://sysufade.cn/fade_pro/"; //阿里云云服务器地址
     public static final String WEBSOCKET_IP  = "ws://119.23.229.19:8080/fade_pro/webSocketServer"; //阿里云云服务器websocket地址
     //public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/"; //本地地址

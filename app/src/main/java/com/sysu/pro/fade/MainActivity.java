@@ -3,6 +3,7 @@ package com.sysu.pro.fade;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -37,7 +38,11 @@ import org.java_websocket.drafts.Draft_6455;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.UserInfo;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -133,6 +138,114 @@ public class MainActivity extends MainBaseActivity {
                         }
                     });
         }
+
+        setUserProvider();
+        getTokenAndConnect();
+    }
+
+    /**
+     * 设置内容提供器以供融云SDK进行调用获得用户的头像等信息
+     */
+    private void setUserProvider() {
+        RongIM.setUserInfoProvider(new RongIM.UserInfoProvider() {
+            @Override
+            public UserInfo getUserInfo(String s) {
+                Log.d("setUserProvider-id", s);
+                Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+                UserService userService = retrofit.create(UserService.class);
+                userService
+                        .getUserById(s)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<User>() {
+                            @Override
+                            public void onCompleted() {}
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e("setUserProvider", e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(User user) {
+                                Log.d("rong-onNext", user.toString());
+                                RongIM.getInstance().refreshUserInfoCache(
+                                        new UserInfo(user.getUser_id().toString(),
+                                                user.getNickname(),
+                                                Uri.parse(Const.BASE_IP+user.getHead_image_url())));
+                            }
+                        });
+                return null;
+            }
+        }, true);
+    }
+
+    private void getTokenAndConnect() {
+/*        Retrofit rongRetrofit = new Retrofit.Builder()
+                .baseUrl(Const.RONG_CLOUD_BASE_IP)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+        RongCloudService rongService = rongRetrofit.create(RongCloudService.class);
+        String randNum = RongCloudHelper.getRandNum();
+        String timeStamp = RongCloudHelper.getCurTime();
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("userId", user.getUser_id().toString());
+        builder.add("name", user.getNickname());
+        builder.add("portraitUri", user.getHead_image_url());
+        rongService.getRongCloudToken(randNum, timeStamp,
+                RongCloudHelper.getSignature(randNum, timeStamp),
+                builder.build())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {}
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("getTokenAndConnectErr", e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            String response = responseBody.string();
+                            Log.e("本地获取token", response);
+                            //Toast.makeText(MainActivity.this, responseBody.string(), Toast.LENGTH_SHORT).show();
+                            JSONObject jsonObject = JSON.parseObject(response);
+                            if (((int)jsonObject.get("code")) == 200){ //返回码正常
+                                String token = (String)jsonObject.get("token");
+                                connect(token);
+                            }
+                            //connect("UJWNywMqxIURSZUVrDvMeYXmBq98FHESTwFkzj26+w5rDw+ZqtUvPybf/6NpKAGYBrqo3wsWf4Jvn4AUx5UbTw==");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });*/
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        userService = retrofit.create(UserService.class);
+        userService.getMessageToken(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Map<String,Object>>() {
+                    @Override
+                    public void onCompleted() {}
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("获取token失败", e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Map<String,Object>map) {
+                        String s = (String) map.get("token");
+                        Log.d("getTokenAndConnect", s);
+                        connect(s);
+                    }
+                });
     }
 
     //设置底部导航栏图片
@@ -411,6 +524,48 @@ public class MainActivity extends MainBaseActivity {
                         }
                     });
             super.onDestroy();
+        }
+    }
+
+    /**
+     * 使用本机用户的token连接融云服务器
+     * @param token 本机用户的token
+     */
+    private void connect(String token) {
+
+        if (getApplicationInfo().packageName.equals(App.getCurProcessName(getApplicationContext()))) {
+
+            Toast.makeText(MainActivity.this, "IN！", Toast.LENGTH_SHORT).show();
+            RongIM.connect(token, new RongIMClient.ConnectCallback() {
+
+                /**
+                 * Token 错误。可以从下面两点检查 1.  Token 是否过期，如果过期您需要向 App Server 重新请求一个新的 Token
+                 *                  2.  token 对应的 appKey 和工程里设置的 appKey 是否一致
+                 */
+                @Override
+                public void onTokenIncorrect() {
+                    Toast.makeText(MainActivity.this, "onTokenIncorrect！", Toast.LENGTH_SHORT).show();
+                }
+
+                /**
+                 * 连接融云成功
+                 * @param userid 当前 token 对应的用户 id
+                 */
+                @Override
+                public void onSuccess(String userid) {
+                    Log.d("LoginActivity", "--onSuccess" + userid);
+                    Toast.makeText(MainActivity.this, "成功！", Toast.LENGTH_SHORT).show();
+                }
+
+                /**
+                 * 连接融云失败
+                 * @param errorCode 错误码，可到官网 查看错误码对应的注释
+                 */
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Toast.makeText(MainActivity.this, "失败……", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 

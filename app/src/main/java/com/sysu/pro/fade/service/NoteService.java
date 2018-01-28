@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.service;
 
 import com.sysu.pro.fade.beans.DetailPage;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.SimpleResponse;
 
@@ -37,12 +38,24 @@ public interface NoteService {
     @POST("changeSecond")
     Observable<SimpleResponse>changeSecond(@Field("note")String note);
 
-    //获得详情页内容
-    @GET("getNotePage/{note_id}")
-    Observable<DetailPage> getNotePage(@Path("note_id")String note_id);
+    //获得详情页内容, getFull为0代表获取部分note信息， 1代表将返回整个完整note
+    @GET("getNotePage/{note_id}/{user_id}/{getFull}")
+    Observable<DetailPage> getNotePage(@Path("note_id")String note_id,@Path("user_id")String user_id
+                                       ,@Path("getFull")String getFull);
 
     //删除帖子
     @DELETE("deleteNote/{note_id}/{user_id}")
     Observable<SimpleResponse> deleteNote(@Path("note_id")String note_id,@Path("user_id")String user_id);
+
+    //获取一个首页完整帖子的请求
+    @GET("getFullNote/{note_id}/{user_id}")
+    Observable<Note> getFullNote(@Path("note_id")String note_id, @Path("user_id")String user_id);
+
+    //搜索帖子的请求,start一开始填0，后面就填服务器返回的start；isAlive=0表明查询死的帖子，为1表明查询活的帖子
+    //查询死贴和查询活帖的start一开始都填0，user_id为用户自己的id
+    //当返回的记录条数小于10的时候，判定已经到底部
+    @GET("searchNote/{keyword}/{start}/{isAlive}/{user_id}")
+    Observable<NoteQuery> searchNote(@Path("keyword")String keyword, @Path("start")String start,
+                                @Path("isAlive")String isAlive,@Path("user_id")String user_id);
 
 }

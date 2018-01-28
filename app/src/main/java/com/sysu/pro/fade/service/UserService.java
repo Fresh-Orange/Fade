@@ -6,6 +6,8 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
+import java.util.Map;
+
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
@@ -78,9 +80,9 @@ public interface UserService {
     @GET("getPersonPage/{user_id}/{my_id}")
     Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
 
-    //检索用户，分段加载
-    @GET("searchUser/{keyword}/{page}")
-    Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("page")String  page);
+    //检索用户，分段加载,start一开始填0，后面就填服务器返回的start
+    @GET("searchUser/{keyword}/{start}")
+    Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("start")String  page);
 
     //获取我自己的帖子
     @GET("getMyNote/{user_id}/{start}")
@@ -88,7 +90,12 @@ public interface UserService {
 
     //获取融云token,返回的string字符串即是token
     @GET("getMessageToken/{user_id}")
-    Observable<String>getMessageToken(@Path("user_id")String  user_id);
+    Observable<Map<String,Object>>getMessageToken(@Path("user_id")String  user_id);
+
+    //获取他人个人页的帖子
+    @GET("getOtherPersonNote/{user_id}/{my_id}/{start}")
+    Observable<NoteQuery>getOtherPersonNote(@Path("user_id")String  user_id, @Path("my_id")String my_id,@Path("start")String  start);
+
 
 
 

@@ -7,6 +7,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +106,7 @@ public class DRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.View
                     if (position == getItemCount() - 1) {
                         mFootViews.clear();
                         notifyDataSetChanged();
+                        EventBus.getDefault().post("more");
                     }
                 }
             });

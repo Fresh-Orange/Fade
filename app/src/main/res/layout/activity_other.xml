@@ -6,26 +6,29 @@
     android:orientation="vertical"
     android:background="#fff">
 
-    <RelativeLayout
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?attr/actionBarSize">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/other_back"-->
+            <!--android:layout_width="20dp"-->
+            <!--android:layout_height="20dp"-->
+            <!--android:layout_marginLeft="16dp"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:src="@drawable/icon_back"/>-->
+        <!--<ImageView-->
+            <!--android:id="@+id/other_menu"-->
+            <!--android:layout_width="20dp"-->
+            <!--android:layout_height="20dp"-->
+            <!--android:layout_marginRight="16dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:src="@drawable/setting"/>-->
+    <!--</RelativeLayout>-->
+    <com.sysu.pro.fade.my.BackBar
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
-        <ImageView
-            android:id="@+id/other_back"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="16dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerInParent="true"
-            android:src="@drawable/icon_back"/>
-        <ImageView
-            android:id="@+id/other_menu"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="16dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:src="@drawable/setting"/>
-    </RelativeLayout>
+        android:layout_height="wrap_content"/>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

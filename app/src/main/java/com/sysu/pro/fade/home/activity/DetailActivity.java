@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -21,6 +24,7 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SecondComment;
@@ -57,12 +61,12 @@ public class DetailActivity extends MainBaseActivity{
     private boolean is_Comment;
     private Integer commentType;
     private Retrofit retrofit;
-    private ImageView detailBack;   //返回按钮
-    private ImageView detailSetting;    //三个点按钮
+    private RelativeLayout detailSetting;    //三个点按钮
     private TextView commentNum;
     private EditText writeComment;
     private Button sendComment;
     private RecyclerView recyclerView;
+    private LinearLayout loadMore;
     private CommonAdapter<Comment> commentAdapter;
     private List<Comment> commentator = new ArrayList<>();  //第一评论者列表
 
@@ -77,6 +81,10 @@ public class DetailActivity extends MainBaseActivity{
     private TextView tvCount;
     private ClickableProgressBar clickableProgressBar;
 
+    /*add by hl*/
+    private Boolean getFull = false;
+    private Integer commentStart; //评论分页查询的起点
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,15 +92,11 @@ public class DetailActivity extends MainBaseActivity{
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
         sendComment = (Button) findViewById(R.id.detail_send_comment);
-        detailBack = (ImageView) findViewById(R.id.detail_back);
+        loadMore = findViewById(R.id.detail_load_more);
+        //设置back bar
+        detailSetting = findViewById(R.id.back_bar_menu);
+        detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
-
-        detailBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         /* ******** 帖子展示部分 by 赖贤城 *******/
         note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
@@ -103,19 +107,20 @@ public class DetailActivity extends MainBaseActivity{
         tvCount = (TextView) findViewById(R.id.tv_comment_add_count);
         tvPostTime = (TextView) findViewById(R.id.tv_post_time);
         clickableProgressBar = (ClickableProgressBar) findViewById(R.id.clickable_progressbar);
-        initNoteView();
+        getFull = getIntent().getBooleanExtra("getFull",false); //如果getFull为true的话，还要重新下载完整note信息
+        if(!getFull) initNoteView();
         //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
 
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
-        is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);
+        is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);//是否是点击评论进来的？
         commentType = note.getAction();
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
 
-        NoteService noteService = retrofit.create(NoteService.class);
-        noteService.getNotePage(Integer.toString(note_id))
+        final NoteService noteService = retrofit.create(NoteService.class);
+        noteService.getNotePage(Integer.toString(note_id),user.getUser_id().toString(),(getFull?"1":"0"))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<DetailPage>() {
@@ -130,14 +135,27 @@ public class DetailActivity extends MainBaseActivity{
 
                     @Override
                     public void onNext(DetailPage detailPage) {
-                        commentator.addAll(detailPage.getComment_list());
-                        commentNum.setText(Integer.toString(detailPage.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
-
+                        //1.评论加载的流程，首先详情页加载头十条（通过请求getNotePage），CommentQuery中包含有十条数据list以及下次查询起点start
+                        // 十条以后，后面的评论需要分段加载（通过请求CommentService的getTenComment），每次10条，start填的是上次CommentQuery返回的
+                        //2.续一秒列表的数据为noteQuery中的list，单项为一个Note
+                        //3.如果getFull为true，则等到下载完整note后才加载界面
+                        CommentQuery commentQuery = detailPage.getCommentQuery();
+                        if(commentQuery != null){
+                            commentator.addAll(commentQuery.getList());
+                            commentStart = commentQuery.getStart(); //下次第一次用CommentService的getTenComment请求获取评论start就填这个
+                        }
+                        Note downloadNote = detailPage.getNote();
+                        if(getFull){
+                            if(note.getOrigin() != null) note = downloadNote.getOrigin();
+                            else note = downloadNote;
+                            initNoteView();
+                        }
+                        commentNum.setText(Integer.toString(downloadNote.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
                         //更新续秒和评论数量
                         //Note tempNote = new Note();
-                        note.setAdd_num(detailPage.getAdd_num());
-                        note.setComment_num(detailPage.getComment_num());
-                        note.setFetchTime(detailPage.getFetchTime());
+                        note.setAdd_num(downloadNote.getAdd_num());
+                        note.setComment_num(downloadNote.getComment_num());
+                        note.setFetchTime(downloadNote.getFetchTime());
                         setCommentAndAddCountText(DetailActivity.this, note);
                         setTimeLeftTextAndProgress(DetailActivity.this, note);
 
@@ -374,8 +392,7 @@ public class DetailActivity extends MainBaseActivity{
     }
 
     private void initialComment() {
-
-        //放直接评论的adapter
+        //放一级评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
             @Override
             public int getLayoutId(int ViewType) {
@@ -422,6 +439,42 @@ public class DetailActivity extends MainBaseActivity{
         recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (commentator.size()%10==0 && recyclerView.canScrollVertically(1)) {
+                    loadMore.setVisibility(View.VISIBLE);
+                    loadTenMoreComment();
+                }
+            }
+        });
+    }
+
+    //上拉加载多10条评论
+    private void loadTenMoreComment() {
+        CommentService service = retrofit.create(CommentService.class);
+        service.getTenComment(note_id.toString(), commentStart.toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CommentQuery>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("loadMoreErr", "onError: "+e.toString());
+                    }
+
+                    @Override
+                    public void onNext(CommentQuery commentQuery) {
+                        commentStart = commentQuery.getStart(); //更新start
+                        commentator.addAll(commentQuery.getList());
+                        commentAdapter.notifyDataSetChanged();
+                        loadMore.setVisibility(View.GONE);
+                    }
+                });
     }
 
     //创建回复的View
@@ -433,7 +486,7 @@ public class DetailActivity extends MainBaseActivity{
         TextView date = (TextView) view.findViewById(R.id.reply_date);
         TextView content = (TextView) view.findViewById(R.id.reply_content);
         name.setText(reply.getNickname());
-        if (reply.getTo_user_id() == userId) {
+        if (reply.getTo_user_id() == null) {
             word.setVisibility(View.GONE);
             toName.setVisibility(View.GONE);
         }
@@ -449,7 +502,7 @@ public class DetailActivity extends MainBaseActivity{
         return view;
     }
 
-    //显示评论输入框
+    //显示一级评论输入框
     private void showDirectComment() {
         writeComment.setVisibility(View.VISIBLE);
         sendComment.setVisibility(View.VISIBLE);
@@ -494,6 +547,8 @@ public class DetailActivity extends MainBaseActivity{
                                 commentator.add(userComment);
                                 commentAdapter.notifyDataSetChanged();
                                 writeComment.setText("");
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
 
@@ -520,8 +575,8 @@ public class DetailActivity extends MainBaseActivity{
                 secondComment.setNote_id(note_id);
                 secondComment.setUser_id(user.getUser_id());
                 secondComment.setComment_id(toComment.getComment_id());
-                secondComment.setTo_nickname(toComment.getNickname());
-                secondComment.setTo_user_id(toComment.getUser_id());
+//                secondComment.setTo_nickname(toComment.getNickname());
+//                secondComment.setTo_user_id(toComment.getUser_id());
                 CommentService send = retrofit.create(CommentService.class);
                 //提交到服务器，并返回评论的id等内容
                 send.addSecondComment(JSON.toJSONString(secondComment))
@@ -548,6 +603,8 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
             }
@@ -602,6 +659,8 @@ public class DetailActivity extends MainBaseActivity{
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
                                 holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
+                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                             }
                         });
             }

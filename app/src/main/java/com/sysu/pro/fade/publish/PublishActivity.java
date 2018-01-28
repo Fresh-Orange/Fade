@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.publish;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -10,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +22,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -41,7 +46,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.BuildConfig;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
@@ -54,12 +66,16 @@ import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
 import com.sysu.pro.fade.publish.Event.ClickToCropEvent;
 import com.sysu.pro.fade.publish.Event.CropToClickEvent;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
+import com.sysu.pro.fade.publish.Event.MapToPublish;
+import com.sysu.pro.fade.publish.Event.SearchToPublish;
 import com.sysu.pro.fade.publish.adapter.PostArticleImgAdapter;
 import com.sysu.pro.fade.publish.crop.CropActivity;
 import com.sysu.pro.fade.publish.imageselector.ImageSelectorActivity;
 import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
+import com.sysu.pro.fade.publish.map.Activity.MapActivity;
+import com.sysu.pro.fade.publish.map.Activity.SearchPlaceActivity;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -75,6 +91,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.rong.imageloader.utils.L;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -154,7 +171,15 @@ public class PublishActivity extends AppCompatActivity {
     int cut_size;   //1表示4:5,2表示15:8
     int curShowPosition = 0;
 
-
+    //地图相关
+    private static String city;
+    private String address;
+    public AMapLocationClientOption mLocationOption = null;
+    private static double latitude;
+    private static double longitude;
+    private boolean mapStatus = false;
+    //声明AMapLocationClientOption对象
+    public AMapLocationClient mLocationClient = null;
 
     private void dealWithImagesToSend(final List<String>images){
         //发送帖子的最后操作在这里
@@ -311,6 +336,7 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
+        getPermission();
         imageX = new float[10];
         imageY = new float[10];
         //注册
@@ -363,6 +389,8 @@ public class PublishActivity extends AppCompatActivity {
                 note.setNickname(user.getNickname());
                 note.setNote_content(edit_temp.getText().toString());
                 note.setHead_image_url(user.getHead_image_url());
+                if (mapStatus)
+                    note.setNote_area(city + "·" + address);
                 //处理图片，发送后的回调处理
                 dealWithImagesToSend(images);
             }
@@ -407,9 +435,9 @@ public class PublishActivity extends AppCompatActivity {
                                 pager.setPaths(images,currentItem);
                                 updatePosition();
 //                                pager.removeViewAt(currentItem);
+                                pager.notifyChanged();
+                                ShowViewPager();
                             }
-                            pager.notifyChanged();
-                            ShowViewPager();
                         }
                     });
                     dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -445,6 +473,41 @@ public class PublishActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.not_choose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (findViewById(R.id.notation).getVisibility() == View.GONE) {
+                    //可以点了
+                    mapStatus = true;
+                    findViewById(R.id.not_choose).setVisibility(View.GONE);
+                    findViewById(R.id.is_choose).setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        findViewById(R.id.is_choose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapStatus = false;
+                findViewById(R.id.not_choose).setVisibility(View.VISIBLE);
+                findViewById(R.id.is_choose).setVisibility(View.GONE);
+            }
+        });
+        findViewById(R.id.map_information).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (findViewById(R.id.notation).getVisibility() == View.GONE) {
+                    //可以点了
+                    mapStatus = true;
+                    findViewById(R.id.not_choose).setVisibility(View.GONE);
+                    findViewById(R.id.is_choose).setVisibility(View.VISIBLE);
+                    Intent intent = new Intent(PublishActivity.this, MapActivity.class);
+                    intent.putExtra("longitude", longitude);
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("city", city);
+                    startActivityForResult(intent, Constants.MAP_RESULT_CODE);
+                }
+            }
+        });
         activityRootView = findViewById(R.id.activity_publish);
 //        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
@@ -762,6 +825,20 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MapToPublish event) {
+        address = event.getAddress();
+        Log.d("Yellow", "MapToPublish");
+        ((TextView) findViewById(R.id.address)).setText(address);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(SearchToPublish event) {
+        Log.d("Yellow", "SearchToPublish");
+        address = event.getAddress();
+        ((TextView) findViewById(R.id.address)).setText(address);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(CropToClickEvent event) {
         String message = event.getMessage();
         curShowPosition = event.getPosition();
@@ -783,8 +860,10 @@ public class PublishActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy(){
-        super.onDestroy();
+        mLocationClient.stopLocation();//停止定位后，本地定位服务并不会被销毁
+        mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
         EventBus.getDefault().unregister(this);//反注册EventBus
+        super.onDestroy();
     }
 
 
@@ -795,4 +874,150 @@ public class PublishActivity extends AppCompatActivity {
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
+
+    public MyLocationListener myListener = new MyLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation amapLocation) {
+            if (amapLocation != null) {
+                if (amapLocation.getErrorCode() == 0) {
+                    findViewById(R.id.map_information).setVisibility(View.VISIBLE);
+                    findViewById(R.id.notation).setVisibility(View.GONE);
+                    //可在其中解析amapLocation获取相应内容。
+//                    amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
+                    latitude = amapLocation.getLatitude();//获取纬度
+                    longitude = amapLocation.getLongitude();//获取经度
+                    Log.d("haa", "latitude" + latitude);
+                    Log.d("haa", "longitude" + longitude);
+//                    amapLocation.getAccuracy();//获取精度信息
+                    address = amapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
+//                    amapLocation.getCountry();//国家信息
+//                    amapLocation.getProvince();//省信息
+                    city = amapLocation.getCity();//城市信息
+                    ((TextView) findViewById(R.id.city)).setText(city);
+                    ((TextView) findViewById(R.id.address)).setText(address);
+//                    amapLocation.getDistrict();//城区信息
+//                    amapLocation.getStreet();//街道信息
+//                    amapLocation.getStreetNum();//街道门牌号信息
+//                    amapLocation.getCityCode();//城市编码
+//                    amapLocation.getAdCode();//地区编码
+//                    amapLocation.getAoiName();//获取当前定位点的AOI信息
+                }else {
+                    findViewById(R.id.map_information).setVisibility(View.GONE);
+                    findViewById(R.id.notation).setVisibility(View.VISIBLE);
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e("AmapError","location Error, ErrCode:"
+                            + amapLocation.getErrorCode() + ", errInfo:"
+                            + amapLocation.getErrorInfo());
+                }
+            }
+        }
+    };
+
+    private void requestLocation() {
+        mLocationClient = new AMapLocationClient(getApplicationContext());     //声明LocationClient类
+        mLocationClient.setLocationListener(myListener);    //注册监听函数
+        //初始化AMapLocationClientOption对象
+        mLocationOption = new AMapLocationClientOption();
+        initLocation();
+        //设置底部加载刷新
+    }
+
+
+    //    /**
+//     * 监听函数，有新位置的时候，格式化成字符串，输出到屏幕中
+//     */
+    public class MyLocationListener implements AMapLocationListener {
+        public void onReceiveLocation(AMapLocation location) {
+            if (location == null) {
+                return;
+            }
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+        }
+
+        @Override
+        public void onLocationChanged(AMapLocation aMapLocation) {
+
+        }
+    }
+
+    private void initLocation() {
+        Log.d("yellow", "initLocation");
+        //获取一次定位结果：
+        //该方法默认为false。
+        mLocationOption.setOnceLocation(true);
+
+        //获取最近3s内精度最高的一次定位结果：
+        //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
+        mLocationOption.setOnceLocationLatest(true);
+
+        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //设置是否返回地址信息（默认返回地址信息）
+        mLocationOption.setNeedAddress(true);
+        //关闭缓存机制
+        mLocationOption.setLocationCacheEnable(false);
+//        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
+        if(null != mLocationClient){
+            mLocationClient.setLocationOption(mLocationOption);
+            //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
+//            mLocationClient.stopLocation();
+            mLocationClient.startLocation();
+        }
+
+    }
+
+    public void getPermission() {
+        List<String> permissionList = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
+                .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
+                .CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.CAMERA);
+        }
+        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
+                .READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        if (ContextCompat.checkSelfPermission(PublishActivity.this, Manifest.permission
+                .WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!permissionList.isEmpty()) {
+            Log.d("yellow", "not Empty");
+            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(PublishActivity.this, permissions, 1);
+        }
+        else {
+            requestLocation();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this, "必须同意所有权限才能使用",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                            return;
+                        }
+                        requestLocation();
+                    }
+                }
+                else {
+                    Toast.makeText(this, "发生未知错误",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+        }
+    }
+
 }
