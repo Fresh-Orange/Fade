@@ -14,8 +14,8 @@ import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
-import com.sysu.pro.fade.beans.Comment;
-import com.sysu.pro.fade.beans.CommentQuery;
+import com.sysu.pro.fade.beans.CommentMessage;
+import com.sysu.pro.fade.beans.CommentMessageQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.message.Adapter.CommentAdapter;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
@@ -34,7 +34,7 @@ import rx.schedulers.Schedulers;
 public class CommentActivity extends MainBaseActivity {
     private RecyclerView notification_Rv;
     private CommentAdapter adapter;
-    private List<Comment> comments = new ArrayList<Comment>();
+    private List<CommentMessage> comments = new ArrayList<CommentMessage>();
     private User user;
     private Retrofit retrofit;
     private MessageService messageService;
@@ -59,7 +59,7 @@ public class CommentActivity extends MainBaseActivity {
         messageService.getAddComment(user.getUser_id().toString(), "0", "null")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<CommentQuery>() {
+                .subscribe(new Subscriber<CommentMessageQuery>() {
                     @Override
                     public void onCompleted() {
                     }
@@ -67,10 +67,10 @@ public class CommentActivity extends MainBaseActivity {
                     public void onError(Throwable e) {
                     }
                     @Override
-                    public void onNext(CommentQuery commentQuery) {
-                        start = commentQuery.getStart();
-                        point = commentQuery.getPoint();
-                        List<Comment>list = commentQuery.getList();
+                    public void onNext(CommentMessageQuery query) {
+                        start = query.getStart();
+                        point = query.getPoint();
+                        List<CommentMessage>list = query.getList();
                         Log.i("收到评论" , "" + list.size());
                         if(list.size() != 0){
                             comments.addAll(list);
@@ -109,7 +109,7 @@ public class CommentActivity extends MainBaseActivity {
                 messageService.getAddComment(user.getUser_id().toString(), start.toString(),point)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CommentQuery>() {
+                        .subscribe(new Subscriber<CommentMessageQuery>() {
                             @Override
                             public void onCompleted() {
                             }
@@ -119,9 +119,9 @@ public class CommentActivity extends MainBaseActivity {
                             }
 
                             @Override
-                            public void onNext(CommentQuery commentQuery) {
-                                start = commentQuery.getStart();
-                                List<Comment>list = commentQuery.getList();
+                            public void onNext(CommentMessageQuery query) {
+                                start = query.getStart();
+                                List<CommentMessage>list = query.getList();
                                 Log.i("收到贡献" , "" + list.size());
                                 if(list.size() != 0){
                                     comments.addAll(list);
@@ -154,7 +154,7 @@ public class CommentActivity extends MainBaseActivity {
                 messageService.getOldComment(user.getUser_id().toString(), start.toString())
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CommentQuery>() {
+                        .subscribe(new Subscriber<CommentMessageQuery>() {
                             @Override
                             public void onCompleted() {
                             }
@@ -163,9 +163,9 @@ public class CommentActivity extends MainBaseActivity {
                             public void onError(Throwable e) {
                             }
                             @Override
-                            public void onNext(CommentQuery commentQuery) {
-                                start = commentQuery.getStart();
-                                List<Comment>list = commentQuery.getList();
+                            public void onNext(CommentMessageQuery query) {
+                                start = query.getStart();
+                                List<CommentMessage>list = query.getList();
                                 Log.i("收到评论" , "" + list.size());
                                 if(list.size() != 0){
                                     comments.addAll(list);
@@ -200,7 +200,7 @@ public class CommentActivity extends MainBaseActivity {
                 messageService.getOldComment(user.getUser_id().toString(),start.toString())
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CommentQuery>() {
+                        .subscribe(new Subscriber<CommentMessageQuery>() {
                             @Override
                             public void onCompleted() {
                             }
@@ -209,9 +209,9 @@ public class CommentActivity extends MainBaseActivity {
                                 e.printStackTrace();
                             }
                             @Override
-                            public void onNext(CommentQuery commentQuery) {
-                                start = commentQuery.getStart();
-                                List<Comment>list = commentQuery.getList();
+                            public void onNext(CommentMessageQuery query) {
+                                start = query.getStart();
+                                List<CommentMessage>list = query.getList();
                                 Log.i("收到粉丝" , "" + list.size());
                                 if(list.size() != 0){
                                     comments.addAll(list);
@@ -239,7 +239,7 @@ public class CommentActivity extends MainBaseActivity {
         footView = LayoutInflater.from(CommentActivity.this).
                 inflate(R.layout.foot,null);
         adapter.VIEW_FOOTER = footView;
-        Comment comment = new Comment();
+        CommentMessage comment = new CommentMessage();
         comment.setViewType(ContributeAdapter.TYPE_FOOTER);
         comments.add(comment);
         adapter.notifyDataSetChanged();
