@@ -6,6 +6,8 @@
         android:width="1dp"
         android:color="#CCCCCC" />
     <!-- 边框宽度和颜色 -->
+    <!-- 填充的颜色 -->
+    <solid android:color="#f8f8f8" />
 
     <item>
         <shape android:shape="rectangle" >

@@ -46,6 +46,10 @@
     <!--for RongCloud IM-->
     <string name="rc_msg_setting">设置</string>
 
+
+    <!--for Discover-->
+    <string name="interest_hint">你可能感兴趣的用户</string>
+
     <string-array name="showGuidelinesArray">
         <item>Off</item>
         <item>On Touch</item>

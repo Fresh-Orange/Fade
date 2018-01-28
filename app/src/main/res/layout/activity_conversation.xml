@@ -2,13 +2,16 @@
               android:id="@+id/main_show"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="37dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="#f8f8f8">
         <LinearLayout
+            android:id="@+id/conversation_back"
             android:layout_marginLeft="12dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -19,14 +22,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:src="@drawable/rc_back"/>
-            <TextView
-                android:layout_marginLeft="2dp"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/rc_msg_back"
-                android:gravity="center_vertical"
-                android:textSize="14sp"
-                android:textColor="#333333"/>
         </LinearLayout>
 
         <TextView
@@ -49,6 +44,10 @@
             android:textColor="#333333"
             android:layout_marginRight="8dp"/>
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#cccccc"/>
     <fragment
         android:id="@+id/conversation"
         android:name="com.sysu.pro.fade.message.fragment.FadeConversationFragment"
