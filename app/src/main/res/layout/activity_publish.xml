@@ -70,7 +70,6 @@
             android:alpha="0.5"
             android:src="@drawable/publish_delete"
             />
-
     </RelativeLayout>
 
     <!--com.sysu.pro.fade.publish.adapter.imageAdaptiveIndicativeLayout
@@ -99,9 +98,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/my_et_emotion"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_marginBottom="5dp"
             android:textColor="@color/black"
             android:textSize="14sp"
@@ -109,6 +108,74 @@
             android:textColorHint="@color/black"
             android:theme="@style/MyEditText">
         </EditText>
+
+
+    <LinearLayout
+        android:id="@+id/map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
+
+        <ImageView
+            android:id="@+id/not_choose"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:alpha="0.5"
+            android:src="@drawable/black_select"/>
+        <ImageView
+            android:id="@+id/is_choose"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/icon_image_select"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/notation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="获取定位失败，请打开GPS"
+            android:alpha="0.5"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            />
+        <LinearLayout
+            android:id="@+id/map_information"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="广州"
+                android:textColor="@color/black"
+                android:alpha="0.5"
+                android:textSize="12sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="·"
+                android:textColor="@color/black"
+                android:alpha="0.5"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:text="中山大学"
+                android:textColor="@color/black"
+                android:alpha="0.5"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <!--</ScrollView>-->
 
