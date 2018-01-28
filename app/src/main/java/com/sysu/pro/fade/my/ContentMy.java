@@ -129,7 +129,8 @@ public class ContentMy {
         String nickname = user.getNickname();
         String summary = user.getSummary();
         String fade_name = user.getFade_name();
-        allNums = new String[]{Integer.toString(user.getFade_num())
+        // TODO: 2018/1/27 第一项是动态数量，暂时没搞，下面有个地方也是先设成了1 
+        allNums = new String[]{"1", Integer.toString(user.getFade_num())
                 , Integer.toString(user.getConcern_num()), Integer.toString(user.getFans_num())};
         Log.d("loadData", "loadData: "+user.getNickname());
         if(login_type.equals("") || image_url == null || image_url.equals("")){
@@ -152,11 +153,13 @@ public class ContentMy {
     }
 
     private void loadFragment() {
-        String[] mTitles = new String[]{"Fade", "关注", "粉丝"};
+        String[] mTitles = new String[]{"动态","Fade", "关注", "粉丝"};
+        Fragment dongTai = new TempFragment();
         Fragment fade = new MyFadeFragment();
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();
+        fragments.add(dongTai);
         fragments.add(fade);
         fragments.add(concern);
         fragments.add(fans);
@@ -180,7 +183,7 @@ public class ContentMy {
         tvShowNickname.setText(user.getNickname());
         tvShowSummary.setText(user.getSummary());
         tvFadeName.setText(user.getFade_name());
-        allNums = new String[] {user.getFade_num().toString(), user.getConcern_num().toString()
+        allNums = new String[] {"1", user.getFade_num().toString(), user.getConcern_num().toString()
                 ,user.getFans_num().toString()};
         loadFragment();
     }
