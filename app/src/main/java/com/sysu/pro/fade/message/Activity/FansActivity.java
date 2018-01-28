@@ -50,10 +50,11 @@ public class FansActivity extends MainBaseActivity {
         setContentView(R.layout.activity_fans);
         notification_Rv = (RecyclerView) findViewById(R.id.fans_recycler);
         notification_Rv.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new FansAdapter(users,this);
-        notification_Rv.setAdapter(adapter);
+
 
         user = new UserUtil(this).getUer();
+        adapter = new FansAdapter(users, user, this);
+        notification_Rv.setAdapter(adapter);
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         messageService = retrofit.create(MessageService.class);
         initLoadAddMore();
