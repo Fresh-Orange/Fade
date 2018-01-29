@@ -76,15 +76,19 @@ public interface UserService {
     @DELETE("cancelConcern/{fans_id}/{star_id}")
     Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
 
-    //得到某人的主页信息,user_id为别人的和my_id为自己的
+    //得到某人的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
     @GET("getPersonPage/{user_id}/{my_id}")
     Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
+
+    //和getPersonPage搭配使用，负责个人页动态部分的继续加载，一开始start填getPersonPage中NoteQuery返回的
+    @GET("getLiveNote/{user_id}/{my_id}/{start}")
+    Observable<NoteQuery>getLiveNote(@Path("user_id")String  user_id, @Path("my_id")String  my_id, @Path("start")String  start);
 
     //检索用户，分段加载,start一开始填0，后面就填服务器返回的start
     @GET("searchUser/{keyword}/{start}")
     Observable<UserQuery>searchUser(@Path("keyword")String  keyword, @Path("start")String  page);
 
-    //获取我自己的帖子
+    //获取我自己的原创帖子（个人页面fade部分）
     @GET("getMyNote/{user_id}/{start}")
     Observable<NoteQuery>getMyNote(@Path("user_id")String  user_id, @Path("start")String  start);
 
@@ -92,9 +96,13 @@ public interface UserService {
     @GET("getMessageToken/{user_id}")
     Observable<Map<String,Object>>getMessageToken(@Path("user_id")String  user_id);
 
-    //获取他人个人页的帖子
+    //获取他人个人页的原创帖子（他人页面fade部分）
     @GET("getOtherPersonNote/{user_id}/{my_id}/{start}")
     Observable<NoteQuery>getOtherPersonNote(@Path("user_id")String  user_id, @Path("my_id")String my_id,@Path("start")String  start);
+
+    //一次得到十条推荐用户
+    @GET("getRecommendUser/{user_id}/{start}")
+    Observable<UserQuery>getRecommendUser(@Path("user_id")String  user_id, @Path("start")String  start);
 
 
 
