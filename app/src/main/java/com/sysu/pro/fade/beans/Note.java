@@ -42,6 +42,16 @@ public class Note implements Serializable {
 
 	private String uuid;//后端索引用的
 
+	private Long liveTime;//存活时间，死贴用到的属性
+
+	public Long getLiveTime() {
+		return liveTime;
+	}
+
+	public void setLiveTime(Long liveTime) {
+		this.liveTime = liveTime;
+	}
+
 	public long getFetchTime() {
 		return fetchTime;
 	}
