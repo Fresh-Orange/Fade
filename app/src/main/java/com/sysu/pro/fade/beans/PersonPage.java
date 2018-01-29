@@ -1,12 +1,10 @@
 package com.sysu.pro.fade.beans;
 
-import java.util.List;
-
 public class PersonPage {
-	//个人界面所需要数据
+	//请求自己和他人的个人页,如果是自己的个人页，则user_id和my_id都填自己的
 	private User user;
 	private Integer isConcern; //0为没关注，1为已关注
-	private List<Note>list;//fade列表，10条一次
+	private NoteQuery query;//活着的帖子，首次加载最多十条(即动态)
 	
 	public User getUser() {
 		return user;
@@ -21,11 +19,11 @@ public class PersonPage {
 		this.isConcern = isConcern;
 	}
 
-	public List<Note> getList() {
-		return list;
+	public NoteQuery getQuery() {
+		return query;
 	}
 
-	public void setList(List<Note> list) {
-		this.list = list;
+	public void setQuery(NoteQuery query) {
+		this.query = query;
 	}
 }
