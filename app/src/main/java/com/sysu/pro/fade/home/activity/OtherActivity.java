@@ -150,6 +150,7 @@ public class OtherActivity extends MainBaseActivity {
                                         tvUnConcern.setVisibility(View.GONE);
                                         tvConcernOk.setVisibility(View.VISIBLE);
                                         tvContact.setVisibility(View.VISIBLE);
+                                        tabLayout.clearOnTabSelectedListeners();
                                         loadFragment();
                                     }
                                 }
@@ -180,6 +181,7 @@ public class OtherActivity extends MainBaseActivity {
                                     tvUnConcern.setVisibility(View.VISIBLE);
                                     tvConcernOk.setVisibility(View.GONE);
                                     tvContact.setVisibility(View.GONE);
+                                    tabLayout.clearOnTabSelectedListeners();
                                     loadFragment();
                                 }
                             }
