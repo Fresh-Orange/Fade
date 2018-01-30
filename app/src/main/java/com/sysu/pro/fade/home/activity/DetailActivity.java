@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -52,6 +52,8 @@ import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
 
 /*
  * rebuild by VJ 2017.12.30
@@ -96,6 +98,8 @@ public class DetailActivity extends MainBaseActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        TintBar(this);//状态栏白底黑字
+
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
         sendComment = (Button) findViewById(R.id.detail_send_comment);
@@ -199,7 +203,7 @@ public class DetailActivity extends MainBaseActivity{
     private void initNoteView(){
         checkAndSetOriginalNote();
         tvName.setText(note.getNickname());
-        tvBody.setText(note.getNote_content());
+        tvBody.setText(Html.fromHtml(note.getNote_content()));
         tvPostTime.setText(note.getPost_time());
         setImageView();
         setCommentAndAddCountText(this, note);

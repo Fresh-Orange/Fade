@@ -139,7 +139,6 @@ public class DRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-
         return position;
     }
 

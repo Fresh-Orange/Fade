@@ -81,7 +81,6 @@ public interface UserService {
     @GET("getPersonPage/{user_id}/{my_id}")
     Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
 
-
     //和getPersonPage搭配使用，负责个人页动态部分的继续加载，一开始start填getPersonPage中NoteQuery返回的
     @GET("getLiveNote/{user_id}/{my_id}/{start}")
     Observable<NoteQuery>getLiveNote(@Path("user_id")String  user_id, @Path("my_id")String  my_id, @Path("start")String  start);

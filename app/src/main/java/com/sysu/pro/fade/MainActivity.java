@@ -58,6 +58,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
+import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
 
 public class MainActivity extends MainBaseActivity {
 
@@ -158,7 +159,9 @@ public class MainActivity extends MainBaseActivity {
 
         setUserProvider();
         getTokenAndConnect();
+        TintBar(this);
     }
+
 
     private void createFiles() {
         //创建文件夹
@@ -565,7 +568,7 @@ public class MainActivity extends MainBaseActivity {
 
         if (getApplicationInfo().packageName.equals(App.getCurProcessName(getApplicationContext()))) {
 
-            Toast.makeText(MainActivity.this, "IN！", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "IN！", Toast.LENGTH_SHORT).show();
             RongIM.connect(token, new RongIMClient.ConnectCallback() {
 
                 /**
@@ -584,7 +587,7 @@ public class MainActivity extends MainBaseActivity {
                 @Override
                 public void onSuccess(String userid) {
                     Log.d("LoginActivity", "--onSuccess" + userid);
-                    Toast.makeText(MainActivity.this, "成功！", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "成功！", Toast.LENGTH_SHORT).show();
                 }
 
                 /**
