@@ -76,9 +76,11 @@ public interface UserService {
     @DELETE("cancelConcern/{fans_id}/{star_id}")
     Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
 
-    //得到某人的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
+    //得到他人或自己的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
+    //若是自己主页，则user_id和my_id都填自己的id
     @GET("getPersonPage/{user_id}/{my_id}")
     Observable<PersonPage>getPersonPage(@Path("user_id")String  user_id, @Path("my_id")String  my_id);
+
 
     //和getPersonPage搭配使用，负责个人页动态部分的继续加载，一开始start填getPersonPage中NoteQuery返回的
     @GET("getLiveNote/{user_id}/{my_id}/{start}")
@@ -104,7 +106,11 @@ public interface UserService {
     @GET("getRecommendUser/{user_id}/{start}")
     Observable<UserQuery>getRecommendUser(@Path("user_id")String  user_id, @Path("start")String  start);
 
+    //个人页，分页查询20条粉丝，user里面有个isConcern属性,返回的start小于20判定为加载到底
+    @GET("getFans/{user_id}/{start}")
+    Observable<UserQuery>getFans(@Path("user_id")String  user_id,@Path("start")String  start);
 
-
-
+    //个人页，分页查询20条关注的人，返回的start小于20判定为加载到底
+    @GET("getConcerns/{user_id}/{start}")
+    Observable<UserQuery>getConcerns(@Path("user_id")String  user_id,@Path("start")String  start);
 }
