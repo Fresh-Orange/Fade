@@ -645,6 +645,7 @@
     <string name="rc_info_not_in_chatroom">你不在该聊天室</string>
     <string name="rc_info_not_in_discussion">你不在该讨论组</string>
     <string name="rc_info_not_in_group">你不在该群</string>
+    <string name="rc_input_hint">请输入内容…</string>
     <string name="rc_input_send">发送</string>
     <string name="rc_input_voice">按住 说话</string>
     <string name="rc_item_change_group_name">%1$s修改群名称为%2$s</string>
@@ -681,6 +682,7 @@
     <string name="rc_monday_format">周一</string>
     <string name="rc_month_format">月</string>
     <string name="rc_morning_format">上午</string>
+    <string name="rc_msg_back">返回</string>
     <string name="rc_name">融云</string>
     <string name="rc_network_error">网络连接错误</string>
     <string name="rc_network_exception">网络异常请稍后再试</string>
@@ -788,7 +790,7 @@
         <item name="android:textColor">@color/rc_rich_content</item>
     </style>
     <style name="RCTheme.Message.TextView" parent="RCTheme.TextView">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/rc_rich_title</item>
     </style>
     <style name="RCTheme.Message.Username.TextView" parent="RCTheme.TextView">
@@ -801,7 +803,7 @@
         <item name="android:textSize">12sp</item>
         <item name="android:paddingLeft">6dp</item>
         <item name="android:paddingRight">6dp</item>>
-        <item name="android:textColor">@color/rc_text_color_primary_inverse</item>
+        <item name="android:textColor">#808080</item>
     </style>
     <style name="RCTheme.Notification" parent="RCTheme.TextView">
         <item name="android:background">@drawable/rc_corner_style</item>

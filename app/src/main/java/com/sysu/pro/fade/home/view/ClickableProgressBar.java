@@ -105,6 +105,18 @@ public class ClickableProgressBar extends FrameLayout {
 		//ivAction.setImageResource(actionResId);
 
 		ivContainer.setImageDrawable(null);
+		timeProgressBar.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_progress_drawable));
+	}
+
+	public void setDeadMode(){
+		btAdd.setVisibility(GONE);
+		btMinus.setVisibility(GONE);
+		btComment.setVisibility(VISIBLE);
+
+		ivAction.setVisibility(GONE);
+		timeProgressBar.setProgress(60);
+		timeProgressBar.setProgressDrawable(null);
+		ivContainer.setImageDrawable(null);
 	}
 
 	public void hideCommentButton(){
@@ -112,12 +124,12 @@ public class ClickableProgressBar extends FrameLayout {
 		btMinus.setVisibility(VISIBLE);
 		btComment.setVisibility(GONE);
 
-
 		ivAction.setVisibility(GONE);
 		//Glide.with(getContext()).load(actionResId).into(ivAction);
 		//ivAction.setImageResource(actionResId);
 
 		ivContainer.setImageResource(R.drawable.add_minus_line);
+		timeProgressBar.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_progress_drawable));
 	}
 
 	static public interface onAddClickListener{

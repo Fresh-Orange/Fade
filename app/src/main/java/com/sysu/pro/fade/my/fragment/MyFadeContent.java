@@ -209,7 +209,7 @@ public class MyFadeContent {
                                                 isLoading = false;
                                             }
                                         });
-                            }
+                        }
                         }
                 });
             }

@@ -18,7 +18,15 @@ import com.sysu.pro.fade.publish.utils.DensityUtils;
 public class TextProgressBar extends ProgressBar {
 	private String str = "test";
 	private Paint mPaint;
+	private int color = Color.argb(122, 0,0,0);
+
 	Rect rect;
+
+	public void setColor(int color) {
+		this.color = color;
+		init();
+		invalidate();
+	}
 
 	public TextProgressBar(Context context) {
 		super(context);
@@ -51,7 +59,7 @@ public class TextProgressBar extends ProgressBar {
 		this.mPaint = new Paint();
 		this.mPaint.setAntiAlias(true);
 		this.mPaint.setTextSize(DensityUtils.sp2px(getContext(), 12));
-		this.mPaint.setColor(Color.argb(122, 0,0,0));
+		this.mPaint.setColor(color);
 	}
 
 	// 设置文字内容
