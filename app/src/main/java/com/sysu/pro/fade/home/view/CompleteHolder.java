@@ -1,8 +1,8 @@
 package com.sysu.pro.fade.home.view;
 
+import android.app.Activity;
 import android.view.View;
 
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
 import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
@@ -21,7 +21,7 @@ public class CompleteHolder extends ImageOnlyHolder{
 		super(itemView);
 	}
 	@Override
-	public void bindView(final MainActivity context, List<Note> data, int  position){
+	public void bindView(final Activity context, List<Note> data, int  position){
 		super.bindView(context, data, position);
 		final Note bean = data.get(position);
 		//因为继承了ImageOnlyHolder，所以这里只需要设置文字就可以

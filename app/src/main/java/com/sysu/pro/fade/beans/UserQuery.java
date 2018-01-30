@@ -8,7 +8,17 @@ public class UserQuery {
 
 	private String point;//通知页面分段查询用到的,记录时间点
 
-	private Integer sum;//搜索页用（返回的搜索结果总数量，上限50条）
+	private Integer sum;
+
+	private String queryKeyWord;
+
+	public String getQueryKeyWord() {
+		return queryKeyWord;
+	}
+
+	public void setQueryKeyWord(String queryKeyWord) {
+		this.queryKeyWord = queryKeyWord;
+	}
 
 	public Integer getSum() {
 		return sum;

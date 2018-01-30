@@ -1,12 +1,12 @@
 package com.sysu.pro.fade.home.adapter;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.view.CompleteHolder;
@@ -31,7 +31,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private static final int IMAGE_ONLY_ITEM = 2;//仅图片类型
 	private static final int FOOT_ITEM = 6;//最底部的“正在加载”
 	public static int viewPagerTag = 0;
-	private MainActivity context;
+	private Activity context;
 	private List<Note> data;
 	private boolean showFootView = true;
 	private String TAG = "footView";
@@ -39,7 +39,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	private FootViewHolder footViewHolder;
 
-	public NotesAdapter(MainActivity context, List<Note> data) {
+	public NotesAdapter(Activity context, List<Note> data) {
 		this.context = context;
 		this.data = data;
 	}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
+                                    android:orientation="vertical"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:foreground = "?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="3dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/item_head"
+                layout="@layout/home_item_head"/>
+
+
+            <!--图片以及图片下方点的封装
+            <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
+                android:id="@+id/image_layout"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>-->
+
+            <TextView
+                android:textColor="#333333"
+                android:textSize="12sp"
+                android:id="@+id/tv_title"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:maxLines="5"
+                android:ellipsize="end"
+                android:text="今天天真好哈天天气真好哈哈哈哈哈哈哈哈天气真好哈哈哈方法气真好哈哈哈哈哈今天天气真好哈哈哈哈哈今天天气真好哈哈哈哈哈今天天气真好哈哈哈哈哈"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/image_container"
+            android:layout_width="133dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginRight="16dp">
+            <ImageView
+                android:id="@+id/iv_first_image"
+                android:layout_width="133dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                />
+            <TextView
+                android:id="@+id/tv_image_count"
+                android:layout_width="16dp"
+                android:layout_height="12dp"
+                android:text="6"
+                android:textSize="8sp"
+                android:textColor="#ccffffff"
+                android:gravity="center"
+                android:background="@drawable/round_solid"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_gravity="bottom|right"/>
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/item_tail"
+        layout="@layout/home_item_tail"/>
+
+
+</LinearLayout>
