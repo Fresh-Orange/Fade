@@ -31,7 +31,7 @@ public class ConversationActivity extends FragmentActivity{
     }
 
     public void TintBar() {
-        StatusBarUtil.setStatusBarColor(this, R.color.status_color);
+        StatusBarUtil.setStatusBarColor(this, R.color.conversation_status_color);
         StatusBarUtil.StatusBarLightMode(this);
     }
 }
