@@ -9,6 +9,16 @@ public class NoteQuery {
 
 	private String point;//通知页面分段查询用到的,记录时间点
 
+	private Integer sum;//搜索页用（返回的搜索结果总数量，上限50条）
+
+	public Integer getSum() {
+		return sum;
+	}
+
+	public void setSum(Integer sum) {
+		this.sum = sum;
+	}
+
 	public Integer getStart() {
 		return start;
 	}
