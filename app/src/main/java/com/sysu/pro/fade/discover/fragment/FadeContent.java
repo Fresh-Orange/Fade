@@ -200,8 +200,11 @@ public class FadeContent {
                     imageContainer.setVisibility(View.GONE);
                 }
                 else{
+                    imageContainer.setVisibility(View.VISIBLE);
                     if (bean.getImages().size() < 2)
                         tvImageCnt.setVisibility(View.GONE);
+                    else
+                        tvImageCnt.setVisibility(View.VISIBLE);
                     Image firstImage = bean.getImages().get(0);
                     ImageUtils.loadRoundImage(context, Const.BASE_IP+firstImage.getImage_url(), image, 4);
                     tvImageCnt.setText(String.valueOf(bean.getImages().size()));
