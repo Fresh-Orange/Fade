@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMKit\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-mr\\values-mr.xml",
+            "outputFile": "F:\\AS\\Fade\\IMKit\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-mr\\values-mr.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\f35c31e1bdc1f8d32088231fd3fd7e81\\res\\values-mr\\values-mr.xml",
+                    "source": "C:\\Users\\赖贤城\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\17f9c846ffc8adba2dbe4c0fa37848eb\\res\\values-mr\\values-mr.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
