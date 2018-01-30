@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.sysu.pro.fade.R;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -18,6 +20,11 @@ import java.lang.reflect.Method;
  */
 
 public class StatusBarUtil {
+
+	static public void TintBar(Activity activity) {
+		StatusBarUtil.setStatusBarColor(activity, R.color.white);
+		StatusBarUtil.StatusBarLightMode(activity);
+	}
 	/**
 	 * 修改状态栏为全透明
 	 * @param activity
