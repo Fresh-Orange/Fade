@@ -23,6 +23,7 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.MyFadeFragment;
+import com.sysu.pro.fade.my.fragment.MyLiveFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -56,7 +57,7 @@ public class ContentMy {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private User user;
-    private String[] allNums;
+    private String[] allNums;       //所有菜单项的数字
     private TextView tvFadeName;//fade_id
 
     private Retrofit retrofit;
@@ -178,12 +179,12 @@ public class ContentMy {
 
     private void loadFragment() {
         String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
-        Fragment dongTai = new TempFragment();
+        Fragment liveFade = new MyLiveFragment();
         Fragment fade = new MyFadeFragment();
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(dongTai);
+        fragments.add(liveFade);
         fragments.add(fade);
         fragments.add(fans);
         fragments.add(concern);

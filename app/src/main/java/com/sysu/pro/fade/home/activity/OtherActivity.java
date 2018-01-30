@@ -91,12 +91,14 @@ public class OtherActivity extends MainBaseActivity {
                     public void onNext(PersonPage personPage) {
                         //获取他人主页用户
                         other = personPage.getUser();
-                        //0为没关注
-                        if (personPage.getIsConcern() == 1) {
-                            tvConcernOk.setVisibility(View.VISIBLE);
-                            tvContact.setVisibility(View.VISIBLE);
-                        } else {
-                            tvUnConcern.setVisibility(View.VISIBLE);
+                        if (personPage.getIsConcern() != null) {
+                            //0为没关注
+                            if (personPage.getIsConcern() == 1) {
+                                tvConcernOk.setVisibility(View.VISIBLE);
+                                tvContact.setVisibility(View.VISIBLE);
+                            } else {
+                                tvUnConcern.setVisibility(View.VISIBLE);
+                            }
                         }
                         loadData();
                         loadFragment();

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -70,8 +73,8 @@ public class DetailActivity extends MainBaseActivity{
     private Button sendComment;
     private List<Note> forwardList = new ArrayList<>(); //续秒列表，用来获取头像
     private CommonAdapter<Note> forwardAdapter;
-    private RecyclerView forwardRecycler;
-    private RecyclerView recyclerView;
+    private RecyclerView forwardRecycler;   //续秒列表
+    private RecyclerView recyclerView;      //评论列表
     private RefreshLayout refreshLayout;
     private int loadMoreFlag;
     private CommonAdapter<Comment> commentAdapter;

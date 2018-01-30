@@ -15,7 +15,7 @@ public class Comment implements Serializable{
 	private String comment_time;      
 	private String comment_content;
 	private List<SecondComment>comments;//二级评论列表
-	private Integer type; //0代表增秒评论，1代表减秒评论
+	private Integer type; //0为没动作，1为对这个帖子增过，2为对这个帖子减过
 
 	private Integer viewType;
 
