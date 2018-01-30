@@ -31,10 +31,10 @@
             ]
         },
         {
-            "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMKit\\build\\intermediates\\res\\merged\\androidTest\\debug\\values-es-rUS_values-es-rUS.arsc.flat",
+            "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMKit\\build\\intermediates\\res\\merged\\androidTest\\debug\\values-es_values-es.arsc.flat",
             "map": [
                 {
-                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\f35c31e1bdc1f8d32088231fd3fd7e81\\res\\values-es-rUS\\values-es-rUS.xml",
+                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\f35c31e1bdc1f8d32088231fd3fd7e81\\res\\values-es\\values-es.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -61,10 +61,10 @@
             ]
         },
         {
-            "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMKit\\build\\intermediates\\res\\merged\\androidTest\\debug\\values-es_values-es.arsc.flat",
+            "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMKit\\build\\intermediates\\res\\merged\\androidTest\\debug\\values-es-rUS_values-es-rUS.arsc.flat",
             "map": [
                 {
-                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\f35c31e1bdc1f8d32088231fd3fd7e81\\res\\values-es\\values-es.xml",
+                    "source": "C:\\Users\\yellow\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\f35c31e1bdc1f8d32088231fd3fd7e81\\res\\values-es-rUS\\values-es-rUS.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
