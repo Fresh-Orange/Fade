@@ -5,12 +5,14 @@
     android:layout_height="wrap_content"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/tv_hint"
+    <ImageView
+        android:id="@+id/iv_divider"
         android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_height="20dp"
-        android:text="@string/rc_msg_setting"
-        android:gravity="center"
+        android:layout_marginTop="33dp"
+        android:layout_marginBottom="33dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/overdue_divider"
         />
 </LinearLayout>

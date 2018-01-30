@@ -9,6 +9,26 @@ public class NoteQuery {
 
 	private String point;//通知页面分段查询用到的,记录时间点
 
+	private Integer sum;
+
+	private String queryKeyWord;
+
+	public String getQueryKeyWord() {
+		return queryKeyWord;
+	}
+
+	public void setQueryKeyWord(String queryKeyWord) {
+		this.queryKeyWord = queryKeyWord;
+	}
+
+	public Integer getSum() {
+		return sum;
+	}
+
+	public void setSum(Integer sum) {
+		this.sum = sum;
+	}
+
 	public Integer getStart() {
 		return start;
 	}

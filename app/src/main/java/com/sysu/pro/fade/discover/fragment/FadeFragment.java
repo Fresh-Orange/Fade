@@ -22,7 +22,7 @@ public class FadeFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		rootView = inflater.inflate(R.layout.fragment_home, container, false);
+		rootView = inflater.inflate(R.layout.discover_fade, container, false);
 		fadeContent = new FadeContent(getActivity(),getContext(), rootView);
 		return rootView;
 	}

@@ -2,40 +2,63 @@ package com.sysu.pro.fade.discover.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.beans.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-
+/**
+ * Created by LaiXiancheng on 2018/1/27.
+ * Email: lxc.sysu@qq.com
+ * 多类型的RecyclerView适配器
+ * 对于每一种在该RecyclerView中出现的item类型，都需要调用registerType函数进行注册
+ */
 
 public class MultiTypeRVAdapter extends RecyclerView.Adapter<MultiTypeRVAdapter.MTypeViewHolder> {
-    List<Object> itemList = new ArrayList<>();
-    public static final int NORMAL_TYPE = 0;
-    public static final int HINT_TYPE = 1;
-    NormalItemClickListener normalItemClickListener;
-    Context mContext;
+    private List<Object> itemList = new ArrayList<>();
+    private Map<String, Integer> name2type = new HashMap<>();
+    private List<BinderInfo> binderInfos= new ArrayList<>();
+    private ViewBinder defaultBinder;
+    private int defaultViewId = R.layout.multitype_default_item;
 
-    public MultiTypeRVAdapter(Context mContext, List<Object> itemList) {
+    public MultiTypeRVAdapter(Context context, List<Object> itemList) {
         this.itemList = itemList;
-        this.mContext = mContext;
+        defaultBinder = new ViewBinder() {
+            @Override
+            public void bindView(View itemView, Object ob, int position) {
+                //空！
+            }
+        };
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (itemList.get(position) instanceof HintTypeItem)
-            return HINT_TYPE;
-        return NORMAL_TYPE;
+        String name = itemList.get(position).getClass().getName();
+        Integer type = name2type.get(name);
+        if (type == null){
+            name2type.put(name, binderInfos.size());
+            binderInfos.add(new BinderInfo(defaultBinder, defaultViewId));
+            type = name2type.get(name);
+        }
+        return type;
+    }
+
+    /**
+     * 注册item类型，对于每一种在该RecyclerView中出现的item类型，都需要调用这个函数进行注册
+     * @param rClass item类型的class
+     * @param binder 待用户实现的数据绑定类
+     * @param viewId 这种item对应的layoutID
+     */
+    public void registerType(Class rClass, ViewBinder binder, int viewId){
+        String className = rClass.getName();
+        name2type.put(className, binderInfos.size());
+        binderInfos.add(new BinderInfo(binder, viewId));
     }
 
 
@@ -43,14 +66,10 @@ public class MultiTypeRVAdapter extends RecyclerView.Adapter<MultiTypeRVAdapter.
     public MTypeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         MTypeViewHolder viewHolder;
-        if (viewType == HINT_TYPE) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.random_item, parent, false);
-            viewHolder = new MTypeViewHolder(view);
-        }
-        else{
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
-            viewHolder = new MTypeViewHolder(view);
-        }
+        ViewBinder binder = binderInfos.get(viewType).binder;
+        int viewId = binderInfos.get(viewType).id;
+        view = LayoutInflater.from(parent.getContext()).inflate(viewId, parent, false);
+        viewHolder = new MTypeViewHolder(binder, view);
         return viewHolder;
     }
 
@@ -65,60 +84,34 @@ public class MultiTypeRVAdapter extends RecyclerView.Adapter<MultiTypeRVAdapter.
     }
 
 
-    static class DRecyclerViewHolder extends RecyclerView.ViewHolder {
-
-        public DRecyclerViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
     class MTypeViewHolder extends RecyclerView.ViewHolder {
-        public TextView tv_nickname;
-        public TextView tv_fade_name;
-        public ImageView iv_header;
-        public MTypeViewHolder(View itemView) {
+        ViewBinder binder;
+        public MTypeViewHolder(ViewBinder binder, View itemView) {
             super(itemView);
+            this.binder = binder;
         }
         public void bindView(){
-            final Object ob = itemList.get(getAdapterPosition());
-            if (getItemViewType() == MultiTypeRVAdapter.HINT_TYPE){
-                //如果是提示信息
-                TextView textView = itemView.findViewById(R.id.tv_hint);
-                textView.setText(((HintTypeItem)ob).getHint());
-            }
-            else if (getItemViewType() == MultiTypeRVAdapter.NORMAL_TYPE){
-                //如果是正常的item
-                tv_nickname = itemView.findViewById(R.id.tv_nickname);
-                tv_fade_name = itemView.findViewById(R.id.tv_fade_name);
-                iv_header = itemView.findViewById(R.id.iv_header);
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (normalItemClickListener != null)
-                            normalItemClickListener.onClick((User)ob);
-                    }
-                });
-
-                User user = (User)itemList.get(getAdapterPosition());
-                ViewGroup.LayoutParams layoutParams1 = tv_nickname.getLayoutParams();
-                layoutParams1.height = 80;
-                tv_nickname.setLayoutParams(layoutParams1);
-                tv_nickname.setText(Html.fromHtml(user.getNickname()));
-                tv_fade_name.setText(Html.fromHtml(user.getFade_name()));
-                Glide.with(mContext).load(Const.BASE_IP + user.getHead_image_url()).into(iv_header);
-            }
+            Object ob = itemList.get(getAdapterPosition());
+            //调用外部传入的binder的绑定数据的接口
+            binder.bindView(itemView, ob, getAdapterPosition());
         }
     }
 
-    public void setNormalItemClickListener(NormalItemClickListener clickListener){
-        this.normalItemClickListener = clickListener;
+    /**
+     * 留给外部进行实现的数据与view的绑定类
+     */
+    abstract static public class ViewBinder {
+        abstract public void bindView(View itemView, Object ob, int position);
     }
 
-    static public interface NormalItemClickListener{
-        void onClick(User user);
+    private class BinderInfo{
+        ViewBinder binder;
+        int id;
+        BinderInfo(ViewBinder binder, int id) {
+            this.binder = binder;
+            this.id = id;
+        }
     }
-
-
 }
 
 

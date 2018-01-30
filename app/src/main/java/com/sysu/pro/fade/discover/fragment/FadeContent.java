@@ -2,31 +2,46 @@ package com.sysu.pro.fade.discover.fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.Image;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.home.adapter.NotesAdapter;
-import com.sysu.pro.fade.home.animator.FadeItemAnimator;
-import com.sysu.pro.fade.home.event.itemChangeEvent;
-import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.discover.adapter.CountTypeItem;
+import com.sysu.pro.fade.discover.adapter.HintTypeItem;
+import com.sysu.pro.fade.discover.adapter.MultiTypeRVAdapter;
+import com.sysu.pro.fade.discover.adapter.OverdueButtonType;
+import com.sysu.pro.fade.discover.adapter.OverdueDividerType;
+import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewScrollListener;
+import com.sysu.pro.fade.discover.event.ClearListEvent;
+import com.sysu.pro.fade.home.activity.ImagePagerActivity;
+import com.sysu.pro.fade.home.view.ClickableProgressBar;
+import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.service.NoteService;
-import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.UserUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,326 +50,260 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setAddOrMinusListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setCommentListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setGoToDetailClickListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setOnUserClickListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setTimeBar;
+import static com.sysu.pro.fade.home.view.TextOnlyHolder.setBody;
+
 
 /**
  * Created by road on 2017/7/14.
  */
 public class FadeContent {
-    /*图片URL数组*/
-    private List<Note> notes;//当前加载的帖子
-    /*信息流适配器*/
-    private NotesAdapter adapter;
-    /*刷新控件*/
-    private SwipeRefreshLayout swipeRefresh;
-    /*上拉加载滑动监听*/
-    private EndlessRecyclerOnScrollListener loadMoreScrollListener;
-    /*检测是否删除的滑动监听*/
-    //private JudgeRemoveOnScrollListener judgeRemoveScrollListener;
-    /*列表*/
-    private RecyclerView recyclerView;
-
-    private Activity activity;
+    private FragmentActivity activity;
     private Context context;
     private View rootView;
 
-    /**
-     * add By 黄路 2017/8/18
-     */
-    private Integer start;
-    private User user;           //登录用户的全部信息
-    private List<Note>updateList;  //已加载帖子，用于发给服务器，更新帖子情况(每一项仅仅包含note_id 和 target_id)
-    private List<Note>checkList;   //顶部下拉查询返回的帖子，根据这个来判断和更新已加载帖子的情况
-    private Retrofit retrofit;
-    private UserService userService;
-    private NoteService noteService;
-    private Boolean isEnd; //记录向下是否到了结尾
-    private Boolean isLoading;
+    private LinearLayoutManager userLinearManager; //用户搜索的LinearLayoutmanager
+    private RecyclerView recyclerView;
+    private MultiTypeRVAdapter mtAdapter;
+    private List<Object> itemList;
 
-    public FadeContent(Activity activity, final Context context, View rootView){
+    //网络请求有关
+    private Retrofit retrofit;
+    private NoteService noteService;
+    private User user;
+    private UserUtil userUtil;
+
+    private String queryKeyWord;
+    private Integer start;
+    private Integer aliveMode = 1;
+    private Integer sum = 0;
+
+    public FadeContent(FragmentActivity activity, final Context context, View rootView){
         this.activity = activity;
         this.context = context;
         this.rootView = rootView;
         //EventBus订阅
         EventBus.getDefault().register(this);
-        swipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
-        swipeRefresh.setRefreshing(false);
+
         //初始化用户信息
         user = ((MainActivity) activity).getCurrentUser();
-        notes = new ArrayList<>();
-        updateList = new ArrayList<>();
-        checkList = new ArrayList<>();
-        isEnd = false;
-        isLoading = true;
-        initViews();
+
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
-        userService = retrofit.create(UserService.class);
         noteService = retrofit.create(NoteService.class);
-        userService.getMyNote(user.getUser_id().toString(),"0")
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<NoteQuery>() {
-                    @Override
-                    public void onCompleted() {
-                    }
+        initRecyclerView();
+        initLoadMore();
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("初次加载","失败");
-                        e.printStackTrace();
-                        setLoadingMore(false);
-                        swipeRefresh.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onNext(NoteQuery noteQuery) {
-                        Log.i("首次加载","成功");
-                        notes.clear();
-                        if(noteQuery.getList() != null && noteQuery.getList().size() != 0){
-                            addToListTail(noteQuery.getList());
-                        }
-                        //更新start
-                        start = noteQuery.getStart();
-                        setLoadingMore(false);
-                        swipeRefresh.setRefreshing(false);
-                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
-                        isLoading = false;
-                    }
-                });
-        start = 0;
+        this.userUtil = new UserUtil((Activity) context);
 
     }
 
-    private void initViews(){
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new NotesAdapter((MainActivity) context, notes);
-        recyclerView.setAdapter(adapter);
-
-        swipeRefresh.setColorSchemeResources(R.color.light_blue);
-		/*刷新数据*/
-        swipeRefresh.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
+    private void initLoadMore(){
+        //设置底部加载刷新
+        RefreshLayout refreshLayout = (RefreshLayout) rootView.findViewById(R.id.refreshLayout_fade);
+        refreshLayout.setEnableRefresh(false);	//取消下拉刷新功能
+        refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(context));
+        //.setProgressResource(R.drawable.progress)
+        // .setArrowResource(R.drawable.arrow));
+        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
-            public void onRefresh() {
-                refreshItems();
+            public void onLoadmore(RefreshLayout refreshlayout) {
+                realLoadMore();
+                refreshlayout.finishLoadmore();
             }
         });
-        loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
+    }
+
+    public void realLoadMore() {
+        noteService.searchNote(queryKeyWord, start.toString(),
+					aliveMode.toString(), user.getUser_id().toString())
+				.subscribeOn(Schedulers.newThread())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<NoteQuery>() {
+					@Override
+					public void onCompleted() {}
+
+					@Override
+					public void onError(Throwable e) {
+						Log.e("searchNote", e.getMessage());
+					}
+
+					@Override
+					public void onNext(NoteQuery noteQuery) {
+                        noteQuery.setQueryKeyWord(queryKeyWord);
+						EventBus.getDefault().post(noteQuery);
+					}
+				});
+    }
+
+
+    private void initRecyclerView(){
+        //可插入中间文字的recyclerView的初始化
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_fade);
+        itemList = new ArrayList<>();
+
+        mtAdapter = new MultiTypeRVAdapter(context, itemList);
+        adapterRegister();
+
+        userLinearManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(userLinearManager);
+        mtAdapter.notifyDataSetChanged();
+
+        recyclerView.setAdapter(mtAdapter);
+        recyclerView.addOnScrollListener(new DRecyclerViewScrollListener() {
             @Override
-            public void onLoadMore(int currentPage) {
-                if(isLoading == false){
-                    isLoading = true;
-                    addItems();
-                }
+            public void onLoadNextPage(RecyclerView view) {
+                // Toast.makeText(context,"底部",Toast.LENGTH_SHORT).show();
             }
-        };
-        recyclerView.addOnScrollListener(loadMoreScrollListener);
-        FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
-        fadeItemAnimator.setRemoveDuration(400);
-        recyclerView.setItemAnimator(fadeItemAnimator);
+        });
 
     }
 
     /**
-     * 加载更多
+     * 注册item类型
      */
-    private void addItems() {
-        new Thread(new Runnable() {
+    private void adapterRegister() {
+        mtAdapter.registerType(Note.class, new MultiTypeRVAdapter.ViewBinder(){
+            //注册User类型的item
             @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isEnd){
-                            Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
-                            setLoadingMore(false);
-                            swipeRefresh.setRefreshing(false);
-                        }else {
-                            //加载更多
-                                isLoading = true;
-                                userService.getMyNote(user.getUser_id().toString(),start.toString())
-                                        .subscribeOn(Schedulers.newThread())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new Subscriber<NoteQuery>() {
-                                            @Override
-                                            public void onCompleted() {
-                                            }
-                                            @Override
-                                            public void onError(Throwable e) {
-                                                Log.e("加载更多","失败");
-                                                e.printStackTrace();
-                                                setLoadingMore(false);
-                                            }
-                                            @Override
-                                            public void onNext(NoteQuery noteQuery) {
-                                                Log.i("加载更多","成功");
-                                                List<Note>addList = noteQuery.getList();
-                                                start = noteQuery.getStart();
-                                                if(addList.size() != 0){
-                                                    addToListTail(noteQuery.getList());
-                                                    Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
-                                                }
-                                                else{
-                                                    Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
-                                                }
-                                                if(addList.size() < 10) isEnd = true;
-                                                swipeRefresh.setRefreshing(false);
-                                                setLoadingMore(false);
-                                                isLoading = false;
-                                            }
-                                        });
-                        }
-                        }
-                });
-            }
-        }).start();
-    }
+            public void bindView(View itemView, Object ob, int position) {
+                Log.d("onGetFadeQuery", "bindView!");
+                itemView.findViewById(R.id.tv_comment_add_count).setVisibility(View.GONE);
+                itemView.findViewById(R.id.iv_head_action).setVisibility(View.GONE);
+                itemView.findViewById(R.id.tv_head_action).setVisibility(View.GONE);
 
-    /**
-     * 下拉刷新
-     */
-    private void refreshItems() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                ClickableProgressBar clickableProgressBar = itemView.findViewById(R.id.clickable_progressbar);
+                ImageView userAvatar = itemView.findViewById(R.id.civ_avatar);
+                ImageView image = itemView.findViewById(R.id.iv_first_image);
+                TextView tvName = itemView.findViewById(R.id.tv_name);
+                TextView tvBody = itemView.findViewById(R.id.tv_title);
+                TextView tvImageCnt = itemView.findViewById(R.id.tv_image_count);
+                FrameLayout imageContainer = itemView.findViewById(R.id.image_container);
+
+
+                final Note bean = (Note)ob;
+                tvName.setText(bean.getNickname());
+                setTimeBar(clickableProgressBar, context, bean);
+                Glide.with(context)
+                        .load(Const.BASE_IP+bean.getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(userAvatar);
+                setBody((Activity) context, bean, tvBody);
+
+                // ************ 设置图片及其点击监听 ************
+                if (bean.getImages() == null || bean.getImages().isEmpty()) {
+                    imageContainer.setVisibility(View.GONE);
                 }
-                activity.runOnUiThread(new Runnable() {
+                else{
+                    if (bean.getImages().size() < 2)
+                        tvImageCnt.setVisibility(View.GONE);
+                    Image firstImage = bean.getImages().get(0);
+                    ImageUtils.loadRoundImage(context, Const.BASE_IP+firstImage.getImage_url(), image, 4);
+                    tvImageCnt.setText(String.valueOf(bean.getImages().size()));
+                    image.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startPictureActivity(bean.getImgUrls());
+                        }
+                    });
+                }
+
+                //* ********* 设置监听器 ***********//*
+                setGoToDetailClickListener(context, itemView, bean);
+                setAddOrMinusListener((Activity) context, clickableProgressBar, userUtil, position, bean);
+                setCommentListener((Activity) context, clickableProgressBar, bean);
+                setOnUserClickListener((Activity) context, tvName, userAvatar, null, bean);
+
+            }
+        }, R.layout.simplified_fade_item);
+
+        mtAdapter.registerType(HintTypeItem.class, new MultiTypeRVAdapter.ViewBinder() {
+            //注册HintTypeItem类型的item
+            @Override
+            public void bindView(View itemView, Object ob, int position) {
+                TextView textView = itemView.findViewById(R.id.tv_hint);
+                textView.setText(((HintTypeItem)ob).getHint());
+            }
+        }, R.layout.discover_hint_item);
+
+        mtAdapter.registerType(CountTypeItem.class, new MultiTypeRVAdapter.ViewBinder() {
+            //注册CountTypeItem类型的item
+            @Override
+            public void bindView(View itemView, Object ob, int position) {
+                TextView textView = itemView.findViewById(R.id.tv_hint);
+                textView.setText(((CountTypeItem)ob).getHint());
+            }
+        }, R.layout.discover_count_item);
+
+        mtAdapter.registerType(OverdueButtonType.class, new MultiTypeRVAdapter.ViewBinder() {
+            //注册OverdueButtonType类型的item
+            @Override
+            public void bindView(View itemView, Object ob, int position) {
+                ImageView v = itemView.findViewById(R.id.iv_hint);
+                v.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void run() {
-                        loadMoreScrollListener.resetPreviousTotal();
-                        //顶部下拉刷新
-                        swipeRefresh.setRefreshing(true);
-                        Log.i("test",updateList.toString());
-                        userService.getMyNote(user.getUser_id().toString(),"0")
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<NoteQuery>() {
-                                    @Override
-                                    public void onCompleted() {
-                                    }
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        Log.e("顶部加载","失败");
-                                        e.printStackTrace();
-                                        swipeRefresh.setRefreshing(false);
-                                    }
-                                    @Override
-                                    public void onNext(NoteQuery noteQuery) {
-                                        Log.i("顶部加载","成功");
-                                        notes.clear();
-                                        if(noteQuery.getList() != null){
-                                            addToListTail(noteQuery.getList());
-                                        }
-                                        //更新start
-                                        start = noteQuery.getStart();
-                                        setLoadingMore(false);
-                                        swipeRefresh.setRefreshing(false);
-                                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                    public void onClick(View v) {
+                        //设置成“过期fade”模式，重置start
+                        aliveMode = 0;
+                        start = 0;
+                        itemList.remove(itemList.size()-1);
+                        itemList.add(new OverdueDividerType());
+                        realLoadMore();
                     }
                 });
             }
-        }).start();
-    }
+        }, R.layout.discover_image_button_item);
 
-    /**
-     * 设置“正在加载”是否显示
-     * @param isShow 是否显示
-     */
-    private void setLoadingMore(boolean isShow){
-        adapter.setLoadingMore(isShow);
-    }
+        mtAdapter.registerType(OverdueDividerType.class, new MultiTypeRVAdapter.ViewBinder() {
+            //注册OverdueButtonType类型的item
+            @Override
+            public void bindView(View itemView, Object ob, int position) {
 
-
-    private void scrollToTOP(){
-        recyclerView.smoothScrollToPosition(0);
-    }
-
-    /**
-     * 如果当前帖子有本机用户自己的帖子，则检查其头像和名字更新
-     * 当home变为可见时调用
-     */
-    public void refreshIfUserChange(){
-        boolean isChange = false;
-        for (Note note: notes){
-            if (note.getUser_id().equals(user.getUser_id())){
-                if (!note.getHead_image_url().equals(user.getHead_image_url())
-                        || !note.getNickname().equals(user.getNickname())){
-                    note.setHead_image_url(user.getHead_image_url());
-                    note.setNickname(user.getNickname());
-                    isChange = true;
-                }
-                else{
-                    isChange = false;
-                    break;
-                }
             }
-        }
-        if (isChange){
-            adapter.notifyDataSetChanged();
-        }
+        }, R.layout.discover_overdue_divider);
     }
 
-    private void addToListTail(List<Note>list){
-        //下翻加载数据
-        for(Note note : list){
-            note.setIs_die(1);
-            if(note.getComment_num() == null) note.setComment_num(0);
-            if(note.getAdd_num() == null) note.setAdd_num(0);
-            if(note.getSub_num() == null) note.setSub_num(0);
+    private void startPictureActivity(List<String> urlList) {
+        List<String> imagePathList = new ArrayList<>();
+        for (int i = 0; i < urlList.size(); i++){
+            imagePathList.add(Const.BASE_IP + urlList.get(i));
         }
-        notes.addAll(list);
-        adapter.notifyDataSetChanged();
+        Intent intent = new Intent(context, ImagePagerActivity.class);
+        intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, (Serializable)imagePathList);
+        intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, 0);
+        context.startActivity(intent);
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetNewNote(Note note) {
-        //接收新的Note，加到头部
-        note.setFetchTime(System.currentTimeMillis());
-        note.setAction(0);
-        if(note.getComment_num() == null) note.setComment_num(0);
-        if(note.getAdd_num() == null) note.setAdd_num(0);
-        if(note.getSub_num() == null) note.setSub_num(0);
-        notes.add(0,note);
-        Note simpleNote = new Note();
-        simpleNote.setNote_id(note.getNote_id());
-        simpleNote.setTarget_id(note.getTarget_id());
-        updateList.add(0,simpleNote);
-        adapter.notifyDataSetChanged();
+    public  void onGetFadeQuery(NoteQuery noteQuery){
+        queryKeyWord = noteQuery.getQueryKeyWord();
+        start = noteQuery.getStart();
+        if (itemList.isEmpty()){
+            sum = noteQuery.getSum();
+            itemList.add(new CountTypeItem(context.getString(R.string.count_hint, noteQuery.getSum().toString())));
+        }
+        List<Note>addNotes = noteQuery.getList();
+        if(addNotes.size() != 0){
+            Log.d("onGetFadeQuery", "added!"+addNotes.size());
+            itemList.addAll(addNotes);
+        }
+        if (itemList.size()-1 == sum && aliveMode == 1){
+            itemList.add(new OverdueButtonType());
+        }
+        mtAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * item发生变化，更新界面
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onItemChanged(itemChangeEvent itemChangeEvent) {
-        adapter.notifyItemChanged(itemChangeEvent.getPosition());
-    }
-
-    /**
-     * 修改用户信息，更新主界面
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public  void onGetUser(User user){
-        Integer user_id = user.getUser_id();
-        for(Note note : notes){
-            if(note.getUser_id() == user_id){
-                note.setHead_image_url(Const.BASE_IP + user.getHead_image_url());
-                note.setNickname(user.getNickname());
-            }
-            adapter.notifyDataSetChanged();
+    public  void onGetFadeQuery(ClearListEvent event){
+        if(itemList != null){
+            itemList.clear();
+            aliveMode = 1;
         }
     }
 

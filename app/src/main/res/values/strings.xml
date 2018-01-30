@@ -11,6 +11,7 @@
     <string name="comment_count_text">共%1$s条评论</string>
     <string name="add_count_text">%1$s续秒</string>
     <string name="time_left_text">剩余%1$s</string>
+    <string name="time_ever_been">流传了%1$s</string>
     <string name="at_user">\@%1$s</string>
     <string name="add_time">续了一秒</string>
     <string name="minus_time">减了一秒</string>
@@ -49,6 +50,7 @@
 
     <!--for Discover-->
     <string name="interest_hint">你可能感兴趣的用户</string>
+    <string name="count_hint">共%1$s条相关内容</string>
 
     <string-array name="showGuidelinesArray">
         <item>Off</item>

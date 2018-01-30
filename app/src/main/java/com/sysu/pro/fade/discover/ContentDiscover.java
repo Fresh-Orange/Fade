@@ -20,12 +20,14 @@ import com.lapism.searchview.SearchItem;
 import com.lapism.searchview.SearchView;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
+import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.discover.adapter.DiscoverFragmentAdapter;
 import com.sysu.pro.fade.discover.event.ClearListEvent;
+import com.sysu.pro.fade.discover.fragment.FadeFragment;
 import com.sysu.pro.fade.discover.fragment.UserFragment;
-import com.sysu.pro.fade.my.fragment.TempFragment;
+import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -42,6 +44,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by road on 2017/7/14.
@@ -93,7 +98,7 @@ public class ContentDiscover {
        mTabLayout = (TabLayout) activity.findViewById(R.id.tabs);
 
        Fragment userFragment = new UserFragment();
-       Fragment fadeFragment = new TempFragment();
+       Fragment fadeFragment = new FadeFragment();
        List<Fragment> fragments = new ArrayList<>();
        fragments.add(userFragment);
        fragments.add(fadeFragment);
@@ -132,6 +137,7 @@ public class ContentDiscover {
                                Log.i("搜索结果",response_str);
                                UserQuery userQuery = JSON.parseObject(response_str,UserQuery.class);
                                if(userQuery != null){
+                                   userQuery.setQueryKeyWord(query);
                                    EventBus.getDefault().post(userQuery);
                                }
                            } catch (IOException e) {
@@ -140,6 +146,27 @@ public class ContentDiscover {
                            super.run();
                        }
                    }.start();
+
+                   retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+                   NoteService noteService = retrofit.create(NoteService.class);
+                   noteService.searchNote(query, "0", "1", user.getUser_id().toString())
+                           .subscribeOn(Schedulers.newThread())
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe(new Subscriber<NoteQuery>() {
+                               @Override
+                               public void onCompleted() {}
+
+                               @Override
+                               public void onError(Throwable e) {
+                                   Log.e("searchNote", e.getMessage());
+                               }
+
+                               @Override
+                               public void onNext(NoteQuery noteQuery) {
+                                   noteQuery.setQueryKeyWord(query);
+                                   EventBus.getDefault().post(noteQuery);
+                               }
+                           });
                    return true;
                }
 
