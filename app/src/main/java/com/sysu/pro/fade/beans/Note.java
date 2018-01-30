@@ -17,7 +17,7 @@ public class Note implements Serializable {
 
 	private String note_content;
 	private String post_time = "";       //发布时间
-	private Integer is_die = 1;         //是否死亡
+	private Integer is_die = 1;         //是否死亡, 0为死，1为活
 
 	private Integer comment_num;    //评论数量
 	private Integer sub_num;        //减一秒数量

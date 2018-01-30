@@ -1,6 +1,21 @@
 {
     "logs": [
         {
+            "outputFile": "E:\\study_and_work\\android_and_java\\Android\\Fade-1\\IMLib\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ta\\values-ta.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\road\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\3afa080f7d2f1c9b62fa4ceae21783d7\\res\\values-ta\\values-ta.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        },
+        {
             "outputFile": "C:\\Users\\yellow\\Desktop\\Fade-2\\Fade\\IMLib\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ta\\values-ta.xml",
             "map": [
                 {
