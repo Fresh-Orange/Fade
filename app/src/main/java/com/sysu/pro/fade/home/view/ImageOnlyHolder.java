@@ -40,16 +40,20 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 			 */
 			pager.setId(++NotesAdapter.viewPagerTag);
 
-			double ratio = getNoteRatio(bean);
-			imageLayout.setViewPagerMaxHeight(600);
-			//imageLayout.setHeightByRatio(((float) (1.0/ratio)));
-			imageLayout.setImgCoordinates(bean.getImgCoordinates());
-			imageLayout.setHeightByRatio((float)ratio);
-			imageLayout.setPaths(Const.BASE_IP, bean.getImgUrls());
+			setImagePager(bean, imageLayout);
 		}
 	}
 
-	private double getNoteRatio(Note bean) {
+	public static void setImagePager(Note bean, imageAdaptiveIndicativeItemLayout imageLayout) {
+		double ratio = getNoteRatio(bean);
+		imageLayout.setViewPagerMaxHeight(600);
+		//imageLayout.setHeightByRatio(((float) (1.0/ratio)));
+		imageLayout.setImgCoordinates(bean.getImgCoordinates());
+		imageLayout.setHeightByRatio((float)ratio);
+		imageLayout.setPaths(Const.BASE_IP, bean.getImgUrls());
+	}
+
+	static private double getNoteRatio(Note bean) {
 		double ratio;
 		int cutSize = bean.getImgCutSize();
 		if (cutSize == 1)

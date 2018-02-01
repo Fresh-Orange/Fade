@@ -18,7 +18,7 @@ import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
-import com.sysu.pro.fade.home.event.itemChangeEvent;
+import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
 import com.sysu.pro.fade.service.NoteService;
@@ -158,6 +158,7 @@ public class ContentHome {
 
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
+        fadeItemAnimator.setChangeDuration(0);//解决notifyItem时的闪屏问题
         recyclerView.setItemAnimator(fadeItemAnimator);
 
     }
@@ -386,12 +387,80 @@ public class ContentHome {
         adapter.notifyDataSetChanged();
     }
 
+/*    static public void getNoteFromServer(final Integer noteId, User curUser, final NotesAdapter adapter){
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
+        NoteService noteService = retrofit.create(NoteService.class);
+        noteService.getFullNote(noteId.toString(), curUser.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Note>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Note newNote) {
+                        List<Note> notes = adapter.getDataList();
+                        for (int i = 0; i < notes.size(); i++) {
+                            Note tmpNote = notes.get(i);
+                            if (tmpNote.getOriginalId().equals(noteId)){
+                                if (tmpNote.isOriginalNote())
+                                    notes.set(i, newNote);
+                                else
+                                    tmpNote.setOrigin(newNote);
+                                adapter.notifyItemChanged(i);
+                            }
+                        }
+
+                    }
+                });
+    }*/
+
+    static public void getNoteAndPostEvent(final Integer noteId, User curUser){
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
+        NoteService noteService = retrofit.create(NoteService.class);
+        noteService.getFullNote(noteId.toString(), curUser.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Note>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(Note newNote) {
+                        EventBus.getDefault().post(new NoteChangeEvent(noteId, newNote));
+                    }
+                });
+    }
+
     /**
      * item发生变化，更新界面
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onItemChanged(itemChangeEvent itemChangeEvent) {
-        adapter.notifyItemChanged(itemChangeEvent.getPosition());
+    public void onItemChanged(NoteChangeEvent noteChangeEvent) {
+        int noteId = noteChangeEvent.getOriginalNoteId();
+        Note newNote = noteChangeEvent.getNote();
+        for (int i = 0; i < notes.size(); i++) {
+            Note tmpNote = notes.get(i);
+            if (tmpNote.getOriginalId().equals(noteId)){
+                if (tmpNote.isOriginalNote())
+                    notes.set(i, newNote);
+                else
+                    tmpNote.setOrigin(newNote);
+                adapter.notifyItemChanged(i);
+            }
+        }
     }
 
     /**
@@ -401,7 +470,7 @@ public class ContentHome {
     public  void onGetUser(User user){
         Integer user_id = user.getUser_id();
         for(Note note : notes){
-            if(note.getUser_id() == user_id){
+            if(note.getUser_id().equals(user_id)){
                 note.setHead_image_url(Const.BASE_IP + user.getHead_image_url());
                 note.setNickname(user.getNickname());
             }

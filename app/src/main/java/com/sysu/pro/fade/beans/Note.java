@@ -45,7 +45,7 @@ public class Note implements Serializable {
 	private Long liveTime;//存活时间，死贴用到的属性
 
 	public Long getLiveTime() {
-		return liveTime;
+		return isOriginalNote() ? liveTime : getOrigin().getLiveTime();
 	}
 
 	public void setLiveTime(Long liveTime) {
@@ -93,7 +93,7 @@ public class Note implements Serializable {
 	}
 
 	public String getNote_content() {
-		return note_content;
+		return isOriginalNote() ? note_content : getOrigin().getNote_content();
 	}
 
 	public void setNote_content(String note_content) {
@@ -108,16 +108,23 @@ public class Note implements Serializable {
 		this.post_time = post_time;
 	}
 
+	public String getOriginalPost_time() {
+		return isOriginalNote() ? post_time : getOrigin().getPost_time();
+	}
+
 	public Integer getComment_num() {
-		return comment_num;
+		return isOriginalNote() ? comment_num : getOrigin().getComment_num();
 	}
 
 	public void setComment_num(Integer comment_num) {
-		this.comment_num = comment_num;
+		if (isOriginalNote())
+			this.comment_num = comment_num;
+		else
+			getOrigin().setComment_num(comment_num);
 	}
 
 	public Integer getIs_die() {
-		return is_die;
+		return isOriginalNote() ? is_die : getOrigin().getIs_die();
 	}
 
 	public void setIs_die(Integer is_die) {
@@ -125,19 +132,25 @@ public class Note implements Serializable {
 	}
 
 	public Integer getSub_num() {
-		return sub_num;
+		return isOriginalNote() ? sub_num : getOrigin().getSub_num();
 	}
 
 	public void setSub_num(Integer sub_num) {
-		this.sub_num = sub_num;
+		if (isOriginalNote())
+			this.sub_num = sub_num;
+		else
+			getOrigin().setSub_num(sub_num);
 	}
 
 	public Integer getAdd_num() {
-		return add_num;
+		return isOriginalNote() ? add_num : getOrigin().getAdd_num();
 	}
 
 	public void setAdd_num(Integer add_num) {
-		this.add_num = add_num;
+		if (isOriginalNote())
+			this.add_num = add_num;
+		else
+			getOrigin().setAdd_num(add_num);
 	}
 
 	@Override
@@ -147,7 +160,7 @@ public class Note implements Serializable {
 	}
 
 	public List<Image> getImages() {
-		return images;
+		return isOriginalNote() ? images : getOrigin().getImages();
 	}
 
 	public List<String> getImgCoordinates() {
@@ -160,7 +173,7 @@ public class Note implements Serializable {
 
 	public List<String> getImgUrls() {
 		List<String> imgUrls = new ArrayList<>();
-		for (Image image: images){
+		for (Image image: getImages()){
 			imgUrls.add(image.getImage_url());
 		}
 		return imgUrls;
@@ -168,7 +181,7 @@ public class Note implements Serializable {
 
 	public List<Double> getImgSizes() {
 		List<Double> imgSizes = new ArrayList<>();
-		for (Image image: images){
+		for (Image image: getImages()){
 			imgSizes.add(Double.parseDouble(image.getImage_size()));
 		}
 		return imgSizes;
@@ -216,7 +229,7 @@ public class Note implements Serializable {
 	}
 
 	public Integer getBaseComment_num() {
-		return baseComment_num;
+		return isOriginalNote() ? baseComment_num : getOrigin().getBaseComment_num();
 	}
 
 	public void setBaseComment_num(Integer baseComment_num) {
@@ -226,6 +239,8 @@ public class Note implements Serializable {
 	//如果note_id相等，则两个帖子相等
 	@Override
 	public int hashCode() {
+		if (target_id == 0)
+			return target_id.hashCode();
 		return note_id.hashCode();
 	}
 
@@ -254,7 +269,7 @@ public class Note implements Serializable {
 	}
 
 	public String getNote_area() {
-		return note_area;
+		return isOriginalNote() ? note_area : getOrigin().getNote_area();
 	}
 
 	public void setNote_area(String note_area) {
@@ -267,5 +282,18 @@ public class Note implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	/**
+	 * 获得原创ID，如果是原创帖则是note_id，如果是转发帖则是target_id
+	 */
+	public Integer getOriginalId() {
+		if (target_id == 0)
+			return note_id;
+		return target_id;
+	}
+
+	public boolean isOriginalNote(){
+		return target_id == 0 || getOrigin()==null;
 	}
 }

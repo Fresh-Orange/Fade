@@ -170,6 +170,7 @@ public class UserContent {
                 TextView tv_nickname = itemView.findViewById(R.id.tv_nickname);
                 TextView tv_fade_name = itemView.findViewById(R.id.tv_fade_name);
                 ImageView iv_header = itemView.findViewById(R.id.iv_header);
+                final User user = (User)ob;
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -178,7 +179,6 @@ public class UserContent {
                         activity.startActivity(intent);
                     }
                 });
-                User user = (User)ob;
                 ViewGroup.LayoutParams layoutParams1 = tv_nickname.getLayoutParams();
                 layoutParams1.height = 80;
                 tv_nickname.setLayoutParams(layoutParams1);
