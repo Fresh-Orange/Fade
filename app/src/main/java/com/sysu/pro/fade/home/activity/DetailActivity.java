@@ -2,12 +2,7 @@ package com.sysu.pro.fade.home.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -44,12 +39,9 @@ import com.sysu.pro.fade.message.Utils.DateUtils;
 import com.sysu.pro.fade.service.CommentService;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
-import com.sysu.pro.fade.utils.TimeUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +49,16 @@ import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.sysu.pro.fade.home.ContentHome.getNoteAndPostEvent;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setAddOrMinusListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setAddress;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setCommentAndAddCountText;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setCommentListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setOnUserClickListener;
+import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setTimeBar;
+import static com.sysu.pro.fade.home.view.ImageOnlyHolder.setImagePager;
+import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
 
 import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
 
@@ -93,6 +95,7 @@ public class DetailActivity extends MainBaseActivity{
     private ImageView userAvatar;
     private TextView tvPostTime;
     private TextView tvCount;
+    private TextView tvAddress;
     private ClickableProgressBar clickableProgressBar;
 
     /*add by hl*/
@@ -120,6 +123,7 @@ public class DetailActivity extends MainBaseActivity{
         userAvatar = (ImageView) findViewById(R.id.civ_avatar);
         tvName = (TextView) findViewById(R.id.tv_name);
         tvBody = (TextView) findViewById(R.id.tv_title);
+        tvAddress = (TextView) findViewById(R.id.tv_address);
         tvCount = (TextView) findViewById(R.id.tv_comment_add_count);
         tvPostTime = (TextView) findViewById(R.id.tv_post_time);
         clickableProgressBar = (ClickableProgressBar) findViewById(R.id.clickable_progressbar);
@@ -172,8 +176,8 @@ public class DetailActivity extends MainBaseActivity{
                         note.setAdd_num(downloadNote.getAdd_num());
                         note.setComment_num(downloadNote.getComment_num());
                         note.setFetchTime(downloadNote.getFetchTime());
-                        setCommentAndAddCountText(DetailActivity.this, note);
-                        setTimeLeftTextAndProgress(DetailActivity.this, note);
+                        setCommentAndAddCountText(DetailActivity.this, tvCount, note);
+                        setTimeBar(clickableProgressBar,DetailActivity.this, note);
 
                         NoteQuery noteQuery = detailPage.getNoteQuery();
                         forwardList.addAll(noteQuery.getList());
@@ -190,17 +194,6 @@ public class DetailActivity extends MainBaseActivity{
                 });
     }
 
-    /**
-     * 帖子展示部分的续秒数和评论数显示 ---by 赖贤城
-     */
-    private void setCommentAndAddCountText(Context context, Note bean) {
-        DecimalFormat decimalFormat = new DecimalFormat(",###");
-        String sAddCount = decimalFormat.format(bean.getAdd_num());
-        String addCntText = context.getString(R.string.add_count_text, sAddCount);
-        String sCommentCount = decimalFormat.format(bean.getComment_num());
-        String commentCntText = context.getString(R.string.comment_count_text, sCommentCount);
-        tvCount.setText(commentCntText + "   "+addCntText);
-    }
 
     /**
      * 帖子展示部分的初始设置，使用的是旧数据，等rxJava返回后才会再更新界面 ---by 赖贤城
@@ -209,11 +202,11 @@ public class DetailActivity extends MainBaseActivity{
         checkAndSetOriginalNote();
         tvName.setText(note.getNickname());
         tvBody.setText(Html.fromHtml(note.getNote_content()));
-        String time = note.getPost_time().substring(0, note.getPost_time().length()-2);
-        tvPostTime.setText(DateUtils.changeToDate(time));
-        setImageView();
-        setCommentAndAddCountText(this, note);
-        setTimeLeftTextAndProgress(this, note);
+        tvPostTime.setText(note.getOriginalPost_time());
+        setImagePager(note, imageLayout);
+        setCommentAndAddCountText(this, tvCount, note);
+        setTimeBar(clickableProgressBar, this, note);
+        setAddress(this, tvAddress, note);
         if (note.getImages() == null || note.getImages().isEmpty()) {
             imageLayout.setVisibility(View.GONE);
         }
@@ -225,9 +218,14 @@ public class DetailActivity extends MainBaseActivity{
                 .fitCenter()
                 .dontAnimate()
                 .into(userAvatar);
-        setCommentListener(this, note);
-        setAddOrMinusListener(this, note);
-        setOnUserClickListener(this, note);
+        setCommentListener(this, clickableProgressBar, note, new ClickableProgressBar.onCommentClickListener() {
+            @Override
+            public void onClick() {
+                showDirectComment();
+            }
+        });
+        setAddOrMinusListener(this, clickableProgressBar, new UserUtil(this), note);
+        setOnUserClickListener(this, tvName, userAvatar, null, note);
     }
 
 
@@ -236,182 +234,13 @@ public class DetailActivity extends MainBaseActivity{
      */
     private void checkAndSetOriginalNote(){
         if (note.getType() != 0){
-            note.setPost_time(note.getOrigin().getPost_time());
             note.setNickname(note.getOrigin().getNickname());
             note.setHead_image_url(note.getOrigin().getHead_image_url());
             note.setUser_id(note.getOrigin().getUser_id());
         }
     }
 
-    private void setOnUserClickListener(final Context context, final Note bean) {
-        tvName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, OtherActivity.class);
-                i.putExtra(Const.USER_ID, bean.getUser_id());
-                context.startActivity(i);
-            }
-        });
-        userAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, OtherActivity.class);
-                i.putExtra(Const.USER_ID, bean.getUser_id());
-                context.startActivity(i);
-            }
-        });
-    }
 
-    private double getNoteRatio(Note bean) {
-        double ratio;
-        int cutSize = bean.getImgCutSize();
-        if (cutSize == 1)
-            ratio = 5.0/4;
-        else if (cutSize == 2)
-            ratio = 8.0/15;
-        else{//USELESS!!
-            ratio = 999;
-            for (double d:bean.getImgSizes()) {
-                Log.d("Ratio", "out "+d);
-                ratio = ratio < d ? ratio : d;
-            }
-        }
-        return ratio;
-    }
-
-    private void setImageView(){
-        double ratio = getNoteRatio(note);
-        imageLayout.setViewPagerMaxHeight(600);
-        //imageLayout.setHeightByRatio(((float) (1.0/ratio)));
-        imageLayout.setImgCoordinates(note.getImgCoordinates());
-        imageLayout.setHeightByRatio((float)ratio);
-        imageLayout.setPaths(Const.BASE_IP, note.getImgUrls());
-    }
-
-    private void setTimeLeftTextAndProgress(Context context, Note bean) {
-        Date dateNow = new Date(bean.getFetchTime());
-        Date datePost = TimeUtil.getTimeDate(bean.getPost_time());
-        //floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
-        long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE
-                + 5 * bean.getAdd_num()
-                - bean.getSub_num()
-                - Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
-        String sTimeLeft;
-        if (minuteLeft < 60)
-            sTimeLeft = String.valueOf(minuteLeft) + "分钟";
-        else if (minuteLeft < 1440)
-            sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 60)) + "小时";
-        else
-            sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 1440)) + "天";
-
-        clickableProgressBar.setTimeText(context.getString(R.string.time_left_text, sTimeLeft));
-
-        if (minuteLeft < 60){
-            int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-            clickableProgressBar.setProgress((int)Math.max((halfProgress+(5.0/6)*minuteLeft), halfProgress));
-        }
-        else
-            clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());
-    }
-
-    /**
-     * 续秒或者减秒
-     */
-    private void setAddOrMinusListener(final Context context, final Note bean) {
-        UserUtil userUtil = new UserUtil(this);
-        final User curUser = userUtil.getUer();
-        clickableProgressBar.setAddClickListener(new ClickableProgressBar.onAddClickListener() {
-            @Override
-            public void onClick() {
-                Note note = getNewNote(context, bean);
-                note.setType(1); // 1表示 续秒
-                sendAddOrMinusToServer(note, curUser, bean);
-                clickableProgressBar.showCommentButton(1);
-                bean.setAction(1);
-                int curProgress = clickableProgressBar.getProgress();
-                int maxProgress = clickableProgressBar.getMaxProgress();
-                clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));
-            }
-        });
-        clickableProgressBar.setMinusClickListener(new ClickableProgressBar.onMinusClickListener() {
-            @Override
-            public void onClick() {
-                Note note = getNewNote(context, bean);
-                note.setType(2); // 2表示 减秒
-                sendAddOrMinusToServer(note, curUser, bean);
-                clickableProgressBar.showCommentButton(0);
-                bean.setAction(2);
-                int curProgress = clickableProgressBar.getProgress();
-                int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-                clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));
-            }
-        });
-    }
-
-    private void setCommentListener(final Context context, final Note bean) {
-        if (bean.getAction() == 1)
-            clickableProgressBar.showCommentButton(1);
-        else if (bean.getAction() == 2)
-            clickableProgressBar.showCommentButton(0);
-        clickableProgressBar.setCommentClickListener(new ClickableProgressBar.onCommentClickListener() {
-            @Override
-            public void onClick() {
-                showDirectComment();
-            }
-        });
-    }
-
-    /**
-     * 将包装好的note对象发到服务器，并更新本地的界面
-     * @param note 准备发往服务器的note
-     * @param curUser 当前用户
-     * @param bean 当前holder对应的bean
-     */
-    private void sendAddOrMinusToServer(Note note, User curUser, final Note bean) {
-        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
-        NoteService noteService = retrofit.create(NoteService.class);
-        noteService
-                .changeSecond(JSON.toJSONString(note))
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SimpleResponse>() {
-                    @Override
-                    public void onCompleted() {}
-
-                    @Override
-                    public void onError(Throwable e) {
-                        //TODO:帖子死掉
-                    }
-
-                    @Override
-                    public void onNext(SimpleResponse simpleResponse) {
-                        if (simpleResponse.getErr() == null){
-                            //USELESS!! Integer newNoteId = (Integer) simpleResponse.getExtra().get("note_id");
-                            Integer comment_num = (Integer) simpleResponse.getExtra().get("comment_num");    //评论数量
-                            Integer sub_num = (Integer) simpleResponse.getExtra().get("sub_num");    //评论数量
-                            Integer add_num = (Integer) simpleResponse.getExtra().get("add_num");    //评论数量
-                            Long fetchTime = (Long) simpleResponse.getExtra().get("fetchTime");
-                            bean.setComment_num(comment_num);
-                            bean.setSub_num(sub_num);
-                            bean.setAdd_num(add_num);
-                            //TODO:fetchTime更新之后进度条更新
-                        }
-                    }
-                });
-    }
-
-    @NonNull
-    private Note getNewNote(Context context, Note bean) {
-        UserUtil userUtil = new UserUtil(this);
-        final User curUser = userUtil.getUer();
-        Note note = new Note();
-        note.setNickname(curUser.getNickname());
-        note.setUser_id(curUser.getUser_id());
-        note.setNote_content(bean.getNote_content());
-        note.setTarget_id(bean.getNote_id());
-        note.setHead_image_url(curUser.getHead_image_url());
-        return note;
-    }
 
     //初始化续秒头像列表
     private void initForwardList() {
@@ -776,5 +605,11 @@ public class DetailActivity extends MainBaseActivity{
         } else {
             finish();
         }
+    }
+
+    @Override
+    public void finish() {
+        getNoteAndPostEvent(note_id, user);//详情页可能有修改帖子，因此通知首页更新
+        super.finish();
     }
 }

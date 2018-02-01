@@ -315,7 +315,7 @@ public class MainActivity extends MainBaseActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 //与pager 关联
-//                mViewPager.setCurrentItem(tab.getPosition(), true);
+//                mViewPager.setCurrentItem(tab.getOriginalNoteId(), true);
                 changeTabSelect(tab);
                 if (tab.getPosition() == Const.PUBLISH - 1){
                     Intent intent = new Intent(MainActivity.this, PublishActivity.class);

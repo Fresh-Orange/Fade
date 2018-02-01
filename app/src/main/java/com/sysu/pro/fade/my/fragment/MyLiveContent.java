@@ -18,7 +18,7 @@ import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
-import com.sysu.pro.fade.home.event.itemChangeEvent;
+import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
@@ -154,6 +154,7 @@ public class MyLiveContent {
         recyclerView.addOnScrollListener(loadMoreScrollListener);
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
+        fadeItemAnimator.setChangeDuration(0);//解决notifyItem时的闪屏问题
         recyclerView.setItemAnimator(fadeItemAnimator);
 
     }
@@ -180,7 +181,7 @@ public class MyLiveContent {
                         }else {
                             //加载更多
                             isLoading = true;
-                            userService.getLiveNote(user.getUser_id().toString(),user.getUser_id().toString(),start.toString())
+                            userService.getLiveNote(user.getUser_id().toString(),user.getUser_id().toString(), start.toString())
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Subscriber<NoteQuery>() {
@@ -237,7 +238,7 @@ public class MyLiveContent {
                         //顶部下拉刷新
                         swipeRefresh.setRefreshing(true);
                         Log.i("test",updateList.toString());
-                        userService.getLiveNote(user.getUser_id().toString(),user.getUser_id().toString(),"0")
+                        userService.getLiveNote(user.getUser_id().toString(),user.getUser_id().toString(), "0")
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Subscriber<NoteQuery>() {
@@ -311,7 +312,7 @@ public class MyLiveContent {
     private void addToListTail(List<Note>list){
         //下翻加载数据
         for(Note note : list){
-            note.setIs_die(1);
+            //note.setIs_die(1);
             if(note.getComment_num() == null) note.setComment_num(0);
             if(note.getAdd_num() == null) note.setAdd_num(0);
             if(note.getSub_num() == null) note.setSub_num(0);
@@ -337,12 +338,24 @@ public class MyLiveContent {
         adapter.notifyDataSetChanged();
     }
 
+
     /**
      * item发生变化，更新界面
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onItemChanged(itemChangeEvent itemChangeEvent) {
-        adapter.notifyItemChanged(itemChangeEvent.getPosition());
+    public void onItemChanged(NoteChangeEvent noteChangeEvent) {
+        int noteId = noteChangeEvent.getOriginalNoteId();
+        Note newNote = noteChangeEvent.getNote();
+        for (int i = 0; i < notes.size(); i++) {
+            Note tmpNote = notes.get(i);
+            if (tmpNote.getOriginalId().equals(noteId)){
+                if (tmpNote.isOriginalNote())
+                    notes.set(i, newNote);
+                else
+                    tmpNote.setOrigin(newNote);
+                adapter.notifyItemChanged(i);
+            }
+        }
     }
 
     /**
@@ -352,7 +365,7 @@ public class MyLiveContent {
     public  void onGetUser(User user){
         Integer user_id = user.getUser_id();
         for(Note note : notes){
-            if(note.getUser_id() == user_id){
+            if(note.getUser_id().equals(user_id)){
                 note.setHead_image_url(Const.BASE_IP + user.getHead_image_url());
                 note.setNickname(user.getNickname());
             }

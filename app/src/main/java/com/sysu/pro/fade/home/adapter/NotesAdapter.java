@@ -44,6 +44,10 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		this.data = data;
 	}
 
+	public List<Note> getDataList(){
+		return this.data;
+	}
+
 	/**
 	 * 根据不同的数据获得不同的item布局类型
 	 *
@@ -60,17 +64,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 			return FOOT_ITEM;
 
 		final Note bean = data.get(position);
-		//将原贴的信息转移到转发帖，方便操作
-		if (bean.getType() != 0){
-			Log.d("trans_image", "position: "+position+
-					"\n"+bean.getOrigin().getImages());
-			bean.setNote_content(bean.getOrigin().getNote_content());
-			bean.setImages(bean.getOrigin().getImages());
-			bean.setComment_num(bean.getOrigin().getComment_num());
-			bean.setAdd_num(bean.getOrigin().getAdd_num());
-			bean.setSub_num(bean.getOrigin().getSub_num());
-			//bean.setAction(bean.getOrigin().getAction());
-		}
+
 		/*
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
 		 */
