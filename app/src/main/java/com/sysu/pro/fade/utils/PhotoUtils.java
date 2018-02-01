@@ -78,7 +78,7 @@ public class PhotoUtils {
 		Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		File vFile = new File(Environment.getExternalStorageDirectory()
-				+ "/Fade/Photo/Fade", String.valueOf(System.currentTimeMillis())
+				+ "/Fade", String.valueOf(System.currentTimeMillis())
 				+ ".jpg");
 		if (vFile.exists())
 		{
@@ -144,7 +144,7 @@ public class PhotoUtils {
 //					.getExternalStorageDirectory().getAbsolutePath(), String
 //					.valueOf(System.currentTimeMillis()));
 			imagePath=PhotoUtils.savePhoto(photo, Environment.getExternalStorageDirectory()
-					+ "/Fade/Photo/Fade", String
+					+ "/Fade", String
 					.valueOf(System.currentTimeMillis()));
 		}
 	}
