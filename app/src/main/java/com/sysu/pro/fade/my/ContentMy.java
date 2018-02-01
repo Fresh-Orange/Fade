@@ -3,6 +3,7 @@ package com.sysu.pro.fade.my;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +23,7 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.MyFadeFragment;
+import com.sysu.pro.fade.my.fragment.MyLiveFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -46,6 +49,7 @@ public class ContentMy {
     private Context context;
     private View rootview;
     private SharedPreferences sharedPreferences;
+    private TextView backBarTitle;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
     private TextView tvShowSummary; //个性签名
@@ -53,7 +57,7 @@ public class ContentMy {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private User user;
-    private String[] allNums;
+    private String[] allNums;       //所有菜单项的数字
     private TextView tvFadeName;//fade_id
 
     private Retrofit retrofit;
@@ -78,6 +82,25 @@ public class ContentMy {
         //隐藏backbar的返回按钮
         RelativeLayout back = rootview.findViewById(R.id.back_bar_back);
         back.setVisibility(View.GONE);
+
+        //设置AppBarLayout,当不可见时，顶栏显示用户名
+        backBarTitle = rootview.findViewById(R.id.tvOfBackBar);
+        backBarTitle.setText(user.getNickname());
+        backBarTitle.setVisibility(View.INVISIBLE);
+        AppBarLayout appBar = rootview.findViewById(R.id.my_app_bar_layout);
+        final LinearLayout myMessage = rootview.findViewById(R.id.my_all_message);
+        appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (verticalOffset + myMessage.getHeight() == 0) {
+                    backBarTitle.setVisibility(View.VISIBLE);
+                } else {
+                    if (backBarTitle.getVisibility() != View.INVISIBLE) {
+                        backBarTitle.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
         //进入设置界面的按钮
         mySetting = rootview.findViewById(R.id.back_bar_menu);
         mySetting.setVisibility(View.VISIBLE);
@@ -156,12 +179,12 @@ public class ContentMy {
 
     private void loadFragment() {
         String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
-        Fragment dongTai = new TempFragment();
+        Fragment liveFade = new MyLiveFragment();
         Fragment fade = new MyFadeFragment();
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(dongTai);
+        fragments.add(liveFade);
         fragments.add(fade);
         fragments.add(fans);
         fragments.add(concern);

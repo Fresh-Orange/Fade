@@ -35,6 +35,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
 import com.sysu.pro.fade.home.view.ClickableProgressBar;
 import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
+import com.sysu.pro.fade.message.Utils.DateUtils;
 import com.sysu.pro.fade.service.CommentService;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -76,8 +77,8 @@ public class DetailActivity extends MainBaseActivity{
     private Button sendComment;
     private List<Note> forwardList = new ArrayList<>(); //续秒列表，用来获取头像
     private CommonAdapter<Note> forwardAdapter;
-    private RecyclerView forwardRecycler;
-    private RecyclerView recyclerView;
+    private RecyclerView forwardRecycler;   //续秒列表
+    private RecyclerView recyclerView;      //评论列表
     private RefreshLayout refreshLayout;
     private int loadMoreFlag;
     private CommonAdapter<Comment> commentAdapter;
@@ -250,7 +251,7 @@ public class DetailActivity extends MainBaseActivity{
             @Override
             public void convert(ViewHolder holder, final Note data, int position) {
                 holder.setCircleImage(R.id.detail_forward_head, Const.BASE_IP+data.getHead_image_url());
-                holder.setGoodImage(R.id.detail_forward_good, data.getType()==1);
+                holder.setGoodImage(R.id.detail_forward_good, data.getType());
                 holder.onWidgetClick(R.id.detail_forward_head, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -272,6 +273,7 @@ public class DetailActivity extends MainBaseActivity{
 
     //初始化评论区
     private void initialComment() {
+        recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
         //放一级评论的adapter
         commentAdapter = new CommonAdapter<Comment>(commentator) {
             @Override
@@ -281,10 +283,11 @@ public class DetailActivity extends MainBaseActivity{
 
             @Override
             public void convert(final CommonAdapter.ViewHolder holder, final Comment data, final int position) {
-                holder.setGoodImage(R.id.comment_detail_good, data.getType()==1);
+                holder.setGoodImage(R.id.comment_detail_good, data.getType());  //1为续秒，2为减秒，0为无操作
                 holder.setImage(R.id.comment_detail_head, Const.BASE_IP+data.getHead_image_url());
                 holder.setText(R.id.comment_detail_name, data.getNickname());
-                holder.setText(R.id.comment_detail_date, data.getComment_time());
+                String time = data.getComment_time().substring(0, data.getComment_time().length()-2);
+                holder.setText(R.id.comment_detail_date, DateUtils.changeToDate(time));
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
                 //头像点击事件
                 holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {
@@ -299,6 +302,7 @@ public class DetailActivity extends MainBaseActivity{
                 holder.onWidgetClick(R.id.comment_detail_content, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        recyclerView.smoothScrollBy(0, getRecyclerViewScrollDistance(position));
                         showSecondComment(commentator.get(position), holder, data.getUser_id());
                     }
                 });
@@ -328,7 +332,7 @@ public class DetailActivity extends MainBaseActivity{
         };
 
         loadMoreFlag = 1;
-        recyclerView = (RecyclerView) findViewById(R.id.detail_comment);
+
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         //设置上拉加载
@@ -345,6 +349,17 @@ public class DetailActivity extends MainBaseActivity{
                 }
             }
         });
+    }
+
+    // TODO: 2018/2/1 回复的内容移动到软键盘和输入框之上，
+    // 现在只能做到，在recyclerView高度够的情况下，某个position 滑到最上
+    private int getRecyclerViewScrollDistance(int position) {
+        int dis = 0;
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        for (int i = 0; i < position; i++) {
+            dis += manager.getChildAt(i).getHeight();
+        }
+        return dis;
     }
 
     //上拉加载多10条评论
@@ -393,7 +408,8 @@ public class DetailActivity extends MainBaseActivity{
             toName.setVisibility(View.GONE);
         }
         else toName.setText(reply.getTo_nickname());
-        date.setText(reply.getComment_time());
+        String time = reply.getComment_time().substring(0, reply.getComment_time().length()-2);
+        date.setText(DateUtils.changeToDate(time));
         content.setText(reply.getComment_content());
         view.findViewById(R.id.reply_content).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -412,6 +428,7 @@ public class DetailActivity extends MainBaseActivity{
     private void showDirectComment() {
         writeComment.setVisibility(View.VISIBLE);
         sendComment.setVisibility(View.VISIBLE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//弹出软件盘
         writeComment.requestFocus();
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -465,6 +482,7 @@ public class DetailActivity extends MainBaseActivity{
     private void showSecondComment(final Comment toComment, final CommonAdapter.ViewHolder holder, final int userId) {
         writeComment.setVisibility(View.VISIBLE);
         sendComment.setVisibility(View.VISIBLE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//弹出软件盘
         writeComment.requestFocus();
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -522,6 +540,7 @@ public class DetailActivity extends MainBaseActivity{
     private void showSecondReply(final SecondComment toComment, final CommonAdapter.ViewHolder holder, final int userId) {
         writeComment.setVisibility(View.VISIBLE);
         sendComment.setVisibility(View.VISIBLE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//弹出软件盘
         writeComment.requestFocus();
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
