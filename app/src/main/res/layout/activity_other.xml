@@ -134,16 +134,28 @@
                     android:text="该用户没有个人简介"
                     android:textColor="#000000"
                     android:textSize="14sp"/>
-                <TextView
-                    android:id="@+id/tvShowSchool"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:text="中山大学·历史学系"
-                    android:textColor="#000000"
-                    android:textSize="14sp"/>
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginRight="4dp"
+                        android:src="@drawable/ic_school"/>
+                    <TextView
+                        android:id="@+id/tvShowSchool"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="中山大学·历史学系"
+                        android:textColor="#000000"
+                        android:textSize="14sp"/>
+                </LinearLayout>
 
                 <android.support.design.widget.TabLayout
                     android:layout_marginTop="16dp"

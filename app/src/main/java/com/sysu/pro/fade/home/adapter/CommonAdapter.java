@@ -91,10 +91,10 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
             TextView view = getView(id);
             view.setText(value);
         }
-        public void setGoodImage(int id, boolean isGood) {
+        public void setGoodImage(int id, int isGood) {
             ImageView view = getView(id);
-            if (isGood) Glide.with(view.getContext()).load(R.drawable.isgood).into(view);
-            else Glide.with(view.getContext()).load(R.drawable.isnotgood).into(view);
+            if (isGood == 1) Glide.with(view.getContext()).load(R.drawable.isgood).into(view);
+            if (isGood == 2) Glide.with(view.getContext()).load(R.drawable.isnotgood).into(view);
         }
         public void setImage(int id, String imageUrl) {
             ImageView view = getView(id);
