@@ -38,7 +38,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils;
+import com.sysu.pro.fade.discover.transform.GlideRoundTransform;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1689,6 +1691,14 @@ public final class ImageUtils {
 
     private static Bitmap.Config getSafeConfig(Bitmap bitmap) {
         return bitmap.getConfig() != null ? bitmap.getConfig() : Bitmap.Config.ARGB_8888;
+    }
+
+    public static void loadRoundImage(Context context, String url, final ImageView imageView, int roundDp) {
+        Glide.with(context)
+                .load(url)
+                //.centerCrop() 千万不要加，加了就没有圆角效果了
+                .transform(new CenterCrop(context), new GlideRoundTransform(context,roundDp))
+                .into(imageView);
     }
 
 }

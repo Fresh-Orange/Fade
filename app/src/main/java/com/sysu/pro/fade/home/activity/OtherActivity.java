@@ -1,12 +1,14 @@
 package com.sysu.pro.fade.home.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,9 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
+import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
+import com.sysu.pro.fade.home.fragment.OtherLiveFragment;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
@@ -40,6 +45,7 @@ public class OtherActivity extends MainBaseActivity {
     private Retrofit retrofit;
     private String[] allNums;
 
+    private TextView backBarTitle;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
     private TextView tvFadeName;//fade_id
@@ -55,8 +61,8 @@ public class OtherActivity extends MainBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other);
 
-        RelativeLayout backBar = findViewById(R.id.back_bar_menu);  //三个点的菜单按钮
-        backBar.setVisibility(View.VISIBLE);
+        RelativeLayout setting = findViewById(R.id.back_bar_menu);  //三个点的菜单按钮
+        setting.setVisibility(View.VISIBLE);
         ivShowHead =  (ImageView) findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) findViewById(R.id.tvShowNickname);
         tvShowSummary = (TextView) findViewById(R.id.tvShowSummary);
@@ -91,12 +97,14 @@ public class OtherActivity extends MainBaseActivity {
                     public void onNext(PersonPage personPage) {
                         //获取他人主页用户
                         other = personPage.getUser();
-                        //0为没关注
-                        if (personPage.getIsConcern() == 1) {
-                            tvConcernOk.setVisibility(View.VISIBLE);
-                            tvContact.setVisibility(View.VISIBLE);
-                        } else {
-                            tvUnConcern.setVisibility(View.VISIBLE);
+                        if (personPage.getIsConcern() != null) {
+                            //0为没关注
+                            if (personPage.getIsConcern() == 1) {
+                                tvConcernOk.setVisibility(View.VISIBLE);
+                                tvContact.setVisibility(View.VISIBLE);
+                            } else {
+                                tvUnConcern.setVisibility(View.VISIBLE);
+                            }
                         }
                         loadData();
                         loadFragment();
@@ -150,6 +158,7 @@ public class OtherActivity extends MainBaseActivity {
                                         tvUnConcern.setVisibility(View.GONE);
                                         tvConcernOk.setVisibility(View.VISIBLE);
                                         tvContact.setVisibility(View.VISIBLE);
+                                        tabLayout.clearOnTabSelectedListeners();
                                         loadFragment();
                                     }
                                 }
@@ -180,6 +189,7 @@ public class OtherActivity extends MainBaseActivity {
                                     tvUnConcern.setVisibility(View.VISIBLE);
                                     tvConcernOk.setVisibility(View.GONE);
                                     tvContact.setVisibility(View.GONE);
+                                    tabLayout.clearOnTabSelectedListeners();
                                     loadFragment();
                                 }
                             }
@@ -193,21 +203,41 @@ public class OtherActivity extends MainBaseActivity {
                         other.getUser_id().toString(), other.getNickname());
             }
         });
+
+        //设置AppBarLayout,当不可见时，顶栏显示用户名
+        backBarTitle = findViewById(R.id.tvOfBackBar);
+        backBarTitle.setText(other.getNickname());
+        backBarTitle.setVisibility(View.INVISIBLE);
+        AppBarLayout appBar = findViewById(R.id.my_app_bar_layout);
+        final LinearLayout otherMessage = findViewById(R.id.other_all_message);
+        appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (verticalOffset + otherMessage.getHeight() == 0) {
+                    backBarTitle.setVisibility(View.VISIBLE);
+                } else {
+                    if (backBarTitle.getVisibility() != View.INVISIBLE) {
+                        backBarTitle.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
     }
 
     private void loadFragment() {
         String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
-        Fragment dongTai = new TempFragment();
-        Fragment fade = new TempFragment();
+        Fragment liveFade = OtherLiveFragment.newInstance(other.getUser_id());
+        Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
         Fragment concern = new TempFragment();
         Fragment fans = new TempFragment();
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(dongTai);
+        fragments.add(liveFade);
         fragments.add(fade);
         fragments.add(fans);
         fragments.add(concern);
         MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(3); //缓存3个选项卡，这样就不会每次都重新加载
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < adapter.getCount(); i++) {
             TabLayout.Tab tab = tabLayout.getTabAt(i);

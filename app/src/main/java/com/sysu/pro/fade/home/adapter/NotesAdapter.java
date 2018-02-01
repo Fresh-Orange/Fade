@@ -1,12 +1,12 @@
 package com.sysu.pro.fade.home.adapter;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.home.view.CompleteHolder;
@@ -31,7 +31,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private static final int IMAGE_ONLY_ITEM = 2;//仅图片类型
 	private static final int FOOT_ITEM = 6;//最底部的“正在加载”
 	public static int viewPagerTag = 0;
-	private MainActivity context;
+	private Activity context;
 	private List<Note> data;
 	private boolean showFootView = true;
 	private String TAG = "footView";
@@ -39,9 +39,13 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	private FootViewHolder footViewHolder;
 
-	public NotesAdapter(MainActivity context, List<Note> data) {
+	public NotesAdapter(Activity context, List<Note> data) {
 		this.context = context;
 		this.data = data;
+	}
+
+	public List<Note> getDataList(){
+		return this.data;
 	}
 
 	/**
@@ -60,17 +64,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 			return FOOT_ITEM;
 
 		final Note bean = data.get(position);
-		//将原贴的信息转移到转发帖，方便操作
-		if (bean.getType() != 0){
-			Log.d("trans_image", "position: "+position+
-					"\n"+bean.getOrigin().getImages());
-			bean.setNote_content(bean.getOrigin().getNote_content());
-			bean.setImages(bean.getOrigin().getImages());
-			bean.setComment_num(bean.getOrigin().getComment_num());
-			bean.setAdd_num(bean.getOrigin().getAdd_num());
-			bean.setSub_num(bean.getOrigin().getSub_num());
-			//bean.setAction(bean.getOrigin().getAction());
-		}
+
 		/*
 		 * 其他情况根据数据内容来判断是图文布局、仅图布局，还是仅文字布局
 		 */
