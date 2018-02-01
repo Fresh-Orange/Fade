@@ -60,8 +60,6 @@ import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setTimeBar;
 import static com.sysu.pro.fade.home.view.ImageOnlyHolder.setImagePager;
 import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
 
-import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
-
 /*
  * rebuild by VJ 2017.12.30
  */
