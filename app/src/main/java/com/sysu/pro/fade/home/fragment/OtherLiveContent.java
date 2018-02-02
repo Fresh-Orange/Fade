@@ -1,4 +1,4 @@
-package com.sysu.pro.fade.my.fragment;
+package com.sysu.pro.fade.home.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,10 +10,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
+import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
@@ -22,6 +22,7 @@ import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.UserUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -39,7 +40,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by road on 2017/7/14.
  */
-public class MyFadeContent {
+public class OtherLiveContent {
     /*图片URL数组*/
     private List<Note> notes;//当前加载的帖子
     /*信息流适配器*/
@@ -57,11 +58,13 @@ public class MyFadeContent {
     private Context context;
     private View rootView;
 
+    private Integer otherUserId;
+
     /**
      * add By 黄路 2017/8/18
      */
     private Integer start;
-    private User user;           //登录用户的全部信息
+    private User selfUser;           //登录用户的全部信息
     private List<Note>updateList;  //已加载帖子，用于发给服务器，更新帖子情况(每一项仅仅包含note_id 和 target_id)
     private List<Note>checkList;   //顶部下拉查询返回的帖子，根据这个来判断和更新已加载帖子的情况
     private Retrofit retrofit;
@@ -69,30 +72,34 @@ public class MyFadeContent {
     private NoteService noteService;
     private Boolean isEnd; //记录向下是否到了结尾
     private Boolean isLoading;
+    private UserUtil userUtil;
 
-    public MyFadeContent(Activity activity, final Context context, View rootView){
+    public OtherLiveContent(Activity activity, final Context context, View rootView, Integer userId){
         this.activity = activity;
         this.context = context;
         this.rootView = rootView;
+        this.otherUserId = userId;
+        this.userUtil = new UserUtil(activity);
+        Log.e("otherContent","OtherFadeContent");
         //EventBus订阅
         EventBus.getDefault().register(this);
         swipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
         swipeRefresh.setRefreshing(false);
         //初始化用户信息
-        user = ((MainActivity) activity).getCurrentUser();
+        selfUser = userUtil.getUer();
         notes = new ArrayList<>();
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
         isEnd = false;
         isLoading = true;
         initViews();
-        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+        retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, selfUser.getTokenModel());
         userService = retrofit.create(UserService.class);
         noteService = retrofit.create(NoteService.class);
-        userService.getMyNote(user.getUser_id().toString(),"0")
+        userService.getPersonPage(otherUserId.toString(), selfUser.getUser_id().toString())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<NoteQuery>() {
+                .subscribe(new Subscriber<PersonPage>() {
                     @Override
                     public void onCompleted() {
                     }
@@ -106,14 +113,14 @@ public class MyFadeContent {
                     }
 
                     @Override
-                    public void onNext(NoteQuery noteQuery) {
+                    public void onNext(PersonPage personPage) {
                         Log.i("首次加载","成功");
                         notes.clear();
-                        if(noteQuery.getList() != null && noteQuery.getList().size() != 0){
-                            addToListTail(noteQuery.getList());
+                        if(personPage.getQuery().getList() != null && personPage.getQuery().getList().size() != 0){
+                            addToListTail(personPage.getQuery().getList());
                         }
                         //更新start
-                        start = noteQuery.getStart();
+                        start = personPage.getQuery().getStart();
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
@@ -128,18 +135,18 @@ public class MyFadeContent {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_home);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NotesAdapter((MainActivity) context, notes);
+        adapter = new NotesAdapter(activity, notes);
         recyclerView.setAdapter(adapter);
 
         swipeRefresh.setColorSchemeResources(R.color.light_blue);
 		/*刷新数据*/
         swipeRefresh.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshItems();
-            }
-        });
+                    @Override
+                    public void onRefresh() {
+                        refreshItems();
+                    }
+                });
         loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
@@ -178,40 +185,40 @@ public class MyFadeContent {
                             swipeRefresh.setRefreshing(false);
                         }else {
                             //加载更多
-                                isLoading = true;
-                                userService.getMyNote(user.getUser_id().toString(),start.toString())
-                                        .subscribeOn(Schedulers.newThread())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new Subscriber<NoteQuery>() {
-                                            @Override
-                                            public void onCompleted() {
+                            isLoading = true;
+                            userService.getLiveNote(otherUserId.toString(), selfUser.getUser_id().toString(),start.toString())
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Subscriber<NoteQuery>() {
+                                        @Override
+                                        public void onCompleted() {
+                                        }
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Log.e("加载更多","失败");
+                                            e.printStackTrace();
+                                            setLoadingMore(false);
+                                        }
+                                        @Override
+                                        public void onNext(NoteQuery noteQuery) {
+                                            Log.i("加载更多","成功");
+                                            List<Note>addList = noteQuery.getList();
+                                            start = noteQuery.getStart();
+                                            if(addList.size() != 0){
+                                                addToListTail(noteQuery.getList());
+                                                Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                                             }
-                                            @Override
-                                            public void onError(Throwable e) {
-                                                Log.e("加载更多","失败");
-                                                e.printStackTrace();
-                                                setLoadingMore(false);
+                                            else{
+                                                Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
                                             }
-                                            @Override
-                                            public void onNext(NoteQuery noteQuery) {
-                                                Log.i("加载更多","成功");
-                                                List<Note>addList = noteQuery.getList();
-                                                start = noteQuery.getStart();
-                                                if(addList.size() != 0){
-                                                    addToListTail(noteQuery.getList());
-                                                    Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
-                                                }
-                                                else{
-                                                    Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
-                                                }
-                                                if(addList.size() < 10) isEnd = true;
-                                                swipeRefresh.setRefreshing(false);
-                                                setLoadingMore(false);
-                                                isLoading = false;
-                                            }
-                                        });
+                                            if(addList.size() < 10) isEnd = true;
+                                            swipeRefresh.setRefreshing(false);
+                                            setLoadingMore(false);
+                                            isLoading = false;
+                                        }
+                                    });
                         }
-                        }
+                    }
                 });
             }
         }).start();
@@ -236,7 +243,7 @@ public class MyFadeContent {
                         //顶部下拉刷新
                         swipeRefresh.setRefreshing(true);
                         Log.i("test",updateList.toString());
-                        userService.getMyNote(user.getUser_id().toString(),"0")
+                        userService.getLiveNote(otherUserId.toString(), selfUser.getUser_id().toString(),"0")
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Subscriber<NoteQuery>() {
@@ -289,11 +296,11 @@ public class MyFadeContent {
     public void refreshIfUserChange(){
         boolean isChange = false;
         for (Note note: notes){
-            if (note.getUser_id().equals(user.getUser_id())){
-                if (!note.getHead_image_url().equals(user.getHead_image_url())
-                        || !note.getNickname().equals(user.getNickname())){
-                    note.setHead_image_url(user.getHead_image_url());
-                    note.setNickname(user.getNickname());
+            if (note.getUser_id().equals(selfUser.getUser_id())){
+                if (!note.getHead_image_url().equals(selfUser.getHead_image_url())
+                        || !note.getNickname().equals(selfUser.getNickname())){
+                    note.setHead_image_url(selfUser.getHead_image_url());
+                    note.setNickname(selfUser.getNickname());
                     isChange = true;
                 }
                 else{
@@ -320,23 +327,6 @@ public class MyFadeContent {
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetNewNote(Note note) {
-        //接收新的Note，加到头部
-        note.setFetchTime(System.currentTimeMillis());
-        note.setAction(0);
-        if(note.getComment_num() == null) note.setComment_num(0);
-        if(note.getAdd_num() == null) note.setAdd_num(0);
-        if(note.getSub_num() == null) note.setSub_num(0);
-        notes.add(0,note);
-        Note simpleNote = new Note();
-        simpleNote.setNote_id(note.getNote_id());
-        simpleNote.setTarget_id(note.getTarget_id());
-        updateList.add(0,simpleNote);
-        adapter.notifyDataSetChanged();
-    }
-
-
     /**
      * item发生变化，更新界面
      */
@@ -353,21 +343,6 @@ public class MyFadeContent {
                     tmpNote.setOrigin(newNote);
                 adapter.notifyItemChanged(i);
             }
-        }
-    }
-
-    /**
-     * 修改用户信息，更新主界面
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public  void onGetUser(User user){
-        Integer user_id = user.getUser_id();
-        for(Note note : notes){
-            if(note.getUser_id().equals(user_id)){
-                note.setHead_image_url(Const.BASE_IP + user.getHead_image_url());
-                note.setNickname(user.getNickname());
-            }
-            adapter.notifyDataSetChanged();
         }
     }
 

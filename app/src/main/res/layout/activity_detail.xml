@@ -1,212 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/detail_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <com.sysu.pro.fade.my.BackBar
+    android:fitsSystemWindows="true"><!--加了这个属性之后跟布局就可以被软键盘挤压了，原因暂时不明-->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <com.sysu.pro.fade.my.BackBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <ScrollView
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/detail_coordinator_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/detail_app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:elevation="0dp"
+                android:background="@android:color/transparent">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_scrollFlags="scroll">
+
+                    <LinearLayout
+                        android:id="@+id/detail_note"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:orientation="vertical">
+                        <!---帖子内容在这里展示，可以修改成其他类型的layout，但id不能改-->
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                        android:layout_width="match_parent"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginLeft="16dp"
+                                        android:layout_marginRight="16dp"
+                                        android:layout_height="@dimen/avatar">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:id="@+id/civ_avatar"
+                                android:layout_width="@dimen/avatar"
+                                android:layout_height="@dimen/avatar"
+                                android:src="@drawable/avatar"/>
+                            <TextView
+                                android:id="@+id/tv_name"
+                                android:gravity="center_vertical"
+                                android:layout_toRightOf="@id/civ_avatar"
+                                android:layout_marginLeft="8dp"
+                                android:textSize="@dimen/name_size"
+                                android:text="刘德华"
+                                android:textColor="@color/name_color"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent" />
+                            <TextView
+                                android:id="@+id/tv_post_time"
+                                android:gravity="center_vertical"
+                                android:layout_alignParentRight="true"
+                                android:textSize="@dimen/name_size"
+                                android:text="12-31-23:59"
+                                android:textColor="#888888"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent" />
+
+                        </RelativeLayout>
+
+                        <!--图片以及图片下方点的封装-->
+                        <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
+                            android:id="@+id/image_layout"
+                            android:layout_marginTop="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+
+                        <TextView
+                            android:textColor="#000"
+                            android:textSize="@dimen/text_size"
+                            android:id="@+id/tv_title"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:text="今天天气真好哈哈哈哈哈"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <include layout="@layout/home_item_tail"></include>
+                    </LinearLayout>
+
+
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/detail_commentator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/detail_note">
+                        <!---续秒人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/detail_forward_list"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/detail_forward_more"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/detail_forward_more"
+                            android:layout_width="40dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginBottom="8dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </android.support.constraint.ConstraintLayout>
+
+                    <View
+                        android:id="@+id/detail_divide1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#cccccc"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/detail_commentator" />
+
+                    <TextView
+                        android:id="@+id/detail_text1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginTop="8dp"
+                        android:text="评论"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
+
+                    <TextView
+                        android:id="@+id/detail_comment_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        app:layout_constraintBottom_toTopOf="@+id/detail_divide2"
+                        app:layout_constraintStart_toEndOf="@+id/detail_text1"
+                        app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
+
+                    <View
+                        android:id="@+id/detail_divide2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_marginTop="8dp"
+                        android:background="#cccccc"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/detail_text1" />
+
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <!--评论展示区-->
+            <com.scwang.smartrefresh.layout.SmartRefreshLayout
+                android:id="@+id/detail_comment_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/detail_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+    </LinearLayout>
+
+    <!--评论输入框和按钮-->
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/detail_root_view"
+        android:layout_alignParentBottom="true">
+        <EditText
+            android:id="@+id/detail_write_comment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:lines="1"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/detail_send_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发送"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/detail_write_comment"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/detail_note"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:orientation="vertical">
-                <!---帖子内容在这里展示，可以修改成其他类型的layout，但id不能改-->
-
-                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                android:layout_width="match_parent"
-                                android:layout_marginTop="8dp"
-                                android:layout_marginLeft="16dp"
-                                android:layout_marginRight="16dp"
-                                android:layout_height="@dimen/avatar">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/civ_avatar"
-                        android:layout_width="@dimen/avatar"
-                        android:layout_height="@dimen/avatar"
-                        android:src="@drawable/avatar"/>
-                    <TextView
-                        android:id="@+id/tv_name"
-                        android:gravity="center_vertical"
-                        android:layout_toRightOf="@id/civ_avatar"
-                        android:layout_marginLeft="8dp"
-                        android:textSize="@dimen/name_size"
-                        android:text="刘德华"
-                        android:textColor="@color/name_color"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
-                    <TextView
-                        android:id="@+id/tv_post_time"
-                        android:gravity="center_vertical"
-                        android:layout_alignParentRight="true"
-                        android:textSize="@dimen/name_size"
-                        android:text="12-31-23:59"
-                        android:textColor="#888888"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
-
-                </RelativeLayout>
-
-                <!--图片以及图片下方点的封装-->
-                <com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout
-                    android:id="@+id/image_layout"
-                    android:layout_marginTop="8dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-
-                <TextView
-                    android:textColor="#000"
-                    android:textSize="@dimen/text_size"
-                    android:id="@+id/tv_title"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:text="今天天气真好哈哈哈哈哈"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <include layout="@layout/home_item_tail"></include>
-            </LinearLayout>
-
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/detail_commentator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_note">
-                <!---续秒人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/detail_forward_list"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/detail_forward_more"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/detail_forward_more"
-                    android:layout_width="40dp"
-                    android:layout_height="25dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <View
-                android:id="@+id/detail_divide1"
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="#cccccc"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_commentator" />
-
-            <TextView
-                android:id="@+id/detail_text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="8dp"
-                android:text="评论"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
-
-            <TextView
-                android:id="@+id/detail_comment_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:layout_constraintBottom_toTopOf="@+id/detail_divide2"
-                app:layout_constraintStart_toEndOf="@+id/detail_text1"
-                app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
-
-            <View
-                android:id="@+id/detail_divide2"
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginTop="8dp"
-                android:background="#cccccc"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_text1" />
-
-            <LinearLayout
-                android:id="@+id/detail_comment_wrapper"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_divide2">
-
-                <com.scwang.smartrefresh.layout.SmartRefreshLayout
-                    android:id="@+id/detail_comment_refresh"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <com.sysu.pro.fade.home.view.GreedyRecyclerView
-                        android:id="@+id/detail_comment"
-                        android:layout_width="match_parent"
-                        android:layout_height="350dp" />
-                </com.scwang.smartrefresh.layout.SmartRefreshLayout>
-
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/detail_write_comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
-                android:lines="1"
-                android:textColor="#000000"
-                android:textSize="14sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/detail_comment_wrapper"
-                app:layout_constraintEnd_toStartOf="@+id/detail_send_comment"
-                app:layout_constraintStart_toStartOf="parent" />
-            <Button
-                android:id="@+id/detail_send_comment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="发送"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/detail_write_comment"
-                app:layout_constraintEnd_toEndOf="parent"/>
-
-        </android.support.constraint.ConstraintLayout>
-    </ScrollView>
-</LinearLayout>
+</RelativeLayout>

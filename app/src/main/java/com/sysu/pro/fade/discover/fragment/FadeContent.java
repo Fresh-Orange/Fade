@@ -31,6 +31,7 @@ import com.sysu.pro.fade.discover.adapter.OverdueDividerType;
 import com.sysu.pro.fade.discover.drecyclerview.DRecyclerViewScrollListener;
 import com.sysu.pro.fade.discover.event.ClearListEvent;
 import com.sysu.pro.fade.home.activity.ImagePagerActivity;
+import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.view.ClickableProgressBar;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.service.NoteService;
@@ -160,6 +161,7 @@ public class FadeContent {
                 // Toast.makeText(context,"底部",Toast.LENGTH_SHORT).show();
             }
         });
+        recyclerView.getItemAnimator().setChangeDuration(0);//解决notifyItem时的闪屏问题
 
     }
 
@@ -175,6 +177,7 @@ public class FadeContent {
                 itemView.findViewById(R.id.tv_comment_add_count).setVisibility(View.GONE);
                 itemView.findViewById(R.id.iv_head_action).setVisibility(View.GONE);
                 itemView.findViewById(R.id.tv_head_action).setVisibility(View.GONE);
+                itemView.findViewById(R.id.tv_address).setVisibility(View.GONE);
 
                 ClickableProgressBar clickableProgressBar = itemView.findViewById(R.id.clickable_progressbar);
                 ImageView userAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -200,8 +203,11 @@ public class FadeContent {
                     imageContainer.setVisibility(View.GONE);
                 }
                 else{
+                    imageContainer.setVisibility(View.VISIBLE);
                     if (bean.getImages().size() < 2)
                         tvImageCnt.setVisibility(View.GONE);
+                    else
+                        tvImageCnt.setVisibility(View.VISIBLE);
                     Image firstImage = bean.getImages().get(0);
                     ImageUtils.loadRoundImage(context, Const.BASE_IP+firstImage.getImage_url(), image, 4);
                     tvImageCnt.setText(String.valueOf(bean.getImages().size()));
@@ -215,7 +221,7 @@ public class FadeContent {
 
                 //* ********* 设置监听器 ***********//*
                 setGoToDetailClickListener(context, itemView, bean);
-                setAddOrMinusListener((Activity) context, clickableProgressBar, userUtil, position, bean);
+                setAddOrMinusListener((Activity) context, clickableProgressBar, userUtil, bean);
                 setCommentListener((Activity) context, clickableProgressBar, bean);
                 setOnUserClickListener((Activity) context, tvName, userAvatar, null, bean);
 
@@ -304,6 +310,27 @@ public class FadeContent {
         if(itemList != null){
             itemList.clear();
             aliveMode = 1;
+        }
+    }
+
+    /**
+     * item发生变化，更新界面
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onItemChanged(NoteChangeEvent noteChangeEvent) {
+        int noteId = noteChangeEvent.getOriginalNoteId();
+        Note newNote = noteChangeEvent.getNote();
+        for (int i = 0; i < itemList.size(); i++) {
+            if (itemList.get(i) instanceof Note){
+                Note tmpNote = (Note) itemList.get(i);
+                if (tmpNote.getOriginalId().equals(noteId)){
+                    if (tmpNote.isOriginalNote())
+                        itemList.set(i, newNote);
+                    else
+                        tmpNote.setOrigin(newNote);
+                    mtAdapter.notifyItemChanged(i);
+                }
+            }
         }
     }
 

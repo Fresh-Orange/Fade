@@ -13,10 +13,10 @@ public class Const {
 
     public static final String RONG_CLOUD_BASE_IP  = "http://api.cn.ronghub.com/"; //阿里云云服务器地址
 
-    //public static final String BASE_IP  = "https://sysufade.cn/fade_pro/"; //阿里云云服务器地址
-    //public static final String WEBSOCKET_IP  = "ws://119.23.229.19:8080/fade_pro/webSocketServer"; //阿里云云服务器websocket地址
-    public static final String BASE_IP      = "http://172.18.92.209:8080/fade_pro/"; //本地地址
-    public static final String WEBSOCKET_IP  = "ws://172.18.92.209:8080/fade_pro/webSocketServer"; //本地websocket地址
+    public static final String BASE_IP  = "https://sysufade.cn/fade_pro/"; //阿里云云服务器地址
+    public static final String WEBSOCKET_IP  = "wss://sysufade.cn/fade_pro/webSocketServer"; //阿里云云服务器websocket地址
+    //public static final String BASE_IP      = "http://192.168.1.2:8080/fade_pro/"; //本地地址
+    //public static final String WEBSOCKET_IP  = "ws://192.168.1.2:8080/fade_pro/webSocketServer"; //本地websocket地址
     /*登录注册 个人信息有关
      */
     public static final String USER_SHARE="login_user"; //存储登录后的用户信息sp数据库
