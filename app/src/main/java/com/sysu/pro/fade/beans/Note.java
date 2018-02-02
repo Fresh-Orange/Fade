@@ -44,6 +44,12 @@ public class Note implements Serializable {
 
 	private Long liveTime;//存活时间，死贴用到的属性
 
+	//转发帖具有的属性
+	private List<User>addUsers;//续秒用户
+
+	private List<User>subUsers;//减秒用户
+
+
 	public Long getLiveTime() {
 		return liveTime;
 	}
@@ -267,5 +273,21 @@ public class Note implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public List<User> getAddUsers() {
+		return addUsers;
+	}
+
+	public void setAddUsers(List<User> addUsers) {
+		this.addUsers = addUsers;
+	}
+
+	public List<User> getSubUsers() {
+		return subUsers;
+	}
+
+	public void setSubUsers(List<User> subUsers) {
+		this.subUsers = subUsers;
 	}
 }

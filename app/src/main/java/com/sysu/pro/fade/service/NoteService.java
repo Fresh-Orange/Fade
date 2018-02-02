@@ -25,13 +25,16 @@ public interface NoteService {
     Observable<SimpleResponse> addNote(@Body RequestBody body);
 
     //初次加载以及向下加载10条，按照时间顺序
-    @GET("getTenNoteByTime/{user_id}/{start}/{concern_num}")
-    Observable<NoteQuery> getTenNoteByTime(@Path("user_id")String user_id, @Path("start")String start,@Path("concern_num")String concern_num);
+    @FormUrlEncoded
+    @POST("getTenNoteByTime")
+    Observable<NoteQuery> getTenNoteByTime(@Field("user_id") String user_id, @Field("start")String start,
+                                           @Field("concern_num")String concern_num,@Field("updateList")String updateList);
 
     //顶部下拉刷新，更新已加载帖子的存活，顺便加载新数据
     //第二个参数实际是Set<Note>updateList, Note的每一项要包括note_id,target_id
-    @GET("getMoreNote/{user_id}/{updateList}")
-    Observable<NoteQuery> getMoreNote(@Path("user_id")String user_id, @Path("updateList")String updateList);
+    @FormUrlEncoded
+    @POST("getMoreNote")
+    Observable<NoteQuery> getMoreNote(@Field("user_id")String user_id, @Field("updateList")String updateList);
 
     //改变续秒数，包括增一秒和减一秒
     @FormUrlEncoded
