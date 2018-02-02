@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.MainActivity;
@@ -91,7 +92,7 @@ public class ContentHome {
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
         noteService = retrofit.create(NoteService.class);
-        noteService.getTenNoteByTime(user.getUser_id().toString(),"0",user.getConcern_num().toString())
+        noteService.getTenNoteByTime(user.getUser_id().toString(),"0",user.getConcern_num().toString(), JSON.toJSONString(updateList))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NoteQuery>() {
@@ -187,7 +188,7 @@ public class ContentHome {
                                 isLoading = true;
                                 Log.i("加载更多打印start", start.toString());
                                 noteService.getTenNoteByTime(user.getUser_id().toString(),
-                                        start.toString(),user.getConcern_num().toString())
+                                        start.toString(),user.getConcern_num().toString(), JSON.toJSONString(updateList))
                                         .subscribeOn(Schedulers.newThread())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(new Subscriber<NoteQuery>() {
@@ -342,6 +343,7 @@ public class ContentHome {
             simpleNote = new Note();
             simpleNote.setNote_id(note.getNote_id());
             simpleNote.setTarget_id(note.getTarget_id());
+            simpleNote.setType(note.getType());
             updateList.add(simpleNote);
         }
         adapter.notifyDataSetChanged();
@@ -365,6 +367,7 @@ public class ContentHome {
                 simpleNote = new Note();
                 simpleNote.setNote_id(getNote.getNote_id());
                 simpleNote.setTarget_id(getNote.getTarget_id());
+                simpleNote.setType(getNote.getType());
                 updateList.add(0,simpleNote);
             }
         }
@@ -383,6 +386,7 @@ public class ContentHome {
         Note simpleNote = new Note();
         simpleNote.setNote_id(note.getNote_id());
         simpleNote.setTarget_id(note.getTarget_id());
+        simpleNote.setType(note.getType());
         updateList.add(0,simpleNote);
         adapter.notifyDataSetChanged();
     }
