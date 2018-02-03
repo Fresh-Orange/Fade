@@ -49,6 +49,16 @@ public class Note implements Serializable {
 
 	private List<User>subUsers;//减秒用户
 
+	//与上面两个属性有关，关注的人中续秒或减秒的总数量
+	private Integer relayUserNum;
+
+	public Integer getRelayUserNum() {
+		return relayUserNum;
+	}
+
+	public void setRelayUserNum(Integer relayUserNum) {
+		this.relayUserNum = relayUserNum;
+	}
 
 	public Long getLiveTime() {
 		return isOriginalNote() ? liveTime : getOrigin().getLiveTime();
