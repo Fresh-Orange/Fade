@@ -61,4 +61,10 @@ public interface NoteService {
     Observable<NoteQuery> searchNote(@Path("keyword")String keyword, @Path("start")String start,
                                 @Path("isAlive")String isAlive,@Path("user_id")String user_id);
 
+    //点开折叠列表，获取20条记录, type为1和2，分别代表增和减
+    @GET("getConcernSecond/{user_id}/{target_id}/{start}/{type}")
+    Observable<NoteQuery> getConcernSecond(@Path("user_id")String user_id, @Path("target_id")String target_id,
+                                           @Path("start")String start,@Path("type")String type);
+
+
 }
