@@ -4,12 +4,12 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_height="@dimen/avatar">
+                android:layout_height="@dimen/big_avatar">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/civ_avatar"
-        android:layout_width="@dimen/avatar"
-        android:layout_height="@dimen/avatar"
+        android:layout_width="@dimen/big_avatar"
+        android:layout_height="@dimen/big_avatar"
         android:src="@drawable/avatar"/>
     <TextView
         android:id="@+id/tv_name"
@@ -17,9 +17,9 @@
         android:layout_toRightOf="@id/civ_avatar"
         android:layout_marginLeft="8dp"
         android:textSize="@dimen/name_size"
-        android:text="刘德华刘德华刘德华刘德华刘德华刘德华"
+        android:text="刘德华刘德华"
         android:ellipsize="end"
-        android:maxEms="10"
+        android:maxEms="5"
         android:singleLine="true"
         android:textColor="@color/name_color"
         android:layout_width="wrap_content"
@@ -41,6 +41,16 @@
         android:src="@drawable/add"
         android:gravity="center_vertical"
         android:layout_toRightOf="@+id/tv_head_action"/>
+
+    <TextView
+        android:id="@+id/tv_post_time"
+        android:gravity="center_vertical"
+        android:layout_alignParentRight="true"
+        android:textSize="@dimen/name_size"
+        android:text="12-31-23:59"
+        android:textColor="#888888"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
 
 
 </RelativeLayout>

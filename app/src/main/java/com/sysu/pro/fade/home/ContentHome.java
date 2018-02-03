@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Retrofit;
@@ -98,12 +100,16 @@ public class ContentHome {
                 .subscribe(new Subscriber<NoteQuery>() {
                     @Override
                     public void onCompleted() {
+                        isLoading = false;
+                        setLoadingMore(false);
+                        swipeRefresh.setRefreshing(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e("初次加载","失败");
                         e.printStackTrace();
+                        isLoading = false;
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
                     }
@@ -111,15 +117,12 @@ public class ContentHome {
                     @Override
                     public void onNext(NoteQuery noteQuery) {
                         Log.i("首次加载","成功");
-                        isLoading = false;
                         notes.clear();
                         if(noteQuery.getList() != null && noteQuery.getList().size() != 0){
                             addToListTail(noteQuery.getList());
                         }
                         //更新start
                         start = noteQuery.getStart();
-                        setLoadingMore(false);
-                        swipeRefresh.setRefreshing(false);
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -194,12 +197,17 @@ public class ContentHome {
                                         .subscribe(new Subscriber<NoteQuery>() {
                                             @Override
                                             public void onCompleted() {
+                                                swipeRefresh.setRefreshing(false);
+                                                setLoadingMore(false);
+                                                isLoading = false;
                                             }
                                             @Override
                                             public void onError(Throwable e) {
                                                 Log.e("加载更多","失败");
                                                 e.printStackTrace();
+                                                swipeRefresh.setRefreshing(false);
                                                 setLoadingMore(false);
+                                                isLoading = false;
                                             }
                                             @Override
                                             public void onNext(NoteQuery noteQuery) {
@@ -217,9 +225,6 @@ public class ContentHome {
                                                 if(addList.size() < 10){
                                                     isEnd = true;
                                                 }
-                                                swipeRefresh.setRefreshing(false);
-                                                setLoadingMore(false);
-                                                isLoading = false;
                                             }
                                         });
                             }
@@ -255,6 +260,7 @@ public class ContentHome {
                                 .subscribe(new Subscriber<NoteQuery>() {
                                     @Override
                                     public void onCompleted() {
+                                        swipeRefresh.setRefreshing(false);
                                     }
                                     @Override
                                     public void onError(Throwable e) {
@@ -282,7 +288,6 @@ public class ContentHome {
                                              addToListHead(noteQuery.getList());
                                             judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
                                         }
-                                        swipeRefresh.setRefreshing(false);
                                     }
                                 });
                     }
@@ -354,15 +359,16 @@ public class ContentHome {
         Note getNote = null;
         Note simpleNote = null;
         for(Note note : list){
-            note.setIs_die(1);
             if(note.getComment_num() == null) note.setComment_num(0);
             if(note.getAdd_num() == null) note.setAdd_num(0);
             if(note.getSub_num() == null) note.setSub_num(0);
         }
+        List<Note> newNoteList = new ArrayList<>();//查重之后的新增贴列表，也就是真正添加进来的帖子列表
         for(int i = 0; i < list.size(); i++){
             getNote = list.get(i);
             //查重判断
             if(!notes.contains(getNote)){
+                newNoteList.add(getNote);
                 notes.add(0,getNote);
                 simpleNote = new Note();
                 simpleNote.setNote_id(getNote.getNote_id());
@@ -371,6 +377,45 @@ public class ContentHome {
                 updateList.add(0,simpleNote);
             }
         }
+
+        //合并帖子的操作，服务器未完工
+        Note oldNote = null;
+        SparseIntArray addTargetId2index = new SparseIntArray();
+        SparseIntArray subTargetId2index = new SparseIntArray();
+        //从newNoteList.size()的位置起，往后全是旧帖
+        for(int i = newNoteList.size(); i < notes.size(); i++){
+            oldNote = notes.get(i);
+            if (oldNote.getType() == 1)  //这条帖子是续秒贴
+                addTargetId2index.append(oldNote.getTarget_id(), i);
+            else if (oldNote.getType() == 2)
+                subTargetId2index.append(oldNote.getTarget_id(), i);
+        }
+
+        List<Integer> waitForDelete = new ArrayList<>();
+        for(int i = 0; i < newNoteList.size(); i++){
+            getNote = newNoteList.get(i);
+            //该帖不是转发贴，跳过
+            if (getNote.getTarget_id() == 0)
+                continue;
+            //合并转发贴，也就是不显示旧的转发贴
+            //index为旧帖中targetId与该新帖相同的帖子索引
+            int index = -1;
+            if (getNote.getType() == 1)
+               index = addTargetId2index.get(getNote.getTarget_id(), -1);
+            else if (getNote.getType() == 2)
+                index = subTargetId2index.get(getNote.getTarget_id(), -1);
+            if(index != -1){
+                waitForDelete.add(index);//先把索引存下来，过后统一删除，不然会导致索引乱套
+            }
+        }
+
+        Collections.sort(waitForDelete);
+        Collections.reverse(waitForDelete);
+        for(Integer i: waitForDelete){
+            notes.remove(i.intValue());
+            updateList.remove(i.intValue());
+        }
+
         adapter.notifyDataSetChanged();
     }
 

@@ -22,6 +22,7 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.activity.OtherActivity;
+import com.sysu.pro.fade.home.activity.RealyUsersActivity;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.TimeUtil;
@@ -80,8 +81,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 		/* ********* 设置界面 ***********/
 		checkAndSetCurUser(context, bean);
-		tvName.setText(bean.getNickname());
-		setActionIfNecessary(bean);
+		setName(bean, tvName);
+		setActionIfNecessary(bean, tvHeadAction, tvAtUser, ivHeadAction, context);
 		setCommentAndAddCountText(context, tvCount, bean);
 		setAddress(context, tvAddress, bean);
 		setTimeBar(clickableProgressBar, context, bean);
@@ -99,29 +100,63 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 	}
 
+	static public void setName(Note bean, TextView tvName) {
+		if ((bean.getType() == 1 && bean.getRelayUserNum()>1) ||
+				bean.getType() == 2 && bean.getRelayUserNum()>1){
+			List<User> users = null;
+			if (bean.getType() == 1)
+				users = bean.getAddUsers();
+			else
+				users = bean.getSubUsers();
+			StringBuilder sBuilder = new StringBuilder(users.get(0).getNickname());
+			for(int i = 1; i < users.size(); i++){
+				sBuilder.append("、");
+				sBuilder.append(users.get(i).getNickname());
+			}
+			tvName.setText(sBuilder);
+		}
+		else{
+			tvName.setText(bean.getNickname());
+		}
+	}
+
 	/**
 	 * 判断并设置头部的续秒或减秒
 	 * @param bean
 	 */
-	private void setActionIfNecessary(Note bean) {
+	static public void setActionIfNecessary(Note bean,
+											TextView tvHeadAction, @Nullable TextView tvAtUser, ImageView ivHeadAction,
+											Context context) {
 		if (bean.getType() == 1){
 			Glide.with(context).load(R.drawable.add).into(ivHeadAction);
 			//ivHeadAction.setImageResource(R.drawable.add);
-			tvHeadAction.setText(R.string.add_time);
-			tvAtUser.setVisibility(View.VISIBLE);
-			tvAtUser.setText(context.getString(R.string.at_user, bean.getOrigin().getNickname()));
+			if (bean.getRelayUserNum() > 1) //如果是合并的转发贴
+				tvHeadAction.setText(context.getString(R.string.many_add_time, bean.getRelayUserNum()));
+			else
+				tvHeadAction.setText(R.string.add_time);
+			if (tvAtUser != null){
+				tvAtUser.setVisibility(View.VISIBLE);
+				tvAtUser.setText(context.getString(R.string.at_user, bean.getOrigin().getNickname()));
+			}
 		}
 		else if (bean.getType() == 2){
 			Glide.with(context).load(R.drawable.minus).into(ivHeadAction);
 			//ivHeadAction.setImageResource(R.drawable.minus);
-			tvHeadAction.setText(R.string.minus_time);
-			tvAtUser.setVisibility(View.VISIBLE);
-			tvAtUser.setText(context.getString(R.string.at_user, bean.getOrigin().getNickname()));
+			if (bean.getSubUsers().size() > 1)	//如果是合并的转发贴
+				tvHeadAction.setText(context.getString(R.string.many_minus_time, bean.getRelayUserNum()));
+			else
+				tvHeadAction.setText(R.string.minus_time);
+			if (tvAtUser != null){
+				tvAtUser.setVisibility(View.VISIBLE);
+				tvAtUser.setText(context.getString(R.string.at_user, bean.getOrigin().getNickname()));
+			}
 		}
 		else{
 			ivHeadAction.setImageDrawable(null);
 			tvHeadAction.setText("");
-			tvAtUser.setVisibility(View.GONE);
+			if (tvAtUser != null){
+				tvAtUser.setVisibility(View.GONE);
+			}
 		}
 	}
 
@@ -145,17 +180,31 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		tvName.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(context, OtherActivity.class);
-				i.putExtra(Const.USER_ID, bean.getUser_id());
-				context.startActivity(i);
+				if (bean.getRelayUserNum() > 1){
+					Intent i = new Intent(context, RealyUsersActivity.class);
+					i.putExtra(Const.NOTE_ENTITY, bean);
+					context.startActivity(i);
+				}
+				else{
+					Intent i = new Intent(context, OtherActivity.class);
+					i.putExtra(Const.USER_ID, bean.getUser_id());
+					context.startActivity(i);
+				}
 			}
 		});
 		userAvatar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(context, OtherActivity.class);
-				i.putExtra(Const.USER_ID, bean.getUser_id());
-				context.startActivity(i);
+				if (bean.getRelayUserNum() > 1){
+					Intent i = new Intent(context, RealyUsersActivity.class);
+					i.putExtra(Const.NOTE_ENTITY, bean);
+					context.startActivity(i);
+				}
+				else{
+					Intent i = new Intent(context, OtherActivity.class);
+					i.putExtra(Const.USER_ID, bean.getUser_id());
+					context.startActivity(i);
+				}
 			}
 		});
 		// @原作者点击事件
@@ -404,8 +453,10 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	static public void setAddress(Context context, TextView tvAddress, Note bean) {
 		if (TextUtils.isEmpty(bean.getNote_area()))
 			tvAddress.setVisibility(View.GONE);
-		else
+		else{
+			tvAddress.setVisibility(View.VISIBLE);
 			tvAddress.setText(bean.getNote_area());
+		}
 	}
 
 	/**

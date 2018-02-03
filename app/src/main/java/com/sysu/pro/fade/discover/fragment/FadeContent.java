@@ -71,6 +71,7 @@ public class FadeContent {
     private RecyclerView recyclerView;
     private MultiTypeRVAdapter mtAdapter;
     private List<Object> itemList;
+    private RefreshLayout refreshLayout;
 
     //网络请求有关
     private Retrofit retrofit;
@@ -104,7 +105,7 @@ public class FadeContent {
 
     private void initLoadMore(){
         //设置底部加载刷新
-        RefreshLayout refreshLayout = (RefreshLayout) rootView.findViewById(R.id.refreshLayout_fade);
+        refreshLayout = (RefreshLayout) rootView.findViewById(R.id.refreshLayout_fade);
         refreshLayout.setEnableRefresh(false);	//取消下拉刷新功能
         refreshLayout.setEnableAutoLoadmore(false);
         refreshLayout.setRefreshFooter(new ClassicsFooter(context));
@@ -114,7 +115,6 @@ public class FadeContent {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
                 realLoadMore();
-                refreshlayout.finishLoadmore();
             }
         });
     }
@@ -126,11 +126,12 @@ public class FadeContent {
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(new Subscriber<NoteQuery>() {
 					@Override
-					public void onCompleted() {}
+					public void onCompleted() {refreshLayout.finishLoadmore();}
 
 					@Override
 					public void onError(Throwable e) {
 						Log.e("searchNote", e.getMessage());
+                        refreshLayout.finishLoadmore();
 					}
 
 					@Override
