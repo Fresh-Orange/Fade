@@ -3,6 +3,7 @@ package com.sysu.pro.fade.home.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -179,7 +180,6 @@ public class DetailActivity extends MainBaseActivity{
 
                         NoteQuery noteQuery = detailPage.getNoteQuery();
                         forwardList.addAll(noteQuery.getList());
-                        // TODO: 2018/1/27 续秒列表的start还没存，等跳转页面设计好再搞
 
                         initForwardList();  //初始化续秒列表
                         initialComment();   //初始化评论区
@@ -200,7 +200,8 @@ public class DetailActivity extends MainBaseActivity{
         checkAndSetOriginalNote();
         tvName.setText(note.getNickname());
         tvBody.setText(Html.fromHtml(note.getNote_content()));
-        tvPostTime.setText(note.getOriginalPost_time());
+        String time = note.getOriginalPost_time().substring(0, note.getOriginalPost_time().length()-2);
+        tvPostTime.setText(DateUtils.changeToDate(time));
         setImagePager(note, imageLayout);
         setCommentAndAddCountText(this, tvCount, note);
         setTimeBar(clickableProgressBar, this, note);
@@ -268,7 +269,21 @@ public class DetailActivity extends MainBaseActivity{
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         forwardRecycler.setLayoutManager(manager);
         ImageView forwardMore = findViewById(R.id.detail_forward_more);
-        Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
+        if (forwardList.size() != 10) {
+            forwardMore.setVisibility(View.INVISIBLE);
+        } else {
+            Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
+            //跳转续秒详情
+            forwardMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(DetailActivity.this, ForwardActivity.class);
+                    i.putExtra("USER_ID", note.getUser_id());
+                    i.putExtra("NOTE_ID", note_id);
+                    startActivity(i);
+                }
+            });
+        }
     }
 
     //初始化评论区
@@ -289,6 +304,10 @@ public class DetailActivity extends MainBaseActivity{
                 String time = data.getComment_time().substring(0, data.getComment_time().length()-2);
                 holder.setText(R.id.comment_detail_date, DateUtils.changeToDate(time));
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
+                //如果是第一项，不需要显示分割线
+                if (position == 0) {
+                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.GONE);
+                }
                 //头像点击事件
                 holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {
                     @Override

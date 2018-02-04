@@ -158,7 +158,6 @@ public class OtherActivity extends MainBaseActivity {
                                         tvUnConcern.setVisibility(View.GONE);
                                         tvConcernOk.setVisibility(View.VISIBLE);
                                         tvContact.setVisibility(View.VISIBLE);
-                                        tabLayout.clearOnTabSelectedListeners();
                                         loadFragment();
                                     }
                                 }
@@ -189,7 +188,6 @@ public class OtherActivity extends MainBaseActivity {
                                     tvUnConcern.setVisibility(View.VISIBLE);
                                     tvConcernOk.setVisibility(View.GONE);
                                     tvContact.setVisibility(View.GONE);
-                                    tabLayout.clearOnTabSelectedListeners();
                                     loadFragment();
                                 }
                             }
@@ -225,6 +223,7 @@ public class OtherActivity extends MainBaseActivity {
     }
 
     private void loadFragment() {
+        tabLayout.clearOnTabSelectedListeners();
         String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
         Fragment liveFade = OtherLiveFragment.newInstance(other.getUser_id());
         Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
