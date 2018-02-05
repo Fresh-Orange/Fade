@@ -156,8 +156,8 @@ public class ContentMy {
         String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
         String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
         String concern_num = (user.getConcern_num()>999?(user.getConcern_num()/1000+"K"):user.getConcern_num().toString());
-        // TODO: 2018/1/27 第一项是动态数量，暂时没搞，下面有个地方也是allNum先设成了1
-        allNums = new String[]{"1", fade_num, fans_num, concern_num};
+        String live_num = (user.getDynamicNum()>999?(user.getDynamicNum()/1000+"K"):user.getDynamicNum().toString());
+        allNums = new String[]{live_num, fade_num, fans_num, concern_num};
         Log.d("loadData", "loadData: "+user.getNickname());
         if(login_type.equals("") || image_url == null || image_url.equals("")){
             Picasso.with(context).load(R.drawable.default_head).into(ivShowHead);
@@ -236,8 +236,8 @@ public class ContentMy {
         String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
         String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
         String concern_num = (user.getConcern_num()>999?(user.getConcern_num()/1000+"K"):user.getConcern_num().toString());
-        // TODO: 2018/1/27 第一项是动态数量，暂时没搞
-        allNums = new String[]{"1", fade_num, fans_num, concern_num};
+        String live_num = (user.getDynamicNum()>999?(user.getDynamicNum()/1000+"K"):user.getDynamicNum().toString());
+        allNums = new String[]{live_num, fade_num, fans_num, concern_num};
         loadFragment();
     }
 

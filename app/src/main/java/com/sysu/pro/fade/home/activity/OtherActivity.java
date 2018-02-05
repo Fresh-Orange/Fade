@@ -121,8 +121,8 @@ public class OtherActivity extends MainBaseActivity {
         String fade_num = (other.getFade_num()>999?(other.getFade_num()/1000+"K"):other.getFade_num().toString());
         String fans_num = (other.getFans_num()>999?(other.getFans_num()/1000+"K"):other.getFans_num().toString());
         String concern_num = (other.getConcern_num()>999?(other.getConcern_num()/1000+"K"):other.getConcern_num().toString());
-        // TODO: 2018/1/27 第一项是动态数量，暂时没搞
-        allNums = new String[]{"1", fade_num, fans_num, concern_num};
+        String live_num = (other.getDynamicNum()>999?(other.getDynamicNum()/1000+"K"):other.getDynamicNum().toString());
+        allNums = new String[]{live_num, fade_num, fans_num, concern_num};
 
         Picasso.with(this).load(Const.BASE_IP + image_url).into(ivShowHead);
         tvShowNickname.setText(nickname);
