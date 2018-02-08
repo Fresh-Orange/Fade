@@ -24,6 +24,7 @@ import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherLiveFragment;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
+import com.sysu.pro.fade.my.fragment.FansFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -228,7 +229,7 @@ public class OtherActivity extends MainBaseActivity {
         Fragment liveFade = OtherLiveFragment.newInstance(other.getUser_id());
         Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
         Fragment concern = new TempFragment();
-        Fragment fans = new TempFragment();
+        Fragment fans = FansFragment.newInstance(other.getUser_id());
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(liveFade);
         fragments.add(fade);

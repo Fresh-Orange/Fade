@@ -22,6 +22,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
+import com.sysu.pro.fade.my.fragment.FansFragment;
 import com.sysu.pro.fade.my.fragment.MyFadeFragment;
 import com.sysu.pro.fade.my.fragment.MyLiveFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
@@ -183,7 +184,7 @@ public class ContentMy {
         Fragment liveFade = new MyLiveFragment();
         Fragment fade = new MyFadeFragment();
         Fragment concern = new TempFragment();
-        Fragment fans = new TempFragment();
+        Fragment fans = FansFragment.newInstance(user.getUser_id());
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(liveFade);
         fragments.add(fade);
