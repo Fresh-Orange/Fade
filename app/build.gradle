@@ -78,7 +78,6 @@ dependencies {
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava', version: '2.1.0'
     compile group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     compile 'com.alibaba:fastjson:1.2.39'
     testCompile 'junit:junit:4.12'
     compile 'me.relex:circleindicator:1.2.2@aar'

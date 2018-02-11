@@ -66,6 +66,13 @@ public class User implements Serializable{
 	//是否已经关注了这个人
 	private Integer isConcern;
 
+	//动态数量
+	private Integer dynamicNum;
+	//院系id
+	private Integer department_id;
+	//院系名字
+	private String department_name;
+
 	public Integer getFade_num() {
 		return fade_num;
 	}
@@ -232,5 +239,29 @@ public class User implements Serializable{
 
 	public void setIsConcern(Integer isConcern) {
 		this.isConcern = isConcern;
+	}
+
+	public Integer getDynamicNum() {
+		return dynamicNum;
+	}
+
+	public void setDynamicNum(Integer dynamicNum) {
+		this.dynamicNum = dynamicNum;
+	}
+
+	public Integer getDepartment_id() {
+		return department_id;
+	}
+
+	public void setDepartment_id(Integer department_id) {
+		this.department_id = department_id;
+	}
+
+	public String getDepartment_name() {
+		return department_name;
+	}
+
+	public void setDepartment_name(String department_name) {
+		this.department_name = department_name;
 	}
 }
