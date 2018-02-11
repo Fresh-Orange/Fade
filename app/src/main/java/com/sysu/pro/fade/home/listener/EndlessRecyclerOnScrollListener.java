@@ -96,7 +96,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 			onLoadMore(currentPage);
 			loading = true;
 			Log.d("loadNow", "unload");
-		}else if ((totalItemCount - visibleItemCount) > firstVisibleItem){
+		}else if ((totalItemCount - visibleItemCount) == firstVisibleItem+1){
 			loading = false;
 			NotesAdapter recycleAdapter = (NotesAdapter) recyclerView.getAdapter();
 			recycleAdapter.setLoadingMore(true);
