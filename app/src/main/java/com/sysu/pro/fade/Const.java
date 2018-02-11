@@ -11,12 +11,13 @@ public class Const {
     public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
     public static final String IP  = "https://sysufade.cn/fade"; //阿里云云服务器地址
 
+
     public static final String RONG_CLOUD_BASE_IP  = "http://api.cn.ronghub.com/"; //阿里云云服务器地址
 
     public static final String BASE_IP  = "https://sysufade.cn/fade_pro/"; //阿里云云服务器地址
     public static final String WEBSOCKET_IP  = "ws://sysufade.cn:8080/fade_pro/webSocketServer"; //阿里云云服务器websocket地址
-    //public static final String BASE_IP      = "http://192.168.1.2:8080/fade_pro/"; //本地地址
-    //public static final String WEBSOCKET_IP  = "ws://192.168.1.2:8080/fade_pro/webSocketServer"; //本地websocket地址
+    //public static final String BASE_IP      = "http://192.168.1.3:8080/fade_pro/"; //本地地址
+    //public static final String WEBSOCKET_IP  = "ws://192.168.1.3:8080/fade_pro/webSocketServer"; //本地websocket地址
     /*登录注册 个人信息有关
      */
     public static final String USER_SHARE="login_user"; //存储登录后的用户信息sp数据库
@@ -54,6 +55,7 @@ public class Const {
     public static final String GOOD_NUM        = "good_num";
     public static final String ISRELAY         = "isRelay";
     public static final String POST_AREA        = "post_area";
+    public static final String NOTE_ENTITY        = "note_entity";
     //当前用户是否点赞
     public static final String IS_GOOD          = "isGood";
 
