@@ -24,6 +24,7 @@ import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherLiveFragment;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
+import com.sysu.pro.fade.my.fragment.ConcernFragment;
 import com.sysu.pro.fade.my.fragment.FansFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
@@ -228,7 +229,7 @@ public class OtherActivity extends MainBaseActivity {
         String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
         Fragment liveFade = OtherLiveFragment.newInstance(other.getUser_id());
         Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
-        Fragment concern = new TempFragment();
+        Fragment concern = ConcernFragment.newInstance(other.getUser_id());
         Fragment fans = FansFragment.newInstance(other.getUser_id());
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(liveFade);

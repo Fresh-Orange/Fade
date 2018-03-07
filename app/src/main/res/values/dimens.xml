@@ -31,4 +31,7 @@
     <dimen name="target_radius">24dp</dimen>
     <dimen name="snap_radius">3dp</dimen>
     <dimen name="corner_length">20dp</dimen>
+
+    <!--for detail activity second comment-->
+    <dimen name="second_comment_limit_height">56dp</dimen>
 </resources>
