@@ -1,7 +1,5 @@
 package com.sysu.pro.fade.home.adapter;
 
-import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
@@ -10,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.sysu.pro.fade.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -119,6 +120,21 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
         public void setWidgetVisibility(int id, int visible) {
             View view = getView(id);
             view.setVisibility(visible);
+        }
+        public int getRealHeight(int id) {
+            View view = getView(id);
+            view.measure(0,0);
+            return view.getMeasuredHeight();
+        }
+        public void limitReplyHeight(int id, int height) {
+            View view = getView(id);
+            view.getLayoutParams().height = height;
+            view.requestLayout();
+        }
+        public void unlimitReplyHeight(int id) {
+            View view = getView(id);
+            view.getLayoutParams().height = -1;
+            view.requestLayout();
         }
     }
 

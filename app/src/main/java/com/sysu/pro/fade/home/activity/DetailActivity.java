@@ -3,6 +3,7 @@ package com.sysu.pro.fade.home.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
@@ -74,6 +76,9 @@ public class DetailActivity extends MainBaseActivity{
     private Retrofit retrofit;
     private RelativeLayout detailSetting;    //三个点按钮
     private TextView commentNum;
+    private TextView commentNumText;
+    private int realHeight;
+    private ConstraintLayout writeCommentWrapper;
     private EditText writeComment;
     private Button sendComment;
     private List<Note> forwardList = new ArrayList<>(); //续秒列表，用来获取头像
@@ -108,6 +113,8 @@ public class DetailActivity extends MainBaseActivity{
         TintBar(this);//状态栏白底黑字
 
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
+        commentNumText = findViewById(R.id.detail_text1);
+        writeCommentWrapper = findViewById(R.id.detail_comment_editor);
         writeComment = (EditText) findViewById(R.id.detail_write_comment);
         sendComment = (Button) findViewById(R.id.detail_send_comment);
 
@@ -325,6 +332,14 @@ public class DetailActivity extends MainBaseActivity{
                         showSecondComment(commentator.get(position), holder, data.getUser_id());
                     }
                 });
+                //"查看更多"点击事件
+                holder.onWidgetClick(R.id.comment_detail_more, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        holder.unlimitReplyHeight(R.id.comment_detail_reply_wrapper);
+                        holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
+                    }
+                });
 
                 List<SecondComment> respondent = new ArrayList<>(); //评论者对应的回复者列表
                 if(data.getComments() != null) {
@@ -333,14 +348,25 @@ public class DetailActivity extends MainBaseActivity{
                         holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.GONE);
                         holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
                     } else {
-                        holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
-                        holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                         //先清空线型布局中的所有View
                         holder.removeAllViews(R.id.comment_detail_reply_wrapper);
                         //放回复内容
+                        realHeight = 0;
                         for(SecondComment reply : data.getComments()) {
                             View view = createReplyItemView(reply, data.getUser_id(), holder);
                             holder.addView(R.id.comment_detail_reply_wrapper, view);
+                        }
+                        int maxHeight = commentNumText.getHeight() * 4;
+                        // TODO: 2018/3/6 目前不能准确获取真实高度…… 
+                        realHeight = holder.getRealHeight(R.id.comment_detail_reply_wrapper);
+                        //超高之后隐藏超出部分，显示“查看更多”
+                        if (realHeight - maxHeight >= commentNumText.getHeight()) {
+                            holder.limitReplyHeight(R.id.comment_detail_reply_wrapper, maxHeight);
+                            holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                            holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+                        } else {
+                            holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                            holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
                         }
                     }
                 } else {
@@ -359,6 +385,9 @@ public class DetailActivity extends MainBaseActivity{
         refreshLayout.setEnableRefresh(false);  //不需要下拉刷新功能
         refreshLayout.setEnableAutoLoadmore(false);
         refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        if (commentator.size() < 10) {
+            refreshLayout.setEnableLoadmore(false);
+        }
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
@@ -436,6 +465,7 @@ public class DetailActivity extends MainBaseActivity{
                 if (reply.getUser_id() != userId) {
                     showSecondReply(reply, holder, userId);
                 } else {
+                    Toast.makeText(DetailActivity.this, "暂时不能删除", Toast.LENGTH_SHORT).show();
                     // TODO: 2018/1/28 自己不能回复自己的二级评论，弹出删除、复制选项
                 }
             }
@@ -445,8 +475,7 @@ public class DetailActivity extends MainBaseActivity{
 
     //显示一级评论输入框
     private void showDirectComment() {
-        writeComment.setVisibility(View.VISIBLE);
-        sendComment.setVisibility(View.VISIBLE);
+        writeCommentWrapper.setVisibility(View.VISIBLE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//弹出软件盘
         writeComment.requestFocus();
         sendComment.setOnClickListener(new View.OnClickListener() {
@@ -456,8 +485,7 @@ public class DetailActivity extends MainBaseActivity{
                 if(imm != null) {
                     imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
                 }
-                writeComment.setVisibility(View.GONE);
-                sendComment.setVisibility(View.GONE);
+                writeCommentWrapper.setVisibility(View.GONE);
                 final Comment userComment = new Comment();
                 userComment.setUser_id(user.getUser_id());
                 userComment.setNickname(user.getNickname());
@@ -499,8 +527,7 @@ public class DetailActivity extends MainBaseActivity{
     }
     //显示二级评论输入框
     private void showSecondComment(final Comment toComment, final CommonAdapter.ViewHolder holder, final int userId) {
-        writeComment.setVisibility(View.VISIBLE);
-        sendComment.setVisibility(View.VISIBLE);
+        writeCommentWrapper.setVisibility(View.VISIBLE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//弹出软件盘
         writeComment.requestFocus();
         sendComment.setOnClickListener(new View.OnClickListener() {
@@ -510,8 +537,7 @@ public class DetailActivity extends MainBaseActivity{
                 if(imm != null) {
                     imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
                 }
-                writeComment.setVisibility(View.GONE);
-                sendComment.setVisibility(View.GONE);
+                writeCommentWrapper.setVisibility(View.GONE);
                 final SecondComment secondComment = new SecondComment();
                 secondComment.setComment_content(writeComment.getText().toString());
                 secondComment.setNickname(user.getNickname());
@@ -557,8 +583,7 @@ public class DetailActivity extends MainBaseActivity{
 
     //显示二级回复输入框
     private void showSecondReply(final SecondComment toComment, final CommonAdapter.ViewHolder holder, final int userId) {
-        writeComment.setVisibility(View.VISIBLE);
-        sendComment.setVisibility(View.VISIBLE);
+        writeCommentWrapper.setVisibility(View.VISIBLE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//弹出软件盘
         writeComment.requestFocus();
         sendComment.setOnClickListener(new View.OnClickListener() {
@@ -568,8 +593,7 @@ public class DetailActivity extends MainBaseActivity{
                 if(imm != null) {
                     imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
                 }
-                writeComment.setVisibility(View.GONE);
-                sendComment.setVisibility(View.GONE);
+                writeCommentWrapper.setVisibility(View.GONE);
                 final SecondComment secondComment = new SecondComment();
                 secondComment.setComment_content(writeComment.getText().toString());
                 secondComment.setNickname(user.getNickname());
@@ -615,12 +639,11 @@ public class DetailActivity extends MainBaseActivity{
     //按返回键时，如果输入框还显示着，用户很大可能是想关掉这个输入框而不是想返回上一个界面
     @Override
     public void onBackPressed() {
-        if (writeComment.getVisibility() == View.VISIBLE) {
+        if (writeCommentWrapper.getVisibility() == View.VISIBLE) {
             writeComment.setText("");
-            writeComment.setVisibility(View.GONE);
-            sendComment.setVisibility(View.GONE);
+            writeCommentWrapper.setVisibility(View.GONE);
         } else {
-            finish();
+            super.onBackPressed();
         }
     }
 
