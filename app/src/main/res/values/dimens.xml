@@ -5,6 +5,7 @@
 
     <!--for Home fragment-->
     <dimen name="avatar">25dp</dimen>
+    <dimen name="big_avatar">35dp</dimen>
     <dimen name="item_head_margin">8dp</dimen>
     <dimen name="left_base_margin">16dp</dimen>
     <dimen name="right_base_margin">16dp</dimen>
@@ -30,4 +31,7 @@
     <dimen name="target_radius">24dp</dimen>
     <dimen name="snap_radius">3dp</dimen>
     <dimen name="corner_length">20dp</dimen>
+
+    <!--for detail activity second comment-->
+    <dimen name="second_comment_limit_height">56dp</dimen>
 </resources>

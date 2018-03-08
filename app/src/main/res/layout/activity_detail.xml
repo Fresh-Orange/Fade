@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -127,9 +128,11 @@
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginBottom="8dp"
+                            android:layout_marginEnd="16dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.536" />
 
                     </android.support.constraint.ConstraintLayout>
 
@@ -150,6 +153,8 @@
                         android:layout_marginLeft="40dp"
                         android:layout_marginTop="8dp"
                         android:text="评论"
+                        android:textSize="14sp"
+                        android:textColor="#333333"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
 
@@ -159,6 +164,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:layout_marginLeft="5dp"
+                        android:textSize="14sp"
+                        android:textColor="#333333"
                         app:layout_constraintBottom_toTopOf="@+id/detail_divide2"
                         app:layout_constraintStart_toEndOf="@+id/detail_text1"
                         app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
@@ -195,30 +202,70 @@
 
     <!--评论输入框和按钮-->
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/detail_comment_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-        <EditText
-            android:id="@+id/detail_write_comment"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:background="@drawable/detail_editor_border">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/detail_editor_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:lines="1"
-            android:textColor="#000000"
-            android:textSize="14sp"
-            android:visibility="gone"
+            android:minHeight="40dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/detail_editor_wrapper_bg"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+
+            <EditText
+                android:id="@+id/detail_write_comment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@null"
+                tools:hint="点击输入评论"
+                android:maxLines="5"
+                android:maxLength="140"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/detail_editor_wrapper"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/detail_editor_wrapper"/>
+
+        </android.support.constraint.ConstraintLayout>
+
         <Button
             android:id="@+id/detail_send_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="发送"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/detail_write_comment"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/detail_editor_btn_send"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Button
+            android:id="@+id/detail_btn_emoji"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginBottom="14dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/detail_editor_btn_emoji"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
 </RelativeLayout>

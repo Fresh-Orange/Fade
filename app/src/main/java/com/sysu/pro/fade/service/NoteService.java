@@ -25,13 +25,16 @@ public interface NoteService {
     Observable<SimpleResponse> addNote(@Body RequestBody body);
 
     //初次加载以及向下加载10条，按照时间顺序
-    @GET("getTenNoteByTime/{user_id}/{start}/{concern_num}")
-    Observable<NoteQuery> getTenNoteByTime(@Path("user_id")String user_id, @Path("start")String start,@Path("concern_num")String concern_num);
+    @FormUrlEncoded
+    @POST("getTenNoteByTime")
+    Observable<NoteQuery> getTenNoteByTime(@Field("user_id") String user_id, @Field("start")String start,
+                                           @Field("concern_num")String concern_num,@Field("updateList")String updateList);
 
     //顶部下拉刷新，更新已加载帖子的存活，顺便加载新数据
     //第二个参数实际是Set<Note>updateList, Note的每一项要包括note_id,target_id
-    @GET("getMoreNote/{user_id}/{updateList}")
-    Observable<NoteQuery> getMoreNote(@Path("user_id")String user_id, @Path("updateList")String updateList);
+    @FormUrlEncoded
+    @POST("getMoreNote")
+    Observable<NoteQuery> getMoreNote(@Field("user_id")String user_id, @Field("updateList")String updateList);
 
     //改变续秒数，包括增一秒和减一秒
     @FormUrlEncoded
@@ -57,5 +60,17 @@ public interface NoteService {
     @GET("searchNote/{keyword}/{start}/{isAlive}/{user_id}")
     Observable<NoteQuery> searchNote(@Path("keyword")String keyword, @Path("start")String start,
                                 @Path("isAlive")String isAlive,@Path("user_id")String user_id);
+
+    //点开折叠列表，获取20条记录, type为1和2，分别代表增和减
+    @GET("getConcernSecond/{user_id}/{target_id}/{start}/{type}")
+    Observable<NoteQuery> getConcernSecond(@Path("user_id")String user_id, @Path("target_id")String target_id,
+                                           @Path("start")String start,@Path("type")String type);
+
+    //每次获取20条续秒详情
+    //user_id为帖子发布者的id！
+    //type为1表示获取续一秒，为2表示获取减一秒
+    @GET("getAllSecond/{user_id}/{note_id}/{start}/{type}")
+    Observable<NoteQuery> getAllSecond(@Path("user_id")String user_id, @Path("note_id")String note_id,
+                                       @Path("start")String start, @Path("type")String type);
 
 }

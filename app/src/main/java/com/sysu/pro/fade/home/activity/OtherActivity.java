@@ -24,6 +24,8 @@ import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherFadeFragment;
 import com.sysu.pro.fade.home.fragment.OtherLiveFragment;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
+import com.sysu.pro.fade.my.fragment.ConcernFragment;
+import com.sysu.pro.fade.my.fragment.FansFragment;
 import com.sysu.pro.fade.my.fragment.TempFragment;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -121,8 +123,8 @@ public class OtherActivity extends MainBaseActivity {
         String fade_num = (other.getFade_num()>999?(other.getFade_num()/1000+"K"):other.getFade_num().toString());
         String fans_num = (other.getFans_num()>999?(other.getFans_num()/1000+"K"):other.getFans_num().toString());
         String concern_num = (other.getConcern_num()>999?(other.getConcern_num()/1000+"K"):other.getConcern_num().toString());
-        // TODO: 2018/1/27 第一项是动态数量，暂时没搞
-        allNums = new String[]{"1", fade_num, fans_num, concern_num};
+        String live_num = (other.getDynamicNum()>999?(other.getDynamicNum()/1000+"K"):other.getDynamicNum().toString());
+        allNums = new String[]{live_num, fade_num, fans_num, concern_num};
 
         Picasso.with(this).load(Const.BASE_IP + image_url).into(ivShowHead);
         tvShowNickname.setText(nickname);
@@ -158,7 +160,6 @@ public class OtherActivity extends MainBaseActivity {
                                         tvUnConcern.setVisibility(View.GONE);
                                         tvConcernOk.setVisibility(View.VISIBLE);
                                         tvContact.setVisibility(View.VISIBLE);
-                                        tabLayout.clearOnTabSelectedListeners();
                                         loadFragment();
                                     }
                                 }
@@ -189,7 +190,6 @@ public class OtherActivity extends MainBaseActivity {
                                     tvUnConcern.setVisibility(View.VISIBLE);
                                     tvConcernOk.setVisibility(View.GONE);
                                     tvContact.setVisibility(View.GONE);
-                                    tabLayout.clearOnTabSelectedListeners();
                                     loadFragment();
                                 }
                             }
@@ -225,11 +225,12 @@ public class OtherActivity extends MainBaseActivity {
     }
 
     private void loadFragment() {
+        tabLayout.clearOnTabSelectedListeners();
         String[] mTitles = new String[]{"动态","Fade", "粉丝", "关注"};
         Fragment liveFade = OtherLiveFragment.newInstance(other.getUser_id());
         Fragment fade = OtherFadeFragment.newInstance(other.getUser_id());
-        Fragment concern = new TempFragment();
-        Fragment fans = new TempFragment();
+        Fragment concern = ConcernFragment.newInstance(other.getUser_id());
+        Fragment fans = FansFragment.newInstance(other.getUser_id());
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(liveFade);
         fragments.add(fade);

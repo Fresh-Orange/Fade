@@ -15,6 +15,7 @@ public class Note implements Serializable {
 	private String nickname;
 	private String head_image_url;
 
+
 	private String note_content;
 	private String post_time = "";       //发布时间
 	private Integer is_die = 1;         //是否死亡
@@ -43,6 +44,22 @@ public class Note implements Serializable {
 	private String uuid;//后端索引用的
 
 	private Long liveTime;//存活时间，死贴用到的属性
+
+	//转发帖具有的属性
+	private List<User>addUsers;//续秒用户
+
+	private List<User>subUsers;//减秒用户
+
+	//与上面两个属性有关，关注的人中续秒或减秒的总数量
+	private Integer relayUserNum = 0;
+
+	public Integer getRelayUserNum() {
+		return relayUserNum;
+	}
+
+	public void setRelayUserNum(Integer relayUserNum) {
+		this.relayUserNum = relayUserNum;
+	}
 
 	public Long getLiveTime() {
 		return isOriginalNote() ? liveTime : getOrigin().getLiveTime();
@@ -189,7 +206,13 @@ public class Note implements Serializable {
 
 
 	public Integer getImgCutSize() {
-		return images.isEmpty()?0:Integer.parseInt(images.get(0).getImage_cut_size());
+		if (images.isEmpty()){
+			if (isOriginalNote())
+				return 0;
+			else
+				return getOrigin().getImages().isEmpty()?0:Integer.parseInt(getOrigin().getImages().get(0).getImage_cut_size());
+		}
+		return Integer.parseInt(images.get(0).getImage_cut_size());
 	}
 
 	public void setImages(List<Image> images) {
@@ -221,7 +244,7 @@ public class Note implements Serializable {
 	}
 	
 	public Integer getAction() {
-		return action;
+		return isOriginalNote() ? action : getOrigin().getAction();
 	}
 
 	public void setAction(Integer action) {
@@ -239,8 +262,6 @@ public class Note implements Serializable {
 	//如果note_id相等，则两个帖子相等
 	@Override
 	public int hashCode() {
-		if (target_id == 0)
-			return target_id.hashCode();
 		return note_id.hashCode();
 	}
 
@@ -295,5 +316,21 @@ public class Note implements Serializable {
 
 	public boolean isOriginalNote(){
 		return target_id == 0 || getOrigin()==null;
+	}
+
+	public List<User> getAddUsers() {
+		return addUsers;
+	}
+
+	public void setAddUsers(List<User> addUsers) {
+		this.addUsers = addUsers;
+	}
+
+	public List<User> getSubUsers() {
+		return subUsers;
+	}
+
+	public void setSubUsers(List<User> subUsers) {
+		this.subUsers = subUsers;
 	}
 }
