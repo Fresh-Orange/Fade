@@ -66,9 +66,11 @@ public interface NoteService {
     Observable<NoteQuery> getConcernSecond(@Path("user_id")String user_id, @Path("target_id")String target_id,
                                            @Path("start")String start,@Path("type")String type);
 
+    //每次获取20条续秒详情
     //user_id为帖子发布者的id！
     //type为1表示获取续一秒，为2表示获取减一秒
     @GET("getAllSecond/{user_id}/{note_id}/{start}/{type}")
     Observable<NoteQuery> getAllSecond(@Path("user_id")String user_id, @Path("note_id")String note_id,
                                        @Path("start")String start, @Path("type")String type);
+
 }

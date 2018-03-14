@@ -73,7 +73,7 @@ public interface UserService {
     Observable<SimpleResponse> concern(@Field("fans_id")String  fans_id,@Field("star_id")String  star_id);
 
     //取消关注某人
-    @DELETE("cancelConcern/{fans_id}/{star_id}")
+    @POST("cancelConcern/{fans_id}/{star_id}")
     Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
 
     //得到他人或自己的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
