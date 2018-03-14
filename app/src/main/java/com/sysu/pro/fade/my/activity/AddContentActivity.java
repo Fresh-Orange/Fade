@@ -4,8 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +32,10 @@ import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -114,6 +120,21 @@ public class AddContentActivity extends LoginBaseActivity {
                     if(PhotoUtils.imagePath != null){
                         File file = new File(PhotoUtils.imagePath);
                         builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+                    } else {
+                        //如果用户没用选择头像，则使用默认头像
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_head);
+                        File file = new File(Environment.getExternalStorageDirectory()
+                                + "/Fade/Photo/Fade", String.valueOf(System.currentTimeMillis())
+                                + ".jpg");
+                        try {
+                            FileOutputStream outputStream = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream);
+                            outputStream.flush();
+                            outputStream.close();
+                            builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+                        } catch (Exception e) {
+                            Log.e("create image file", e.toString());
+                        }
                     }
                     RequestBody body = builder.build();
                     Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, null);
@@ -157,6 +178,7 @@ public class AddContentActivity extends LoginBaseActivity {
                                                 user.setConcern_num(0);
                                                 user.setFans_num(0);
                                                 user.setFade_num(0);
+                                                user.setDynamicNum(0);  //本地初始为0
                                             }
                                             //存储用户信息
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
