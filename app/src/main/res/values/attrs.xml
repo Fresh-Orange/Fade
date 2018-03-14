@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="code">
+        <attr name="codeNumber" format="integer"/>
+        <attr name="codeSpace" format="integer"/>
+        <attr name="lengthSide" format="integer"/>
+        <attr name="textSize" format="float"/>
+        <attr name="inputType" format="integer"/>
+    </declare-styleable>
+</resources>
