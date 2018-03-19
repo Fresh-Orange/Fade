@@ -58,7 +58,7 @@
                 android:id="@+id/my_telephone"
                 android:hint="输入手机号或FadeID"
                 android:textSize="14sp"
-                android:textColor="#c3c3c3"
+                android:textColor="#111111"
                 android:background="@null"/>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -82,9 +82,10 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textPassword"
                     android:id="@+id/my_password"
                     android:textSize="14sp"
-                    android:textColor="#c3c3c3"
+                    android:textColor="#111111"
                     android:background="@null"/>
             </LinearLayout>
 
