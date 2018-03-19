@@ -71,10 +71,9 @@
                 android:layout_width="0dp"
                 android:layout_weight="8"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
                 android:id="@+id/my_telephone"
                 android:textSize="18sp"
-                android:textColor="#c3c3c3"
+                android:textColor="#111111"
                 android:background="@null"/>
         </LinearLayout>
 
