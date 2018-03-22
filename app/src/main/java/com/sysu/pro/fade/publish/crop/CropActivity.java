@@ -38,6 +38,7 @@ public class CropActivity extends AppCompatActivity{
 
     private int newCount = 9;
     private int mMaxCount;
+    private int cutSize;
 
     public static NoScrollView scrollView;
     private ArrayList<String> newimages;
@@ -51,23 +52,26 @@ public class CropActivity extends AppCompatActivity{
     public static float[] top = new float[10];
     public static float[] bottom = new float[10];
     public static boolean[] isSet = new boolean[10];
-    private int cut_size = 1;
 
     public static int screenWidth;
     private boolean isOriginalHeight = true;
     private Bitmap[] bms = new Bitmap[10];
 
-    private int isFifteenToEight;
 
-    static int FIFTEEN_DIV_EIGHT = 0;
-    static int FOUR_DIV_FIVE = 1;
+    static int Two_Div_One = 0;
+    static int Three_Div_Four = 1;
+    static int normalSize = 2;
+    static int One_Div_One = 3;
 
     private ImageView addButton;
+    private static float currentRatio;
+    private static int currentWidth;
+    private static int currentHeight;
     public static void openActivity(Activity activity, int requestCode,
                                     int maxSelectCount, ArrayList<String> images,
                                     int newCount) {
         boolean flag = false;
-        if (determineSize(images.get(0)) == FIFTEEN_DIV_EIGHT)
+        if (determineSize(images.get(0)) == Two_Div_One)
             flag = true;
         else
             flag = false;
@@ -89,11 +93,15 @@ public class CropActivity extends AppCompatActivity{
         /**
          *options.outHeight为原始图片的高
          */
-        float currentRatio = (float)options.outWidth / (float)options.outHeight;
-        if (currentRatio > 1.3375f)
-            return FIFTEEN_DIV_EIGHT;
+        currentWidth = (int) options.outWidth;
+        currentHeight = (int) options.outHeight;
+        currentRatio = (float)options.outWidth / (float)options.outHeight;
+        if (currentRatio <= 2f && currentRatio >= 0.75f)
+            return normalSize;
+        else if (currentRatio > 2f)
+            return Two_Div_One;
         else
-            return FOUR_DIV_FIVE;
+            return Three_Div_Four;
     }
 
     // Activity Methods ////////////////////////////////////////////////////////////////////////////
@@ -115,34 +123,41 @@ public class CropActivity extends AppCompatActivity{
         bms[current_position] = BitmapFactory.decodeFile(newimages.get(current_position));
         cropImageView.setImageBitmap(bms[current_position]);
         cropImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
+        showPics(current_position);
+        Log.d("Yellow", "You On create");
         mPickerHorizontal.setOnSelectedListener(new ScrollPickerView.OnSelectedListener() {
             @Override
             public void onSelected(ScrollPickerView scrollPickerView, int position) {
-                //反正就是改变一下这个VIEW以便调用onLayout，都是泪。。
-                ViewGroup.LayoutParams lp = cropImageView.getLayoutParams();
-                if (isOriginalHeight) {
-                    lp.height += 0.1;
-                    isOriginalHeight = false;
-                }
-                else {
-                    lp.height -= 0.1;
-                    isOriginalHeight = true;
-                }
-                cropImageView.setLayoutParams(lp);
-                current_position = position;
-                for(int i = 0; i < bms.length; i++){
-                    //回收bitmap避免OOM
-                    if(bms[i] != null && !bms[i].isRecycled()){
-                        Log.e("recycle", "recycled" + i);
-                        bms[i].recycle();
-                    }
-                }
-                bms[current_position] = BitmapFactory.decodeFile(newimages.get(position));
-                cropImageView.setImageBitmap(bms[current_position]);
+                showPics(position);
             }
         });
 
+
+
+    }
+
+    private void showPics(int position) {
+        //反正就是改变一下这个VIEW以便调用onLayout，都是泪。。
+        ViewGroup.LayoutParams lp = cropImageView.getLayoutParams();
+        if (isOriginalHeight) {
+            lp.height += 0.1;
+            isOriginalHeight = false;
+        }
+        else {
+            lp.height -= 0.1;
+            isOriginalHeight = true;
+        }
+        cropImageView.setLayoutParams(lp);
+        current_position = position;
+        for(int i = 0; i < bms.length; i++){
+            //回收bitmap避免OOM
+            if(bms[i] != null && !bms[i].isRecycled()){
+                Log.e("recycle", "recycled" + i);
+                bms[i].recycle();
+            }
+        }
+        bms[current_position] = BitmapFactory.decodeFile(newimages.get(position));
+        cropImageView.setImageBitmap(bms[current_position]);
     }
 
     private void initListener() {
@@ -192,7 +207,6 @@ public class CropActivity extends AppCompatActivity{
             isSet[i] = false;
         Intent intent = getIntent();
         //默认15:8
-        isFifteenToEight = intent.getIntExtra(Constants.FLAG,0);
         current_position = intent.getIntExtra(Constants.CURRENT_CROP_POSITION, 0);
         newCount = intent.getIntExtra(Constants.CROP_COUNT, 9);
         newimages = new ArrayList<String>();
@@ -202,17 +216,26 @@ public class CropActivity extends AppCompatActivity{
         }
         if (newimages.size() == 9)
             addButton.setVisibility(View.GONE);
-        if (isFifteenToEight == 0) {
-            cropImageView.setAspectRatio(15, 8);
-            cut_size = 2;
+        if (newimages.size() > 1) {
+            //多于一张
+            cropImageView.setAspectRatio(1, 1);
         }
         else {
-            cropImageView.setAspectRatio(4, 5);
-            cut_size = 1;
+            cutSize = determineSize(newimages.get(0));
+            if (cutSize == normalSize) {
+                cropImageView.setAspectRatio(currentWidth, currentHeight);
+            }
+            if (cutSize == Two_Div_One) {
+                cropImageView.setAspectRatio(2, 1);
+            }
+            if (cutSize == Three_Div_Four) {
+                cropImageView.setAspectRatio(3, 4);
+            }
         }
+
         final CopyOnWriteArrayList<Bitmap> bitmaps = new CopyOnWriteArrayList<Bitmap>();
         for (int i = 0; i < newimages.size(); i++) {
-            Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(newimages.get(i), 150, 150);
+            Bitmap newBp = BitmapUtils.decodeSampledBitmapFromFd(newimages.get(i), 100, 100);
             bitmaps.add(newBp);
         }
         mPickerHorizontal = (BitmapScrollPicker) findViewById(R.id.picker_04_horizontal);

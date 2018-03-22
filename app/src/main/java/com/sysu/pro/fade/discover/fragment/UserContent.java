@@ -184,7 +184,7 @@ public class UserContent {
                 tv_nickname.setLayoutParams(layoutParams1);
                 tv_nickname.setText(Html.fromHtml(user.getNickname()));
                 tv_fade_name.setText(Html.fromHtml(user.getFade_name()));
-                Glide.with(context).load(Const.BASE_IP + user.getHead_image_url()).into(iv_header);
+                Glide.with(context).load(Const.BASE_IP + user.getHead_image_url()).error(R.drawable.register_head_ic).into(iv_header);
             }
         }, R.layout.item_user);
 

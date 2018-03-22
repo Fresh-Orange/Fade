@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!--for Home fragment-->
-    <dimen name="avatar">25dp</dimen>
+    <dimen name="avatar">32dp</dimen>
     <dimen name="big_avatar">35dp</dimen>
     <dimen name="item_head_margin">8dp</dimen>
     <dimen name="left_base_margin">16dp</dimen>
