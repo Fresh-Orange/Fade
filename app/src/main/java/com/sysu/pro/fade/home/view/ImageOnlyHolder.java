@@ -2,7 +2,6 @@ package com.sysu.pro.fade.home.view;
 
 import android.app.Activity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 
 import com.sysu.pro.fade.Const;
@@ -49,13 +48,26 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 		imageLayout.setViewPagerMaxHeight(600);
 		//imageLayout.setHeightByRatio(((float) (1.0/ratio)));
 		imageLayout.setImgCoordinates(bean.getImgCoordinates());
-		imageLayout.setHeightByRatio((float)ratio);
+		imageLayout.setHeightByRatio((float)(1.0/ratio));
 		imageLayout.setPaths(Const.BASE_IP, bean.getImgUrls());
 	}
 
 	static private double getNoteRatio(Note bean) {
-		double ratio;
-		int cutSize = bean.getImgCutSize();
+		double ratio = 1.0;
+		if (bean.getImages().size() > 1){
+			ratio = 1.0;
+		}
+		else if (bean.getImages().size() == 1){
+			double imgRadio = bean.getImgSizes().get(0);
+			if (imgRadio > 2)
+				ratio = 2.0;
+			else if (imgRadio < 0.75)
+				ratio = 0.75;
+			else
+				ratio = imgRadio;
+		}
+
+		/*int cutSize = bean.getImgCutSize();
 		if (cutSize == 1)
 			ratio = 5.0/4;
 		else if (cutSize == 2)
@@ -66,7 +78,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 				Log.d("Ratio", "out "+d);
 				ratio = ratio < d ? ratio : d;
 			}
-		}
+		}*/
 
 		return ratio;
 	}
