@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--这里用CoordinatorLayout主要是为了让背景图延伸到状态栏-->
+
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent">
+            <ImageView
+                android:id="@+id/back_btn"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/login_back"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="17dp"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:layout_marginLeft="89dp"
+            android:layout_marginRight="89dp"
+            android:layout_gravity="center"
+            android:gravity="center">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="输入您的手机号"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="#222222"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="33dp"
+            android:layout_marginRight="33dp"
+            android:gravity="center">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CN +86"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:layout_height="wrap_content"
+                android:id="@+id/my_telephone"
+                android:textSize="18sp"
+                android:textColor="#111111"
+                android:background="@null"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="33dp"
+            android:layout_marginRight="33dp"
+            android:background="#c3c3c3"></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="33dp"
+            android:layout_marginRight="33dp"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/next"
+                android:src="@drawable/next_blue"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

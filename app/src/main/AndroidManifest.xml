@@ -67,6 +67,16 @@
         <activity
             android:name=".my.activity.LoginActivity"
             android:theme="@style/imagePagerTheme" />
+        <activity android:name=".my.activity.RegisterActivity"/>
+        <activity android:name=".my.activity.SetPasswordActivity"/>
+        <activity android:name=".my.activity.SetContentActivity"/>
+        <activity android:name=".my.activity.SetSchoolActivity"/>
+        <activity android:name=".my.activity.SetFadeIDActivity"/>
+        <activity android:name=".my.activity.SetInitAttentionActivity"/>
+        <activity android:name=".my.activity.LoginMainActivity"/>
+        <activity android:name=".my.activity.TelephoneActivity"/>
+        <activity android:name=".my.activity.ValidationActivity"/>
+        <activity android:name=".my.activity.SetNewPasswordActivity"/>
         <activity android:name=".my.activity.RegisterBySMSActivity" />
         <activity android:name=".my.activity.CheckTelActivity" />
         <activity android:name=".my.activity.GuideActivity" />
