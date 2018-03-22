@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
 import com.sysu.pro.fade.publish.utils.DensityUtils;
+import com.sysu.pro.fade.utils.Screen;
 
 /**
  * Created by LaiXiancheng on 2017/12/30.
@@ -49,7 +50,7 @@ public class TextProgressBar extends ProgressBar {
 		super.onDraw(canvas);
 		this.mPaint.getTextBounds(this.str, 0, this.str.length(), rect);
 		int x = (int)(getWidth()*((getProgress()-2)*1.0/100) - rect.right);//减2是为了文字左移一点
-		int y = getHeight() + rect.centerY();
+		int y = getHeight() / 2 + rect.height()/2 - Screen.Dp2Px(1,getContext());/// + rect.centerY();
 		canvas.drawText(this.str, x, y, this.mPaint);
 	}
 
@@ -58,6 +59,7 @@ public class TextProgressBar extends ProgressBar {
 		rect = new Rect();
 		this.mPaint = new Paint();
 		this.mPaint.setAntiAlias(true);
+		this.mPaint.setFakeBoldText(true);
 		this.mPaint.setTextSize(DensityUtils.sp2px(getContext(), 12));
 		this.mPaint.setColor(color);
 	}
