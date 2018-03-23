@@ -32,101 +32,118 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
-            android:layout_marginLeft="89dp"
-            android:layout_marginRight="89dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:src="@drawable/fade_logo"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:orientation="vertical"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginRight="33dp"
             android:gravity="center">
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/my_telephone"
-                android:hint="输入手机号或FadeID"
-                android:textSize="14sp"
-                android:textColor="#111111"
-                android:background="@null"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="#c3c3c3"></LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginRight="33dp"
-            android:gravity="center">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:orientation="vertical"
+                android:layout_marginLeft="33dp"
+                android:layout_marginRight="33dp"
+                android:gravity="bottom">
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:id="@+id/my_password"
+                    android:id="@+id/my_telephone"
+                    android:hint="输入手机号或FadeID"
                     android:textSize="14sp"
                     android:textColor="#111111"
                     android:background="@null"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#c3c3c3"></LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="#c3c3c3"></LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
-                <TextView
-                    android:id="@+id/forget_password"
+                android:layout_height="0dp"
+                android:layout_weight="1.7"
+                android:orientation="vertical"
+                android:layout_marginLeft="33dp"
+                android:layout_marginRight="33dp"
+                android:gravity="center">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:text="忘记密码？"
-                    android:textSize="12sp"
-                    android:textColor="#588abf"/>
-            </LinearLayout>
-        </LinearLayout>
+                    android:orientation="horizontal">
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:id="@+id/my_password"
+                        android:textSize="14sp"
+                        android:textColor="#111111"
+                        android:background="@null"/>
+                </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginRight="33dp"
-            android:gravity="center">
-            <ImageView
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#c3c3c3"></LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+                    <TextView
+                        android:id="@+id/forget_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:text="忘记密码？"
+                        android:textSize="12sp"
+                        android:textColor="#588abf"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/login"
-                android:src="@drawable/login_blue"/>
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:layout_marginLeft="33dp"
+                android:layout_marginRight="33dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/login"
+                    android:src="@drawable/login_blue"/>
+            </LinearLayout>
         </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <!--其他方式登录选项-->
             <LinearLayout
