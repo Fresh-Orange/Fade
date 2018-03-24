@@ -204,7 +204,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/next"
-                android:src="@drawable/next_gray"/>
+                android:src="@drawable/finish_register_blue"/>
         </LinearLayout>
     </LinearLayout>
 
