@@ -82,6 +82,8 @@ public class MainActivity extends MainBaseActivity {
     private final int READ_PHONE_STATE = 104;
     private final int RECORD_AUDIO = 105;
 
+    private int oldTabItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -316,6 +318,7 @@ public class MainActivity extends MainBaseActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 //与pager 关联
 //                mViewPager.setCurrentItem(tab.getOriginalNoteId(), true);
+                oldTabItem = mViewPager.getCurrentItem();
                 changeTabSelect(tab);
                 if (tab.getPosition() == Const.PUBLISH - 1){
                     Intent intent = new Intent(MainActivity.this, PublishActivity.class);
@@ -520,6 +523,10 @@ public class MainActivity extends MainBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Const.PUBLISH_REQUEST_CODE){
+            //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
+            mTabLayoutMenu.getTabAt(oldTabItem).select();
+        }
         //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
         //为fragment赋值
 /*        List<Fragment> fragments = this.getSupportFragmentManager().getFragments();

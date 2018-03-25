@@ -2,6 +2,8 @@ package com.sysu.pro.fade.home.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +24,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.activity.ImagePagerActivity;
 import com.sysu.pro.fade.publish.Event.ClickToCropEvent;
 import com.sysu.pro.fade.publish.utils.ImageUtils;
+import com.sysu.pro.fade.utils.Screen;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -58,13 +61,14 @@ import static com.sysu.pro.fade.utils.Screen.getScreenWidth;
 public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	private int viewPagerMaxHeight = 400;
 	private ViewPager pager;
-	private imageAdaptiveIndicativeItemLayout.mImageItemPagerAdapter imgAdapter;
+	public imageAdaptiveIndicativeItemLayout.mImageItemPagerAdapter imgAdapter;
 	private LinearLayout dotLinearLayout;
 	private LinearLayout rootLinearLayout;
 	List<String> imagePathList;
 	static public enum ClickMode { SHOW_PICTURE, EDIT }
 	private ClickMode clickMode = ClickMode.SHOW_PICTURE;//默认点击查看图片
 	private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
+	private int pagerHeight = 0;
 
 	public void setImgCoordinates(List<String> imgCoordinates) {
 		this.imgCoordinates = imgCoordinates;
@@ -114,18 +118,18 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 		int realHeight = maxHeight < fitHeight ? maxHeight : fitHeight;
 		layoutParams.height = realHeight;
 		layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+		pagerHeight = realHeight;
 		pager.setLayoutParams(layoutParams);
+		//pager.requestLayout();
 	}
 
 	public int getPagerRootHeight() {
-		//ViewGroup.LayoutParams layoutParams = rootLinearLayout.getLayoutParams();
-		return rootLinearLayout.getMeasuredHeight();
+		if (dotLinearLayout.getVisibility() == View.VISIBLE)
+			return pagerHeight + Screen.Dp2Px(20, getContext());
+		else
+			return pagerHeight;
 	}
 
-	public int getPagerRootWidth() {
-		//ViewGroup.LayoutParams layoutParams = rootLinearLayout.getLayoutParams();
-		return rootLinearLayout.getMeasuredWidth();
-	}
 
 
 	/**
@@ -192,6 +196,41 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 
 	}
 
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+
+	}
+
+	/*@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		ViewGroup viewParent = (ViewGroup) getParent();
+		ViewGroup.LayoutParams layoutParams = viewParent.getLayoutParams();
+		layoutParams.height = Screen.getScreenHeight(getContext());
+		layoutParams.width = getMeasuredWidth();
+		Log.d("yellowsss", "layoutParams: " + layoutParams.height + " " + layoutParams.width);
+		viewParent.setLayoutParams(layoutParams);
+
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+		viewParent = (ViewGroup) getParent();
+		layoutParams = viewParent.getLayoutParams();
+		layoutParams.height = getMeasuredHeight();
+		layoutParams.width = getMeasuredWidth();
+		Log.d("yellowsss", "layoutParams: " + layoutParams.height + " " + layoutParams.width);
+		viewParent.setLayoutParams(layoutParams);
+	}*/
+
+	public void release(){
+		imgAdapter.release();
+	}
+
 
 
 	/**
@@ -202,10 +241,11 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	 */
 	public void addDots(Context context, LinearLayout dotsLinearLayout, int imgCnt) {
 		dotsLinearLayout.removeAllViews();
-		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Dp2Px(10, context), Dp2Px(10, context));
-		lp.setMargins(Dp2Px(5, context), Dp2Px(5, context), Dp2Px(5, context), 0);
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Dp2Px(4, context), Dp2Px(4, context));
+		lp.setMargins(Dp2Px(4, context), Dp2Px(8, context), Dp2Px(4, context), 0);
 
 		if (imgCnt > 1) {
+			dotsLinearLayout.setVisibility(VISIBLE);
 			ImageView dotView = new ImageView(context);
 			dotView.setImageResource(R.drawable.point_selected);
 			dotView.setLayoutParams(lp);
@@ -218,6 +258,9 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 				dotView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 				dotsLinearLayout.addView(dotView);
 			}
+		}
+		else{
+			dotsLinearLayout.setVisibility(GONE);
 		}
 	}
 
@@ -331,8 +374,20 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 					startY = Integer.valueOf(imgCoordinates.get(fragmentIndex).split(":")[1]);
 				}
 			}
+			Log.d("yellowsss", "startX startY: " + startX + "  " + startY);
 
 			ImageUtils.loadImage(getContext(), mImageUrl, mImageView, viewPager, startX, startY, 0, 0);
+		}
+
+		public void release(){
+			releaseImageView(mImageView);
+		}
+		private void releaseImageView(ImageView imageView) {
+			Drawable d = imageView.getDrawable();
+			if (d != null)
+				d.setCallback(null);
+			imageView.setImageDrawable(null);
+			imageView.setBackgroundDrawable(null);
 		}
 
 
@@ -341,15 +396,25 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	/**
 	 * 该pager的adapter，使用与fragment结合的方式
 	 */
-	private class mImageItemPagerAdapter extends FragmentStatePagerAdapter {
+	public class mImageItemPagerAdapter extends FragmentStatePagerAdapter {
 
 		public List<String> imagePathList;
 		private List<String> imgCoordinates;//图片左上角的坐标，其中一项的形式 "x:y"
+		private List<mImageItemFragment> fragments = new ArrayList<>();//图片左上角的坐标，其中一项的形式 "x:y"
+		private FragmentManager fm;
 
 		public mImageItemPagerAdapter(FragmentManager fm, List<String> imagePathList, List<String> imgCoordinates) {
 			super(fm);
+			this.fm = fm;
 			this.imagePathList = imagePathList;
 			this.imgCoordinates = imgCoordinates;
+			//fm.getFragments().get(0).
+		}
+
+		public void release(){
+			for (mImageItemFragment f:fragments) {
+				f.release();
+			}
 		}
 
 		@Override
@@ -362,8 +427,10 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 			String nextUrl = "";
 			if (position + 1 < imagePathList.size())
 				nextUrl = imagePathList.get(position + 1);
-			return mImageItemFragment.newInstance(imagePathList, position, nextUrl
+			mImageItemFragment imageFragment = mImageItemFragment.newInstance(imagePathList, position, nextUrl
 					, imgCoordinates, clickMode, pager);
+			fragments.add(imageFragment);
+			return imageFragment;
 		}
 
 
