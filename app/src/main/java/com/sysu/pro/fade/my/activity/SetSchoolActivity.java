@@ -54,7 +54,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
 
         mbundle = getIntent().getExtras();
         //user.setTelephone((User) mbundle.getSerializable("user"));
-        //user = (User) mbundle.getSerializable("user");
+        user = (User) mbundle.getSerializable("user");
 
         finishbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +63,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
                 user.setDepartment_name(my_major);
                 Intent intent = new Intent(SetSchoolActivity.this, SetContentActivity.class);
                 mbundle.putSerializable("user", user);
-                intent.putExtra("user", mbundle);
+                intent.putExtras( mbundle);
                 startActivity(intent);
                 finish();
             }
@@ -100,7 +100,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
                 value = testData.get(position);
                 // 把选择的数据展示对应的TextView上
                 school.setText(value);
-                //user.setSchool_name(value);
+                user.setSchool_name(value);
                 // 选择完后关闭popup窗口
                 typeSelectPopup.dismiss();
             }

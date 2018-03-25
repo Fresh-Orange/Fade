@@ -62,11 +62,13 @@ public class SetContentActivity extends LoginBaseActivity {
     private User user;
     private Bundle mbundle;
     private SharedPreferences sharedPreferences;
+    private ImageView backbtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_content);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
+        backbtn = (ImageView) findViewById(R.id.back_btn);
         nextbtn = (ImageView) findViewById(R.id.next);
         myhead = (ImageView) findViewById(R.id.ivRegisterUserHead);
         edRegisterNickname = (EditText) findViewById(R.id.edRegisterNickname);
@@ -79,14 +81,22 @@ public class SetContentActivity extends LoginBaseActivity {
         user = (User) mbundle.getSerializable("user");
         //Toast.makeText(SetContentActivity.this, user.getTelephone(), Toast.LENGTH_SHORT).show();
 
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         nextbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //startActivity(new Intent(SetContentActivity.this, SetSchoolActivity.class));
                 String nickname = edRegisterNickname.getText().toString();
-                if(nickname.equals("")){
-                    Toast.makeText(SetContentActivity.this,"输入昵称不能为空",Toast.LENGTH_SHORT).show();
+                if (PhotoUtils.imagePath == null){
+                    Toast.makeText(SetContentActivity.this,"必须选择头像",Toast.LENGTH_SHORT).show();
+                }else if(nickname.equals("")){
+                    Toast.makeText(SetContentActivity.this,"必须输入昵称",Toast.LENGTH_SHORT).show();
                 }else if (!male.isChecked() && !female.isChecked()){
                     Toast.makeText(SetContentActivity.this,"必须选择性别",Toast.LENGTH_SHORT).show();
                 }else{
@@ -96,7 +106,7 @@ public class SetContentActivity extends LoginBaseActivity {
                     user.setSex(sex);
                     MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
                             .addFormDataPart("user", JSON.toJSONString(user));
-                    if(PhotoUtils.imagePath != null){
+                    /*if(PhotoUtils.imagePath != null){
                         File file = new File(PhotoUtils.imagePath);
                         builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
                     } else {
@@ -114,7 +124,9 @@ public class SetContentActivity extends LoginBaseActivity {
                         } catch (Exception e) {
                             Log.e("create image file", e.toString());
                         }
-                    }
+                    }*/
+                    File file = new File(PhotoUtils.imagePath);
+                    builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
                     RequestBody body = builder.build();
                     Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, null);
                     final UserService userService = retrofit.create(UserService.class);
@@ -165,7 +177,7 @@ public class SetContentActivity extends LoginBaseActivity {
                                             //最后设置登陆类型 为账号密码登陆
                                             editor.putString(Const.LOGIN_TYPE,"0");
                                             editor.apply();
-                                            startActivity(new Intent(SetContentActivity.this,MainActivity.class));
+                                            startActivity(new Intent(SetContentActivity.this,SetFadeIDActivity.class));
                                             LoginActivitiesCollector.finishAll();
                                         }else {
                                             Log.e("register","注册失败");

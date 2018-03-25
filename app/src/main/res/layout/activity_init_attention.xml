@@ -32,26 +32,34 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="80dp"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
             android:layout_gravity="center"
             android:gravity="center">
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:text="选择你想关注的用户"
                 android:gravity="center"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="#222222"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp">
 
@@ -64,13 +72,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user1"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed1"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -90,13 +99,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user2"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed2"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -116,13 +126,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user3"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed3"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -151,13 +162,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user4"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed4"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -177,13 +189,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user5"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed5"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -203,13 +216,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user6"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed6"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -238,13 +252,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user7"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed7"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -264,13 +279,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user8"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed8"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -290,13 +306,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user9"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/weibo"/>
+                        android:src="@drawable/avatar" />
                     <ImageView
                         android:id="@+id/choosed9"
+                        android:visibility="invisible"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/choosed"
@@ -311,11 +328,11 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp"
-            android:gravity="center|top">
+            android:gravity="center">
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
@@ -325,11 +342,11 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp"
-            android:gravity="center|top">
+            android:gravity="center">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

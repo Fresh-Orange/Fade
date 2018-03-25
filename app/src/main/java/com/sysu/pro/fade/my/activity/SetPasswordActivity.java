@@ -158,7 +158,7 @@ public class SetPasswordActivity extends LoginBaseActivity{
                         Intent intent = new Intent(SetPasswordActivity.this, SetSchoolActivity.class);
                         Bundle mbundle = new Bundle();
                         mbundle.putSerializable("user", user);
-                        intent.putExtra("user", mbundle);
+                        intent.putExtras(mbundle);
                         startActivity(intent);
                         finish();
                     }else {

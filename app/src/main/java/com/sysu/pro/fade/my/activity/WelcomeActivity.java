@@ -25,7 +25,7 @@ public class WelcomeActivity extends LoginBaseActivity {
             String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
 
             if(login_type == ""){
-                startActivity(new Intent(WelcomeActivity.this,SetPasswordActivity.class));
+                startActivity(new Intent(WelcomeActivity.this,RegisterActivity.class));
                 finish();
             }else{
                 startActivity(new Intent(WelcomeActivity.this,MainActivity.class));
