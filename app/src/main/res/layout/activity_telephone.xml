@@ -71,6 +71,8 @@
                 android:layout_width="0dp"
                 android:layout_weight="8"
                 android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textCursorDrawable="@null"
                 android:id="@+id/my_telephone"
                 android:textSize="18sp"
                 android:textColor="#111111"

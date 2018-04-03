@@ -35,128 +35,150 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
-            android:layout_marginLeft="89dp"
-            android:layout_marginRight="89dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:src="@drawable/fade_logo"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:orientation="vertical"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginRight="33dp"
             android:gravity="center">
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/my_telephone"
-                android:hint="输入手机号"
-                android:textSize="14sp"
-                android:textColor="#c3c3c3"
-                android:background="@null"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="#c3c3c3"></LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="24dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginRight="33dp"
-            android:gravity="center">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="7"
-                    android:layout_height="wrap_content">
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/my_valid"
-                        android:textSize="14sp"
-                        android:textColor="#c3c3c3"
-                        android:background="@null"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/get_valid"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:text="获取验证码"
-                        android:textSize="12sp"
-                        android:textColor="#588abf"/>
-                </LinearLayout>
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="#c3c3c3"></LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="7"
-                    android:layout_height="wrap_content">
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/red_wrong_valid"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:orientation="vertical"
+                android:layout_marginLeft="33dp"
+                android:layout_marginRight="33dp"
+                android:gravity="bottom">
+                <EditText
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:visibility="invisible">
-                    <ImageView
-                        android:layout_width="match_parent"
+                    android:id="@+id/my_telephone"
+                    android:textCursorDrawable="@null"
+                    android:inputType="number"
+                    android:hint="输入手机号"
+                    android:textSize="14sp"
+                    android:textColor="#c3c3c3"
+                    android:background="@null"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#c3c3c3"></LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:layout_marginLeft="33dp"
+                android:layout_marginRight="33dp"
+                android:gravity="center">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="7"
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textCursorDrawable="@null"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:id="@+id/my_valid"
+                            android:textSize="14sp"
+                            android:textColor="#c3c3c3"
+                            android:background="@null"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/get_valid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="获取验证码"
+                            android:textSize="12sp"
+                            android:textColor="#588abf"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#c3c3c3"></LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="7"
+                        android:layout_height="wrap_content">
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/red_wrong_valid"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/red_wrong_valid"/>
+                        android:gravity="center"
+                        android:visibility="invisible">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/red_wrong_valid"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginRight="33dp"
-            android:gravity="center">
-            <ImageView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnRegister"
-                android:src="@drawable/register_gray"/>
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:layout_marginLeft="33dp"
+                android:layout_marginRight="33dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnRegister"
+                    android:src="@drawable/register_gray"/>
+            </LinearLayout>
         </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <!--其他方式登录选项-->
             <LinearLayout
