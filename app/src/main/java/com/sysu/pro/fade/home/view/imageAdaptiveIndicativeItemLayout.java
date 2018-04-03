@@ -228,7 +228,8 @@ public class imageAdaptiveIndicativeItemLayout extends LinearLayout {
 	}*/
 
 	public void release(){
-		imgAdapter.release();
+		if (imgAdapter != null)
+			imgAdapter.release();
 	}
 
 
