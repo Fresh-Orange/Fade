@@ -2,6 +2,7 @@ package com.sysu.pro.fade.home.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +49,8 @@ public class OtherActivity extends MainBaseActivity {
     private Retrofit retrofit;
     private String[] allNums;
 
+    private CoordinatorLayout rootView;
+    private ProgressBar loading;
     private TextView backBarTitle;
     private ImageView ivShowHead;
     private TextView tvShowNickname;
@@ -65,6 +69,8 @@ public class OtherActivity extends MainBaseActivity {
 
         RelativeLayout setting = findViewById(R.id.back_bar_menu);  //三个点的菜单按钮
         setting.setVisibility(View.VISIBLE);
+        rootView = findViewById(R.id.other_root_layout);
+        loading = findViewById(R.id.other_loading);
         ivShowHead =  (ImageView) findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) findViewById(R.id.tvShowNickname);
         tvShowSummary = (TextView) findViewById(R.id.tvShowSummary);
@@ -110,6 +116,8 @@ public class OtherActivity extends MainBaseActivity {
                         }
                         loadData();
                         loadFragment();
+                        loading.setVisibility(View.GONE);
+                        rootView.setVisibility(View.VISIBLE);
                     }
                 });
     }
