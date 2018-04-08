@@ -30,6 +30,7 @@ import rx.schedulers.Schedulers;
 public class TelephoneActivity extends LoginBaseActivity {
     private ImageView nextbtn;
     private EditText telephone;
+    private ImageView backbtn;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -38,12 +39,12 @@ public class TelephoneActivity extends LoginBaseActivity {
                 String ans_str = (String) msg.obj;
                 //Toast.makeText(RegisterBySMSActivity.this,ans_str,Toast.LENGTH_SHORT).show();
                 //暂时取消验证限制，到时候将if语句恢复
-                //if(ans_str.equals("{}")){
+                if(ans_str.equals("{}")){
                 Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
                 intent.putExtra("mobilePhoneNumber",telephone.getText().toString());
                 startActivity(intent);
                 finish();
-                //}
+                }
             }
         }
     };
@@ -52,7 +53,16 @@ public class TelephoneActivity extends LoginBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_telephone);
         nextbtn = (ImageView) findViewById(R.id.next);
+        backbtn = (ImageView) findViewById(R.id.back_btn);
         telephone = (EditText) findViewById(R.id.my_telephone);
+
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         nextbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,9 +88,8 @@ public class TelephoneActivity extends LoginBaseActivity {
                             public void onNext(SimpleResponse simpleResponse) {
                                 if(simpleResponse.getSuccess().equals("0")){
                                     Toast.makeText(TelephoneActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
-                                    UserTool.sendIdentifyCode(handler,telephone.getText().toString());
                                 }else{
-                                    Toast.makeText(TelephoneActivity.this,"该手机号已经注册",Toast.LENGTH_SHORT).show();
+                                    UserTool.sendIdentifyCode(handler,telephone.getText().toString());
                                 }
                             }
                         });
