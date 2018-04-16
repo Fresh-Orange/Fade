@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.my.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ public class RegisterBySMSActivity extends LoginBaseActivity {
 
     private Button btnSubmitTel;
     private EditText edTelphone;
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {

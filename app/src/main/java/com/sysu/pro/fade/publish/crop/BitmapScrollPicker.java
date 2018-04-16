@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
@@ -116,6 +118,16 @@ public class BitmapScrollPicker extends ScrollPickerView<Bitmap> {
         int itemSize = getItemSize();
         Bitmap bitmap = data.get(position);
 
+        if (position == 0) {
+            // 画边框
+            Rect rec = canvas.getClipBounds();
+            Paint paint = new Paint();
+            int color = Color.parseColor("#aaeeee00");
+            paint.setColor(color);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(10);
+            canvas.drawRect(rec, paint);
+        }
         mRect1.right = bitmap.getWidth();
         mRect1.bottom = bitmap.getHeight();
 
@@ -163,7 +175,6 @@ public class BitmapScrollPicker extends ScrollPickerView<Bitmap> {
                 mRect2.left = (int) (top + span);
                 mRect2.right = (int) (top + itemSize - span);
             } else {
-
                 mRect2.top = (int) (top + span);
                 mRect2.bottom = (int) (top + itemSize - span);
             }
