@@ -7,17 +7,22 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.litepal.LitePalBase.TAG;
 
 /**
  * Created by huanggzh5 on 2018/3/11.
@@ -94,19 +99,24 @@ public class Code extends LinearLayout implements TextWatcher, View.OnKeyListene
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        Log.d(TAG, "beforeTextChanged: "  + currentPosition);
     }
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
         if (i == 0 && i2 >= 1 && currentPosition != mEditTextList.size() - 1) {
             currentPosition++;
+            mEditTextList.get(currentPosition).requestFocus();
+            Log.d(TAG, "onTextChanged: " + currentPosition);
+        }else if (i == 0 && i2 == 0 && currentPosition != 0){
+            currentPosition--;
             mEditTextList.get(currentPosition).requestFocus();
         }
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
+        Log.d(TAG, "afterTextChanged: " + currentPosition);
     }
 
     @Override
@@ -123,17 +133,25 @@ public class Code extends LinearLayout implements TextWatcher, View.OnKeyListene
      */
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        EditText editText = (EditText) view;
-        if (i == KeyEvent.KEYCODE_DEL && editText.getText().length() == 0) {
-            int action = keyEvent.getAction();
-            if (currentPosition != 0 && action == KeyEvent.ACTION_DOWN) {
-                currentPosition--;
-                mEditTextList.get(currentPosition).requestFocus();
-                mEditTextList.get(currentPosition).setText("");
-            }
+        if (i == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+
+            //Toast.makeText(mContext, mEditTextList.get(currentPosition).getText(), Toast.LENGTH_SHORT).show();
+            /*if (currentPosition != 0) {
+                //currentPosition--;
+                if (mEditTextList.get(currentPosition).getText().length() < 1){
+                    currentPosition--;
+                    mEditTextList.get(currentPosition).requestFocus();
+                    mEditTextList.get(currentPosition).setText("");
+                }else{
+                    mEditTextList.get(currentPosition).setText("");
+                }
+            }*/
+            mEditTextList.get(currentPosition).setText("");
+            return true;
         }
         return false;
     }
+
 
     /**
      * 获取验证码
