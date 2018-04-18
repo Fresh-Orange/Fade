@@ -1,41 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.sysu.pro.fade">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.sysu.pro.fade">
 
     <meta-data
         android:name="android.support.VERSION"
         android:value="25.3.1"
-        tools:replace="android:value" />
+        tools:replace="android:value"/>
 
     <!-- 基础模块（必须加入以下声明）START -->
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
-    <!--<uses-permission android:name="android.permission.INTERNET" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
-    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />-->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
+    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> -->
+
 
     <!-- 用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- 用于访问GPS定位 -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <!-- 用于获取运营商信息，用于支持提供运营商信息相关的接口 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <!-- 用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <!-- 用于访问网络，网络定位需要上网 -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- 用于读取手机当前的状态 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!-- 用于写入缓存数据到扩展存储卡 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- 用于申请调用A-GPS模块 -->
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
     <!-- 用于申请获取蓝牙信息进行室内定位 -->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <!-- 基础模块 END -->
     <application
@@ -43,31 +44,31 @@
         android:allowBackup="true"
         android:icon="@mipmap/app"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:largeHeap="true"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <service android:name="com.amap.api.location.APSService" />
+        <service android:name="com.amap.api.location.APSService"/>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="dc40cca1d244f03684c5150c331264f7" />
+            android:value="dc40cca1d244f03684c5150c331264f7"/>
 
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".my.activity.AddContentActivity"
-            android:theme="@style/registerTheme" />
+            android:theme="@style/registerTheme"/>
         <activity android:name=".my.activity.WelcomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".my.activity.LoginActivity"
-            android:theme="@style/imagePagerTheme" />
+            android:theme="@style/imagePagerTheme"/>
         <activity android:name=".my.activity.RegisterActivity"/>
         <activity android:name=".my.activity.SetPasswordActivity"/>
         <activity android:name=".my.activity.SetContentActivity"/>
@@ -78,24 +79,24 @@
         <activity android:name=".my.activity.TelephoneActivity"/>
         <activity android:name=".my.activity.ValidationActivity"/>
         <activity android:name=".my.activity.SetNewPasswordActivity"/>
-        <activity android:name=".my.activity.RegisterBySMSActivity" />
-        <activity android:name=".my.activity.CheckTelActivity" />
-        <activity android:name=".my.activity.GuideActivity" />
-        <activity android:name=".my.activity.AddPasswordActivity" />
-        <activity android:name=".my.MySetting" />
-        <activity android:name=".my.setting.Personal" />
-        <activity android:name=".my.setting.Safety" />
-        <activity android:name=".my.setting.About" />
+        <activity android:name=".my.activity.RegisterBySMSActivity"/>
+        <activity android:name=".my.activity.CheckTelActivity"/>
+        <activity android:name=".my.activity.GuideActivity"/>
+        <activity android:name=".my.activity.AddPasswordActivity"/>
+        <activity android:name=".my.MySetting"/>
+        <activity android:name=".my.setting.Personal"/>
+        <activity android:name=".my.setting.Safety"/>
+        <activity android:name=".my.setting.About"/>
         <activity
             android:name=".home.activity.ImagePagerActivity"
-            android:theme="@style/imagePagerTheme" />
-        <activity android:name=".publish.PublishActivity" />
+            android:theme="@style/imagePagerTheme"/>
+        <activity android:name=".publish.PublishActivity"/>
         <activity
             android:name=".publish.imageselector.ImageSelectorActivity"
-            android:launchMode="singleTask" />
-        <activity android:name=".publish.imageselector.PreviewActivity" />
-        <activity android:name=".publish.crop.CropActivity" />
-        <activity android:name=".home.activity.DetailActivity" />
+            android:launchMode="singleTask"/>
+        <activity android:name=".publish.imageselector.PreviewActivity"/>
+        <activity android:name=".publish.crop.CropActivity"/>
+        <activity android:name=".home.activity.DetailActivity"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -104,34 +105,36 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/rc_file_path" />
+                android:resource="@xml/rc_file_path"/>
         </provider>
 
-        <activity android:name=".notification.NotificationActivity" />
-        <activity android:name=".message.Activity.ContributionActivity" />
-        <activity android:name=".message.Activity.FansActivity" />
-        <activity android:name=".message.Activity.CommentActivity" />
-        <activity android:name=".baseactivity.MainBaseActivity" />
-        <activity android:name=".baseactivity.LoginBaseActivity" />
-        <activity android:name=".home.activity.OtherActivity" />
+        <activity android:name=".notification.NotificationActivity"/>
+        <activity android:name=".message.Activity.ContributionActivity"/>
+        <activity android:name=".message.Activity.FansActivity"/>
+        <activity android:name=".message.Activity.CommentActivity"/>
+        <activity android:name=".baseactivity.MainBaseActivity"/>
+        <activity android:name=".baseactivity.LoginBaseActivity"/>
+        <activity android:name=".home.activity.OtherActivity"/>
         <activity
             android:name=".message.Activity.ConversationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
                 <data
                     android:host="com.sysu.pro.fade"
                     android:pathPrefix="/conversation/"
-                    android:scheme="rong" />
+                    android:scheme="rong"/>
             </intent-filter>
         </activity>
-        <activity android:name=".publish.map.Activity.MapActivity" />
-        <activity android:name=".publish.map.Activity.SearchPlaceActivity" />
-        <activity android:name=".home.activity.ForwardActivity"></activity>
+        <activity android:name=".publish.map.Activity.MapActivity"/>
+        <activity android:name=".publish.map.Activity.SearchPlaceActivity"/>
+        <activity android:name=".home.activity.ForwardActivity"/>
+        <activity android:name=".home.activity.TintedCompatActivity">
+        </activity>
     </application>
 
 </manifest>

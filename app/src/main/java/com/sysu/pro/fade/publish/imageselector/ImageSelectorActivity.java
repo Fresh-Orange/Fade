@@ -36,7 +36,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.publish.Event.ImageSelectorToCrop;
 import com.sysu.pro.fade.publish.Event.ImageSelectorToPublish;
 import com.sysu.pro.fade.publish.adapter.PreviewImageAdapter;
 import com.sysu.pro.fade.publish.imageselector.adapter.FolderAdapter;

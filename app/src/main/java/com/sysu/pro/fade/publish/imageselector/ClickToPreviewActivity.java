@@ -16,13 +16,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.imageselector.adapter.ImagePagerAdapter;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 import static android.animation.ObjectAnimator.ofFloat;
 
-public class ClickToPreviewActivity extends Activity {
+public class ClickToPreviewActivity extends AppCompatActivity {
 
     private MyViewPager vpImage;    //ViewPager容器，用于显示侧滑效果
     private TextView tvIndicator;   //当前位置/总数量，位于左上角
