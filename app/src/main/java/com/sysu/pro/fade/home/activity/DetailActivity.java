@@ -276,10 +276,13 @@ public class DetailActivity extends MainBaseActivity{
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         forwardRecycler.setLayoutManager(manager);
         ImageView forwardMore = findViewById(R.id.detail_forward_more);
+        if (forwardList.size() > 0) {
+            findViewById(R.id.detail_commentator).setVisibility(View.VISIBLE);
+        }
         if (forwardList.size() != 10) {
             forwardMore.setVisibility(View.INVISIBLE);
         } else {
-            Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
+//            Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
             //跳转续秒详情
             forwardMore.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -313,7 +316,7 @@ public class DetailActivity extends MainBaseActivity{
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
                 //如果是第一项，不需要显示分割线
                 if (position == 0) {
-                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.GONE);
+                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.INVISIBLE);
                 }
                 //头像点击事件
                 holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {
