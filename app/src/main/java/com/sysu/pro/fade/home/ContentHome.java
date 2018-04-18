@@ -162,7 +162,7 @@ public class ContentHome {
 
         FadeItemAnimator fadeItemAnimator = new FadeItemAnimator();
         fadeItemAnimator.setRemoveDuration(400);
-        fadeItemAnimator.setSupportsChangeAnimations(false);//解决notifyItem时的闪屏问题
+        fadeItemAnimator.setChangeDuration(0);//解决notifyItem时的闪屏问题
         recyclerView.setItemAnimator(fadeItemAnimator);
 
     }
