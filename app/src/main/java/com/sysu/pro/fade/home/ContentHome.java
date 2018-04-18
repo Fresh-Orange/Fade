@@ -342,14 +342,19 @@ public class ContentHome {
             if(note.getAdd_num() == null) note.setAdd_num(0);
             if(note.getSub_num() == null) note.setSub_num(0);
         }
-        notes.addAll(list);
+
         Note simpleNote = null;
         for(Note note : list){
-            simpleNote = new Note();
-            simpleNote.setNote_id(note.getNote_id());
-            simpleNote.setTarget_id(note.getTarget_id());
-            simpleNote.setType(note.getType());
-            updateList.add(simpleNote);
+            //查重判断
+            if(!notes.contains(note)){
+                notes.add(note);
+
+                simpleNote = new Note();
+                simpleNote.setNote_id(note.getNote_id());
+                simpleNote.setTarget_id(note.getTarget_id());
+                simpleNote.setType(note.getType());
+                updateList.add(simpleNote);
+            }
         }
         adapter.notifyDataSetChanged();
     }
@@ -427,13 +432,17 @@ public class ContentHome {
         if(note.getComment_num() == null) note.setComment_num(0);
         if(note.getAdd_num() == null) note.setAdd_num(0);
         if(note.getSub_num() == null) note.setSub_num(0);
-        notes.add(0,note);
-        Note simpleNote = new Note();
-        simpleNote.setNote_id(note.getNote_id());
-        simpleNote.setTarget_id(note.getTarget_id());
-        simpleNote.setType(note.getType());
-        updateList.add(0,simpleNote);
-        adapter.notifyDataSetChanged();
+        if (!notes.contains(note)){
+            notes.add(0,note);
+            Note simpleNote = new Note();
+            simpleNote.setNote_id(note.getNote_id());
+            simpleNote.setTarget_id(note.getTarget_id());
+            simpleNote.setType(note.getType());
+            updateList.add(0,simpleNote);
+            adapter.notifyDataSetChanged();
+        }
+
+        Log.e("onGetNewNote", "note id : "+note.getNote_id());
     }
 
 /*    static public void getNoteFromServer(final Integer noteId, User curUser, final NotesAdapter adapter){
