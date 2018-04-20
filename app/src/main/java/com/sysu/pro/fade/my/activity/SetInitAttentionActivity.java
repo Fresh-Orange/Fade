@@ -2,8 +2,12 @@ package com.sysu.pro.fade.my.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -57,8 +61,70 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
     private ImageView choosed9;
     private User user;
     private UserQuery userQuery;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1) {
+                List<User> list = userQuery.getList();
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(0).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user1);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(1).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user2);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(2).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user3);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(3).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user4);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(4).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user5);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(5).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user6);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(6).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user7);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(7).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user8);
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(8).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user9);
+            }else {
+
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init_attention);
         backbtn = (ImageView) findViewById(R.id.back_btn);
@@ -179,52 +245,9 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
                             @Override
                             public void onNext(UserQuery userlist) {
                                 userQuery = userlist;
-                                List<User> list = userlist.getList();
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(0).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user1);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(1).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user2);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(2).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user3);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(3).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user4);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(4).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user5);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(5).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user6);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(6).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user7);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(7).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user8);
-                                Glide.with(SetInitAttentionActivity.this)
-                                        .load(Const.BASE_IP + list.get(8).getHead_image_url())
-                                        .fitCenter()
-                                        .dontAnimate()
-                                        .into(user9);
+                                Message msg = new Message();
+                                msg.what = 1;
+                                handler.sendMessage(msg);
                             }
                         });
             }

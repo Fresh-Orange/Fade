@@ -13,12 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:background="@android:color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent">
+            android:background="@android:color/white">
             <ImageView
                 android:id="@+id/back_btn"
                 android:layout_width="18dp"
@@ -106,11 +107,11 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textCursorDrawable="@null"
+                    android:theme="@style/MyEditText"
                     android:background="@null"
                     android:id="@+id/edRegisterNickname"
                     android:textSize="18dp"
-                    android:textColor="#bfbfbf"/>
+                    android:textColor="#222222"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

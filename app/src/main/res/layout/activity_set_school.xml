@@ -13,12 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:background="@android:color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent">
+            android:background="@android:color/white">
             <ImageView
                 android:id="@+id/back_btn"
                 android:layout_width="18dp"
@@ -129,7 +130,7 @@
                 android:layout_weight="8"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="9dp"
-                android:textCursorDrawable="@null"
+                android:theme="@style/MyEditText"
                 android:id="@+id/major"
                 android:textSize="18dp"
                 android:textColor="#bfbfbf"
