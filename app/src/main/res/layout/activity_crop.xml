@@ -27,9 +27,9 @@
             android:layout_width="0dp"
             android:layout_weight="4"
             android:layout_height="match_parent"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="5dp"
             app:spv_center_item_background="@color/white"
-            app:spv_center_item_position="2"
+            app:spv_center_item_position="0"
             app:spv_max_scale="1"
             app:spv_min_scale="1"
             app:spv_draw_bitmap_width="40dp"
@@ -37,6 +37,7 @@
             app:spv_draw_bitmap_mode="fill"
             app:spv_is_circulation="false"
             app:spv_orientation="horizontal"
+            android:layout_marginLeft="10dp"
             app:spv_visible_item_count="4" />
 
         <ImageView

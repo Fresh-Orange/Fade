@@ -49,7 +49,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="dc40cca1d244f03684c5150c331264f7" />
+            android:value="fc4a90dcd3335f05495a4e9607592182" />
 
         <activity
             android:name=".MainActivity"
@@ -70,6 +70,8 @@
         <activity android:name=".my.activity.RegisterBySMSActivity" />
         <activity android:name=".my.activity.CheckTelActivity" />
         <activity android:name=".my.activity.GuideActivity" />
+        <activity android:name=".my.activity.RegisterActivity" />
+        <activity android:name=".my.activity.LoginMainActivity" />
         <activity android:name=".my.activity.AddPasswordActivity" />
         <activity android:name=".my.MySetting" />
         <activity android:name=".my.setting.Personal" />
