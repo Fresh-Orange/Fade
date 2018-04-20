@@ -66,15 +66,25 @@
         </activity>
         <activity
             android:name=".my.activity.LoginActivity"
-            android:theme="@style/imagePagerTheme"/>
-        <activity android:name=".my.activity.RegisterBySMSActivity"/>
-        <activity android:name=".my.activity.CheckTelActivity"/>
-        <activity android:name=".my.activity.GuideActivity"/>
-        <activity android:name=".my.activity.AddPasswordActivity"/>
-        <activity android:name=".my.MySetting"/>
-        <activity android:name=".my.setting.Personal"/>
-        <activity android:name=".my.setting.Safety"/>
-        <activity android:name=".my.setting.About"/>
+            android:theme="@style/imagePagerTheme" />
+        <activity android:name=".my.activity.RegisterActivity"/>
+        <activity android:name=".my.activity.SetPasswordActivity"/>
+        <activity android:name=".my.activity.SetContentActivity"/>
+        <activity android:name=".my.activity.SetSchoolActivity"/>
+        <activity android:name=".my.activity.SetFadeIDActivity"/>
+        <activity android:name=".my.activity.SetInitAttentionActivity"/>
+        <activity android:name=".my.activity.LoginMainActivity"/>
+        <activity android:name=".my.activity.TelephoneActivity"/>
+        <activity android:name=".my.activity.ValidationActivity"/>
+        <activity android:name=".my.activity.SetNewPasswordActivity"/>
+        <activity android:name=".my.activity.RegisterBySMSActivity" />
+        <activity android:name=".my.activity.CheckTelActivity" />
+        <activity android:name=".my.activity.GuideActivity" />
+        <activity android:name=".my.activity.AddPasswordActivity" />
+        <activity android:name=".my.MySetting" />
+        <activity android:name=".my.setting.Personal" />
+        <activity android:name=".my.setting.Safety" />
+        <activity android:name=".my.setting.About" />
         <activity
             android:name=".home.activity.ImagePagerActivity"
             android:theme="@style/imagePagerTheme"/>
@@ -96,7 +106,7 @@
                 android:resource="@xml/rc_file_path"/>
         </provider>
 
-        <activity android:name=".notification.NotificationActivity"/>
+        <!--<activity android:name=".notification.NotificationActivity"/>-->
         <activity android:name=".message.Activity.ContributionActivity"/>
         <activity android:name=".message.Activity.FansActivity"/>
         <activity android:name=".message.Activity.CommentActivity"/>

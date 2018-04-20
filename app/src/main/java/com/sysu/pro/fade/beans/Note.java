@@ -7,7 +7,7 @@ import java.util.List;
 public class Note implements Serializable {
 	/**
 	 * 帖子
-	 * 如果是转发贴（target_id不为0的话，显示的续秒数、减秒数、评论数都是原贴origin的）
+	 * 如果是转发贴（target_id不为0的话，显示的续秒数、减秒数、评论数都是原贴origin的） guozhen
 	 */
 	private static final long serialVersionUID = 3337872547982353088L;
 	private Integer note_id;
