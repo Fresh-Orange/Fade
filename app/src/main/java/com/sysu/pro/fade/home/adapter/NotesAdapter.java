@@ -36,6 +36,8 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 	private boolean showFootView = true;
 	private String TAG = "footView";
 
+	private int debug_num = 1;
+
 
 	private FootViewHolder footViewHolder;
 
@@ -87,6 +89,7 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 
 	@Override
 	public HomeBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		Log.e("HomeBaseViewHolder", "Created " + debug_num++ + "HomeBaseViewHolder");
 		View view;
 		HomeBaseViewHolder viewHolder;
 		if (viewType == COMPLETE_ITEM) {
