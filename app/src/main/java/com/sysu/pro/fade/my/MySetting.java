@@ -20,6 +20,7 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.my.activity.GuideActivity;
+import com.sysu.pro.fade.my.activity.RegisterActivity;
 import com.sysu.pro.fade.my.setting.About;
 import com.sysu.pro.fade.my.setting.Personal;
 import com.sysu.pro.fade.service.UserService;
@@ -99,7 +100,7 @@ public class MySetting extends MainBaseActivity {
                                 editor.putString(Const.LOGIN_TYPE,"");//重置LOGIN_TYPE
                                 editor.remove("user");
                                 editor.apply();
-                                startActivity(new Intent(MySetting.this, GuideActivity.class));
+                                startActivity(new Intent(MySetting.this, RegisterActivity.class));
                                 // TODO: 2017/12/31 这里应该要把MainActivity也结束掉
                                 MainActivitiesCollector.finishAll();
                             }

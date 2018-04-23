@@ -112,4 +112,9 @@ public interface UserService {
     //个人页，分页查询20条关注的人，返回的start小于20判定为加载到底
     @GET("getConcerns/{user_id}/{start}")
     Observable<UserQuery>getConcerns(@Path("user_id")String  user_id,@Path("start")String  start);
+
+    //注册后一版得到9条推荐用户
+    @GET("getOriginRecommendUsers/{user_id}/{start}")
+    Observable<UserQuery>getOriginRecommendUsers(@Path("user_id")String  user_id, @Path("start")String  start);
+
 }

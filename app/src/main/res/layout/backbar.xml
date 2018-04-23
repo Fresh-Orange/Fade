@@ -11,18 +11,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="40dp">
         <RelativeLayout
             android:id="@+id/back_bar_back"
-            android:layout_width="53dp"
+            android:layout_width="44dp"
             android:layout_height="match_parent"
             android:background="@drawable/btn_back_selector">
             <ImageView
-                android:layout_width="13dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="18dp"
-                android:alpha="0.5"
-                android:src="@drawable/back"
+                android:layout_width="44dp"
+                android:layout_height="40dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/icon_back"
                 android:layout_centerVertical="true"/>
         </RelativeLayout>
 

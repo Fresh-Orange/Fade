@@ -1,17 +1,11 @@
 package com.sysu.pro.fade.publish;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,12 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -36,11 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,10 +38,6 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.google.gson.Gson;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
-import com.sysu.pro.fade.BuildConfig;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Image;
@@ -75,8 +58,6 @@ import com.sysu.pro.fade.publish.imageselector.constant.Constants;
 import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 import com.sysu.pro.fade.publish.imageselector.utils.ImageSelectorUtils;
 import com.sysu.pro.fade.publish.map.Activity.MapActivity;
-import com.sysu.pro.fade.publish.map.Activity.SearchPlaceActivity;
-import com.sysu.pro.fade.publish.utils.ImageUtils;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -91,7 +72,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.rong.imageloader.utils.L;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -182,6 +162,7 @@ public class PublishActivity extends AppCompatActivity {
     public AMapLocationClient mLocationClient = null;
 
     private void dealWithImagesToSend(final List<String>images){
+
         //发送帖子的最后操作在这里
         //收集要发送的图片数据，包装一下,压缩好图片后，发送帖子
         if(images_files == null) images_files = new ArrayList<>();
@@ -209,10 +190,19 @@ public class PublishActivity extends AppCompatActivity {
                 }
                 @Override
                 public void onSuccess(File file) {
-                    Bitmap bitmap_temp = ImageUtils.getBitmap(file.getPath());
+
+                    //改变获取图片宽高的方式，只读取头信息，不整个解码，用以解决内存溢出 ---by 赖贤城
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    /**
+                     * 最关键在此，把options.inJustDecodeBounds = true;
+                     * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
+                     */
+                    Bitmap bitmap_temp = BitmapFactory.decodeFile(file.getPath(), options); // 此时返回的bitmap为null
                     //获得宽高比
-                    final Double size = new Integer(bitmap_temp.getWidth()).doubleValue()/ new Integer(bitmap_temp.getHeight()).doubleValue();
-                    bitmap_temp.recycle();
+                    final Double size = Integer.valueOf(options.outWidth).doubleValue()/ Integer.valueOf(options.outHeight).doubleValue();
+
+
                     image.setImage_size(size.toString());
                     //添加到图片队列
                     imageArray.add(image);
@@ -374,6 +364,20 @@ public class PublishActivity extends AppCompatActivity {
         Log.d("upload_size", str);
         return str;
     }
+
+    private void changeRatio(int pos) {
+        //将后面的图片比例改到前面
+        for (int i = pos; i < images.size(); i++) {
+            imageX[i] = imageX[i + 1];
+            imageY[i] = imageY[i + 1];
+        }
+    }
+
+    private void clearRatio() {
+        for (int i = 0; i < 9; i++) {
+            imageX[i] = imageY[i] = 0;
+        }
+    }
     private void InitListener() {
         publishTextView = (TextView) findViewById(R.id.tv_confirm);
         publishTextView.setOnClickListener(new View.OnClickListener() {
@@ -417,24 +421,39 @@ public class PublishActivity extends AppCompatActivity {
                     dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            if (images.size() == 2) {
+                                clearRatio();
+                                Log.d("Yellow", "in!");
+                            }
                             if (images.size() == 1) {
                                 images.clear();
                                 newCount = maxCount;
                                 choose_view.setVisibility(View.VISIBLE);
                                 setHiddenPager(true);
                                 show = CHOOSE;
+                                clearRatio();
                             }
                             else {
                                 int currentItem = pager.getPosition();
-                                Log.d("Hey", "" + currentItem);
                                 removeImg(currentItem);
+                                changeRatio(currentItem);
+                                for (int i = 0; i < imageX.length; i++) {
+                                    Log.d("Yellow", "i: " + i);
+                                    Log.d("Yellow", "imageX: " + imageX[i]);
+                                }
+                                for (int i = 0; i < imageX.length; i++) {
+                                    Log.d("Yellow", "i: " + i);
+                                    Log.d("Yellow", "imageY:: " + imageY[i]);
+                                }
                                 newCount = maxCount - images.size();
                                 pager.setPaths(images,currentItem);
-                                updatePosition();
+//                                updatePosition();
 //                                pager.removeViewAt(currentItem);
                                 pager.notifyChanged();
                                 ShowViewPager();
                             }
+
+
                         }
                     });
                     dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -634,20 +653,32 @@ public class PublishActivity extends AppCompatActivity {
             setHiddenPager(false);
             show = PAGER;
             float maxRatio = 0;
-            pager.setViewPagerMaxHeight(800);
-            double ratio;
-            cutSize = determineSize(images.get(0));
-            if (cutSize == 1) {
-                ratio = 5.0/4;
-                cut_size = 1;
+            pager.setViewPagerMaxHeight(1800);
+            double ratio = 1.0;
+            if (images.size() > 1){
+                ratio = 1.0;
             }
-            else {
-                ratio = 8.0/15;
-                cut_size = 2;
+            else if (images.size() == 1){
+                double imgRadio = determineSize(images.get(0));
+                if (imgRadio > 2)
+                    ratio = 2.0;
+                else if (imgRadio < 0.75)
+                    ratio = 0.75;
+                else
+                    ratio = imgRadio;
             }
+            final double inRatio = ratio;
+            Log.d("yellowsss", "ratio: " + ratio);
             pager.setClickMode(imageAdaptiveIndicativeItemLayout.ClickMode.EDIT);
-            pager.setHeightByRatio((float)ratio);
-            pager.invalidate();
+            String coordinateString = getCoordinateString();
+            String[] coordinates = coordinateString.split(",");
+            pager.setImgCoordinates(Arrays.asList(coordinates));
+            pager.setHeightByRatio((float)(1.0/ratio));
+            Log.d("yellowsss", "coordinates: " + coordinateString);
+            pager.setPaths(images,curShowPosition);
+
+            //pager.invalidate();
+            //pager.forceLayout();
             pager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 boolean isLayouted = false;
                 @Override
@@ -656,14 +687,20 @@ public class PublishActivity extends AppCompatActivity {
                         return;
                     isLayouted = true;
                     ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
-                    layoutParams.height = pager.getMeasuredHeight();
+                    layoutParams.height = pager.getPagerRootHeight();
                     layoutParams.width = pager.getMeasuredWidth();
+                    Log.d("yellowsss", "layoutParams: " + layoutParams.height + " " + layoutParams.width);
                     pagerContainer.setLayoutParams(layoutParams);
                     pagerContainer.invalidate();
                     icon_add_pic.invalidate();
                     icon_sub_pic.invalidate();
+                    pager.setHeightByRatio((float)(1.0/inRatio));
+                    pager.imgAdapter.notifyDataSetChanged();
                 }
             });
+
+
+
             //ViewGroup.LayoutParams layoutParams = pagerContainer.getLayoutParams();
             //layoutParams.height = pager.getPagerRootHeight();
             //layoutParams.width = pager.getPagerRootWidth();
@@ -673,12 +710,7 @@ public class PublishActivity extends AppCompatActivity {
             //icon_sub_pic.invalidate();
 
 
-            String coordinateString = getCoordinateString();
-            String[] coordinates = coordinateString.split(",");
-            Log.d("yellowsss", "coordinates: " + coordinateString);
-            pager.setImgCoordinates(Arrays.asList(coordinates));
-            pager.setPaths(images,curShowPosition);
-            pager.invalidate();
+
         }
     }
 
@@ -693,7 +725,7 @@ public class PublishActivity extends AppCompatActivity {
         }
     }
 
-    private static int determineSize(String image) {
+    private static float determineSize(String image) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         /**
@@ -705,10 +737,7 @@ public class PublishActivity extends AppCompatActivity {
          *options.outHeight为原始图片的高
          */
         float currentRatio = (float)options.outWidth / (float)options.outHeight;
-        if (currentRatio > 1.3375f)
-            return 0;
-        else
-            return 1;
+        return currentRatio;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -841,6 +870,14 @@ public class PublishActivity extends AppCompatActivity {
     public void onEvent(CropToClickEvent event) {
         String message = event.getMessage();
         curShowPosition = event.getPosition();
+        for (int i = 0; i < imageX.length; i++) {
+            Log.d("Yellow", "i: " + i);
+            Log.d("Yellow", "imageX: " + imageX[i]);
+        }
+        for (int i = 0; i < imageX.length; i++) {
+            Log.d("Yellow", "i: " + i);
+            Log.d("Yellow", "imageY:: " + imageY[i]);
+        }
         Log.d("yellowsss", message);
         ShowViewPager();
     }
@@ -864,8 +901,11 @@ public class PublishActivity extends AppCompatActivity {
             mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
         }
         EventBus.getDefault().unregister(this);//反注册EventBus
+
+        pager.release();//释放图片资源，试图解决OOM ---by 赖贤城
         super.onDestroy();
     }
+
 
 
     public String getRealPathFromURI(Uri contentUri) {

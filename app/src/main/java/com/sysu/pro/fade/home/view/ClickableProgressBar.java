@@ -128,7 +128,7 @@ public class ClickableProgressBar extends FrameLayout {
 		//Glide.with(getContext()).load(actionResId).into(ivAction);
 		//ivAction.setImageResource(actionResId);
 
-		ivContainer.setImageResource(R.drawable.add_minus_line);
+		ivContainer.setImageResource(R.drawable.button_divider);
 		timeProgressBar.setProgressDrawable(getResources().getDrawable(R.drawable.layer_list_progress_drawable));
 	}
 

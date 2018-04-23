@@ -55,7 +55,7 @@ public class ContentDiscover {
     private FragmentActivity activity;
     private Context context;
     private View rootview;
-    private TabLayout mTabLayout;
+    private TabLayout mTabLayout;//
     private ViewPager mViewPager;
     private LayoutInflater mInflater;
     private View view_user, view_fade;//页卡视图

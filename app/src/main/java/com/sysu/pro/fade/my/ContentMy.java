@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -52,9 +53,12 @@ public class ContentMy {
     private View rootview;
     private SharedPreferences sharedPreferences;
     private TextView backBarTitle;
-    private ImageView ivShowHead;
+    private CircleImageView ivShowHead;
     private TextView tvShowNickname;
     private TextView tvShowSummary; //个性签名
+    private TextView schoolName;
+    private TextView schoolDot;
+    private TextView departmentName;
     private RelativeLayout mySetting;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -73,10 +77,13 @@ public class ContentMy {
         EventBus.getDefault().register(this);
         //获得本地存储的用户信息
         sharedPreferences = activity.getSharedPreferences(Const.USER_SHARE,Context.MODE_PRIVATE);
-        ivShowHead =  (ImageView) rootview.findViewById(R.id.ivShowHead);
+        ivShowHead =  rootview.findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) rootview.findViewById(R.id.tvShowNickname);
         tvShowSummary = (TextView) rootview.findViewById(R.id.tvShowSummary);
         tvFadeName = (TextView) rootview.findViewById(R.id.tvShowUserId);
+        schoolName = rootview.findViewById(R.id.school_name);
+        schoolDot = rootview.findViewById(R.id.school_dot);
+        departmentName = rootview.findViewById(R.id.department_name);
 
         user = new UserUtil(activity).getUer();
         loadData();
@@ -154,6 +161,8 @@ public class ContentMy {
         String nickname = user.getNickname();
         String summary = user.getSummary();
         String fade_name = user.getFade_name();
+        String school_name = user.getSchool_name();
+        String department_name = user.getDepartment_name();
         //获取用户的关注、粉丝等的数量
         String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
         String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
@@ -177,6 +186,14 @@ public class ContentMy {
             tvShowSummary.setText(summary);
         }
         tvFadeName.setText(fade_name);
+        //学校院系
+        if(school_name != null) {
+            schoolName.setText(school_name);
+        }
+        if (department_name != null) {
+            schoolDot.setVisibility(View.VISIBLE);
+            departmentName.setText(department_name);
+        }
     }
 
     private void loadFragment() {
