@@ -1,9 +1,10 @@
 package com.sysu.pro.fade.baseactivity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
-public class MainBaseActivity extends AppCompatActivity {
+import com.sysu.pro.fade.home.activity.TintedCompatActivity;
+
+public class MainBaseActivity extends TintedCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

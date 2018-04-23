@@ -1,19 +1,15 @@
 package com.sysu.pro.fade.home.fragment;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +25,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.home.others.PhotoViewAttacher;
-import com.sysu.pro.fade.publish.PublishActivity;
-import com.sysu.pro.fade.publish.imageselector.utils.BitmapUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -146,9 +140,9 @@ public class ImageDetailFragment extends Fragment {
 
 		Glide.with(this)
 				.load(mImageUrl)
-				.placeholder(R.drawable.unload)
+				//.placeholder(R.drawable.unload)
 				.diskCacheStrategy(DiskCacheStrategy.SOURCE)
-				.thumbnail(0.05f)
+				//.thumbnail(0.05f)
 				.fitCenter()
 				.into(new GlideDrawableImageViewTarget(mImageView){
 			//重写其中的三个方法，其实就是对加载过程进行监听！

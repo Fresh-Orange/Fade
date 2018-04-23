@@ -21,11 +21,15 @@ import io.rong.imlib.model.UserInfo;
  */
 
 public class App extends Application {
+	//private RefWatcher mRefWatcher;
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		RongIM.init(this);
 		setRongMsgClickListener();
+
+		//内存分析工具
+		//mRefWatcher = LeakCanary.install(this);
 
 	}
 
