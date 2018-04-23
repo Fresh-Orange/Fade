@@ -3,6 +3,8 @@ package com.sysu.pro.fade.my.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -10,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -41,12 +44,83 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
     private EditText second_password;
     private ImageView into_fade_btn;
     private SharedPreferences sharedPreferences;
-    private LinearLayout red_wrong_valid;
+    private LinearLayout red_wrong_password;
+    private TextView red_text;
     private int fp_flag;
     private String fp;
     private String sp;
     private String mobilePhoneNumber;
     private ImageView backbtn;
+    private int number_flag = 0;
+    private int zifu_flag = 0;
+
+    TextWatcher mTextWatchr = new TextWatcher() {
+        private CharSequence temp;
+        //private int editStart ;
+        //private int editEnd ;
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            temp = charSequence;
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            //editStart = first_password.getSelectionStart();
+            //editEnd = first_password.getSelectionEnd();
+            judgePassword(temp.toString());
+            if (temp.length() < 6) {
+                if (temp.length() == 0){
+                    red_wrong_password.setVisibility(View.INVISIBLE);
+                }else{
+                    red_text.setText("密码太短");
+                    red_wrong_password.setVisibility(View.VISIBLE);
+                    into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+                }
+            }else  if (temp.length() > 16){
+                red_text.setText("密码太长");
+                red_wrong_password.setVisibility(View.VISIBLE);
+                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+            }else if(fp_flag == 1){
+                red_text.setText("密码需包含英文与数字");
+                red_wrong_password.setVisibility(View.VISIBLE);
+                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+            }else if (fp_flag == 2){
+                red_wrong_password.setVisibility(View.INVISIBLE);
+            }else{
+                red_text.setText("密码包含非法字符");
+                red_wrong_password.setVisibility(View.VISIBLE);
+                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+            }
+        }
+    };
+
+    TextWatcher mTextWatchr1 = new TextWatcher() {
+        private CharSequence temp;
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            temp = charSequence;
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (temp.length() > 0 && fp_flag == 2){
+                red_wrong_password.setVisibility(View.INVISIBLE);
+                into_fade_btn.setImageResource(R.drawable.into_fade_blue);
+            }else{
+                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -58,9 +132,12 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
         first_password = (EditText) findViewById(R.id.my_telephone);
         second_password = (EditText) findViewById(R.id.my_valid);
         into_fade_btn = (ImageView) findViewById(R.id.into_fade);
-        red_wrong_valid = (LinearLayout) findViewById(R.id.red_wrong_valid);
+        red_wrong_password = (LinearLayout) findViewById(R.id.red_wrong_password);
+        red_text = (TextView) findViewById(R.id.red_text);
+        first_password.addTextChangedListener(mTextWatchr);
+        second_password.addTextChangedListener(mTextWatchr1);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
-        mobilePhoneNumber = getIntent().getStringExtra("mobilePhoneNumber");
+        mobilePhoneNumber = getIntent().getStringExtra("telephone");
         backbtn = (ImageView) findViewById(R.id.back_btn);
 
         Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,null);
@@ -78,8 +155,15 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
             public void onClick(View view) {
                 fp = first_password.getText().toString();
                 sp = second_password.getText().toString();
-                judgePassword(fp);
-                if (fp_flag == 0 && fp.equals(sp)){
+                if (fp_flag == 2){
+                    if (fp.equals(sp)){
+
+                    }else {
+                        red_text.setText("密码不相同");
+                        red_wrong_password.setVisibility(View.VISIBLE);
+                    }
+                }
+                /*if (fp_flag == 0 && fp.equals(sp)){
                     userService.loginUserByTel(mobilePhoneNumber,fp)
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -109,19 +193,36 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
                 }else{
                     Intent intent = new Intent(SetNewPasswordActivity.this, MainActivity.class);
                     startActivity(intent);
-                }
+                }*/
             }
         });
     }
 
     private void judgePassword(String account){
-        Pattern p = Pattern.compile("/^[a-zA-Z0-9]{4,16}$/");
-        Matcher m = p.matcher(account);
-        if(m.matches()){
-            fp_flag = 0;
-        }else{
-            fp_flag = 1;
+        fp_flag = 0;
+        number_flag = 0;
+        zifu_flag = 0;
+        for (int i = 0; i < account.length(); i++){
+            if ((account.charAt(i) > '9' || account.charAt(i) < '0')
+                    && (account.charAt(i) > 'z' || account.charAt(i) < 'a')
+                    && (account.charAt(i) > 'Z' || account.charAt(i) < 'A')){
+                fp_flag = 3;
+                break;
+            }else if (account.charAt(i) <= '9' && account.charAt(i) >= '0'){
+                number_flag = 1;
+            }else if ((account.charAt(i) <= 'z' && account.charAt(i) >= 'a')
+                    || (account.charAt(i) <= 'Z' && account.charAt(i) >= 'A')){
+                zifu_flag = 1;
+            }
         }
+        if (fp_flag != 3){
+            if (number_flag == 1 && zifu_flag == 1){
+                fp_flag = 2;
+            }else {
+                fp_flag = 1;
+            }
+        }
+
     }
 
     public void loginSuccess(User user){

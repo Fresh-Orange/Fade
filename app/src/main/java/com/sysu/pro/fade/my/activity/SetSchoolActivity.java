@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
@@ -41,6 +42,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
     private ArrayAdapter<String> testDataAdapter;
     private View line;
     private String value;
+    private ImageView backbtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -55,6 +57,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
         out1 = (ImageView) findViewById(R.id.out1);
         out2 = (ImageView) findViewById(R.id.out2);
         line = (View) findViewById(R.id.line);
+        backbtn = (ImageView) findViewById(R.id.back_btn);
         user = new User();
         mbundle = new Bundle();
 
@@ -62,16 +65,28 @@ public class SetSchoolActivity extends LoginBaseActivity {
         //user.setTelephone((User) mbundle.getSerializable("user"));
         user = (User) mbundle.getSerializable("user");
 
+        //Toast.makeText(SetSchoolActivity.this, user.getTelephone(), Toast.LENGTH_SHORT).show();
+        backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         finishbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String my_major = major.getText().toString();
-                user.setDepartment_name(my_major);
-                Intent intent = new Intent(SetSchoolActivity.this, SetContentActivity.class);
-                mbundle.putSerializable("user", user);
-                intent.putExtras( mbundle);
-                startActivity(intent);
-                finish();
+                if (school.getText().equals("")){
+                    Toast.makeText(SetSchoolActivity.this, "必须选择学校", Toast.LENGTH_SHORT).show();
+                }else{
+                    String my_major = major.getText().toString();
+                    user.setDepartment_name(my_major);
+                    Intent intent = new Intent(SetSchoolActivity.this, SetContentActivity.class);
+                    mbundle.putSerializable("user", user);
+                    intent.putExtras( mbundle);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
 

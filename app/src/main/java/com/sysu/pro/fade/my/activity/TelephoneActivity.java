@@ -43,7 +43,7 @@ public class TelephoneActivity extends LoginBaseActivity {
                 //暂时取消验证限制，到时候将if语句恢复
                 if(ans_str.equals("{}")){
                 Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
-                intent.putExtra("mobilePhoneNumber",telephone.getText().toString());
+                intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
                 startActivity(intent);
                 finish();
                 }

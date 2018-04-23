@@ -69,7 +69,8 @@ public class LoginMainActivity extends LoginBaseActivity {
         forget_password_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginMainActivity.this, TelephoneActivity.class));
+                //startActivity(new Intent(LoginMainActivity.this, TelephoneActivity.class));
+                Toast.makeText(LoginMainActivity.this, "功能暂未完善", Toast.LENGTH_SHORT).show();
             }
         });
 

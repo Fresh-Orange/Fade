@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +27,7 @@ import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
+import java.awt.font.TextAttribute;
 import java.util.List;
 
 import retrofit2.Retrofit;
@@ -59,6 +61,15 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
     private ImageView choosed8;
     private ImageView user9;
     private ImageView choosed9;
+    private TextView text1;
+    private TextView text2;
+    private TextView text3;
+    private TextView text4;
+    private TextView text5;
+    private TextView text6;
+    private TextView text7;
+    private TextView text8;
+    private TextView text9;
     private User user;
     private UserQuery userQuery;
 
@@ -68,51 +79,65 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
             super.handleMessage(msg);
             if (msg.what == 1) {
                 List<User> list = userQuery.getList();
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(0).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user1);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(1).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user2);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(2).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user3);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(3).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user4);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(4).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user5);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(5).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user6);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(6).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user7);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(7).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user8);
-                Glide.with(SetInitAttentionActivity.this)
-                        .load(Const.BASE_IP + list.get(8).getHead_image_url())
-                        .fitCenter()
-                        .dontAnimate()
-                        .into(user9);
+                Log.d("guozheng", "list: " + list.size());
+                if (list.size() == 0){
+                    Toast.makeText(SetInitAttentionActivity.this, "没有更多的用户了哟！", Toast.LENGTH_SHORT).show();
+                }else{
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(0).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user1);
+                    text1.setText(list.get(0).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(1).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user2);
+                    text2.setText(list.get(1).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(2).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user3);
+                    text3.setText(list.get(2).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(3).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user4);
+                    text4.setText(list.get(3).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(4).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user5);
+                    text5.setText(list.get(4).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(5).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user6);
+                    text6.setText(list.get(5).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(6).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user7);
+                    text7.setText(list.get(6).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(7).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user8);
+                    text8.setText(list.get(7).getNickname());
+                    Glide.with(SetInitAttentionActivity.this)
+                            .load(Const.BASE_IP + list.get(8).getHead_image_url())
+                            .fitCenter()
+                            .dontAnimate()
+                            .into(user9);
+                    text9.setText(list.get(8).getNickname());
+                }
             }else {
 
             }
@@ -148,11 +173,20 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
         choosed7 = (ImageView) findViewById(R.id.choosed7);
         choosed8 = (ImageView) findViewById(R.id.choosed8);
         choosed9 = (ImageView) findViewById(R.id.choosed9);
-        user = user = new UserUtil(this).getUer();
+        text1 = (TextView) findViewById(R.id.text1);
+        text2 = (TextView) findViewById(R.id.text2);
+        text3 = (TextView) findViewById(R.id.text3);
+        text4 = (TextView) findViewById(R.id.text4);
+        text5 = (TextView) findViewById(R.id.text5);
+        text6 = (TextView) findViewById(R.id.text6);
+        text7 = (TextView) findViewById(R.id.text7);
+        text8 = (TextView) findViewById(R.id.text8);
+        text9 = (TextView) findViewById(R.id.text9);
+        user = new UserUtil(this).getUer();
 
         Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, null);
         final UserService userService = retrofit.create(UserService.class);
-        userService.getRecommendUser(user.getUser_id() + "", 0 +"")
+        userService.getOriginRecommendUsers(user.getUser_id() + "", 0 +"")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserQuery>() {
@@ -169,52 +203,62 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
                     @Override
                     public void onNext(UserQuery userlist) {
                         userQuery = userlist;
-                        List<User> list = userlist.getList();
+                        //Toast.makeText(SetInitAttentionActivity.this, userQuery.getStart(), Toast.LENGTH_SHORT).show();
+                        List<User> list = userQuery.getList();
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(0).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user1);
+                        text1.setText(list.get(0).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(1).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user2);
+                        text2.setText(list.get(1).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(2).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user3);
+                        text3.setText(list.get(2).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(3).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user4);
+                        text4.setText(list.get(3).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(4).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user5);
+                        text5.setText(list.get(4).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(5).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user6);
+                        text6.setText(list.get(5).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(6).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user7);
+                        text7.setText(list.get(6).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(7).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user8);
+                        text8.setText(list.get(7).getNickname());
                         Glide.with(SetInitAttentionActivity.this)
                                 .load(Const.BASE_IP + list.get(8).getHead_image_url())
                                 .fitCenter()
                                 .dontAnimate()
                                 .into(user9);
+                        text9.setText(list.get(8).getNickname());
                     }
                 });
 
@@ -228,7 +272,7 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
         another.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userService.getRecommendUser(user.getUser_id() + "", userQuery.getStart() +"")
+                userService.getOriginRecommendUsers(user.getUser_id() + "", userQuery.getStart() +"")
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<UserQuery>() {

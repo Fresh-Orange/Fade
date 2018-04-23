@@ -83,7 +83,7 @@ public class ValidationActivity extends LoginBaseActivity{
         red_wrong_valid = (LinearLayout) findViewById(R.id.red_wrong_valid);
         send_telephone = (TextView) findViewById(R.id.send_telephone);
         send_again = (TextView) findViewById(R.id.send_again);
-        mobilePhoneNumber = getIntent().getStringExtra("mobilePhoneNumber");
+        mobilePhoneNumber = getIntent().getStringExtra("telephone");
 
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override

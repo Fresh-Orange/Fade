@@ -10,11 +10,11 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:fitsSystemWindows="true"
-        android:background="@android:color/white">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@android:color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -75,10 +75,9 @@
                 android:layout_weight="8"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="9dp"
-                android:textCursorDrawable="@null"
                 android:id="@+id/school"
                 android:textSize="18dp"
-                android:textColor="#bfbfbf"
+                android:textColor="#222222"
                 android:background="@null"/>
 
             <LinearLayout
@@ -133,7 +132,7 @@
                 android:theme="@style/MyEditText"
                 android:id="@+id/major"
                 android:textSize="18dp"
-                android:textColor="#bfbfbf"
+                android:textColor="#222222"
                 android:background="@null"/>
 
             <LinearLayout
