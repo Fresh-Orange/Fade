@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -41,7 +43,7 @@ public class TelephoneActivity extends LoginBaseActivity {
                 //暂时取消验证限制，到时候将if语句恢复
                 if(ans_str.equals("{}")){
                 Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
-                intent.putExtra("mobilePhoneNumber",telephone.getText().toString());
+                intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
                 startActivity(intent);
                 finish();
                 }
@@ -50,6 +52,10 @@ public class TelephoneActivity extends LoginBaseActivity {
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_telephone);
         nextbtn = (ImageView) findViewById(R.id.next);

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -69,6 +71,10 @@ public class ValidationActivity extends LoginBaseActivity{
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validation);
         mCode = (Code) findViewById(R.id.code);
@@ -77,7 +83,7 @@ public class ValidationActivity extends LoginBaseActivity{
         red_wrong_valid = (LinearLayout) findViewById(R.id.red_wrong_valid);
         send_telephone = (TextView) findViewById(R.id.send_telephone);
         send_again = (TextView) findViewById(R.id.send_again);
-        mobilePhoneNumber = getIntent().getStringExtra("mobilePhoneNumber");
+        mobilePhoneNumber = getIntent().getStringExtra("telephone");
 
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override

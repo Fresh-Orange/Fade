@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,6 +48,10 @@ public class LoginMainActivity extends LoginBaseActivity {
     private String fade_name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_main);
 
@@ -63,7 +69,8 @@ public class LoginMainActivity extends LoginBaseActivity {
         forget_password_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginMainActivity.this, TelephoneActivity.class));
+                //startActivity(new Intent(LoginMainActivity.this, TelephoneActivity.class));
+                Toast.makeText(LoginMainActivity.this, "功能暂未完善", Toast.LENGTH_SHORT).show();
             }
         });
 
