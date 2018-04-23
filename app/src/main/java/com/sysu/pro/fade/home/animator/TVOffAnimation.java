@@ -28,8 +28,6 @@ public class TVOffAnimation extends Animation {
 
 	@Override
 	protected void applyTransformation(float interpolatedTime, Transformation t) {
-
-
 		final Matrix matrix=t.getMatrix();
 		//interpolatedTime是从0~1的一个变化，前85%让动画缩小成一个线，后15%保持线的高度缩小线的宽度
 		if (interpolatedTime<0.85){

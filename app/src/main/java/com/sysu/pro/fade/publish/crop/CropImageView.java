@@ -267,6 +267,9 @@ public class CropImageView extends android.support.v7.widget.AppCompatImageView 
         mAspectRatioY = aspectRatioY;
 
         if (mFixAspectRatio) {
+            //子View调用requestLayout方法，会标记当前View及父容器，
+            // 同时逐层向上提交，直到ViewRootImpl处理该事件，ViewRootImpl会调用三大流程，
+            // 从measure开始，对于每一个含有标记位的view及其子View都会进行测量、布局、绘制。
             requestLayout(); // Request measure/layout to be run again.
 //            getCroppedImage();
         }
