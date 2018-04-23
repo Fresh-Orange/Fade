@@ -58,7 +58,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
-import static com.sysu.pro.fade.message.Utils.StatusBarUtil.TintBar;
 
 public class MainActivity extends MainBaseActivity {
 
@@ -161,7 +160,7 @@ public class MainActivity extends MainBaseActivity {
 
         setUserProvider();
         getTokenAndConnect();
-        TintBar(this);
+
     }
 
 

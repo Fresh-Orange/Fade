@@ -169,7 +169,6 @@ public class PublishActivity extends AppCompatActivity {
         if(images_files == null) images_files = new ArrayList<>();
         else images_files.clear();
 
-
         for(int i = 0; i < images.size(); i++){
             final Image image = new Image();
             //获得坐标
@@ -179,7 +178,6 @@ public class PublishActivity extends AppCompatActivity {
             String yStr = "" + y;
             image.setImage_coordinate(xStr + ":" + yStr);
             image.setImage_cut_size(cut_size + "");
-
             String image_path = images.get(i);
             //然后压缩图片
             Luban.with(this)
@@ -384,6 +382,10 @@ public class PublishActivity extends AppCompatActivity {
         publishTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (edit_temp.getText().toString().isEmpty()) {
+                    Toast.makeText(PublishActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //发送帖子
                 progressDialog.show();
                 //设置Note对象的一些属性

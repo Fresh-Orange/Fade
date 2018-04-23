@@ -2,6 +2,7 @@ package com.sysu.pro.fade.home.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +36,7 @@ import com.sysu.pro.fade.utils.UserUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.rong.imkit.RongIM;
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -47,11 +50,16 @@ public class OtherActivity extends MainBaseActivity {
     private Retrofit retrofit;
     private String[] allNums;
 
+    private CoordinatorLayout rootView;
+    private ProgressBar loading;
     private TextView backBarTitle;
-    private ImageView ivShowHead;
+    private CircleImageView ivShowHead;
     private TextView tvShowNickname;
     private TextView tvFadeName;//fade_id
     private TextView tvShowSummary; //个性签名
+    private TextView schoolName;
+    private TextView schoolDot;
+    private TextView departmentName;
     private TextView tvUnConcern;  //点击后关注
     private ImageView tvConcernOk;  //点击后取消关注
     private TextView tvContact;     //私信按钮
@@ -65,10 +73,15 @@ public class OtherActivity extends MainBaseActivity {
 
         RelativeLayout setting = findViewById(R.id.back_bar_menu);  //三个点的菜单按钮
         setting.setVisibility(View.VISIBLE);
-        ivShowHead =  (ImageView) findViewById(R.id.ivShowHead);
+        rootView = findViewById(R.id.other_root_layout);
+        loading = findViewById(R.id.other_loading);
+        ivShowHead =  findViewById(R.id.ivShowHead);
         tvShowNickname = (TextView) findViewById(R.id.tvShowNickname);
         tvShowSummary = (TextView) findViewById(R.id.tvShowSummary);
         tvFadeName = (TextView) findViewById(R.id.tvShowUserId);
+        schoolName = findViewById(R.id.school_name);
+        schoolDot = findViewById(R.id.school_dot);
+        departmentName = findViewById(R.id.department_name);
         tvConcernOk = findViewById(R.id.other_concern_ok);
         tvUnConcern = findViewById(R.id.other_text1);
         tvContact = findViewById(R.id.other_text2);
@@ -110,6 +123,8 @@ public class OtherActivity extends MainBaseActivity {
                         }
                         loadData();
                         loadFragment();
+                        loading.setVisibility(View.GONE);
+                        rootView.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -119,6 +134,8 @@ public class OtherActivity extends MainBaseActivity {
         String nickname = other.getNickname();
         String summary = other.getSummary();
         String fade_name = other.getFade_name();
+        String school_name = other.getSchool_name();
+        String department_name = other.getDepartment_name();
         //获取用户的关注、粉丝等的数量
         String fade_num = (other.getFade_num()>999?(other.getFade_num()/1000+"K"):other.getFade_num().toString());
         String fans_num = (other.getFans_num()>999?(other.getFans_num()/1000+"K"):other.getFans_num().toString());
@@ -134,6 +151,14 @@ public class OtherActivity extends MainBaseActivity {
             tvShowSummary.setText(summary);
         }
         tvFadeName.setText(fade_name);
+        //学校院系
+        if(school_name != null) {
+            schoolName.setText(school_name);
+        }
+        if (department_name != null) {
+            schoolDot.setVisibility(View.VISIBLE);
+            departmentName.setText(department_name);
+        }
         tvUnConcern.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

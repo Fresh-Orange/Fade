@@ -18,7 +18,8 @@
         android:clickable="true"
         android:focusable="true"
         android:layout_width="match_parent"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:orientation="vertical"
         android:gravity="center_vertical"
         android:layout_height="79dp"
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:text="位置没有找到?"
             android:textColor="@color/dark_gray"/>
 
@@ -42,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textColor="@color/dark_gray"
                 android:text="使用“"/>
             <TextView
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textColor="@color/dark_gray"
                 android:text="address"/>
             <TextView
@@ -61,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textColor="@color/dark_gray"
                 android:text="”作为你的地址"/>
         </LinearLayout>
