@@ -68,6 +68,7 @@
         </activity>
         <activity
             android:name=".my.activity.LoginActivity"
+
             android:theme="@style/imagePagerTheme"/>
         <activity android:name=".my.activity.RegisterActivity"/>
         <activity android:name=".my.activity.SetPasswordActivity"/>
@@ -87,6 +88,7 @@
         <activity android:name=".my.setting.Personal"/>
         <activity android:name=".my.setting.Safety"/>
         <activity android:name=".my.setting.About"/>
+
         <activity
             android:name=".home.activity.ImagePagerActivity"
             android:theme="@style/imagePagerTheme"/>

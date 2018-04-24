@@ -285,9 +285,10 @@ public class ContentHome {
                                                  origin.setIs_die(check.getIs_die());
                                                  origin.setFetchTime(check.getFetchTime());
                                              }
-                                             addToListHead(noteQuery.getList());
                                             judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
                                         }
+                                        if(noteQuery.getList() != null && noteQuery.getList().size() > 0)
+                                            addToListHead(noteQuery.getList());
                                     }
                                 });
                     }

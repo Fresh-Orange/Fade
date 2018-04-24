@@ -84,9 +84,9 @@ public class LocNearAddressAdapter extends RecyclerView.Adapter<LocNearAddressAd
         //将数据设置到ViewHolder中
         address = retail.getTitle();
         detail = retail.getSnippet();
-        //设置首字母
+        //设置城市
         holder.city.setText(address);
-        //设置商品名称
+        //设置信息
         holder.address.setText(detail);
         holder.itemView.setTag(position);
     }

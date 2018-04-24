@@ -14,14 +14,10 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
-import com.sysu.pro.fade.message.Utils.DateUtils;
-import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -76,7 +72,7 @@ public class FansFragment extends Fragment {
 
     private void getData() {
         UserService service = retrofit.create(UserService.class);
-        service.getFans(userId.toString(), start)
+        service.getFans(userId.toString(),myself.getUser_id().toString(), start)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserQuery>() {
