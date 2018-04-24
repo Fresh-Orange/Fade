@@ -1,11 +1,14 @@
 package com.sysu.pro.fade.service;
 
+import com.sysu.pro.fade.beans.Department;
+import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -49,6 +52,17 @@ public interface UserService {
     @POST("getHeadImageUrl")
     Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,
                                                @Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
+
+    //根据电话号码修改密码
+    //只要返回的SimpleResponse的getErr()为空，说明修改成功
+    @FormUrlEncoded
+    @POST("changePasswordTel")
+    Observable<SimpleResponse> changePasswordTel(@Field("telephone")String  telephone, @Field("password")String  password);
+
+    //返回一个学校所有院系
+    //中山大学的school_id为12002
+    @GET("getSchoolDepartment/{school_id}")
+    Observable<DepartmentQuery> getSchoolDepartment(@Path("school_id")String  school_id);
 
     //更新用户信息
     @POST("updateUserById")

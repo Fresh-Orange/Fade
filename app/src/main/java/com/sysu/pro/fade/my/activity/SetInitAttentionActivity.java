@@ -80,7 +80,7 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
             if (msg.what == 1) {
                 List<User> list = userQuery.getList();
                 Log.d("guozheng", "list: " + list.size());
-                if (list.size() == 0){
+                if (list.size() < 9){
                     Toast.makeText(SetInitAttentionActivity.this, "没有更多的用户了哟！", Toast.LENGTH_SHORT).show();
                 }else{
                     Glide.with(SetInitAttentionActivity.this)

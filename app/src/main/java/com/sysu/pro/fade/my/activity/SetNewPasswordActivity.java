@@ -22,6 +22,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.LoginActivitiesCollector;
 import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.beans.Code;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -157,7 +158,52 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
                 sp = second_password.getText().toString();
                 if (fp_flag == 2){
                     if (fp.equals(sp)){
+                        userService.changePasswordTel(mobilePhoneNumber,fp)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<SimpleResponse>() {
+                                    @Override
+                                    public void onCompleted() {
 
+                                    }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e("修改","失败");
+                                        Toast.makeText(SetNewPasswordActivity.this,"修改失败，请重新修改！",Toast.LENGTH_SHORT).show();
+                                        //progressDialog.dismiss();
+                                        e.printStackTrace();
+                                    }
+                                    @Override
+                                    public void onNext(SimpleResponse response) {
+                                        Log.i("success",response.toString());
+                                        userService.loginUserByTel(mobilePhoneNumber,fp)
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<User>() {
+                                                    @Override
+                                                    public void onCompleted() {
+
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("登录","失败");
+                                                        Toast.makeText(SetNewPasswordActivity.this,"登录失败,账号或密码错误",Toast.LENGTH_SHORT).show();
+                                                        //progressDialog.dismiss();
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(User user) {
+                                                        Log.i("user",user.toString());
+                                                        if(user.getUser_id() != null){
+                                                            loginSuccess(user);
+                                                        }else {
+                                                            Toast.makeText(SetNewPasswordActivity.this,"登录失败",Toast.LENGTH_SHORT).show();
+                                                            //progressDialog.dismiss();
+                                                        }
+                                                    }
+                                                });
+                                    }
+                                });
                     }else {
                         red_text.setText("密码不相同");
                         red_wrong_password.setVisibility(View.VISIBLE);

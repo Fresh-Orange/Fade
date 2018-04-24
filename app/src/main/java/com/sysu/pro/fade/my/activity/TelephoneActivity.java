@@ -42,10 +42,10 @@ public class TelephoneActivity extends LoginBaseActivity {
                 //Toast.makeText(RegisterBySMSActivity.this,ans_str,Toast.LENGTH_SHORT).show();
                 //暂时取消验证限制，到时候将if语句恢复
                 if(ans_str.equals("{}")){
-                Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
-                intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
-                startActivity(intent);
-                finish();
+                    Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
+                    intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
+                    startActivity(intent);
+                    finish();
                 }
             }
         }
@@ -96,6 +96,10 @@ public class TelephoneActivity extends LoginBaseActivity {
                                     Toast.makeText(TelephoneActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
                                 }else{
                                     UserTool.sendIdentifyCode(handler,telephone.getText().toString());
+                                    /*Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
+                                    intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
+                                    startActivity(intent);
+                                    finish();*/
                                 }
                             }
                         });
