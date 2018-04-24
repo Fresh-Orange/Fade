@@ -1,11 +1,13 @@
 package com.sysu.pro.fade.service;
 
+import com.sysu.pro.fade.beans.Department;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -73,7 +75,7 @@ public interface UserService {
     Observable<SimpleResponse> concern(@Field("fans_id")String  fans_id,@Field("star_id")String  star_id);
 
     //取消关注某人
-    @DELETE("cancelConcern/{fans_id}/{star_id}")
+    @POST("cancelConcern/{fans_id}/{star_id}")
     Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
 
     //得到他人或自己的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
@@ -106,10 +108,25 @@ public interface UserService {
     Observable<UserQuery>getRecommendUser(@Path("user_id")String  user_id, @Path("start")String  start);
 
     //个人页，分页查询20条粉丝，user里面有个isConcern属性,返回的start小于20判定为加载到底
-    @GET("getFans/{user_id}/{start}")
-    Observable<UserQuery>getFans(@Path("user_id")String  user_id,@Path("start")String  start);
+    @GET("getFans/{user_id}/{my_id}/{start}")
+    Observable<UserQuery>getFans(@Path("user_id")String  user_id,@Path("my_id")String  my_id,@Path("start")String  start);
 
     //个人页，分页查询20条关注的人，返回的start小于20判定为加载到底
-    @GET("getConcerns/{user_id}/{start}")
-    Observable<UserQuery>getConcerns(@Path("user_id")String  user_id,@Path("start")String  start);
+    @GET("getConcerns/{user_id}/{my_id}/{start}")
+    Observable<UserQuery>getConcerns(@Path("user_id")String  user_id,@Path("my_id")String  my_id,@Path("start")String  start);
+
+    //注册后一版得到9条推荐用户
+    @GET("getOriginRecommendUsers/{user_id}/{start}")
+    Observable<UserQuery>getOriginRecommendUsers(@Path("user_id")String  user_id, @Path("start")String  start);
+
+    //根据电话号码修改密码
+    //只要返回的SimpleResponse的getErr()为空，说明修改成功
+    @POST("changePasswordTel")
+    Observable<SimpleResponse> changePasswordTel(@Field("telephone")String  telephone, @Field("password")String  password);
+
+    //返回一个学校所有院系
+    //中山大学的school_id为12002
+    @GET("getSchoolDepartment/{school_id}")
+    Observable<ArrayList<Department>>getSchoolDepartment(@Path("school_id")String  school_id);
+
 }

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.sysu.pro.fade">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.sysu.pro.fade">
 
     <meta-data
         android:name="android.support.VERSION"
         android:value="25.3.1"
-        tools:replace="android:value" />
+        tools:replace="android:value"/>
 
     <!-- 基础模块（必须加入以下声明）START -->
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
-    <!--<uses-permission android:name="android.permission.INTERNET" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
-    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
 
     <!-- 用于进行网络定位 -->
@@ -47,11 +47,11 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <service android:name="com.amap.api.location.APSService" />
+        <service android:name="com.amap.api.location.APSService"/>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="fc4a90dcd3335f05495a4e9607592182" />
+            android:value="68209f18e47d9a2598033701dc813149"/>
 
         <activity
             android:name=".MainActivity"
@@ -107,10 +107,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/rc_file_path" />
+                android:resource="@xml/rc_file_path"/>
         </provider>
 
-        <activity android:name=".notification.NotificationActivity"/>
+        <!--<activity android:name=".notification.NotificationActivity"/>-->
         <activity android:name=".message.Activity.ContributionActivity"/>
         <activity android:name=".message.Activity.FansActivity"/>
         <activity android:name=".message.Activity.CommentActivity"/>
