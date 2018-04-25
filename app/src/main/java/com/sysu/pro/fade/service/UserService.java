@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.service;
 
 import com.sysu.pro.fade.beans.Department;
+import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
@@ -51,6 +52,17 @@ public interface UserService {
     @POST("getHeadImageUrl")
     Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,
                                                @Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
+
+    //根据电话号码修改密码
+    //只要返回的SimpleResponse的getErr()为空，说明修改成功
+    @FormUrlEncoded
+    @POST("changePasswordTel")
+    Observable<SimpleResponse> changePasswordTel(@Field("telephone")String  telephone, @Field("password")String  password);
+
+    //返回一个学校所有院系
+    //中山大学的school_id为12002
+    @GET("getSchoolDepartment/{school_id}")
+    Observable<DepartmentQuery> getSchoolDepartment(@Path("school_id")String  school_id);
 
     //更新用户信息
     @POST("updateUserById")
@@ -119,15 +131,4 @@ public interface UserService {
     //注册后一版得到9条推荐用户
     @GET("getOriginRecommendUsers/{user_id}/{start}")
     Observable<UserQuery>getOriginRecommendUsers(@Path("user_id")String  user_id, @Path("start")String  start);
-
-    //根据电话号码修改密码
-    //只要返回的SimpleResponse的getErr()为空，说明修改成功
-    @POST("changePasswordTel")
-    Observable<SimpleResponse> changePasswordTel(@Field("telephone")String  telephone, @Field("password")String  password);
-
-    //返回一个学校所有院系
-    //中山大学的school_id为12002
-    @GET("getSchoolDepartment/{school_id}")
-    Observable<ArrayList<Department>>getSchoolDepartment(@Path("school_id")String  school_id);
-
 }
