@@ -13,7 +13,9 @@
     <FrameLayout
         android:id="@+id/frame_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="3dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -55,21 +57,20 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-
     </FrameLayout>
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout_menu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:tabMode="fixed"
-            app:tabSelectedTextColor="#ff0"
-            app:tabIndicatorColor="#ff3"
-            app:tabTextColor="#ff5"
-            android:background="#fff"
-            android:elevation="3dp">
-        </android.support.design.widget.TabLayout>
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="#ff0"
+        app:tabIndicatorColor="#ff3"
+        app:tabTextColor="#ff5"
+        android:background="@color/white"
+        android:elevation="3dp">
+    </android.support.design.widget.TabLayout>
 
 
 
