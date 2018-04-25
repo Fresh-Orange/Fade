@@ -19,7 +19,6 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
-import com.sysu.pro.fade.publish.crop.cropwindow.handle.Handle;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -51,7 +50,7 @@ public class RegisterActivity extends LoginBaseActivity {
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                //if(ans.equals("{}")){
 
                     //验证成功，跳转到输入密码界面
                     Intent intent = new Intent(RegisterActivity.this,SetPasswordActivity.class);
@@ -59,9 +58,9 @@ public class RegisterActivity extends LoginBaseActivity {
                     startActivity(intent);
 
                     //finish();
-                }else{
+                /*}else{
                     red_wrong_valid.setVisibility(View.VISIBLE);
-                }
+                }*/
             }
         }
     };
