@@ -121,7 +121,7 @@ public class FansFragment extends Fragment {
                     holder.setWidgetVisibility(R.id.fans_divide_line, View.GONE);
                 }
                 holder.setCircleImage(R.id.fans_head, Const.BASE_IP+data.getHead_image_url());
-                holder.onWidgetClick(R.id.fans_head, new View.OnClickListener() {
+                holder.onWidgetClick(R.id.fans_root_view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent i = new Intent(getContext(), OtherActivity.class);
@@ -131,10 +131,13 @@ public class FansFragment extends Fragment {
                 });
                 holder.setText(R.id.fans_name, data.getNickname());
                 holder.setText(R.id.fans_signature, data.getSummary());
-                if (data.getIsConcern() == 1) {
-                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
-                } else {
-                    holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
+                //如果打开别人的页面，粉丝是自己，就不用显示是否关注了
+                if (data.getUser_id() != userId) {
+                    if (data.getIsConcern() == 1) {
+                        holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
+                    } else {
+                        holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
+                    }
                 }
             }
         };
