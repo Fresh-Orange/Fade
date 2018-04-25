@@ -46,7 +46,7 @@
         </RelativeLayout>
     </FrameLayout>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -57,7 +57,14 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/shadow_line_bottom"
+            android:alpha="0.5"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout_menu"
@@ -68,8 +75,7 @@
         app:tabSelectedTextColor="#ff0"
         app:tabIndicatorColor="#ff3"
         app:tabTextColor="#ff5"
-        android:background="@color/white"
-        android:elevation="3dp">
+        android:background="@color/white">
     </android.support.design.widget.TabLayout>
 
 
