@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -40,16 +42,20 @@ public class TelephoneActivity extends LoginBaseActivity {
                 //Toast.makeText(RegisterBySMSActivity.this,ans_str,Toast.LENGTH_SHORT).show();
                 //暂时取消验证限制，到时候将if语句恢复
                 if(ans_str.equals("{}")){
-                Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
-                intent.putExtra("mobilePhoneNumber",telephone.getText().toString());
-                startActivity(intent);
-                finish();
+                    Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
+                    intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
+                    startActivity(intent);
+                    finish();
                 }
             }
         }
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_telephone);
         nextbtn = (ImageView) findViewById(R.id.next);
@@ -90,6 +96,10 @@ public class TelephoneActivity extends LoginBaseActivity {
                                     Toast.makeText(TelephoneActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
                                 }else{
                                     UserTool.sendIdentifyCode(handler,telephone.getText().toString());
+                                    /*Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
+                                    intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
+                                    startActivity(intent);
+                                    finish();*/
                                 }
                             }
                         });
