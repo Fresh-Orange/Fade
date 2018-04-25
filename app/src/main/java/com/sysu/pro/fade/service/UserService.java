@@ -130,6 +130,4 @@ public interface UserService {
     @GET("getSchoolDepartment/{school_id}")
     Observable<ArrayList<Department>>getSchoolDepartment(@Path("school_id")String  school_id);
 
-
-
 }
