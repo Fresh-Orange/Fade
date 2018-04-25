@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -50,6 +52,7 @@ public class ValidationActivity extends LoginBaseActivity{
                 finish();
                 }else{
                     red_wrong_valid.setVisibility(View.VISIBLE);
+                    handler2.sendEmptyMessageDelayed(1,1000);
                 }
             }
         }
@@ -66,6 +69,16 @@ public class ValidationActivity extends LoginBaseActivity{
                 if(ans_str.equals("{}")){
                     Toast.makeText(ValidationActivity.this, "重发成功", Toast.LENGTH_SHORT).show();
                 }
+            }
+        }
+    };
+
+    private Handler handler2 = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1){
+                red_wrong_valid.setVisibility(View.INVISIBLE);
             }
         }
     };
@@ -117,4 +130,23 @@ public class ValidationActivity extends LoginBaseActivity{
             }
         });
     }
+
+    /**
+     * 监听删除键
+     * @param view
+     * @param i
+     * @param keyEvent
+     * @return
+
+    @Override
+    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        if (i == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+            Message msg = new Message();
+            msg.what = 1;
+            handler2.sendMessage(msg);
+            Log.d("delete", "success");
+            return true;
+        }
+        return false;
+    }*/
 }

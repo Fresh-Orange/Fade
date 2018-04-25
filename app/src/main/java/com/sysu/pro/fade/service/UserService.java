@@ -120,12 +120,12 @@ public interface UserService {
     Observable<UserQuery>getRecommendUser(@Path("user_id")String  user_id, @Path("start")String  start);
 
     //个人页，分页查询20条粉丝，user里面有个isConcern属性,返回的start小于20判定为加载到底
-    @GET("getFans/{user_id}/{start}")
-    Observable<UserQuery>getFans(@Path("user_id")String  user_id,@Path("start")String  start);
+    @GET("getFans/{user_id}/{my_id}/{start}")
+    Observable<UserQuery>getFans(@Path("user_id")String  user_id,@Path("my_id")String  my_id,@Path("start")String  start);
 
     //个人页，分页查询20条关注的人，返回的start小于20判定为加载到底
-    @GET("getConcerns/{user_id}/{start}")
-    Observable<UserQuery>getConcerns(@Path("user_id")String  user_id,@Path("start")String  start);
+    @GET("getConcerns/{user_id}/{my_id}/{start}")
+    Observable<UserQuery>getConcerns(@Path("user_id")String  user_id,@Path("my_id")String  my_id,@Path("start")String  start);
 
     //注册后一版得到9条推荐用户
     @GET("getOriginRecommendUsers/{user_id}/{start}")
