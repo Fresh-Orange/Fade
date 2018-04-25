@@ -21,7 +21,6 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
-import com.sysu.pro.fade.publish.crop.cropwindow.handle.Handle;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.utils.RetrofitUtil;

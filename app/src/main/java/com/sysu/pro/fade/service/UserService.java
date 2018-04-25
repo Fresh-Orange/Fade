@@ -1,6 +1,5 @@
 package com.sysu.pro.fade.service;
 
-import com.sysu.pro.fade.beans.Department;
 import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
@@ -8,7 +7,6 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -87,8 +85,9 @@ public interface UserService {
     Observable<SimpleResponse> concern(@Field("fans_id")String  fans_id,@Field("star_id")String  star_id);
 
     //取消关注某人
-    @DELETE("cancelConcern/{fans_id}/{star_id}")
-    Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
+    @FormUrlEncoded
+    @POST("cancelConcern")
+    Observable<SimpleResponse> cancelConcern(@Field("fans_id")String  fans_id, @Field("star_id")String  star_id);
 
     //得到他人或自己的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
     //若是自己主页，则user_id和my_id都填自己的id

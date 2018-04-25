@@ -43,8 +43,7 @@ public interface NoteService {
 
     //获得详情页内容, getFull为0代表获取部分note信息， 1代表将返回整个完整note
     @GET("getNotePage/{note_id}/{user_id}/{getFull}")
-    Observable<DetailPage> getNotePage(@Path("note_id")String note_id,@Path("user_id")String user_id
-                                       ,@Path("getFull")String getFull);
+    Observable<DetailPage> getNotePage(@Path("note_id")String note_id,@Path("user_id")String user_id,@Path("getFull")String getFull);
 
     //删除帖子
     @DELETE("deleteNote/{note_id}/{user_id}")
