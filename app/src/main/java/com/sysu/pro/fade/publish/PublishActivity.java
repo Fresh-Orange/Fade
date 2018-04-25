@@ -158,6 +158,7 @@ public class PublishActivity extends AppCompatActivity {
     private static double latitude;
     private static double longitude;
     private boolean mapStatus = false;
+    private boolean isShowMap = false;
     //声明AMapLocationClientOption对象
     public AMapLocationClient mLocationClient = null;
 
@@ -323,7 +324,6 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
-        requestLocation();
         imageX = new float[10];
         imageY = new float[10];
         //注册
@@ -336,6 +336,7 @@ public class PublishActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(PublishActivity.this);
         show = CHOOSE;
         InitView();
+        requestLocation();
         if (flag) {
             et_emotion= (EditText) findViewById(R.id.my_et_emotion);
             //设置焦点，可被操作
@@ -580,6 +581,16 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
+//        SharedPreferences sharedPreferences = getSharedPreferences("MY_PREFERENCE",
+//                Context.MODE_PRIVATE);
+//        isShowMap = sharedPreferences.getBoolean("isShowMap", false);
+//        longitude = sharedPreferences.getInt("longitude", 0);
+//        latitude = sharedPreferences.getInt("latitude", 0);
+        if (isShowMap) {
+            findViewById(R.id.map_information).setVisibility(View.VISIBLE);
+            findViewById(R.id.notation).setVisibility(View.GONE);
+        }
+
         icon_sub_pic = (ImageButton) findViewById(R.id.icon_sub_pic);
         icon_add_pic = (ImageButton) findViewById(R.id.icon_add_pic);
         pager = (imageAdaptiveIndicativeItemLayout) findViewById(R.id.image_layout);
@@ -812,7 +823,7 @@ public class PublishActivity extends AppCompatActivity {
         Log.d("yellow", "getExternalCacheDir()" + getExternalCacheDir());
         Log.d("yellow", "OldEnvironment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
         vFile = new File(Environment.getExternalStorageDirectory()
-                + "/Fade/Photo/Fade", String.valueOf(System.currentTimeMillis())
+                + "/Fade", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
         if (vFile.exists())
         {
@@ -934,6 +945,12 @@ public class PublishActivity extends AppCompatActivity {
 //                    amapLocation.getCountry();//国家信息
 //                    amapLocation.getProvince();//省信息
                     city = amapLocation.getCity();//城市信息
+//                    SharedPreferences sharedPreferences = getSharedPreferences("MY_PREFERENCE",
+//                            Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.putFloat("latitude",(float) latitude);
+//                    editor.putFloat("longitude", (float)longitude);
+//                    editor.apply();
                     ((TextView) findViewById(R.id.city)).setText(city);
                     ((TextView) findViewById(R.id.address)).setText(address);
 //                    amapLocation.getDistrict();//城区信息
@@ -996,8 +1013,8 @@ public class PublishActivity extends AppCompatActivity {
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
-        //关闭缓存机制
-        mLocationOption.setLocationCacheEnable(false);
+//        //关闭缓存机制
+//        mLocationOption.setLocationCacheEnable(true);
 //        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
         if(null != mLocationClient){
             mLocationClient.setLocationOption(mLocationOption);

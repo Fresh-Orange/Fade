@@ -137,6 +137,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
             public void onLoadmore(RefreshLayout refreshlayout) {
                 searchNearBy();
                 refreshlayout.finishLoadmore();
+                findViewById(R.id.suggestion).setVisibility(View.VISIBLE);
             }
         });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
