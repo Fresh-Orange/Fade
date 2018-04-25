@@ -1,6 +1,5 @@
 package com.sysu.pro.fade.service;
 
-import com.sysu.pro.fade.beans.Department;
 import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
@@ -8,7 +7,6 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import okhttp3.RequestBody;
