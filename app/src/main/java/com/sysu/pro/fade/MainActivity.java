@@ -167,7 +167,7 @@ public class MainActivity extends MainBaseActivity {
     private void createFiles() {
         //创建文件夹
         final File sd= Environment.getExternalStorageDirectory();
-        String cache_path_photo = sd.getPath() + "/Fade/Photo/Fade";
+        String cache_path_photo = sd.getPath() + "/Fade";
         File rootFile_photo = new File(cache_path_photo);
         if(!rootFile_photo.exists())
             rootFile_photo.mkdirs();

@@ -87,7 +87,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		setAddress(context, tvAddress, bean);
 		setTimeBar(clickableProgressBar, context, bean);
 		Glide.with(context)
-				.load(Const.BASE_IP+bean.getHead_image_url())
+				.load(Const.BASE_IP + bean.getHead_image_url())
 				.fitCenter()
 				.dontAnimate()
 				.into(userAvatar);

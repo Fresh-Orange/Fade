@@ -73,7 +73,7 @@ public class ConcernFragment extends Fragment {
 
     private void getData() {
         UserService service = retrofit.create(UserService.class);
-        service.getConcerns(userId.toString(), start)
+        service.getConcerns(userId.toString(), myself.getUser_id().toString(),start)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserQuery>() {
