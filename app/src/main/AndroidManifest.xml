@@ -47,6 +47,15 @@
         android:theme="@style/AppTheme.NoActionBar">
         <service android:name="com.amap.api.location.APSService" />
 
+        <service
+            android:name="com.sysu.pro.fade.message.GeTui.Service.DemoPushService"
+            android:exported="true"
+            android:label="PushService"
+            android:process=":pushservice">
+        </service>
+
+        <service android:name="com.sysu.pro.fade.message.GeTui.Service.DemoIntentService"/>
+
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="fc4a90dcd3335f05495a4e9607592182" />
