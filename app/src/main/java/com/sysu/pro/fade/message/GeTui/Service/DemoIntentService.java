@@ -5,6 +5,7 @@ package com.sysu.pro.fade.message.GeTui.Service;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -16,6 +17,8 @@ import com.igexin.sdk.message.GTTransmitMessage;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
@@ -41,15 +44,27 @@ public class DemoIntentService extends GTIntentService {
 
     @Override
     public void onReceiveServicePid(Context context, int pid) {
+        Log.e("getui", "------------onReceiveServicePid------------");
     }
 
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
+        Log.e("getui", "------------onReceiveMessageData------------");
+        String noteID = new String(msg.getPayload());
+//        Log.e("getui", "data: " + data);
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.putExtra(Const.NOTE_ID, noteID);
+        intent.putExtra(Const.IS_COMMENT, false);
+//        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
+//        intent.putExtra(Const.COMMENT_ENTITY, temp);
+        intent.putExtra("getFull",true);
+        startActivity(intent);
 
     }
 
     @Override
     public void onReceiveClientId(Context context, String clientid) {
+        Log.e("getui", "------------onReceiveClientId------------");
         Log.e(TAG, "onReceiveClientId -> " + "clientid = " + clientid);
         if(myself == null){
             SharedPreferences sharedPreferences = getSharedPreferences(Const.USER_SHARE, Context.MODE_PRIVATE);
@@ -78,19 +93,44 @@ public class DemoIntentService extends GTIntentService {
 
     @Override
     public void onReceiveOnlineState(Context context, boolean online) {
+        Log.e("getui", "------------onReceiveOnlineState------------");
     }
 
     @Override
     public void onReceiveCommandResult(Context context, GTCmdMessage cmdMessage) {
+        Log.e("getui", "------------onReceiveCommandResult------------");
     }
 
 
 
     @Override
     public void onNotificationMessageArrived(Context context, GTNotificationMessage msg) {
+        String content = msg.getContent();
+        String messageId = msg.getMessageId();
+        String taskId = msg.getTaskId();
+        String title = msg.getTitle();
+        String pkgName = msg.getPkgName();
+        Log.e("getui", "------------onNotificationMessageArrived------------");
+        Log.e("getui", "content: " + content);
+        Log.e("getui", "messageId: " + messageId);
+        Log.e("getui", "taskId: " + taskId);
+        Log.e("getui", "title: " + title);
+        Log.e("getui", "pkgName: " + pkgName);
     }
 
     @Override
     public void onNotificationMessageClicked(Context context, GTNotificationMessage msg) {
+        String content = msg.getContent();
+        String messageId = msg.getMessageId();
+        String taskId = msg.getTaskId();
+        String title = msg.getTitle();
+        String pkgName = msg.getPkgName();
+        Log.e("getui", "------------onNotificationMessageClicked------------");
+        Log.e("getui", "content: " + content);
+        Log.e("getui", "messageId: " + messageId);
+        Log.e("getui", "taskId: " + taskId);
+        Log.e("getui", "title: " + title);
+        Log.e("getui", "pkgName: " + pkgName);
+
     }
 }
