@@ -71,6 +71,8 @@ public class MainActivity extends MainBaseActivity {
     private Retrofit retrofit;
     private UserService userService;
     private Client client;
+
+
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -168,7 +170,10 @@ public class MainActivity extends MainBaseActivity {
 
         // com.getui.demo.DemoIntentService 为第三方自定义的推送服务事件接收类
         PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), DemoIntentService.class);
+
     }
+
+
 
 
     private void createFiles() {
