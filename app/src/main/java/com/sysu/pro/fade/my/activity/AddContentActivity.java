@@ -32,9 +32,7 @@ import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -210,6 +208,7 @@ public class AddContentActivity extends LoginBaseActivity {
         if (resultCode == RESULT_OK) { // 如果返回码是可以用的
             switch (requestCode) {
                 case TAKE_PICTURE:
+                   // Log.i("xxxx","---------------------------------------------------------");
                     PhotoUtils.startPhotoZoom(tempUri, this); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:

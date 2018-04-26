@@ -72,6 +72,8 @@ public class User implements Serializable{
 	private Integer department_id;
 	//院系名字
 	private String department_name;
+	//推荐分数
+	private  double recommendScore;
 
 	public Integer getFade_num() {
 		return fade_num;
@@ -263,5 +265,13 @@ public class User implements Serializable{
 
 	public void setDepartment_name(String department_name) {
 		this.department_name = department_name;
+	}
+
+	public double getRecommendScore() {
+		return recommendScore;
+	}
+
+	public void setRecommendScore(double recommendScore) {
+		this.recommendScore = recommendScore;
 	}
 }

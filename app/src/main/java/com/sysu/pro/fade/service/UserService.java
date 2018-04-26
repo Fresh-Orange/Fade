@@ -1,13 +1,12 @@
 package com.sysu.pro.fade.service;
 
-import com.sysu.pro.fade.beans.Department;
+import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.PersonPage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -52,6 +51,17 @@ public interface UserService {
     Observable<SimpleResponse> getHeadImageUrl(@Field("telephone")String telephone,
                                                @Field("fade_name")String fade_name, @Field("wechat_id")String wechat_id);
 
+    //根据电话号码修改密码
+    //只要返回的SimpleResponse的getErr()为空，说明修改成功
+    @FormUrlEncoded
+    @POST("changePasswordTel")
+    Observable<SimpleResponse> changePasswordTel(@Field("telephone")String  telephone, @Field("password")String  password);
+
+    //返回一个学校所有院系
+    //中山大学的school_id为12002
+    @GET("getSchoolDepartment/{school_id}")
+    Observable<DepartmentQuery> getSchoolDepartment(@Path("school_id")String  school_id);
+
     //更新用户信息
     @POST("updateUserById")
     Observable<SimpleResponse> updateUserById(@Body RequestBody body);
@@ -75,8 +85,9 @@ public interface UserService {
     Observable<SimpleResponse> concern(@Field("fans_id")String  fans_id,@Field("star_id")String  star_id);
 
     //取消关注某人
-    @POST("cancelConcern/{fans_id}/{star_id}")
-    Observable<SimpleResponse> cancelConcern(@Path("fans_id")String  fans_id, @Path("star_id")String  star_id);
+    @FormUrlEncoded
+    @POST("cancelConcern")
+    Observable<SimpleResponse> cancelConcern(@Field("fans_id")String  fans_id, @Field("star_id")String  star_id);
 
     //得到他人或自己的主页信息,user_id为别人的和my_id为自己的，返回信息包括了用户信息和十条动态
     //若是自己主页，则user_id和my_id都填自己的id
@@ -119,14 +130,8 @@ public interface UserService {
     @GET("getOriginRecommendUsers/{user_id}/{start}")
     Observable<UserQuery>getOriginRecommendUsers(@Path("user_id")String  user_id, @Path("start")String  start);
 
-    //根据电话号码修改密码
-    //只要返回的SimpleResponse的getErr()为空，说明修改成功
-    @POST("changePasswordTel")
-    Observable<SimpleResponse> changePasswordTel(@Field("telephone")String  telephone, @Field("password")String  password);
-
-    //返回一个学校所有院系
-    //中山大学的school_id为12002
-    @GET("getSchoolDepartment/{school_id}")
-    Observable<ArrayList<Department>>getSchoolDepartment(@Path("school_id")String  school_id);
-
+    //添加个推需要的clientid保存到一个hash结构中
+    @FormUrlEncoded
+    @POST("addClientId")
+    Observable<SimpleResponse> addClientId(@Field("user_id")String  user_id, @Field("clientid")String  clientid);
 }

@@ -13,9 +13,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
+import com.sysu.pro.fade.beans.CommentMessage;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.message.Activity.CommentActivity;
@@ -283,18 +286,24 @@ public class ContentMessage {
                 contributionCount++;
                 processCountTv.setVisibility(View.VISIBLE);
                 processCountTv.setText(String.valueOf(contributionCount));
+                //续减秒产生的转发帖信息
+                Note note = ((JSONObject) response.getExtra().get("note")).toJavaObject(Note.class);
                 break;
             case "01":
                 //粉丝队列数量加一
                 newFanCount++;
                 newFanCountTv.setVisibility(View.VISIBLE);
                 newFanCountTv.setText(String.valueOf(newFanCount));
+                //粉丝信息
+                User user = ((JSONObject) response.getExtra().get("user")).toJavaObject(User.class);
                 break;
             case "02":
                 //评论数量加一
                 commentCount++;
                 commentCountTv.setVisibility(View.VISIBLE);
                 commentCountTv.setText(String.valueOf(commentCount));
+                //评论信息
+                CommentMessage message = ((JSONObject) response.getExtra().get("message")).toJavaObject(CommentMessage.class);
                 break;
         }
     }

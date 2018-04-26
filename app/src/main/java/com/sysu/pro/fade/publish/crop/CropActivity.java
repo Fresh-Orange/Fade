@@ -132,8 +132,6 @@ public class CropActivity extends AppCompatActivity{
             }
         });
 
-
-
     }
 
     private void showPics(int position) {

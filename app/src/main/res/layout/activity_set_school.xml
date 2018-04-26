@@ -10,15 +10,16 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:fitsSystemWindows="true">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@android:color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent">
+            android:background="@android:color/white">
             <ImageView
                 android:id="@+id/back_btn"
                 android:layout_width="18dp"
@@ -74,10 +75,9 @@
                 android:layout_weight="8"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="9dp"
-                android:textCursorDrawable="@null"
                 android:id="@+id/school"
                 android:textSize="18dp"
-                android:textColor="#bfbfbf"
+                android:textColor="#222222"
                 android:background="@null"/>
 
             <LinearLayout
@@ -124,15 +124,14 @@
                     android:textColor="#888888"/>
             </LinearLayout>
 
-            <EditText
+            <TextView
                 android:layout_width="0dp"
                 android:layout_weight="8"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="9dp"
-                android:textCursorDrawable="@null"
                 android:id="@+id/major"
                 android:textSize="18dp"
-                android:textColor="#bfbfbf"
+                android:textColor="#222222"
                 android:background="@null"/>
 
             <LinearLayout
@@ -140,18 +139,18 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|right"
-                android:layout_gravity="center"
-                android:visibility="invisible">
+                android:layout_gravity="center">
                 <ImageView
                     android:id="@+id/out2"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/out"/>
             </LinearLayout>
         </LinearLayout>
 
         <View
+            android:id="@+id/line1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#888888"

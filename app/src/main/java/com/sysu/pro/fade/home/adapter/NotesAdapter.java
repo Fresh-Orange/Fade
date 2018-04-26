@@ -125,6 +125,10 @@ public class NotesAdapter extends RecyclerView.Adapter<HomeBaseViewHolder> {
 		return showFootView ? data.size() + 1 : data.size();
 	}
 
+	public int getRealCount() {
+		return data.size();
+	}
+
 	public void setLoadingMore(boolean isShow){
 		if (showFootView == isShow)
 			return;
