@@ -3,11 +3,7 @@ package com.sysu.pro.fade.my.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +17,6 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.LoginActivitiesCollector;
 import com.sysu.pro.fade.baseactivity.LoginBaseActivity;
@@ -33,7 +28,6 @@ import com.sysu.pro.fade.utils.PhotoUtils;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -54,7 +48,6 @@ public class SetContentActivity extends LoginBaseActivity {
     protected static final int TAKE_PICTURE = 1;
     protected static final int CHOOSE_PICTURE = 0;
     private static final int CROP_SMALL_PICTURE = 2;
-    protected static Uri tempUri;
     private static final int PERMISSION_REQUEST_CODE = 0X00000060;
     private ImageView nextbtn;
     private ImageView myhead;
@@ -232,7 +225,7 @@ public class SetContentActivity extends LoginBaseActivity {
         if (resultCode == RESULT_OK) { // 如果返回码是可以用的
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    PhotoUtils.startPhotoZoom(tempUri, this); // 开始对图片进行裁剪处理
+                    PhotoUtils.startPhotoZoom(PhotoUtils.tempUri, this); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:
                     PhotoUtils.startPhotoZoom(data.getData(), this); // 开始对图片进行裁剪处理

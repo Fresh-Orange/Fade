@@ -8,11 +8,19 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.lapism.searchview.SearchAdapter;
@@ -29,6 +37,7 @@ import com.sysu.pro.fade.discover.adapter.DiscoverFragmentAdapter;
 import com.sysu.pro.fade.discover.event.ClearListEvent;
 import com.sysu.pro.fade.discover.fragment.FadeFragment;
 import com.sysu.pro.fade.discover.fragment.UserFragment;
+import com.sysu.pro.fade.my.activity.ValidationActivity;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -41,6 +50,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -49,6 +59,8 @@ import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.lapism.searchview.SearchView.TAG;
 
 /**
  * Created by road on 2017/7/14.
@@ -70,8 +82,32 @@ public class ContentDiscover {
 
 
     //搜索控件
-    private SearchHistoryTable mHistoryDatabase;
-    private SearchView mSearchView;
+    //private SearchHistoryTable mHistoryDatabase;
+    //private SearchView mSearchView;
+    private RelativeLayout searchView;
+    private ImageView fangdajing;
+    private EditText searchView_edittext;
+    private EditText searchView_edittext1;
+    private TextView searchButton;
+    private String query;
+    private int flag;
+
+    TextWatcher mTextWatchr = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
 
     //网络请求有关
     private Retrofit retrofit;
@@ -116,6 +152,120 @@ public class ContentDiscover {
    }
 
    private void initSearchView(){
+       searchView = rootview.findViewById(R.id.searchView);
+       fangdajing = rootview.findViewById(R.id.fangdajing);
+       searchView_edittext = rootview.findViewById(R.id.searchView_edittext);
+       searchView_edittext1 = rootview.findViewById(R.id.searchView_edittext1);
+       searchButton = rootview.findViewById(R.id.search_button);
+
+       searchView_edittext.setFocusable(false);
+       //searchView_edittext1.setFocusable(false);
+       searchView_edittext.setCursorVisible(false);
+       searchView_edittext1.setCursorVisible(false);
+       searchView_edittext.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               //searchView_edittext.setFocusable(false);
+               searchView_edittext1.setFocusable(true);
+               searchView_edittext1.setCursorVisible(true);
+               InputMethodManager inputMethodManager = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+               inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+               Log.d("edit", "0");
+           }
+       });
+       searchView_edittext1.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               searchView_edittext1.setCursorVisible(true);
+               //searchView_edittext1.setFocusable(true);
+               Log.d("edit", "1");
+           }
+       });
+       searchView_edittext1.addTextChangedListener(mTextWatchr);
+       searchButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               flag = 0;
+               EventBus.getDefault().post(new ClearListEvent());
+               InputMethodManager inputMethodManager = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+               inputMethodManager.hideSoftInputFromWindow(searchView_edittext1.getWindowToken(), 0);
+               query = searchView_edittext1.getText().toString();
+               if (jundgeqiery(query) == false){
+                   //Toast.makeText(activity, "输入不合法！", Toast.LENGTH_LONG).show();
+                   Log.d(TAG, "kong");
+                   flag = 1;
+                   Toast.makeText(context, "输入不合法！", Toast.LENGTH_LONG).show();
+               }else {
+                   flag = 2;
+                   progressBar.setVisibility(View.VISIBLE);
+                   new Thread(){
+                       @Override
+                       public void run() {
+                           Request.Builder builder = new Request.Builder();
+                           String url = Const.BASE_IP + "searchUser/" + query + "/0 ";
+                           builder.url(url);
+                           Request request = builder.build();
+                           try {
+                               Response response = new OkHttpClient().newCall(request).execute();
+                               String response_str = response.body().string();
+                               Log.i("搜索结果", response_str);
+                               UserQuery userQuery = JSON.parseObject(response_str, UserQuery.class);
+                               if (userQuery != null) {
+                                   userQuery.setQueryKeyWord(query);
+                                   EventBus.getDefault().post(userQuery);
+                               }
+                           } catch (IOException e) {
+                               e.printStackTrace();
+                           }
+                           super.run();
+                       }
+                   }.start();
+                   retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+                   NoteService noteService = retrofit.create(NoteService.class);
+                   noteService.searchNote(query, "0", "1", user.getUser_id().toString())
+                           .subscribeOn(Schedulers.newThread())
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe(new Subscriber<NoteQuery>() {
+                               @Override
+                               public void onCompleted() {
+                               }
+
+                               @Override
+                               public void onError(Throwable e) {
+                                   Log.e("searchNote", e.getMessage());
+                               }
+
+                               @Override
+                               public void onNext(NoteQuery noteQuery) {
+                                   noteQuery.setQueryKeyWord(query);
+                                   EventBus.getDefault().post(noteQuery);
+                               }
+                           });
+               }
+               /*if (flag == 1){
+                   Toast.makeText(context, "输入不合法！", Toast.LENGTH_LONG).show();
+               }*/
+           }
+       });
+   }
+
+   private boolean jundgeqiery(String que){
+       /*Pattern p = Pattern.compile("^[a-z0-9A-Z\u4e00-\u9fa5]+$");
+       for (int i = 0; i < que.length(); i++){
+           String s = que.charAt(i) + "";
+           if (p.matcher(s).matches()){
+               return true;
+           }
+       }*/
+       for (int i = 0; i < que.length(); i++){
+           if (que.charAt(i) != ' ' && que.charAt(i) != '.'){
+               return true;
+           }
+       }
+       return false;
+   }
+
+   /*private void initSearchView(){
        //搜索控件的初始化
        mHistoryDatabase = new SearchHistoryTable(context);
        mSearchView = rootview.findViewById(R.id.searchView);
@@ -191,8 +341,8 @@ public class ContentDiscover {
            searchAdapter.setOnSearchItemClickListener(new SearchAdapter.OnSearchItemClickListener() {
                @Override
                public void onSearchItemClick(View view, int position, String text) {
-/*                   mHistoryDatabase.addItem(new SearchItem(text));
-                   mSearchView.close(false);*/
+                   //mHistoryDatabase.addItem(new SearchItem(text));
+                   //mSearchView.close(false);
                }
            });
            mSearchView.setAdapter(searchAdapter);
@@ -208,7 +358,7 @@ public class ContentDiscover {
            mSearchView.setFilters(filter);
            //use mSearchView.getFiltersStates() to consider filter when performing search
        }
-   }
+   }*/
 
 
 

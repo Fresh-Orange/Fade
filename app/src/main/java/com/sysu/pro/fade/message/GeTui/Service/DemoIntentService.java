@@ -5,17 +5,24 @@ package com.sysu.pro.fade.message.GeTui.Service;
  */
 
 import android.content.Context;
-import android.os.Message;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.igexin.sdk.GTIntentService;
-import com.igexin.sdk.PushConsts;
-import com.igexin.sdk.PushManager;
-import com.igexin.sdk.message.FeedbackCmdMessage;
 import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTNotificationMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
-import com.igexin.sdk.message.SetTagCmdMessage;
+import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.beans.SimpleResponse;
+import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
@@ -25,6 +32,8 @@ import com.igexin.sdk.message.SetTagCmdMessage;
  * onReceiveCommandResult 各种事件处理回执 <br>
  */
 public class DemoIntentService extends GTIntentService {
+
+    private User myself;
 
     public DemoIntentService() {
 
@@ -36,11 +45,35 @@ public class DemoIntentService extends GTIntentService {
 
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
+
     }
 
     @Override
     public void onReceiveClientId(Context context, String clientid) {
         Log.e(TAG, "onReceiveClientId -> " + "clientid = " + clientid);
+        if(myself == null){
+            SharedPreferences sharedPreferences = getSharedPreferences(Const.USER_SHARE, Context.MODE_PRIVATE);
+            myself = JSON.parseObject(sharedPreferences.getString("user","{}"),User.class);
+        }
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,myself.getTokenModel());
+        UserService userService = retrofit.create(UserService.class);
+        userService.addClientId(myself.getUser_id().toString(),clientid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>(){
+                    @Override
+                    public void onCompleted() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        Log.i("上传clientid","成功");
+                    }
+                });
     }
 
     @Override
