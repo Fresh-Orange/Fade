@@ -129,4 +129,9 @@ public interface UserService {
     //注册后一版得到9条推荐用户
     @GET("getOriginRecommendUsers/{user_id}/{start}")
     Observable<UserQuery>getOriginRecommendUsers(@Path("user_id")String  user_id, @Path("start")String  start);
+
+    //添加个推需要的clientid保存到一个hash结构中
+    @FormUrlEncoded
+    @POST("addClientId")
+    Observable<SimpleResponse> addClientId(@Field("user_id")String  user_id, @Field("clientid")String  clientid);
 }
