@@ -38,7 +38,7 @@ import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setActionIfNecessar
 import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setName;
 import static com.sysu.pro.fade.home.view.HomeBaseViewHolder.setOnUserClickListener;
 
-public class RealyUsersActivity extends MainBaseActivity {
+public class RelayUsersActivity extends MainBaseActivity {
 
 	private LinearLayoutManager userLinearManager; //用户搜索的LinearLayoutmanager
 	private RecyclerView recyclerView;
@@ -128,6 +128,9 @@ public class RealyUsersActivity extends MainBaseActivity {
 						if(addNotes.size() != 0){
 							Log.d("onGetFadeQuery", "added!"+addNotes.size());
 							itemList.addAll(addNotes);
+							List<Object> nullArr = new ArrayList<Object>();
+							nullArr.add(null);
+							itemList.removeAll(nullArr);
 						}
 						mtAdapter.notifyDataSetChanged();
 					}
@@ -176,16 +179,16 @@ public class RealyUsersActivity extends MainBaseActivity {
 				postTime = postTime.replaceFirst(":\\d+\\.\\d+", "");
 				tvPostTime.setText(postTime);
 				tvName.setText(bean.getNickname());
-				Glide.with(RealyUsersActivity.this)
+				Glide.with(RelayUsersActivity.this)
 						.load(Const.BASE_IP+bean.getHead_image_url())
 						.fitCenter()
 						.dontAnimate()
 						.into(userAvatar);
 				setName(bean, tvName);
-				setActionIfNecessary(bean, tvAction, null, ivAction, RealyUsersActivity.this);
+				setActionIfNecessary(bean, tvAction, null, ivAction, RelayUsersActivity.this);
 
 				/* ********* 设置监听器 ***********/
-				setOnUserClickListener(RealyUsersActivity.this, tvName, userAvatar, null, bean);
+				setOnUserClickListener(RelayUsersActivity.this, tvName, userAvatar, null, bean);
 
 			}
 		}, R.layout.relay_users_item);

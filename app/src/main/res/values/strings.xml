@@ -17,6 +17,7 @@
     <string name="many_add_time">等%1$d人续了一秒</string>
     <string name="minus_time">减了一秒</string>
     <string name="many_minus_time">等%1$d人减了一秒</string>
+    <string name="have_report">已举报</string>
 
     <!--for RealyUsers activity-->
     <string name="all_users">所有人</string>

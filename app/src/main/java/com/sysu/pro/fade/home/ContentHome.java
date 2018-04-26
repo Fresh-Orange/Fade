@@ -89,7 +89,6 @@ public class ContentHome {
         updateList = new ArrayList<>();
         checkList = new ArrayList<>();
         isEnd = false;
-        isLoading = true;
         initViews();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
         userService = retrofit.create(UserService.class);
@@ -100,7 +99,6 @@ public class ContentHome {
                 .subscribe(new Subscriber<NoteQuery>() {
                     @Override
                     public void onCompleted() {
-                        isLoading = false;
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
                     }
@@ -109,7 +107,6 @@ public class ContentHome {
                     public void onError(Throwable e) {
                         Log.e("初次加载","失败");
                         e.printStackTrace();
-                        isLoading = false;
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
                     }
@@ -149,10 +146,8 @@ public class ContentHome {
         loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                if(!isLoading){
-                    isLoading = true;
-                    addItems();
-                }
+                Log.d("loadNow", "actual load!!!");
+                addItems();
             }
         };
         //TODO 监听器分离
@@ -188,7 +183,6 @@ public class ContentHome {
                             swipeRefresh.setRefreshing(false);
                         }else {
                             //加载更多
-                                isLoading = true;
                                 Log.i("加载更多打印start", start.toString());
                                 noteService.getTenNoteByTime(user.getUser_id().toString(),
                                         start.toString(),user.getConcern_num().toString(), JSON.toJSONString(updateList))
@@ -199,7 +193,6 @@ public class ContentHome {
                                             public void onCompleted() {
                                                 swipeRefresh.setRefreshing(false);
                                                 setLoadingMore(false);
-                                                isLoading = false;
                                             }
                                             @Override
                                             public void onError(Throwable e) {
@@ -207,7 +200,6 @@ public class ContentHome {
                                                 e.printStackTrace();
                                                 swipeRefresh.setRefreshing(false);
                                                 setLoadingMore(false);
-                                                isLoading = false;
                                             }
                                             @Override
                                             public void onNext(NoteQuery noteQuery) {
@@ -301,6 +293,7 @@ public class ContentHome {
      * @param isShow 是否显示
      */
     private void setLoadingMore(boolean isShow){
+        loadMoreScrollListener.loading = isShow;
         adapter.setLoadingMore(isShow);
     }
 
@@ -383,7 +376,7 @@ public class ContentHome {
             }
         }
 
-        //合并帖子的操作，服务器未完工
+        //合并帖子的操作
         Note oldNote = null;
         SparseIntArray addTargetId2index = new SparseIntArray();
         SparseIntArray subTargetId2index = new SparseIntArray();

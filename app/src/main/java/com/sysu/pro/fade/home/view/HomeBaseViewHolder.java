@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.activity.OtherActivity;
-import com.sysu.pro.fade.home.activity.RealyUsersActivity;
+import com.sysu.pro.fade.home.activity.RelayUsersActivity;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.TimeUtil;
@@ -50,6 +52,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	private ImageView userAvatar;
 	private TextView tvHeadAction;
 	private ImageView ivHeadAction;
+	private ImageView ivDots;
 	private TextView tvCount;
 	private TextView tvAtUser;
 	private TextView tvAddress;
@@ -67,6 +70,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		tvAtUser = (TextView) itemView.findViewById(R.id.tv_original_author);
 		tvAddress = (TextView) itemView.findViewById(R.id.tv_address);
 		ivHeadAction = (ImageView) itemView.findViewById(R.id.iv_head_action);
+		ivDots = (ImageView) itemView.findViewById(R.id.iv_dots);
 		tvHeadAction = (TextView) itemView.findViewById(R.id.tv_head_action);
 		clickableProgressBar = (ClickableProgressBar) itemView.findViewById(R.id.clickable_progressbar);
 	}
@@ -93,11 +97,80 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				.into(userAvatar);
 
 		/* ********* 设置监听器 ***********/
+		setDotsMenu(bean, userUtil, ivDots);
 		setGoToDetailClickListener(context, itemView, bean);
 		setAddOrMinusListener(context, clickableProgressBar, userUtil, bean);
 		setCommentListener(context, clickableProgressBar, bean);
 		setOnUserClickListener(context, tvName, userAvatar, tvAtUser, bean);
 
+	}
+
+	/**
+	 * 设置fade的“三点”的显示与点击事件
+	 */
+	static public void setDotsMenu(final Note bean, final UserUtil userUtil, final ImageView ivDots) {
+		ivDots.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v){
+				PopupMenu popup = new PopupMenu(ivDots.getContext(), ivDots);
+				//Inflating the Popup using xml file
+				popup.getMenuInflater()
+						.inflate(R.menu.dots_menu, popup.getMenu());
+				final User curUser = userUtil.getUer();
+				MenuItem delete_item = popup.getMenu().findItem(R.id.delete_fade);
+
+				if (bean.getRelayUserNum()<=1 && bean.getUser_id().equals(curUser.getUser_id())){
+					delete_item.setVisible(true);
+				}
+				else{
+					delete_item.setVisible(false);
+				}
+
+				//registering popup with OnMenuItemClickListener
+				popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+					public boolean onMenuItemClick(MenuItem item) {
+						if (item.getItemId()==R.id.delete_fade){
+							deleteNote(bean, curUser, ivDots.getContext());
+						}
+						else if (item.getItemId()==R.id.report){
+							Toast.makeText(ivDots.getContext(), R.string.have_report, Toast.LENGTH_SHORT).show();
+						}
+						return true;
+					}
+				});
+
+				popup.show(); //showing popup menu
+			}
+		});
+	}
+
+	static private void deleteNote(final Note bean, User curUser, final Context context){
+		Toast.makeText(context, "暂不支持删除帖子", Toast.LENGTH_SHORT).show();
+		/*Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
+		NoteService noteService = retrofit.create(NoteService.class);
+		noteService
+				.deleteNote(bean.getNote_id().toString(), curUser.getUser_id().toString())
+				.subscribeOn(Schedulers.newThread())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<SimpleResponse>() {
+					@Override
+					public void onCompleted() {}
+
+					@Override
+					public void onError(Throwable e) {
+						Toast.makeText(context, "删除帖子出错", Toast.LENGTH_SHORT).show();
+					}
+
+					@Override
+					public void onNext(SimpleResponse simpleResponse) {
+						if (simpleResponse.getErr() == null){
+							EventBus.getDefault().post(new NoteDeleteEvent(bean.getNote_id()));
+						}
+						else {
+							Toast.makeText(context, "删除帖子出错，错误码:"+simpleResponse.getErr(), Toast.LENGTH_SHORT).show();
+						}
+					}
+				});*/
 	}
 
 	static public void setName(Note bean, TextView tvName) {
@@ -181,7 +254,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			@Override
 			public void onClick(View v) {
 				if (bean.getRelayUserNum() > 1){
-					Intent i = new Intent(context, RealyUsersActivity.class);
+					Intent i = new Intent(context, RelayUsersActivity.class);
 					i.putExtra(Const.NOTE_ENTITY, bean);
 					context.startActivity(i);
 				}
@@ -196,7 +269,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			@Override
 			public void onClick(View v) {
 				if (bean.getRelayUserNum() > 1){
-					Intent i = new Intent(context, RealyUsersActivity.class);
+					Intent i = new Intent(context, RelayUsersActivity.class);
 					i.putExtra(Const.NOTE_ENTITY, bean);
 					context.startActivity(i);
 				}
