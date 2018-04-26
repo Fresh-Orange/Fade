@@ -143,10 +143,7 @@ public class MyFadeContent {
         loadMoreScrollListener = new EndlessRecyclerOnScrollListener(context, layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                if(isLoading == false){
-                    isLoading = true;
                     addItems();
-                }
             }
         };
         recyclerView.addOnScrollListener(loadMoreScrollListener);
@@ -274,6 +271,7 @@ public class MyFadeContent {
      * @param isShow 是否显示
      */
     private void setLoadingMore(boolean isShow){
+        loadMoreScrollListener.loading = false;
         adapter.setLoadingMore(isShow);
     }
 

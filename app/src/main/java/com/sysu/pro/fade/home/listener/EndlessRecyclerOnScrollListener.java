@@ -21,7 +21,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
 	String logTag = "scroll";
 	private int previousTotal = 0;
-	private boolean loading = true;
+	public boolean loading = false;
 	private int firstVisibleItem;
 	private int visibleItemCount;
 	private int totalItemCount;
@@ -29,6 +29,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 	private int currentPage = 1;
 	private LinearLayoutManager mLinearLayoutManager;
 	private boolean isKeyBoardOpen;
+	private boolean isBottom;
 
 	private boolean isScroll;
 
@@ -80,27 +81,29 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		 * 以下是用于判断是否到底（是否需要加载更多数据）
 		 */
 		visibleItemCount = recyclerView.getChildCount();
-		totalItemCount = mLinearLayoutManager.getItemCount();
+		totalItemCount = ((NotesAdapter)recyclerView.getAdapter()).getRealCount();
 		firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
 
-		if (loading) {
-			if (totalItemCount > previousTotal) {
-				loading = false;
-				previousTotal = totalItemCount;
-				Log.d("loadNow", "load");
-			}
+		if (isBottom && (totalItemCount - visibleItemCount) > firstVisibleItem) {
+			isBottom = false;
+			Log.d("loadNow", "isUp");
 		}
-		if (!loading
+		else if (!isBottom
 				&& (totalItemCount - visibleItemCount) <= firstVisibleItem) {
-			currentPage++;
-			onLoadMore(currentPage);
-			loading = true;
-			Log.d("loadNow", "unload");
-		}else if ((totalItemCount - visibleItemCount) == firstVisibleItem+1){
-			loading = false;
+			isBottom = true;
 			NotesAdapter recycleAdapter = (NotesAdapter) recyclerView.getAdapter();
 			recycleAdapter.setLoadingMore(true);
-		}
+			if (!loading){
+				loading = true;
+				onLoadMore(currentPage);
+			}
+			Log.d("loadNow", "isBottom load="+loading);
+		}/*else if ((totalItemCount - visibleItemCount) == firstVisibleItem+1){
+			Log.d("loadNow", "cancel");
+			//loading = false;
+			NotesAdapter recycleAdapter = (NotesAdapter) recyclerView.getAdapter();
+			recycleAdapter.setLoadingMore(false);
+		}*/
 
 
 		Log.d("loadMoreVar", "visible = " + String.valueOf(visibleItemCount) + "  total = " + String.valueOf(totalItemCount)
