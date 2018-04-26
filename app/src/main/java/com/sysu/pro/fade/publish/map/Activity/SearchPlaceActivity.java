@@ -1,7 +1,9 @@
 package com.sysu.pro.fade.publish.map.Activity;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocationClient;
@@ -66,10 +69,10 @@ import java.util.List;
 public class SearchPlaceActivity extends AppCompatActivity {
 
     private RecyclerView rvNearBy;
+    private RecyclerView.LayoutManager mLayoutManager;
     private List nearList = new ArrayList<PoiItem>();
     private PoiSearch poiSearch;
     private String city;
-    public AMapLocationClientOption mLocationOption = null;
     private double latitude;
     private double longitude;
 
@@ -79,23 +82,26 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     private LocNearAddressAdapter adapter;
     //声明AMapLocationClientOption对象
-    public AMapLocationClient mLocationClient = null;
     private RefreshLayout refreshLayout;
 
     private String keyword = "";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_place);
         initView();
         final Intent intent = getIntent();
-        latitude = intent.getDoubleExtra("latitude",0);
-        longitude = intent.getDoubleExtra("longitude",0);
+        latitude = intent.getDoubleExtra("latitude", 0);
+        longitude = intent.getDoubleExtra("longitude", 0);
         city = intent.getStringExtra("city");
         editSearchKeyEt = findViewById(R.id.edit);
         rvNearBy = findViewById(R.id.rv_nearby);
         refreshLayout = findViewById(R.id.refreshLayout);
 
+//        suggestion_address = ((TextView)findViewById(R.id.suggestion_address));
+//        suggestion = findViewById(R.id.suggestion);
 //        editSearchKeyEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
 //            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -117,9 +123,9 @@ public class SearchPlaceActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 keyword = editable.toString();
                 Log.d("keyword", "keyword: " + keyword);
-                findViewById(R.id.suggestion).setVisibility(View.GONE);
                 currentPageNum = 1;
                 nearList.clear();
+                adapter.setKeyword(keyword);
                 adapter.notifyDataSetChanged();
                 if (!keyword.isEmpty()) {
                     Log.d("keyword", "notEmpty");
@@ -135,8 +141,9 @@ public class SearchPlaceActivity extends AppCompatActivity {
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
-                searchNearBy();
                 refreshlayout.finishLoadmore();
+                searchNearBy();
+//                findViewById(R.id.suggestion).setVisibility(View.VISIBLE);
             }
         });
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
@@ -144,38 +151,115 @@ public class SearchPlaceActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent2 = new Intent();
                 intent2.putExtra("finish", false);
-                setResult(RESULT_OK,intent2);
+                setResult(RESULT_OK, intent2);
                 finish();
             }
         });
-        findViewById(R.id.suggestion).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EventBus.getDefault().post(new SearchToPublish(keyword));
-                Intent intent4 = new Intent();
-                intent4.putExtra("finish", true);
-                setResult(RESULT_OK,intent4);
-                finish();
-            }
-        });
+//        suggestion.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("yellow", "suggestion clicked!");
+//                EventBus.getDefault().post(new SearchToPublish(keyword));
+//                Intent intent4 = new Intent();
+//                intent4.putExtra("finish", true);
+//                setResult(RESULT_OK, intent4);
+//                finish();
+//            }
+//        });
+        rvNearBy.getFocusedChild();
         adapter.setOnItemClickListener(new LocNearAddressAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                //获得实例
-                PoiItem retail = (PoiItem) nearList.get(position);
-                EventBus.getDefault().post(new SearchToPublish(retail.getTitle()));
-                Intent intent3 = new Intent();
-                intent3.putExtra("finish", true);
-                setResult(RESULT_OK,intent3);
-                finish();
+                Log.d("adapter", "position: " + position);
+                if (position < nearList.size()) {
+                    //获得实例
+                    PoiItem retail = (PoiItem) nearList.get(position);
+                    EventBus.getDefault().post(new SearchToPublish(retail.getTitle()));
+                    Intent intent3 = new Intent();
+                    intent3.putExtra("finish", true);
+                    setResult(RESULT_OK, intent3);
+                    finish();
+                }
+                else {
+                    EventBus.getDefault().post(new SearchToPublish(keyword));
+                    Intent intent4 = new Intent();
+                    intent4.putExtra("finish", true);
+                    setResult(RESULT_OK, intent4);
+                    finish();
+                }
             }
         });
+//        rvNearBy.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public final void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                if (!recyclerView.canScrollVertically(-1)) {
+//                    onScrolledToTop();
+//                } else if (!recyclerView.canScrollVertically(1)) {
+//                    onScrolledToBottom();
+//                } else if (dy < 0) {
+//                    onScrolledUp();
+//                } else if (dy > 0) {
+//                    onScrolledDown();
+//                }
+//            }
+//
+//            public void onScrolledUp() {
+//                if (isShowSuggestion) {
+//                    hideSuggestion();
+//                    isShowSuggestion = false;
+//                }
+//            }
+//
+//            public void onScrolledDown() {
+//                if (currentPageNum > 2) {
+//                    if (!isShowSuggestion) {
+//                        showSuggestion();
+//                        isShowSuggestion = true;
+//                    }
+//
+//                }
+//            }
+//
+//            public void onScrolledToTop() {
+//
+//            }
+//
+//            public void onScrolledToBottom() {
+////                Log.d("Bottom", "size: " + nearList.size());
+////                if (!isShowSuggestion && nearList.size() > 0) {
+////                    TextView bottom = findViewById(R.id.suggestion_address_bottom);
+////                    bottom.setText(keyword);
+////                    findViewById(R.id.suggestion_bottom).setVisibility(View.VISIBLE);
+////                }
+//            }
+//        });
     }
+
+
+
+//    /**
+//     * 显示时间条
+//     */
+//    private void showSuggestion() {
+//        suggestion_address.setText(keyword);
+//        ObjectAnimator.ofFloat(suggestion, "alpha", 0, 1).setDuration(50).start();
+//        isShowSuggestion = true;
+//        suggestion.setVisibility(View.VISIBLE);
+//    }
+//
+//    /**
+//     * 隐藏时间条
+//     */
+//    private void hideSuggestion() {
+//        ObjectAnimator.ofFloat(suggestion, "alpha", 1, 0).setDuration(50).start();
+//        suggestion.setVisibility(View.GONE);
+//    }
 
     private void initView() {
         rvNearBy = (RecyclerView) findViewById(R.id.rv_nearby);
-        rvNearBy.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new LocNearAddressAdapter(nearList, getApplicationContext());
+        mLayoutManager = new LinearLayoutManager(this);
+        rvNearBy.setLayoutManager(mLayoutManager);
+        adapter = new LocNearAddressAdapter(nearList, getApplicationContext(), keyword);
 //        adapter = new MainAddressAdapter(poiList, getApplicationContext());
         rvNearBy.setAdapter(adapter);
     }
@@ -215,13 +299,12 @@ public class SearchPlaceActivity extends AppCompatActivity {
 //                        adapter.notifyDataSetChanged();
                     for (PoiItem p : itemList) {
                         nearList.add(p);
-                        Log.d("haa", "here" + p.getPoiExtension());
-                        adapter.notifyDataSetChanged();
                     }
+                    adapter.notifyDataSetChanged();
                 }
                 else {
-                    ((TextView)findViewById(R.id.address)).setText(keyword);
-                    findViewById(R.id.suggestion).setVisibility(View.VISIBLE);
+//                    if (!keyword.isEmpty())
+//                        showSuggestion();
 //                    List<String> suggestion = result.getSearchSuggestionKeywords();
 //                    Log.d("suggestion", suggestion.toString());
                 }

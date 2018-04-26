@@ -33,6 +33,7 @@ import com.sysu.pro.fade.publish.Event.CropToClickEvent;
 import com.sysu.pro.fade.publish.Event.MapToPublish;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.publish.map.Adapter.LocNearAddressAdapter;
+import com.sysu.pro.fade.publish.map.Adapter.MapAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -54,7 +55,7 @@ public class MapActivity extends AppCompatActivity {
     private int currentPageSize = 20;
     private EditText editSearchKeyEt;
 
-    private LocNearAddressAdapter adapter;
+    private MapAdapter adapter;
 
     private RefreshLayout refreshLayout;
 
@@ -88,7 +89,7 @@ public class MapActivity extends AppCompatActivity {
                 startActivityForResult(intent, 500);
             }
         });
-        adapter.setOnItemClickListener(new LocNearAddressAdapter.onItemClickListener() {
+        adapter.setOnItemClickListener(new MapAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 //获得实例
@@ -120,7 +121,7 @@ public class MapActivity extends AppCompatActivity {
         city = intent.getStringExtra("city");
         lvLocMain = (RecyclerView) findViewById(R.id.lv_location_nearby);
         lvLocMain.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new LocNearAddressAdapter(nearList, getApplicationContext());
+        adapter = new MapAdapter(nearList, getApplicationContext());
 //        adapter = new MainAddressAdapter(poiList, getApplicationContext());
         lvLocMain.setAdapter(adapter);
     }

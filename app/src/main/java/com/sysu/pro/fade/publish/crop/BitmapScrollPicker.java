@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.sysu.pro.fade.R;
 
@@ -115,7 +118,50 @@ public class BitmapScrollPicker extends ScrollPickerView<Bitmap> {
     public void drawItem(Canvas canvas, List<Bitmap> data, int position, int relative, float moveLength, float top) {
         int itemSize = getItemSize();
         Bitmap bitmap = data.get(position);
+        int color = Color.parseColor("#3c7ce2");
+        if (position == getSelectedPosition())
+            bitmap = bitmapCombine(bitmap,bitmap.getWidth() / 10,bitmap.getHeight() / 10,color);
+        Log.d("position", "Data_position: " + position);
+//        if (position == 0) {
 
+        // 原图片的宽高
+//        final int bigW = bitmap.getWidth();
+//        final int bigH = bitmap.getHeight();
+//
+//        int smallW = 100;
+//        int smallH = 100;
+//        // 重新定义大小
+//        int newW = bigW+smallW*2;
+//        int newH = bigH+smallH*2;
+//
+//        int color = Color.parseColor("#ffcc0000");
+//
+//        // 绘原图
+//        Bitmap newBitmap = Bitmap.createBitmap(newW, newH, Bitmap.Config.ARGB_8888);
+//        Canvas canvas2 = new Canvas(newBitmap);
+//        Paint p = new Paint();
+//        p.setColor(color);
+//        canvas2.drawRect(new Rect(0, 0, newW, newH), p);
+//
+//        // 绘边框
+//        canvas2.drawBitmap(bitmap, (newW - bigW - 2 * smallW) / 2 + smallW, (newH
+//                - bigH - 2 * smallH)
+//                / 2 + smallH, null);
+
+//        // 画边框
+//        Rect rec = canvas.getClipBounds();
+//
+//        Log.d("rec", "left: " + rec.left);
+//        Log.d("rec", "right: " + rec.right);
+//        Log.d("rec", "top: " + rec.top);
+//        Log.d("rec", "bottom: " + rec.bottom);
+//        Paint paint = new Paint();
+//
+//        paint.setColor(color);
+//        paint.setStyle(Paint.Style.STROKE);
+//        paint.setStrokeWidth(20);
+//        canvas.drawRect(-5, -5, bitmap.getWidth(), getItemHeight()+5, paint);
+//        }
         mRect1.right = bitmap.getWidth();
         mRect1.bottom = bitmap.getHeight();
 
@@ -163,7 +209,6 @@ public class BitmapScrollPicker extends ScrollPickerView<Bitmap> {
                 mRect2.left = (int) (top + span);
                 mRect2.right = (int) (top + itemSize - span);
             } else {
-
                 mRect2.top = (int) (top + span);
                 mRect2.bottom = (int) (top + itemSize - span);
             }
@@ -172,6 +217,40 @@ public class BitmapScrollPicker extends ScrollPickerView<Bitmap> {
             canvas.drawBitmap(bitmap, mRect1, mRectTemp, null);
         }
     }
+
+    private Bitmap bitmapCombine(Bitmap bm, int smallW, int smallH,int color) {
+        //防止空指针异常
+        if(bm==null){
+            return null;
+        }
+
+        // 原图片的宽高
+        final int bigW = bm.getWidth();
+        final int bigH = bm.getHeight();
+
+        // 重新定义大小
+        int newW = bigW+smallW*2;
+        int newH = bigH+smallH*2;
+
+        // 绘原图
+        Bitmap newBitmap = Bitmap.createBitmap(newW, newH, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(newBitmap);
+        Paint p = new Paint();
+        p.setColor(color);
+        canvas.drawRect(new Rect(0, 0, newW, newH), p);
+
+        // 绘边框
+        canvas.drawBitmap(bm, (newW - bigW - 2 * smallW) / 2 + smallW, (newH
+                - bigH - 2 * smallH)
+                / 2 + smallH, null);
+
+
+        canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.restore();
+
+        return newBitmap;
+    }
+
 
     // 缩放item内容
     private void scale(Rect rect, int relative, int itemSize, float moveLength) {

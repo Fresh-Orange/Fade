@@ -73,7 +73,7 @@ public class ConcernFragment extends Fragment {
 
     private void getData() {
         UserService service = retrofit.create(UserService.class);
-        service.getConcerns(userId.toString(), start)
+        service.getConcerns(userId.toString(), myself.getUser_id().toString(),start)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserQuery>() {
@@ -118,7 +118,7 @@ public class ConcernFragment extends Fragment {
                     holder.setWidgetVisibility(R.id.fans_divide_line, View.GONE);
                 }
                 holder.setCircleImage(R.id.fans_head, Const.BASE_IP+data.getHead_image_url());
-                holder.onWidgetClick(R.id.fans_head, new View.OnClickListener() {
+                holder.onWidgetClick(R.id.fans_root_view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent i = new Intent(getContext(), OtherActivity.class);
@@ -128,8 +128,11 @@ public class ConcernFragment extends Fragment {
                 });
                 holder.setText(R.id.fans_name, data.getNickname());
                 holder.setText(R.id.fans_signature, data.getSummary());
+                /*
+                * 2018.4.25 根据当前需求，关注页不显示是否关注
+                */
 //                if (data.getIsConcern() == 1) {
-                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
+//                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
 //                } else {
 //                    holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
 //                }

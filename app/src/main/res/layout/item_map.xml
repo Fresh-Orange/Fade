@@ -9,9 +9,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginLeft="5dp"
         android:orientation="vertical"
         android:gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_height="79dp">
         <TextView
             android:id="@+id/city"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:text="GuangZhou"
             android:textColor="@color/black"/>
 
@@ -30,14 +31,14 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textColor="@color/dark_gray"
             android:text="Sun-yat-sen University"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1px"
         android:background="@color/light_gray"
         />
 </LinearLayout>

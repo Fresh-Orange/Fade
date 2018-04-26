@@ -8,6 +8,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -132,18 +134,25 @@ public class SetPasswordActivity extends LoginBaseActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_password);
         nextbtn = (ImageView) findViewById(R.id.next);
         first_password = (EditText) findViewById(R.id.my_telephone);
         second_password = (EditText) findViewById(R.id.my_valid);
-        mobilePhoneNumber = getIntent().getStringExtra("mobilePhoneNumber");
+        mobilePhoneNumber = getIntent().getStringExtra("telephone");
         backbtn = (ImageView) findViewById(R.id.back_btn);
         red_wrong_password = (LinearLayout) findViewById(R.id.red_wrong_password);
         red_text = (TextView) findViewById(R.id.red_text);
         first_password.addTextChangedListener(mTextWatchr);
         second_password.addTextChangedListener(mTextWatchr1);
         user = new User();
+        user.setTelephone(mobilePhoneNumber);
+        //Toast.makeText(SetPasswordActivity.this,mobilePhoneNumber, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(SetPasswordActivity.this, user.getTelephone(), Toast.LENGTH_SHORT).show();
 
         nextbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +162,6 @@ public class SetPasswordActivity extends LoginBaseActivity{
                 sp = second_password.getText().toString();
                 if (fp_flag == 2){
                     if (fp.equals(sp)){
-                        user.setTelephone(mobilePhoneNumber);
                         user.setPassword(fp);
                         Intent intent = new Intent(SetPasswordActivity.this, SetSchoolActivity.class);
                         Bundle mbundle = new Bundle();

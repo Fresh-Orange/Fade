@@ -44,7 +44,6 @@ import com.sysu.pro.fade.beans.Image;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.emotionkeyboard.fragment.EmotionMainFragment;
 import com.sysu.pro.fade.home.view.imageAdaptiveIndicativeItemLayout;
 import com.sysu.pro.fade.publish.Event.ClickToCropEvent;
 import com.sysu.pro.fade.publish.Event.CropToClickEvent;
@@ -102,7 +101,7 @@ public class PublishActivity extends AppCompatActivity {
 
     private final int maxCount = 9;
     private EditText et_emotion; //编辑器
-    private EmotionMainFragment emotionMainFragment;
+//    private EmotionMainFragment emotionMainFragment;
 
     private boolean isHidden = true;
 
@@ -158,6 +157,7 @@ public class PublishActivity extends AppCompatActivity {
     private static double latitude;
     private static double longitude;
     private boolean mapStatus = false;
+    private boolean isShowMap = false;
     //声明AMapLocationClientOption对象
     public AMapLocationClient mLocationClient = null;
 
@@ -168,7 +168,6 @@ public class PublishActivity extends AppCompatActivity {
         if(images_files == null) images_files = new ArrayList<>();
         else images_files.clear();
 
-
         for(int i = 0; i < images.size(); i++){
             final Image image = new Image();
             //获得坐标
@@ -178,7 +177,6 @@ public class PublishActivity extends AppCompatActivity {
             String yStr = "" + y;
             image.setImage_coordinate(xStr + ":" + yStr);
             image.setImage_cut_size(cut_size + "");
-
             String image_path = images.get(i);
             //然后压缩图片
             Luban.with(this)
@@ -323,7 +321,6 @@ public class PublishActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_publish);
-        requestLocation();
         imageX = new float[10];
         imageY = new float[10];
         //注册
@@ -336,6 +333,7 @@ public class PublishActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(PublishActivity.this);
         show = CHOOSE;
         InitView();
+        requestLocation();
         if (flag) {
             et_emotion= (EditText) findViewById(R.id.my_et_emotion);
             //设置焦点，可被操作
@@ -383,6 +381,10 @@ public class PublishActivity extends AppCompatActivity {
         publishTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (edit_temp.getText().toString().isEmpty() && images.size() == 0) {
+                    Toast.makeText(PublishActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //发送帖子
                 progressDialog.show();
                 //设置Note对象的一些属性
@@ -580,6 +582,16 @@ public class PublishActivity extends AppCompatActivity {
     }
 
     private void InitView() {
+//        SharedPreferences sharedPreferences = getSharedPreferences("MY_PREFERENCE",
+//                Context.MODE_PRIVATE);
+//        isShowMap = sharedPreferences.getBoolean("isShowMap", false);
+//        longitude = sharedPreferences.getInt("longitude", 0);
+//        latitude = sharedPreferences.getInt("latitude", 0);
+        if (isShowMap) {
+            findViewById(R.id.map_information).setVisibility(View.VISIBLE);
+            findViewById(R.id.notation).setVisibility(View.GONE);
+        }
+
         icon_sub_pic = (ImageButton) findViewById(R.id.icon_sub_pic);
         icon_add_pic = (ImageButton) findViewById(R.id.icon_add_pic);
         pager = (imageAdaptiveIndicativeItemLayout) findViewById(R.id.image_layout);
@@ -600,15 +612,15 @@ public class PublishActivity extends AppCompatActivity {
             pagerContainer.setVisibility(View.VISIBLE);
     }
 
-    private void initEmotionMainFragment() {
-        //构建传递参数
-        Bundle bundle = new Bundle();
-        //绑定主内容编辑框
-        bundle.putBoolean(EmotionMainFragment.BIND_TO_EDITTEXT,false);
-        //隐藏控件
-        bundle.putBoolean(EmotionMainFragment.HIDE_BAR_EDITTEXT_AND_BTN,true);
-
-        bundle.putBoolean(EmotionMainFragment.EMOTION_HIDE,isHidden);
+//    private void initEmotionMainFragment() {
+//        //构建传递参数
+//        Bundle bundle = new Bundle();
+//        //绑定主内容编辑框
+//        bundle.putBoolean(EmotionMainFragment.BIND_TO_EDITTEXT,false);
+//        //隐藏控件
+//        bundle.putBoolean(EmotionMainFragment.HIDE_BAR_EDITTEXT_AND_BTN,true);
+//
+//        bundle.putBoolean(EmotionMainFragment.EMOTION_HIDE,isHidden);
         //替换fragment
         //创建修改实例
 //        frameLayout = (FrameLayout) findViewById(R.id.fl_memotionview_main);
@@ -627,7 +639,7 @@ public class PublishActivity extends AppCompatActivity {
 //        transaction.addToBackStack(null);
 //        //提交修改
 //        transaction.commit();
-    }
+//    }
 
 //    @Override
 //    public void onBackPressed() {
@@ -812,7 +824,7 @@ public class PublishActivity extends AppCompatActivity {
         Log.d("yellow", "getExternalCacheDir()" + getExternalCacheDir());
         Log.d("yellow", "OldEnvironment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
         vFile = new File(Environment.getExternalStorageDirectory()
-                + "/Fade/Photo/Fade", String.valueOf(System.currentTimeMillis())
+                + "/Fade", String.valueOf(System.currentTimeMillis())
                 + ".jpg");
         if (vFile.exists())
         {
@@ -848,7 +860,8 @@ public class PublishActivity extends AppCompatActivity {
     public void onEvent(ImageSelectorToPublish event) {
         images = event.getImages();
         newCount = event.getNewCount();
-        curShowPosition = images.size() - 1;
+//        curShowPosition = images.size() - 1;
+        curShowPosition = 0;
         ShowViewPager();
     }
 
@@ -934,6 +947,12 @@ public class PublishActivity extends AppCompatActivity {
 //                    amapLocation.getCountry();//国家信息
 //                    amapLocation.getProvince();//省信息
                     city = amapLocation.getCity();//城市信息
+//                    SharedPreferences sharedPreferences = getSharedPreferences("MY_PREFERENCE",
+//                            Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.putFloat("latitude",(float) latitude);
+//                    editor.putFloat("longitude", (float)longitude);
+//                    editor.apply();
                     ((TextView) findViewById(R.id.city)).setText(city);
                     ((TextView) findViewById(R.id.address)).setText(address);
 //                    amapLocation.getDistrict();//城区信息
@@ -996,8 +1015,8 @@ public class PublishActivity extends AppCompatActivity {
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
-        //关闭缓存机制
-        mLocationOption.setLocationCacheEnable(false);
+//        //关闭缓存机制
+//        mLocationOption.setLocationCacheEnable(true);
 //        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
         if(null != mLocationClient){
             mLocationClient.setLocationOption(mLocationOption);

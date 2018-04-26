@@ -309,7 +309,7 @@ public class DetailActivity extends MainBaseActivity{
             @Override
             public void convert(final CommonAdapter.ViewHolder holder, final Comment data, final int position) {
                 holder.setGoodImage(R.id.comment_detail_good, data.getType());  //1为续秒，2为减秒，0为无操作
-                holder.setImage(R.id.comment_detail_head, Const.BASE_IP+data.getHead_image_url());
+                holder.setCircleImage(R.id.comment_detail_head, Const.BASE_IP+data.getHead_image_url());
                 holder.setText(R.id.comment_detail_name, data.getNickname());
                 String time = data.getComment_time().substring(0, data.getComment_time().length()-2);
                 holder.setText(R.id.comment_detail_date, DateUtils.changeToDate(time));

@@ -105,7 +105,7 @@ public class ImageDetailFragment extends Fragment {
 	private void save() {
 		Bitmap mbmp = mImageView.getDrawingCache();
 		File appDir = new File(Environment.getExternalStorageDirectory(),
-				"/Fade/Photo/Fade");
+				"/Fade");
 		String fileName = System.currentTimeMillis() + ".jpg";
 		File file = new File(appDir, fileName);
 		try {

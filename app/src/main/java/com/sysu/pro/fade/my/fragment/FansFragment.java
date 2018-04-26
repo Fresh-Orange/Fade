@@ -14,14 +14,11 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.beans.NoteQuery;
+import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
-import com.sysu.pro.fade.message.Utils.DateUtils;
-import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -76,7 +73,7 @@ public class FansFragment extends Fragment {
 
     private void getData() {
         UserService service = retrofit.create(UserService.class);
-        service.getFans(userId.toString(), start)
+        service.getFans(userId.toString(),myself.getUser_id().toString(), start)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<UserQuery>() {
@@ -116,12 +113,12 @@ public class FansFragment extends Fragment {
             }
 
             @Override
-            public void convert(ViewHolder holder, final User data, int position) {
+            public void convert(final ViewHolder holder, final User data, int position) {
                 if (position == 0) {
                     holder.setWidgetVisibility(R.id.fans_divide_line, View.GONE);
                 }
                 holder.setCircleImage(R.id.fans_head, Const.BASE_IP+data.getHead_image_url());
-                holder.onWidgetClick(R.id.fans_head, new View.OnClickListener() {
+                holder.onWidgetClick(R.id.fans_root_view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent i = new Intent(getContext(), OtherActivity.class);
@@ -131,10 +128,41 @@ public class FansFragment extends Fragment {
                 });
                 holder.setText(R.id.fans_name, data.getNickname());
                 holder.setText(R.id.fans_signature, data.getSummary());
-                if (data.getIsConcern() == 1) {
-                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
-                } else {
-                    holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
+                //如果打开别人的页面，粉丝是自己，就不用显示是否关注了
+                if (data.getUser_id() != myself.getUser_id()) {
+                    if (data.getIsConcern() == 1) {
+                        holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
+                        // TODO: 2018/4/25 取关
+                    } else {
+                        holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
+                        holder.onWidgetClick(R.id.fans_concern, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                UserService service = retrofit.create(UserService.class);
+                                service.concern(myself.getUser_id().toString(), data.getUser_id().toString())
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Subscriber<SimpleResponse>() {
+                                            @Override
+                                            public void onCompleted() {
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                Log.d("关注bug", "onError: " + e.toString());
+                                            }
+
+                                            @Override
+                                            public void onNext(SimpleResponse simpleResponse) {
+                                                if (simpleResponse.getErr() == null) {
+                                                    holder.setWidgetVisibility(R.id.fans_concern, View.GONE);
+                                                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
+                                                }
+                                            }
+                                        });
+                            }
+                        });
+                    }
                 }
             }
         };

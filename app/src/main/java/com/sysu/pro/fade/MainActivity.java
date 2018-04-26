@@ -31,6 +31,8 @@ import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.message.ContentMessage;
+import com.sysu.pro.fade.message.GeTui.Service.DemoIntentService;
+import com.sysu.pro.fade.message.GeTui.Service.DemoPushService;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.service.UserService;
@@ -58,7 +60,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
-
+import com.igexin.sdk.PushManager;
 public class MainActivity extends MainBaseActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -161,13 +163,18 @@ public class MainActivity extends MainBaseActivity {
         setUserProvider();
         getTokenAndConnect();
 
+        // com.getui.demo.DemoPushService 为第三方自定义推送服务
+        PushManager.getInstance().initialize(this.getApplicationContext(), DemoPushService.class);
+
+        // com.getui.demo.DemoIntentService 为第三方自定义的推送服务事件接收类
+        PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), DemoIntentService.class);
     }
 
 
     private void createFiles() {
         //创建文件夹
         final File sd= Environment.getExternalStorageDirectory();
-        String cache_path_photo = sd.getPath() + "/Fade/Photo/Fade";
+        String cache_path_photo = sd.getPath() + "/Fade";
         File rootFile_photo = new File(cache_path_photo);
         if(!rootFile_photo.exists())
             rootFile_photo.mkdirs();
