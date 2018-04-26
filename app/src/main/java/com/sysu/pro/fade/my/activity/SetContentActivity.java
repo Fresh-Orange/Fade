@@ -232,7 +232,7 @@ public class SetContentActivity extends LoginBaseActivity {
         if (resultCode == RESULT_OK) { // 如果返回码是可以用的
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    PhotoUtils.startPhotoZoom(tempUri, this); // 开始对图片进行裁剪处理
+                    PhotoUtils.startPhotoZoom(PhotoUtils.tempUri, this); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:
                     PhotoUtils.startPhotoZoom(data.getData(), this); // 开始对图片进行裁剪处理
