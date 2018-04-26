@@ -12,10 +12,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.sysu.pro.fade.R;
 
@@ -104,13 +102,21 @@ public class Code extends LinearLayout implements TextWatcher, View.OnKeyListene
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (i == 0 && i2 >= 1 && currentPosition != mEditTextList.size() - 1) {
+        if (i == 0 && i2 == 1 && currentPosition != mEditTextList.size() - 1) {
             currentPosition++;
             mEditTextList.get(currentPosition).requestFocus();
+            //Log.d(TAG, "i: " + i);
+            //Log.d(TAG, "i1: " + i1);
+            //Log.d(TAG, "i2: " + i2);
             Log.d(TAG, "onTextChanged: " + currentPosition);
-        }else if (i == 0 && i2 == 0 && currentPosition != 0){
+        }else if (i == 0 && i1 == 0 && i2 == 0 && currentPosition != 0){
             currentPosition--;
             mEditTextList.get(currentPosition).requestFocus();
+            mEditTextList.get(currentPosition).setText("");
+            //Log.d(TAG, "i: " + i);
+            //Log.d(TAG, "i1: " + i1);
+            //Log.d(TAG, "i2: " + i2);
+            Log.d(TAG, "onTextChanged: " + currentPosition);
         }
     }
 
