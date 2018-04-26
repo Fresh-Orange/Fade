@@ -290,7 +290,7 @@ public class MainActivity extends MainBaseActivity {
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.mipmap.message_normal), "消息")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.mipmap.add), "发布")));
+                createView(res.getDrawable(R.mipmap.add_normal), "发布")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.mipmap.discover_normal), "发现")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
@@ -301,7 +301,6 @@ public class MainActivity extends MainBaseActivity {
         View view = getLayoutInflater().inflate(R.layout.tab_layout, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.icon);
         imageView.setImageDrawable(icon);
-        imageView.setAlpha((float)0.5);
         return view;
     }
 
@@ -352,28 +351,41 @@ public class MainActivity extends MainBaseActivity {
 
     //设置选择tab图标
     private void changeTabSelect(TabLayout.Tab tab) {
-        Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
         //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
+            img_title.setImageResource(R.mipmap.home_focus);
         } else if (tab.getPosition()==Const.DISCOVER-1) {
             mViewPager.setCurrentItem(Const.DISCOVER-1,false);
+            img_title.setImageResource(R.mipmap.discover_focus);
         }else if (tab.getPosition() == Const.MESSAGE-1) {
             mViewPager.setCurrentItem(Const.MESSAGE-1,false);
+            img_title.setImageResource(R.mipmap.message_focus);
         } else if(tab.getPosition() == Const.MY-1){
             mViewPager.setCurrentItem(Const.MY-1,false);
+            img_title.setImageResource(R.mipmap.my_focus);
         }
-        img_title.setAlpha((float)1.0);
     }
 
     //设置还原tab图标
     private void changeTabNormal(TabLayout.Tab tab) {
-        Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
-        img_title.setAlpha((float)0.5);
+        if (tab.getPosition() == Const.HOME-1) {
+            mViewPager.setCurrentItem(Const.HOME-1,false);
+            img_title.setImageResource(R.mipmap.home_normal);
+        } else if (tab.getPosition()==Const.DISCOVER-1) {
+            mViewPager.setCurrentItem(Const.DISCOVER-1,false);
+            img_title.setImageResource(R.mipmap.discover_normal);
+        }else if (tab.getPosition() == Const.MESSAGE-1) {
+            mViewPager.setCurrentItem(Const.MESSAGE-1,false);
+            img_title.setImageResource(R.mipmap.message_normal);
+        } else if(tab.getPosition() == Const.MY-1){
+            mViewPager.setCurrentItem(Const.MY-1,false);
+            img_title.setImageResource(R.mipmap.my_normal);
+        }
     }
 
 
