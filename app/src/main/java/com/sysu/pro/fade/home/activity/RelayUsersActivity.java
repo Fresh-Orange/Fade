@@ -125,6 +125,7 @@ public class RelayUsersActivity extends MainBaseActivity {
 							refreshLayout.setEnableRefresh(false);
 						start = noteQuery.getStart();
 						List<Note>addNotes = noteQuery.getList();
+						Log.d("RelayUsersActivity", addNotes.toString());
 						if(addNotes.size() != 0){
 							Log.d("onGetFadeQuery", "added!"+addNotes.size());
 							itemList.addAll(addNotes);
