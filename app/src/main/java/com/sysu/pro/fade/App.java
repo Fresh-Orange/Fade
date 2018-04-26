@@ -10,6 +10,7 @@ import com.sysu.pro.fade.home.activity.OtherActivity;
 
 import io.rong.imkit.RongContext;
 import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.UserInfo;
@@ -22,16 +23,25 @@ import io.rong.imlib.model.UserInfo;
 
 public class App extends Application {
 	//private RefWatcher mRefWatcher;
+	public static Application instance;
+
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		RongIM.init(this);
 		setRongMsgClickListener();
+		instance = this;
 
 		//内存分析工具
 		//mRefWatcher = LeakCanary.install(this);
 
 	}
+
+	public static Application getInstance() {
+		return instance;
+	}
+
 
 
 
@@ -81,6 +91,14 @@ public class App extends Application {
 					return false;
 				}
 			});
-		};
+
+			//融云消息的通知
+			RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+				@Override
+				public boolean onReceived(Message message, int i) {
+					return false;
+				}
+			});
+		}
 	}
 }

@@ -8,6 +8,8 @@
         android:value="25.3.1"
         tools:replace="android:value" />
 
+
+
     <!-- 基础模块（必须加入以下声明）START -->
     <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
     <!--<uses-permission android:name="android.permission.INTERNET" />-->
@@ -52,6 +54,10 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="dc40cca1d244f03684c5150c331264f7" />
+
+        <meta-data
+            android:name="com.sysu.pro.fade.config.GlideConfiguration"
+            android:value="GlideModule" />
 
         <activity
             android:name=".MainActivity"
@@ -133,8 +139,8 @@
         <activity android:name=".publish.map.Activity.MapActivity"/>
         <activity android:name=".publish.map.Activity.SearchPlaceActivity"/>
         <activity android:name=".home.activity.ForwardActivity"/>
-        <activity android:name=".home.activity.TintedCompatActivity">
-        </activity>
+        <activity android:name=".home.activity.TintedCompatActivity"/>
+        <activity android:name=".home.activity.RelayUsersActivity"/>
     </application>
 
 </manifest>
