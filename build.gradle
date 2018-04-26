@@ -31,6 +31,10 @@ allprojects {
         //PhotoView的仓库
         maven { url "https://jitpack.io" }
         google()
+        //Maven URL地址
+        maven {
+            url "http://mvn.gt.igexin.com/nexus/content/repositories/releases/"
+        }
     }
 }
 

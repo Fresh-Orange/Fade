@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.view.View;
 
 import com.sysu.pro.fade.beans.Note;
-import com.sysu.pro.fade.emotionkeyboard.utils.EmotionUtils;
-import com.sysu.pro.fade.emotionkeyboard.utils.SpanStringUtils;
+import com.sysu.pro.fade.publish.utils.EmotionUtils;
+import com.sysu.pro.fade.publish.utils.SpanStringUtils;
+
 
 import java.util.List;
 
