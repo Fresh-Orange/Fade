@@ -354,6 +354,8 @@ public class ContentMessage {
 //            e.printStackTrace();
 //        }
 //        mNotificationManager.notify(0,notification);
+
+
     }
 
 }
