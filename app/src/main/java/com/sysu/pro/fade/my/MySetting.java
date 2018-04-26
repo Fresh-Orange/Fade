@@ -19,11 +19,11 @@ import com.sysu.pro.fade.baseactivity.MainActivitiesCollector;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.my.activity.GuideActivity;
 import com.sysu.pro.fade.my.activity.RegisterActivity;
 import com.sysu.pro.fade.my.setting.About;
 import com.sysu.pro.fade.my.setting.Personal;
 import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.GlideCatchUtil;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
@@ -35,7 +35,7 @@ import rx.schedulers.Schedulers;
 public class MySetting extends MainBaseActivity {
 
     private ListView settingList;   //用于展示各个设置选项
-    private String[] list = {"修改个人信息", "账号安全", "关于Fade", "有话对Fade说"};
+    private String[] list = {"修改个人信息", "账号安全", "关于Fade", "有话对Fade说", "清理图片缓存"};
     private String signature;       //存储签名内容，用于个人界面的签名更新
 
     @Override
@@ -43,6 +43,7 @@ public class MySetting extends MainBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_setting);
         settingList = (ListView) findViewById(R.id.setting_list);
+        list[4] = list[4] + "("+GlideCatchUtil.getInstance().getCacheSize()+")";
         ArrayAdapter<String> adapter = new ArrayAdapter<>(MySetting.this, android.R.layout.simple_list_item_1, list);
         settingList.setAdapter(adapter);
         settingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -62,6 +63,12 @@ public class MySetting extends MainBaseActivity {
                         break;
                     case 3:
                         Toast.makeText(MySetting.this, "反馈", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 4:
+                        if (GlideCatchUtil.getInstance().clearCacheDiskSelf())
+                            Toast.makeText(MySetting.this, "清理完成", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(MySetting.this, "清理出错，请重试", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;
