@@ -30,6 +30,7 @@ import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.TokenModel;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.my.setting.Personal;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
@@ -69,6 +70,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
     private String value;
     private ImageView backbtn;
     private UserService userService;
+    private int flag = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -141,11 +143,15 @@ public class SetSchoolActivity extends LoginBaseActivity {
             public void onClick(View view) {
                 switch (view.getId()) {
                     case R.id.out2:
-                        // 点击控件后显示popup窗口
-                        initSelectPopup1();
-                        // 使用isShowing()检查popup窗口是否在显示状态
-                        if (typeSelectPopup1 != null && !typeSelectPopup1.isShowing()) {
-                            typeSelectPopup1.showAsDropDown(line1, 0, 0);
+                        if (flag == 0){
+                            Toast.makeText(SetSchoolActivity.this, "请先选择学校", Toast.LENGTH_SHORT).show();
+                        }else {
+                            // 点击控件后显示popup窗口
+                            initSelectPopup1();
+                            // 使用isShowing()检查popup窗口是否在显示状态
+                            if (typeSelectPopup1 != null && !typeSelectPopup1.isShowing()) {
+                                typeSelectPopup1.showAsDropDown(line1, 0, 0);
+                            }
                         }
                         break;
                 }
@@ -187,6 +193,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
                             @Override
                             public void onNext(DepartmentQuery initlist) {
                                 majorData = initlist.getList();
+                                flag = 1;
                             }
                         });
                 // 选择完后关闭popup窗口
