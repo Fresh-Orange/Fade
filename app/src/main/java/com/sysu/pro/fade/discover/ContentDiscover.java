@@ -2,6 +2,8 @@ package com.sysu.pro.fade.discover;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -62,6 +64,10 @@ public class ContentDiscover {
     private List<View> mViewList = new ArrayList<>();//页卡视图集合
 
     private List<User>userList; //用户数据
+
+
+
+
 
     //搜索控件
     private SearchHistoryTable mHistoryDatabase;
@@ -203,6 +209,7 @@ public class ContentDiscover {
            //use mSearchView.getFiltersStates() to consider filter when performing search
        }
    }
+
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)

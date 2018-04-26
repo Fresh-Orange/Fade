@@ -1,8 +1,11 @@
 package com.sysu.pro.fade.message;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
 import com.sysu.pro.fade.beans.CommentMessage;
@@ -35,12 +39,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.imkit.RongContext;
 import io.rong.imkit.fragment.ConversationListFragment;
 import io.rong.imlib.model.Conversation;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -84,6 +91,12 @@ public class ContentMessage {
     private boolean isDebug;
     private Context mContext;
     private Conversation.ConversationType[] mConversationsTypes = null;
+
+    static public int addNumber = 0;
+    static public int fanNumber = 0;
+    static public int commentNumber = 0;
+    static public int chatNumber = 0;
+    private int badgeNumber = 0;
 
     public ContentMessage(FragmentActivity activity, Context context, View rootview){
         this.activity = activity;
@@ -247,6 +260,7 @@ public class ContentMessage {
                 Intent intent = new Intent(context, ContributionActivity.class);
                 activity.startActivity(intent);
                 contributionCount = 0;
+                sendBadge();
                 //消除贡献队列
                 processCountTv.setVisibility(View.GONE);
             }
@@ -259,6 +273,7 @@ public class ContentMessage {
                 Intent intent = new Intent(context, FansActivity.class);
                 activity.startActivity(intent);
                 newFanCount = 0;
+                sendBadge();
                 //消除粉丝
                 newFanCountTv.setVisibility(View.GONE);
             }
@@ -271,6 +286,7 @@ public class ContentMessage {
                 Intent intent = new Intent(context, CommentActivity.class);
                 activity.startActivity(intent);
                 commentCount = 0;
+                sendBadge();
                 //消除评论
                 commentCountTv.setVisibility(View.GONE);
             }
@@ -284,6 +300,7 @@ public class ContentMessage {
             case "00":
                 //贡献队列数量加一
                 contributionCount++;
+                sendBadge();
                 processCountTv.setVisibility(View.VISIBLE);
                 processCountTv.setText(String.valueOf(contributionCount));
                 //续减秒产生的转发帖信息
@@ -292,6 +309,7 @@ public class ContentMessage {
             case "01":
                 //粉丝队列数量加一
                 newFanCount++;
+                sendBadge();
                 newFanCountTv.setVisibility(View.VISIBLE);
                 newFanCountTv.setText(String.valueOf(newFanCount));
                 //粉丝信息
@@ -300,6 +318,7 @@ public class ContentMessage {
             case "02":
                 //评论数量加一
                 commentCount++;
+                sendBadge();
                 commentCountTv.setVisibility(View.VISIBLE);
                 commentCountTv.setText(String.valueOf(commentCount));
                 //评论信息
@@ -307,4 +326,34 @@ public class ContentMessage {
                 break;
         }
     }
+
+    private void sendBadge() {
+        //华为
+        badgeNumber = contributionCount + newFanCount + commentCount + chatNumber;
+        Bundle extra =new Bundle();
+        extra.putString("package", "com.sysu.pro.fade");
+        extra.putString("class", "com.sysu.pro.fade.my.activity.WelcomeActivity");
+        extra.putInt("badgenumber", badgeNumber);
+        context.getContentResolver().
+                call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"),
+                        "change_badge", null, extra);
+
+        ShortcutBadger.applyCount(context, badgeNumber); //for 1.1.4+
+//        //小米
+//        NotificationManager mNotificationManager = (NotificationManager) context
+//                .getSystemService(Context.NOTIFICATION_SERVICE);
+//        Notification.Builder builder = new Notification.Builder(context)
+//                .setContentTitle("title").setContentText("text").setSmallIcon(R.drawable.icon);
+//        Notification notification = builder.build();
+//        try {
+//            Field field = notification.getClass().getDeclaredField("extraNotification");
+//            Object extraNotification = field.get(notification);
+//            Method method = extraNotification.getClass().getDeclaredMethod("setMessageCount", int.class);
+//            method.invoke(extraNotification, badgeNumber);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        mNotificationManager.notify(0,notification);
+    }
+
 }
