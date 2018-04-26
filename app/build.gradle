@@ -97,5 +97,6 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 
+    compile "me.leolin:ShortcutBadger:1.1.13@aar"
     compile project(':IMKit')
 }
