@@ -15,12 +15,15 @@ import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTNotificationMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -38,6 +41,8 @@ public class DemoIntentService extends GTIntentService {
 
     private User myself;
 
+
+
     public DemoIntentService() {
 
     }
@@ -45,6 +50,7 @@ public class DemoIntentService extends GTIntentService {
     @Override
     public void onReceiveServicePid(Context context, int pid) {
         Log.e("getui", "------------onReceiveServicePid------------");
+
     }
 
     @Override
@@ -59,6 +65,13 @@ public class DemoIntentService extends GTIntentService {
 //        intent.putExtra(Const.COMMENT_ENTITY, temp);
         intent.putExtra("getFull",true);
         startActivity(intent);
+
+        String str = new String(msg.getPayload());
+        Log.i("getui",str);
+        PushMessage pushMessage = JSON.parseObject(str, PushMessage.class);
+        if(pushMessage == null) return;
+        EventBus.getDefault().post(pushMessage);
+
 
     }
 
@@ -94,6 +107,7 @@ public class DemoIntentService extends GTIntentService {
     @Override
     public void onReceiveOnlineState(Context context, boolean online) {
         Log.e("getui", "------------onReceiveOnlineState------------");
+
     }
 
     @Override
@@ -131,6 +145,7 @@ public class DemoIntentService extends GTIntentService {
         Log.e("getui", "taskId: " + taskId);
         Log.e("getui", "title: " + title);
         Log.e("getui", "pkgName: " + pkgName);
+        Log.e("getui", "------------通知被点击------------");
 
     }
 }

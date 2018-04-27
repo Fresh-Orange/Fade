@@ -252,6 +252,8 @@ public class ContentMy {
         backBarTitle.setText(user.getNickname());
         tvShowSummary.setText(user.getSummary());
         tvFadeName.setText(user.getFade_name());
+        schoolName.setText(user.getSchool_name());
+        departmentName.setText(user.getDepartment_name());
         String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
         String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
         String concern_num = (user.getConcern_num()>999?(user.getConcern_num()/1000+"K"):user.getConcern_num().toString());

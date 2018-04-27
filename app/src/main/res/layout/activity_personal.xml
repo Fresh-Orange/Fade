@@ -121,19 +121,77 @@
         android:gravity="center_vertical"
         android:layout_margin="20dp"
         android:showDividers="end">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="学校"/>
+        </LinearLayout>
+
         <TextView
             android:layout_width="0dp"
+            android:layout_weight="7"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:text="学校"/>
-        <EditText
-            android:id="@+id/setting_school"
             android:layout_marginLeft="20dp"
+            android:id="@+id/setting_school"/>
+
+        <LinearLayout
             android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:background="@null"/>
+            android:gravity="center_vertical|right"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/out1"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:src="@drawable/out"/>
+        </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_margin="20dp"
+        android:showDividers="end">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="院系"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="7"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:id="@+id/setting_department"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/out2"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:src="@drawable/out"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

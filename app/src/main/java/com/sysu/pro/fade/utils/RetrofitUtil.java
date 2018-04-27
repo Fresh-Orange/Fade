@@ -16,7 +16,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.fastjson.FastJsonConverterFactory;
+//import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by road on 2017/7/30.
@@ -53,9 +54,10 @@ public class RetrofitUtil {
     }
 
     public static Retrofit createRetrofit(String baseUrl,TokenModel tokenModel){
+
         return new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .addConverterFactory(JacksonConverterFactory.create())
+                .addConverterFactory(FastJsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(createOkHttp(tokenModel))
                 .build();
