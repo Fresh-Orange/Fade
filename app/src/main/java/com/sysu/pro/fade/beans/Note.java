@@ -53,6 +53,17 @@ public class Note implements Serializable {
 	//与上面两个属性有关，关注的人中续秒或减秒的总数量
 	private Integer relayUserNum = 0;
 
+	//是否是推荐的，0代表非推荐，1是推荐的
+	private Integer isRecommend;
+
+	public Integer getIsRecommend() {
+		return isRecommend;
+	}
+
+	public void setIsRecommend(Integer isRecommend) {
+		this.isRecommend = isRecommend;
+	}
+
 	public Integer getRelayUserNum() {
 		return relayUserNum;
 	}
