@@ -53,6 +53,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	private TextView tvHeadAction;
 	private ImageView ivHeadAction;
 	private ImageView ivDots;
+	private ImageView ivConcern;
 	private TextView tvCount;
 	private TextView tvAtUser;
 	private TextView tvAddress;
@@ -70,6 +71,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		tvAtUser = (TextView) itemView.findViewById(R.id.tv_original_author);
 		tvAddress = (TextView) itemView.findViewById(R.id.tv_address);
 		ivHeadAction = (ImageView) itemView.findViewById(R.id.iv_head_action);
+		ivConcern = (ImageView) itemView.findViewById(R.id.iv_concern_in_fade);
 		ivDots = (ImageView) itemView.findViewById(R.id.iv_dots);
 		tvHeadAction = (TextView) itemView.findViewById(R.id.tv_head_action);
 		clickableProgressBar = (ClickableProgressBar) itemView.findViewById(R.id.clickable_progressbar);
@@ -215,7 +217,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		else if (bean.getType() == 2){
 			Glide.with(context).load(R.drawable.minus).into(ivHeadAction);
 			//ivHeadAction.setImageResource(R.drawable.minus);
-			if (bean.getSubUsers().size() > 1)	//如果是合并的转发贴
+			if (bean.getRelayUserNum() > 1)	//如果是合并的转发贴
 				tvHeadAction.setText(context.getString(R.string.many_minus_time, bean.getRelayUserNum()));
 			else
 				tvHeadAction.setText(R.string.minus_time);

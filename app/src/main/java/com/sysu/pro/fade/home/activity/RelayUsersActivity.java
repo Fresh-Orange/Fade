@@ -21,7 +21,6 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.adapter.MultiTypeRVAdapter;
-import com.sysu.pro.fade.message.Utils.StatusBarUtil;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -75,7 +74,6 @@ public class RelayUsersActivity extends MainBaseActivity {
 		initLoadMore();
 		refreshLayout.autoRefresh();
 
-		StatusBarUtil.TintBar(this);
 
 	}
 

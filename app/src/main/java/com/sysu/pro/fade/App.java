@@ -14,6 +14,7 @@ import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.UserInfo;
+import io.rong.push.RongPushClient;
 
 
 /**
@@ -29,6 +30,8 @@ public class App extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		RongPushClient.registerMiPush(this, "2882303761517779005", "5451777914005");
+		//RongPushClient.registerHWPush(this);
 		RongIM.init(this);
 		setRongMsgClickListener();
 		instance = this;
