@@ -42,6 +42,9 @@ import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.java_websocket.drafts.Draft_6455;
 
 import java.io.File;
@@ -72,6 +75,7 @@ public class MainActivity extends MainBaseActivity {
     private UserService userService;
     private Client client;
 
+    private View redPoint;
 
     /*
     上次back的时间，用于双击退出判断
@@ -171,6 +175,8 @@ public class MainActivity extends MainBaseActivity {
         // com.getui.demo.DemoIntentService 为第三方自定义的推送服务事件接收类
         PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), DemoIntentService.class);
 
+        //主界面需要更新底部导航栏
+        EventBus.getDefault().register(this);
     }
 
 
@@ -302,18 +308,18 @@ public class MainActivity extends MainBaseActivity {
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.mipmap.message_normal), "消息")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
-                createView(res.getDrawable(R.mipmap.add), "发布")));
+                createView(res.getDrawable(R.mipmap.add_normal), "发布")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.mipmap.discover_normal), "发现")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.mipmap.my_normal), "我的")));
+        redPoint = mTabLayoutMenu.getTabAt(1).getCustomView().findViewById(R.id.red_point);
     }
 
     private View createView(Drawable icon, String tab) {
         View view = getLayoutInflater().inflate(R.layout.tab_layout, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.icon);
         imageView.setImageDrawable(icon);
-        imageView.setAlpha((float)0.5);
         return view;
     }
 
@@ -364,30 +370,51 @@ public class MainActivity extends MainBaseActivity {
 
     //设置选择tab图标
     private void changeTabSelect(TabLayout.Tab tab) {
-        Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
         //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
+            img_title.setImageResource(R.mipmap.home_focus);
         } else if (tab.getPosition()==Const.DISCOVER-1) {
             mViewPager.setCurrentItem(Const.DISCOVER-1,false);
+            img_title.setImageResource(R.mipmap.discover_focus);
         }else if (tab.getPosition() == Const.MESSAGE-1) {
             mViewPager.setCurrentItem(Const.MESSAGE-1,false);
+            img_title.setImageResource(R.mipmap.message_focus);
         } else if(tab.getPosition() == Const.MY-1){
             mViewPager.setCurrentItem(Const.MY-1,false);
+            img_title.setImageResource(R.mipmap.my_focus);
         }
-        img_title.setAlpha((float)1.0);
     }
 
     //设置还原tab图标
     private void changeTabNormal(TabLayout.Tab tab) {
-        Resources res = getResources();
         View view = tab.getCustomView();
         ImageView img_title = (ImageView) view.findViewById(R.id.icon);
-        img_title.setAlpha((float)0.5);
+        if (tab.getPosition() == Const.HOME-1) {
+            mViewPager.setCurrentItem(Const.HOME-1,false);
+            img_title.setImageResource(R.mipmap.home_normal);
+        } else if (tab.getPosition()==Const.DISCOVER-1) {
+            mViewPager.setCurrentItem(Const.DISCOVER-1,false);
+            img_title.setImageResource(R.mipmap.discover_normal);
+        }else if (tab.getPosition() == Const.MESSAGE-1) {
+            mViewPager.setCurrentItem(Const.MESSAGE-1,false);
+            img_title.setImageResource(R.mipmap.message_normal);
+        } else if(tab.getPosition() == Const.MY-1){
+            mViewPager.setCurrentItem(Const.MY-1,false);
+            img_title.setImageResource(R.mipmap.my_normal);
+        }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveMessage(Boolean haveNewMessage) {
+        if (haveNewMessage) {
+            redPoint.setVisibility(View.VISIBLE);
+        } else {
+            redPoint.setVisibility(View.GONE);
+        }
+    }
 
     public static class PlaceHolderFragment extends LazyFragment{
 
@@ -576,6 +603,8 @@ public class MainActivity extends MainBaseActivity {
                     });
             super.onDestroy();
         }
+        //取消EventBus
+        EventBus.getDefault().unregister(this);
     }
 
     /**

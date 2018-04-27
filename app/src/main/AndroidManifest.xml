@@ -84,7 +84,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity
             android:name=".my.activity.AddContentActivity"
             android:theme="@style/registerTheme"/>

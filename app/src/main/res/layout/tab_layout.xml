@@ -1,21 +1,22 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:src="@mipmap/discover_normal"/>
 
-    <!--去除底部导航栏文字部分-->
-    <!--<TextView-->
-        <!--android:id="@+id/title"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="发现"-->
-        <!--android:layout_gravity="center"/>-->
+    <View
+        android:id="@+id/red_point"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/red_point"
+        android:visibility="gone"
+        android:layout_alignTop="@id/icon"
+        android:layout_alignRight="@id/icon"
+        android:layout_alignEnd="@id/icon"/>
 
-</LinearLayout>
+</RelativeLayout>

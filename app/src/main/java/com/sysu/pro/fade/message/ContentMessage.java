@@ -215,6 +215,10 @@ public class ContentMessage {
                             commentCountTv.setVisibility(View.VISIBLE);
                             commentCountTv.setText(String.valueOf(commentCount));
                         }
+                        //让主界面进行更新红点
+                        if (contributionCount+newFanCount+commentCount > 0) {
+                            EventBus.getDefault().post(true);
+                        }
                     }
                 });
     }
@@ -263,6 +267,10 @@ public class ContentMessage {
                 sendBadge();
                 //消除贡献队列
                 processCountTv.setVisibility(View.GONE);
+                //让主界面进行更新红点
+                if (contributionCount+newFanCount+commentCount == 0) {
+                    EventBus.getDefault().post(false);
+                }
             }
         });
 
@@ -276,6 +284,10 @@ public class ContentMessage {
                 sendBadge();
                 //消除粉丝
                 newFanCountTv.setVisibility(View.GONE);
+                //让主界面进行更新红点
+                if (contributionCount+newFanCount+commentCount == 0) {
+                    EventBus.getDefault().post(false);
+                }
             }
         });
 
@@ -289,6 +301,10 @@ public class ContentMessage {
                 sendBadge();
                 //消除评论
                 commentCountTv.setVisibility(View.GONE);
+                //让主界面进行更新红点
+                if (contributionCount+newFanCount+commentCount == 0) {
+                    EventBus.getDefault().post(false);
+                }
             }
         });
     }

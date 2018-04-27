@@ -123,6 +123,12 @@ public class DetailActivity extends MainBaseActivity{
         detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
 
+        //设置上拉加载
+        refreshLayout = findViewById(R.id.detail_comment_refresh);
+        refreshLayout.setEnableRefresh(false);  //不需要下拉刷新功能
+        refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+
         /* ******** 帖子展示部分 by 赖贤城 *******/
         note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
         imageLayout = (imageAdaptiveIndicativeItemLayout)findViewById(R.id.image_layout);
@@ -383,11 +389,7 @@ public class DetailActivity extends MainBaseActivity{
 
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //设置上拉加载
-        refreshLayout = findViewById(R.id.detail_comment_refresh);
-        refreshLayout.setEnableRefresh(false);  //不需要下拉刷新功能
-        refreshLayout.setEnableAutoLoadmore(false);
-        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        //上拉加载
         if (commentator.size() < 10) {
             refreshLayout.setEnableLoadmore(false);
         }
@@ -431,15 +433,20 @@ public class DetailActivity extends MainBaseActivity{
 
                     @Override
                     public void onNext(CommentQuery commentQuery) {
-                        commentStart = commentQuery.getStart(); //更新start
-                        commentator.addAll(commentQuery.getList());
-                        commentAdapter.notifyDataSetChanged();
-                        refreshLayout.finishLoadmore();
-                        if (commentQuery.getList().size() == 10) {
-                            loadMoreFlag = 1;
-                            refreshLayout.setEnableLoadmore(true);
-                        } else {
-                            refreshLayout.setEnableLoadmore(false);
+                        if(commentQuery.getList().size() > 0) {
+                            commentStart = commentQuery.getStart(); //更新start
+                            int oldSize = commentator.size();
+                            int addSize = commentQuery.getList().size();
+                            commentator.addAll(commentQuery.getList());
+                            //部分更新就行了
+                            commentAdapter.notifyItemRangeInserted(oldSize, addSize);
+                            refreshLayout.finishLoadmore();
+                            if (commentQuery.getList().size() == 10) {
+                                loadMoreFlag = 1;
+                                refreshLayout.setEnableLoadmore(true);
+                            } else {
+                                refreshLayout.setEnableLoadmore(false);
+                            }
                         }
                     }
                 });
@@ -517,11 +524,16 @@ public class DetailActivity extends MainBaseActivity{
                                 Map<String, Object> map = simpleResponse.getExtra();
                                 userComment.setComment_id((Integer) map.get("comment_id"));
                                 userComment.setComment_time((String) map.get("comment_time"));
-                                commentator.add(userComment);
-                                commentAdapter.notifyDataSetChanged();
+                                //如果评论没有的话，直接添加，如果评论等于10条的话，等上拉加载再加载出来吧
+                                int oldSize = commentator.size();
+                                if (oldSize == 0 || oldSize%10 != 0) {
+                                    commentator.add(userComment);
+                                    commentAdapter.notifyItemInserted(oldSize);
+                                } else {
+                                    refreshLayout.setEnableLoadmore(true);
+                                }
                                 writeComment.setText("");
-                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
-                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
                             }
                         });
 
@@ -574,7 +586,7 @@ public class DetailActivity extends MainBaseActivity{
                                 View view = createReplyItemView(secondComment, userId, holder);
                                 holder.addView(R.id.comment_detail_reply_wrapper, view);
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
-                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+//                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
                                 Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                                 commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
