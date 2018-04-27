@@ -90,6 +90,7 @@ public class FansFragment extends Fragment {
                     @Override
                     public void onNext(UserQuery userQuery) {
                         refreshLayout.finishLoadmore();
+                        fans.clear();
                         fans.addAll(userQuery.getList());
                         Log.d("Check", "fans: "+userQuery.getList().size());
                         start = userQuery.getStart().toString();
@@ -128,40 +129,68 @@ public class FansFragment extends Fragment {
                 });
                 holder.setText(R.id.fans_name, data.getNickname());
                 holder.setText(R.id.fans_signature, data.getSummary());
+                //设置关注
+                holder.onWidgetClick(R.id.fans_concern, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        UserService service = retrofit.create(UserService.class);
+                        service.concern(myself.getUser_id().toString(), data.getUser_id().toString())
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<SimpleResponse>() {
+                                    @Override
+                                    public void onCompleted() {
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.d("关注bug", "onError: " + e.toString());
+                                    }
+
+                                    @Override
+                                    public void onNext(SimpleResponse simpleResponse) {
+                                        if (simpleResponse.getErr() == null) {
+                                            holder.setWidgetVisibility(R.id.fans_concern, View.GONE);
+                                            holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
+                                        }
+                                    }
+                                });
+                    }
+                });
+                //设置取关
+                holder.onWidgetClick(R.id.fans_concern_ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        UserService service = retrofit.create(UserService.class);
+                        service.cancelConcern(myself.getUser_id().toString(), data.getUser_id().toString())
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<SimpleResponse>() {
+                                    @Override
+                                    public void onCompleted() {
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.d("取关bug", "onError: " + e.toString());
+                                    }
+
+                                    @Override
+                                    public void onNext(SimpleResponse simpleResponse) {
+                                        if (simpleResponse.getErr() == null) {
+                                            holder.setWidgetVisibility(R.id.fans_concern_ok, View.GONE);
+                                            holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
+                                        }
+                                    }
+                                });
+                    }
+                });
                 //如果打开别人的页面，粉丝是自己，就不用显示是否关注了
                 if (data.getUser_id() != myself.getUser_id()) {
                     if (data.getIsConcern() == 1) {
                         holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
-                        // TODO: 2018/4/25 取关
                     } else {
                         holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
-                        holder.onWidgetClick(R.id.fans_concern, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                UserService service = retrofit.create(UserService.class);
-                                service.concern(myself.getUser_id().toString(), data.getUser_id().toString())
-                                        .subscribeOn(Schedulers.newThread())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new Subscriber<SimpleResponse>() {
-                                            @Override
-                                            public void onCompleted() {
-                                            }
-
-                                            @Override
-                                            public void onError(Throwable e) {
-                                                Log.d("关注bug", "onError: " + e.toString());
-                                            }
-
-                                            @Override
-                                            public void onNext(SimpleResponse simpleResponse) {
-                                                if (simpleResponse.getErr() == null) {
-                                                    holder.setWidgetVisibility(R.id.fans_concern, View.GONE);
-                                                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
-                                                }
-                                            }
-                                        });
-                            }
-                        });
                     }
                 }
             }

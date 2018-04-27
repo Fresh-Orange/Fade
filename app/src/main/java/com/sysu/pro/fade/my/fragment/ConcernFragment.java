@@ -90,6 +90,7 @@ public class ConcernFragment extends Fragment {
                     @Override
                     public void onNext(UserQuery userQuery) {
                         refreshLayout.finishLoadmore();
+                        concern.clear();
                         concern.addAll(userQuery.getList());
                         Log.d("Check", "fans: "+userQuery.getList().size());
                         start = userQuery.getStart().toString();

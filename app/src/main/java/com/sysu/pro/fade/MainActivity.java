@@ -42,6 +42,9 @@ import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.java_websocket.drafts.Draft_6455;
 
 import java.io.File;
@@ -72,6 +75,7 @@ public class MainActivity extends MainBaseActivity {
     private UserService userService;
     private Client client;
 
+    private View redPoint;
 
     /*
     上次back的时间，用于双击退出判断
@@ -171,6 +175,8 @@ public class MainActivity extends MainBaseActivity {
         // com.getui.demo.DemoIntentService 为第三方自定义的推送服务事件接收类
         PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), DemoIntentService.class);
 
+        //主界面需要更新底部导航栏
+        EventBus.getDefault().register(this);
     }
 
 
@@ -307,6 +313,7 @@ public class MainActivity extends MainBaseActivity {
                 createView(res.getDrawable(R.mipmap.discover_normal), "发现")));
         mTabLayoutMenu.addTab(mTabLayoutMenu.newTab().setCustomView(
                 createView(res.getDrawable(R.mipmap.my_normal), "我的")));
+        redPoint = mTabLayoutMenu.getTabAt(1).getCustomView().findViewById(R.id.red_point);
     }
 
     private View createView(Drawable icon, String tab) {
@@ -400,6 +407,14 @@ public class MainActivity extends MainBaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveMessage(Boolean haveNewMessage) {
+        if (haveNewMessage) {
+            redPoint.setVisibility(View.VISIBLE);
+        } else {
+            redPoint.setVisibility(View.GONE);
+        }
+    }
 
     public static class PlaceHolderFragment extends LazyFragment{
 
@@ -588,6 +603,8 @@ public class MainActivity extends MainBaseActivity {
                     });
             super.onDestroy();
         }
+        //取消EventBus
+        EventBus.getDefault().unregister(this);
     }
 
     /**
