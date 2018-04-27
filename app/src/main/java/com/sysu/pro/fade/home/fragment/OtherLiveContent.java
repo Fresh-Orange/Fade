@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sysu.pro.fade.Const;
@@ -74,6 +76,13 @@ public class OtherLiveContent {
     private Boolean isLoading;
     private UserUtil userUtil;
 
+    /**
+     * add by VJ 2018/4/27
+     * 用于没有内容时的文案
+     */
+    private ImageView interesting;
+    private TextView nothingLive;
+
     public OtherLiveContent(Activity activity, final Context context, View rootView, Integer userId){
         this.activity = activity;
         this.context = context;
@@ -81,6 +90,8 @@ public class OtherLiveContent {
         this.otherUserId = userId;
         this.userUtil = new UserUtil(activity);
         Log.e("otherContent","OtherFadeContent");
+        interesting = rootView.findViewById(R.id.interesting);
+        nothingLive = rootView.findViewById(R.id.nothing_live);
         //EventBus订阅
         EventBus.getDefault().register(this);
         swipeRefresh = (SwipeRefreshLayout)rootView.findViewById(R.id.swipe_refresh);
@@ -125,6 +136,14 @@ public class OtherLiveContent {
                         swipeRefresh.setRefreshing(false);
                         Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                         isLoading = false;
+                        //add by vj
+                        if (notes.size() != 0) {
+                            interesting.setVisibility(View.GONE);
+                            nothingLive.setVisibility(View.GONE);
+                        } else {
+                            interesting.setVisibility(View.VISIBLE);
+                            nothingLive.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
         start = 0;
@@ -204,6 +223,11 @@ public class OtherLiveContent {
                                             if(addList.size() != 0){
                                                 addToListTail(noteQuery.getList());
                                                 Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+                                                //add by vj
+                                                if (notes.size() != 0) {
+                                                    interesting.setVisibility(View.GONE);
+                                                    nothingLive.setVisibility(View.GONE);
+                                                }
                                             }
                                             else{
                                                 Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
@@ -259,6 +283,14 @@ public class OtherLiveContent {
                                         notes.clear();
                                         if(noteQuery.getList() != null){
                                             addToListTail(noteQuery.getList());
+                                        }
+                                        //add by vj
+                                        if (notes.size() != 0) {
+                                            interesting.setVisibility(View.GONE);
+                                            nothingLive.setVisibility(View.GONE);
+                                        } else {
+                                            interesting.setVisibility(View.VISIBLE);
+                                            nothingLive.setVisibility(View.VISIBLE);
                                         }
                                         //更新start
                                         start = noteQuery.getStart();

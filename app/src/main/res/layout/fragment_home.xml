@@ -1,7 +1,8 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     >
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -14,13 +15,31 @@
             android:dividerHeight="1dp"
             android:divider="#d9d9d9"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/light_gray"/>
+            android:layout_height="match_parent"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
 
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/interesting"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:src="@mipmap/interesting"
+        android:alpha="0.5"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/nothing_live"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="没有动态可以续了，右滑无中生有"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="65dp"
+        android:textColor="#000000"
+        android:textSize="14sp"/>
 
 
-
-</FrameLayout>
+</RelativeLayout>

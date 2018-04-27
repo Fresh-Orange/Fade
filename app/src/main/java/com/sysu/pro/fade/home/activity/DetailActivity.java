@@ -529,10 +529,11 @@ public class DetailActivity extends MainBaseActivity{
                                 if (oldSize == 0 || oldSize%10 != 0) {
                                     commentator.add(userComment);
                                     commentAdapter.notifyItemInserted(oldSize);
-                                    writeComment.setText("");
-                                    Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
-                                    commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
+                                } else {
+                                    refreshLayout.setEnableLoadmore(true);
                                 }
+                                writeComment.setText("");
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
                             }
                         });
 
