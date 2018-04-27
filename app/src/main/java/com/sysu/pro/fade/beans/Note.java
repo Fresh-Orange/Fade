@@ -54,7 +54,20 @@ public class Note implements Serializable {
 	private Integer relayUserNum = 0;
 
 	//是否是推荐的，0代表非推荐，1是推荐的
-	private Integer isRecommend;
+	private Integer isRecommend = 0;
+
+	//推荐的帖子的用户是否被当前用户关注了
+	private boolean isConcernedFromRecommend = false;
+
+	public boolean isConcernedFromRecommend() {
+		return isConcernedFromRecommend;
+	}
+
+	public void setConcernedFromRecommend(boolean concernedFromRecommend) {
+		isConcernedFromRecommend = concernedFromRecommend;
+	}
+
+
 
 	public Integer getIsRecommend() {
 		return isRecommend;
