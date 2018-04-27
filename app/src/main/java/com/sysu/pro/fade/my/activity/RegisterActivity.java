@@ -52,7 +52,7 @@ public class RegisterActivity extends LoginBaseActivity {
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                //if(ans.equals("{}")){
 
                     //验证成功，跳转到输入密码界面
                     Intent intent = new Intent(RegisterActivity.this,SetPasswordActivity.class);
@@ -60,9 +60,9 @@ public class RegisterActivity extends LoginBaseActivity {
                     startActivity(intent);
 
                     //finish();
-                }else{
-                    red_wrong_valid.setVisibility(View.VISIBLE);
-                }
+                //}else{
+                //    red_wrong_valid.setVisibility(View.VISIBLE);
+               // }
             }
         }
     };

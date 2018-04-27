@@ -36,6 +36,7 @@ import com.sysu.pro.fade.utils.RetrofitUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +72,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
     private ImageView backbtn;
     private UserService userService;
     private int flag = 0;
+    private Map<String, Integer> school_map;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -87,6 +89,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
         line = (View) findViewById(R.id.line);
         line1 = (View) findViewById(R.id.line1);
         backbtn = (ImageView) findViewById(R.id.back_btn);
+        school_map = new HashMap<String, Integer>();
         user = new User();
         mbundle = new Bundle();
 
@@ -174,8 +177,8 @@ public class SetSchoolActivity extends LoginBaseActivity {
                 // 把选择的数据展示对应的TextView上
                 school.setText(value);
                 user.setSchool_name(value);
-                user.setSchool_id(12002);
-                userService.getSchoolDepartment("12002")
+                user.setSchool_id(school_map.get(value));
+                userService.getSchoolDepartment(school_map.get(value)+"")
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<DepartmentQuery>() {
@@ -258,22 +261,19 @@ public class SetSchoolActivity extends LoginBaseActivity {
      * 模拟假数据
      */
     private void TestData() {
-        testData = new ArrayList<>();
-        /*for (int i = 0; i < 20; i++) {
-            String str = new String("数据" + i);
-            testData.add(str);
-        }*/
-        testData.add("中山大学");
-        testData.add("华南理工大学");
-        testData.add("深圳大学");
-        testData.add("暨南大学");
-        testData.add("华南师范大学");
-        testData.add("华南农业大学");
-        testData.add("南方医科大学");
-        testData.add("广东外语外贸大学");
-        testData.add("广州大学");
-        testData.add("广东工业大学");
-        testData.add("汕头大学");
-        testData.add("广东中医药大学");
+        school_map.put("中山大学", 12002);
+        school_map.put("华南理工大学", 12001);
+        school_map.put("深圳大学", 12051);
+        school_map.put("暨南大学", 12003);
+        school_map.put("华南师范大学", 12004);
+        school_map.put("华南农业大学", 12006);
+        school_map.put("南方医科大学", 12010);
+        school_map.put("广东外语外贸大学", 12008);
+        school_map.put("广州大学", 12007);
+        school_map.put("广东工业大学", 12005);
+        school_map.put("汕头大学", 12101);
+        school_map.put("广州中医药大学", 12009);
+
+        testData = new ArrayList<>(school_map.keySet());
     }
 }
