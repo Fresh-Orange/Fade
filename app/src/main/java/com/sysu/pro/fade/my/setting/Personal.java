@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -39,8 +40,11 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -83,6 +87,7 @@ public class Personal extends AppCompatActivity {
     private Integer school_id;
     private Integer department_id;
     private int flag;
+    private Map<String, Integer> school_map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +105,7 @@ public class Personal extends AppCompatActivity {
         out2 = (ImageView) findViewById(R.id.out2);
         settingArea = (EditText) findViewById(R.id.setting_area);
         flag = 0;
+        school_map = new HashMap<String, Integer>();
 
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,null);
         userService = retrofit.create(UserService.class);
@@ -315,9 +321,9 @@ public class Personal extends AppCompatActivity {
                 // 把选择的数据展示对应的TextView上
                 settingSchool.setText(value);
                 user.setSchool_name(value);
-                user.setSchool_id(12002);
-                school_id = 12002;
-                userService.getSchoolDepartment("12002")
+                user.setSchool_id(school_map.get(value));
+                school_id = school_map.get(value);
+                userService.getSchoolDepartment(school_map.get(value)+"")
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<DepartmentQuery>() {
@@ -428,12 +434,25 @@ public class Personal extends AppCompatActivity {
      * 模拟假数据
      */
     private void TestData() {
-        testData = new ArrayList<>();
         /*for (int i = 0; i < 20; i++) {
             String str = new String("数据" + i);
             testData.add(str);
         }*/
-        testData.add("中山大学");
+        school_map.put("中山大学", 12002);
+        school_map.put("华南理工大学", 12001);
+        school_map.put("深圳大学", 12051);
+        school_map.put("暨南大学", 12003);
+        school_map.put("华南师范大学", 12004);
+        school_map.put("华南农业大学", 12006);
+        school_map.put("南方医科大学", 12010);
+        school_map.put("广东外语外贸大学", 12008);
+        school_map.put("广州大学", 12007);
+        school_map.put("广东工业大学", 12005);
+        school_map.put("汕头大学", 12101);
+        school_map.put("广州中医药大学", 12009);
+
+        testData = new ArrayList<>(school_map.keySet());
+        /*testData.add("中山大学");
         testData.add("华南理工大学");
         testData.add("深圳大学");
         testData.add("暨南大学");
@@ -444,7 +463,7 @@ public class Personal extends AppCompatActivity {
         testData.add("广州大学");
         testData.add("广东工业大学");
         testData.add("汕头大学");
-        testData.add("广东中医药大学");
+        testData.add("广东中医药大学");*/
     }
 
 }
