@@ -101,12 +101,13 @@ public class ForwardFragment extends Fragment {
                     @Override
                     public void onNext(NoteQuery noteQuery) {
                         refreshLayout.finishLoadmore();
+                        int addSize = noteQuery.getList().size();
                         attitudes.addAll(noteQuery.getList());
                         Log.d("GetData", ""+attitudes.size());
                         start = noteQuery.getStart().toString();
                         adapter.notifyDataSetChanged();
                         Log.d("Check", "setupView: "+adapter.getItemCount());
-                        if (attitudes.size() % 20 != 0) {
+                        if (addSize < 10) {
                             refreshLayout.setEnableLoadmore(false);
                         } else {
                             refreshLayout.setEnableLoadmore(true);

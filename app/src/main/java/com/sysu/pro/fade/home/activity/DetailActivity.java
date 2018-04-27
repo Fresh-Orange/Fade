@@ -285,11 +285,12 @@ public class DetailActivity extends MainBaseActivity{
         if (forwardList.size() > 0) {
             findViewById(R.id.detail_commentator).setVisibility(View.VISIBLE);
         }
-        if (forwardList.size() != 10) {
-            forwardMore.setVisibility(View.INVISIBLE);
+        if (forwardList.size() < 10) {
+            forwardMore.setVisibility(View.GONE);
         } else {
 //            Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
             //跳转续秒详情
+            forwardMore.setVisibility(View.VISIBLE);
             forwardMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
