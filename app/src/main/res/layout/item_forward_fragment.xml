@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <View
         android:id="@+id/fragment_forward_item_divide_line"
@@ -12,55 +12,58 @@
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:background="#7f7f7f"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="#7f7f7f"/>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/fragment_forward_item_head"
-        android:layout_width="33dp"
-        android:layout_height="33dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/fragment_forward_item_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:layout_marginLeft="7dp"
-        android:textColor="@color/black"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_forward_item_head"
-        app:layout_constraintStart_toEndOf="@+id/fragment_forward_item_head"
-        app:layout_constraintTop_toTopOf="@+id/fragment_forward_item_head" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/fragment_forward_item_head"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_marginBottom="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/fragment_forward_item_attitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#7f7f7f"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_forward_item_head"
-        app:layout_constraintStart_toEndOf="@+id/fragment_forward_item_name"
-        app:layout_constraintTop_toTopOf="@+id/fragment_forward_item_head" />
+        <TextView
+            android:id="@+id/fragment_forward_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:layout_marginLeft="7dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/fragment_forward_item_head"
+            app:layout_constraintStart_toEndOf="@+id/fragment_forward_item_head"
+            app:layout_constraintTop_toTopOf="@+id/fragment_forward_item_head" />
 
-    <TextView
-        android:id="@+id/fragment_forward_item_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textColor="#7f7f7f"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_forward_item_head"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/fragment_forward_item_head" />
+        <TextView
+            android:id="@+id/fragment_forward_item_attitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#7f7f7f"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/fragment_forward_item_head"
+            app:layout_constraintStart_toEndOf="@+id/fragment_forward_item_name"
+            app:layout_constraintTop_toTopOf="@+id/fragment_forward_item_head" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/fragment_forward_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:textColor="#7f7f7f"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/fragment_forward_item_head"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/fragment_forward_item_head" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>
