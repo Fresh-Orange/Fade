@@ -9,11 +9,11 @@
         tools:replace="android:value"/>
 
     <!-- 基础模块（必须加入以下声明）START -->
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
-    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
-    <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
-    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
-    <!-- <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> -->
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+    <!--<uses-permission android:name="android.permission.INTERNET" />-->
+    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
+    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />-->
 
 
     <!-- 用于进行网络定位 -->
@@ -48,6 +48,12 @@
 
 
 
+    <!-- 华为角标 -->
+    <uses-permission android:name=" com.huawei.android.launcher.permission.CHANGE_BADGE"/>
+
+    <!-- 三星角标 -->
+    <uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
+    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
     <!-- 基础模块 END -->
     <application
         android:name=".App"
@@ -57,11 +63,21 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <service android:name="com.amap.api.location.APSService"/>
+        <service android:name="com.amap.api.location.APSService" />
+
+        <service
+            android:name="com.sysu.pro.fade.message.GeTui.Service.DemoPushService"
+            android:exported="true"
+            android:label="PushService"
+            android:process=":pushservice">
+        </service>
+
+        <service android:name="com.sysu.pro.fade.message.GeTui.Service.DemoIntentService"/>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="dc40cca1d244f03684c5150c331264f7"/>
+            android:value="dc40cca1d244f03684c5150c331264f7" />
+
         <meta-data
             android:name="com.sysu.pro.fade.config.GlideConfiguration"
             android:value="GlideModule"/>
@@ -118,7 +134,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/rc_file_path"/>
+                android:resource="@xml/rc_file_path" />
         </provider>
 
         <activity android:name=".notification.NotificationActivity"/>

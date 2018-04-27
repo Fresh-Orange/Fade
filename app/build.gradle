@@ -25,7 +25,7 @@ android {
 //    multiDexEnabled true
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -77,23 +77,25 @@ dependencies {
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     //compile 'cn.leancloud.android:avoscloud-sdk:v4.3.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'io.reactivex:rxjava:1.3.4'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.3.4'
+    compile group: 'io.reactivex', name: 'rxandroid', version: '1.2.1'
+    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.3.0'
+    compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava', version: '2.1.0'
+    compile group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.alibaba:fastjson:1.2.39'
     testCompile 'junit:junit:4.12'
     compile 'me.relex:circleindicator:1.2.2@aar'
     implementation 'com.lapism:searchview:5.0.0-alpha7'
     implementation 'com.google.android:flexbox:0.3.1'
-    compile 'org.java-websocket:Java-WebSocket:1.3.6'
+    compile "org.java-websocket:Java-WebSocket:1.3.6"
     compile 'com.amap.api:location:latest.integration'
     compile 'com.amap.api:search:latest.integration'
+
     compile 'com.getui:sdk:2.12.3.0'
+
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+
     compile project(':IMKit')
-    implementation files('libs/MiPush_SDK_Client_3_6_2.jar')
 }

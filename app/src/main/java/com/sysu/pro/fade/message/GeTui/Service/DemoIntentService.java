@@ -5,17 +5,30 @@ package com.sysu.pro.fade.message.GeTui.Service;
  */
 
 import android.content.Context;
-import android.os.Message;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.igexin.sdk.GTIntentService;
-import com.igexin.sdk.PushConsts;
-import com.igexin.sdk.PushManager;
-import com.igexin.sdk.message.FeedbackCmdMessage;
 import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTNotificationMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
-import com.igexin.sdk.message.SetTagCmdMessage;
+import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.beans.PushMessage;
+import com.sysu.pro.fade.beans.SimpleResponse;
+import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.message.Activity.ContributionActivity;
+import com.sysu.pro.fade.service.UserService;
+import com.sysu.pro.fade.utils.RetrofitUtil;
+
+import org.greenrobot.eventbus.EventBus;
+
+import retrofit2.Retrofit;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
@@ -26,38 +39,113 @@ import com.igexin.sdk.message.SetTagCmdMessage;
  */
 public class DemoIntentService extends GTIntentService {
 
+    private User myself;
+
+
+
     public DemoIntentService() {
 
     }
 
     @Override
     public void onReceiveServicePid(Context context, int pid) {
+        Log.e("getui", "------------onReceiveServicePid------------");
+
     }
 
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
+        Log.e("getui", "------------onReceiveMessageData------------");
+        String noteID = new String(msg.getPayload());
+//        Log.e("getui", "data: " + data);
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.putExtra(Const.NOTE_ID, noteID);
+        intent.putExtra(Const.IS_COMMENT, false);
+//        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
+//        intent.putExtra(Const.COMMENT_ENTITY, temp);
+        intent.putExtra("getFull",true);
+        startActivity(intent);
+
+        String str = new String(msg.getPayload());
+        Log.i("getui",str);
+        PushMessage pushMessage = JSON.parseObject(str, PushMessage.class);
+        if(pushMessage == null) return;
+        EventBus.getDefault().post(pushMessage);
+
+
     }
 
     @Override
     public void onReceiveClientId(Context context, String clientid) {
+        Log.e("getui", "------------onReceiveClientId------------");
         Log.e(TAG, "onReceiveClientId -> " + "clientid = " + clientid);
+        if(myself == null){
+            SharedPreferences sharedPreferences = getSharedPreferences(Const.USER_SHARE, Context.MODE_PRIVATE);
+            myself = JSON.parseObject(sharedPreferences.getString("user","{}"),User.class);
+        }
+        Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,myself.getTokenModel());
+        UserService userService = retrofit.create(UserService.class);
+        userService.addClientId(myself.getUser_id().toString(),clientid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<SimpleResponse>(){
+                    @Override
+                    public void onCompleted() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                    @Override
+                    public void onNext(SimpleResponse simpleResponse) {
+                        Log.i("上传clientid","成功");
+                    }
+                });
     }
 
     @Override
     public void onReceiveOnlineState(Context context, boolean online) {
+        Log.e("getui", "------------onReceiveOnlineState------------");
+
     }
 
     @Override
     public void onReceiveCommandResult(Context context, GTCmdMessage cmdMessage) {
+        Log.e("getui", "------------onReceiveCommandResult------------");
     }
 
 
 
     @Override
     public void onNotificationMessageArrived(Context context, GTNotificationMessage msg) {
+        String content = msg.getContent();
+        String messageId = msg.getMessageId();
+        String taskId = msg.getTaskId();
+        String title = msg.getTitle();
+        String pkgName = msg.getPkgName();
+        Log.e("getui", "------------onNotificationMessageArrived------------");
+        Log.e("getui", "content: " + content);
+        Log.e("getui", "messageId: " + messageId);
+        Log.e("getui", "taskId: " + taskId);
+        Log.e("getui", "title: " + title);
+        Log.e("getui", "pkgName: " + pkgName);
     }
 
     @Override
     public void onNotificationMessageClicked(Context context, GTNotificationMessage msg) {
+        String content = msg.getContent();
+        String messageId = msg.getMessageId();
+        String taskId = msg.getTaskId();
+        String title = msg.getTitle();
+        String pkgName = msg.getPkgName();
+        Log.e("getui", "------------onNotificationMessageClicked------------");
+        Log.e("getui", "content: " + content);
+        Log.e("getui", "messageId: " + messageId);
+        Log.e("getui", "taskId: " + taskId);
+        Log.e("getui", "title: " + title);
+        Log.e("getui", "pkgName: " + pkgName);
+        Log.e("getui", "------------通知被点击------------");
+
     }
 }
