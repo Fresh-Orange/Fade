@@ -5,7 +5,6 @@ package com.sysu.pro.fade.message.GeTui.Service;
  */
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -18,8 +17,6 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.home.activity.DetailActivity;
-import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 
@@ -56,23 +53,16 @@ public class DemoIntentService extends GTIntentService {
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
         Log.e("getui", "------------onReceiveMessageData------------");
-        String noteID = new String(msg.getPayload());
-//        Log.e("getui", "data: " + data);
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(Const.NOTE_ID, noteID);
-        intent.putExtra(Const.IS_COMMENT, false);
-//        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
-//        intent.putExtra(Const.COMMENT_ENTITY, temp);
-        intent.putExtra("getFull",true);
-        startActivity(intent);
-
         String str = new String(msg.getPayload());
         Log.i("getui",str);
-        PushMessage pushMessage = JSON.parseObject(str, PushMessage.class);
-        if(pushMessage == null) return;
-        EventBus.getDefault().post(pushMessage);
-
-
+        try {
+            PushMessage pushMessage = JSON.parseObject(str, PushMessage.class);
+            Log.i("getui","-------------");
+            if(pushMessage == null) return;
+            EventBus.getDefault().post(pushMessage);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
