@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -67,3 +68,66 @@
     </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>
+
+<!--另一种方案-->
+
+<!--<RelativeLayout-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools">-->
+
+<!--<View-->
+    <!--android:id="@+id/fragment_forward_item_divide_line"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="1dp"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--android:layout_marginLeft="16dp"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:background="#7f7f7f"/>-->
+
+<!--<de.hdodenhof.circleimageview.CircleImageView-->
+    <!--android:id="@+id/fragment_forward_item_head"-->
+    <!--android:layout_width="33dp"-->
+    <!--android:layout_height="33dp"-->
+    <!--android:layout_marginBottom="24dp"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--android:layout_marginLeft="16dp"-->
+    <!--android:layout_marginTop="24dp"/>-->
+
+<!--<TextView-->
+    <!--android:id="@+id/fragment_forward_item_name"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="7dp"-->
+    <!--android:layout_marginLeft="7dp"-->
+    <!--android:layout_toRightOf="@id/fragment_forward_item_head"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--tools:text="名字"-->
+    <!--android:textColor="@color/black"-->
+    <!--android:textSize="14sp"/>-->
+
+<!--<TextView-->
+    <!--android:id="@+id/fragment_forward_item_attitude"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:textColor="#7f7f7f"-->
+    <!--android:textSize="14sp"-->
+    <!--tools:text="续了一秒"-->
+    <!--android:layout_toRightOf="@id/fragment_forward_item_name"-->
+    <!--android:layout_centerVertical="true"/>-->
+
+<!--<TextView-->
+    <!--android:id="@+id/fragment_forward_item_time"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginEnd="16dp"-->
+    <!--android:layout_marginRight="16dp"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--tools:text="今天"-->
+    <!--android:textColor="#7f7f7f"-->
+    <!--android:textSize="12sp"/>-->
+
+<!--</RelativeLayout>-->
