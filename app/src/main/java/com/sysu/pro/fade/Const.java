@@ -7,7 +7,7 @@ public class Const {
     /*
     信息流相关常量
      */
-    public static final int HOME_NODE_DEFAULT_LIFE = 60;    //单位：分钟
+    public static final int HOME_NODE_DEFAULT_LIFE = 45;    //单位：分钟
     public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
     public static final String IP  = "https://sysufade.cn/fade"; //阿里云云服务器地址
 

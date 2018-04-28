@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,6 +94,9 @@ public class DetailActivity extends MainBaseActivity{
 
     private InputMethodManager imm; //管理软键盘
 
+    private ProgressBar detailLoading;
+    private CoordinatorLayout allContent;
+
     /* ******** 帖子展示部分 by 赖贤城 *******/
     Note note;//首页传入的帖子
     private imageAdaptiveIndicativeItemLayout imageLayout;
@@ -111,6 +116,9 @@ public class DetailActivity extends MainBaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         TintBar(this);//状态栏白底黑字
+
+        detailLoading = findViewById(R.id.detail_loading);
+        allContent = findViewById(R.id.detail_coordinator_layout);
 
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         commentNumText = findViewById(R.id.detail_text1);
@@ -201,6 +209,9 @@ public class DetailActivity extends MainBaseActivity{
                             Log.d("bug", "进来了");
                             showDirectComment();
                         }
+
+                        detailLoading.setVisibility(View.GONE);
+                        allContent.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -285,11 +296,12 @@ public class DetailActivity extends MainBaseActivity{
         if (forwardList.size() > 0) {
             findViewById(R.id.detail_commentator).setVisibility(View.VISIBLE);
         }
-        if (forwardList.size() != 10) {
-            forwardMore.setVisibility(View.INVISIBLE);
+        if (forwardList.size() < 10) {
+            forwardMore.setVisibility(View.GONE);
         } else {
 //            Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
             //跳转续秒详情
+            forwardMore.setVisibility(View.VISIBLE);
             forwardMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -322,7 +334,9 @@ public class DetailActivity extends MainBaseActivity{
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
                 //如果是第一项，不需要显示分割线
                 if (position == 0) {
-                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.INVISIBLE);
+                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.GONE);
+                } else {
+                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.VISIBLE);
                 }
                 //头像点击事件
                 holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {

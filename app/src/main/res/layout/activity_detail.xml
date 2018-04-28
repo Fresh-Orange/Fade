@@ -15,10 +15,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <ProgressBar
+            android:id="@+id/detail_loading"
+            android:indeterminate="false"
+            android:indeterminateDrawable="@drawable/dialog_style_xml_color"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/detail_coordinator_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            tools:visibility="visible">
 
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/detail_app_bar_layout"
@@ -27,9 +38,10 @@
                 app:elevation="0dp"
                 android:background="@android:color/transparent">
 
-                <android.support.constraint.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     app:layout_scrollFlags="scroll">
 
                     <LinearLayout
@@ -37,9 +49,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
                         android:orientation="vertical">
                         <!---帖子内容在这里展示，可以修改成其他类型的layout，但id不能改-->
 
@@ -57,14 +66,14 @@
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
                                 android:layout_alignParentTop="true"
-                                android:src="@drawable/avatar" />
+                                tools:src="@drawable/avatar" />
                             <TextView
                                 android:id="@+id/tv_name"
                                 android:gravity="center_vertical"
                                 android:layout_toRightOf="@id/civ_avatar"
                                 android:layout_marginLeft="8dp"
                                 android:textSize="@dimen/name_size"
-                                android:text="刘德华"
+                                tools:text="刘德华"
                                 android:textColor="@color/name_color"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent" />
@@ -73,7 +82,7 @@
                                 android:gravity="center_vertical"
                                 android:layout_alignParentRight="true"
                                 android:textSize="@dimen/name_size"
-                                android:text="12-31-23:59"
+                                tools:text="12-31-23:59"
                                 android:textColor="#888888"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent" />
@@ -95,7 +104,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
-                            android:text="今天天气真好哈哈哈哈哈"
+                            tools:text="今天天气真好哈哈哈哈哈"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
@@ -109,9 +118,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/detail_note">
+                        tools:visibility="visible">
                         <!---续秒人的头像在这里展示，可以修改成其他类型的layout，但id不能改-->
 
                         <android.support.v7.widget.RecyclerView
@@ -127,14 +134,14 @@
 
                         <ImageView
                             android:id="@+id/detail_forward_more"
-                            android:src="@drawable/forward_more"
                             android:visibility="gone"
-                            android:layout_width="40dp"
-                            android:layout_height="25dp"
+                            tools:visibility="visible"
+                            android:src="@drawable/forward_more"
+                            android:layout_height="33dp"
+                            android:layout_width="43dp"
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginBottom="8dp"
-                            android:layout_marginEnd="16dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -146,47 +153,41 @@
                         android:id="@+id/detail_divide1"
                         android:layout_width="match_parent"
                         android:layout_height="1px"
-                        android:background="#cccccc"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/detail_commentator" />
+                        android:background="#cccccc"/>
 
-                    <TextView
-                        android:id="@+id/detail_text1"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginLeft="40dp"
-                        android:layout_marginTop="8dp"
-                        android:text="评论"
-                        android:textSize="14sp"
-                        android:textColor="#333333"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/detail_text1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="40dp"
+                            android:layout_marginLeft="40dp"
+                            android:layout_marginTop="8dp"
+                            android:text="评论"
+                            android:textSize="14sp"
+                            android:textColor="#333333"/>
 
-                    <TextView
-                        android:id="@+id/detail_comment_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:textSize="14sp"
-                        android:textColor="#333333"
-                        app:layout_constraintBottom_toTopOf="@+id/detail_divide2"
-                        app:layout_constraintStart_toEndOf="@+id/detail_text1"
-                        app:layout_constraintTop_toBottomOf="@+id/detail_divide1" />
-
+                        <TextView
+                            android:id="@+id/detail_comment_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:textSize="14sp"
+                            android:textColor="#333333"/>
+                    </LinearLayout>
                     <View
                         android:id="@+id/detail_divide2"
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_marginTop="8dp"
-                        android:background="#cccccc"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/detail_text1" />
+                        android:background="#cccccc"/>
 
-                </android.support.constraint.ConstraintLayout>
+                </LinearLayout>
 
             </android.support.design.widget.AppBarLayout>
 

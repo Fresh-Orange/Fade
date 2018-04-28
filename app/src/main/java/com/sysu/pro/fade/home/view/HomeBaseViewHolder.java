@@ -1,5 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import com.sysu.pro.fade.home.event.NoteConcernChangeEvent;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.Screen;
 import com.sysu.pro.fade.utils.TimeUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
@@ -388,6 +392,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		clickableProgressBar.setAddClickListener(new ClickableProgressBar.onAddClickListener() {
 			@Override
 			public void onClick() {
+				Log.d("sendAddOrMinusToServer", "bie zhe yang");
 				Note tempNote = getNewNote(context, userUtil, bean);
 				tempNote.setType(1); // 1表示 续秒
 				sendAddOrMinusToServer(tempNote, clickableProgressBar, curUser, 1, bean);
@@ -396,6 +401,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		clickableProgressBar.setMinusClickListener(new ClickableProgressBar.onMinusClickListener() {
 			@Override
 			public void onClick() {
+				Log.d("sendAddOrMinusToServer", "bie zhe yang");
 				Note note = getNewNote(context, userUtil, bean);
 				note.setType(2); // 2表示 减秒
 				sendAddOrMinusToServer(note, clickableProgressBar, curUser, 2, bean);
@@ -407,16 +413,16 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		if (action == 1){
 			clickableProgressBar.showCommentButton(1);
 			bean.setAction(1);
-			int curProgress = clickableProgressBar.getProgress();
+			/*int curProgress = clickableProgressBar.getProgress();
 			int maxProgress = clickableProgressBar.getMaxProgress();
-			clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));
+			clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));*/
 		}
 		else if (action == 2){
 			clickableProgressBar.showCommentButton(0);
 			bean.setAction(2);
-			int curProgress = clickableProgressBar.getProgress();
+			/*int curProgress = clickableProgressBar.getProgress();
 			int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-			clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));
+			clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));*/
 		}
 
 	}
@@ -478,6 +484,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 */
 	static public void sendAddOrMinusToServer(Note tempNote, final ClickableProgressBar clickableProgressBar,
 											  final User curUser, final int action, final Note bean) {
+		Log.d("sendAddOrMinusToServer", "bu wan le");
 		Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
 		NoteService noteService = retrofit.create(NoteService.class);
 		noteService
@@ -497,7 +504,113 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					public void onNext(SimpleResponse simpleResponse) {
 						if (simpleResponse.getErr() == null){
 							//USELESS!! Integer newNoteId = (Integer) simpleResponse.getExtra().get("note_id");
-							setAddOrMinusView(clickableProgressBar, bean, action);
+							//setAddOrMinusView(clickableProgressBar, bean, action);
+							final Button btAdd = clickableProgressBar.btAdd;
+							final Button btMinus = clickableProgressBar.btMinus;
+							final Button btComment = clickableProgressBar.btComment;
+							final ImageView ivDivider = clickableProgressBar.ivContainer;
+							final ClickableProgressBar pbTime = clickableProgressBar;
+							final float moveLength = Screen.Dp2Px(12, clickableProgressBar.getContext());
+							ValueAnimator anim = ValueAnimator.ofFloat(0f, 2f);
+							anim.setDuration(1000);
+							anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+								boolean isSetView = false;
+								int curProgress;
+								int maxProgress;
+								int addProgress;
+								int mimusProgress;
+								@Override
+								public void onAnimationUpdate(ValueAnimator animation) {
+									float currentValue = (float) animation.getAnimatedValue();
+									if (currentValue < 1f){
+										if (action == 1)
+											btAdd.setTranslationY(-currentValue*moveLength);
+										else
+											btMinus.setTranslationY(-currentValue*moveLength);
+										btAdd.setAlpha(1f-currentValue);
+										btMinus.setAlpha(1f-currentValue);
+										//ivDivider.setAlpha(1f-currentValue);
+									}
+									else if (!isSetView){
+										setAddOrMinusView(clickableProgressBar, bean, action);
+										btComment.setAlpha(0f);
+										curProgress = clickableProgressBar.getProgress();
+										maxProgress = clickableProgressBar.getMaxProgress();
+										addProgress = Math.min(curProgress+5, maxProgress);
+										int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+										mimusProgress = Math.max(curProgress-5, halfProgress);
+										isSetView = true;
+									}
+									else {
+										btComment.setAlpha(currentValue-1f);
+										if (action == 1)
+											pbTime.setProgress(((int)(curProgress+(currentValue-1f)*(addProgress -curProgress))));
+										else
+											pbTime.setProgress(((int)(curProgress-(currentValue-1f)*(curProgress-mimusProgress))));
+									}
+									Log.d("TAG", "cuurent value is " + currentValue);
+								}
+							});
+							anim.addListener(new Animator.AnimatorListener() {
+								@Override
+								public void onAnimationStart(Animator animation) {
+
+								}
+
+								@Override
+								public void onAnimationEnd(Animator animation) {
+									getNoteAndPostEvent(bean.getOriginalId(), curUser);
+									Log.d("TAG", "END");
+								}
+
+								@Override
+								public void onAnimationCancel(Animator animation) {
+
+								}
+
+								@Override
+								public void onAnimationRepeat(Animator animation) {
+
+								}
+							});
+							anim.start();
+
+							/*float curTranslationY = btAdd.getTranslationY();
+							ObjectAnimator moveOut = ObjectAnimator.ofFloat(btAdd, "translationY", curTranslationY, -moveLength);
+							moveOut.setInterpolator(new LinearInterpolator());
+							//moveOut.setDuration(5000);
+							//moveOut.start();
+							ObjectAnimator fadeOut = ObjectAnimator.ofFloat(btAdd, "alpha", 1f, 0f);
+							AnimatorSet animSet = new AnimatorSet();
+							animSet.play(moveOut).with(fadeOut);
+							animSet.setDuration(5000);
+							Log.d("sendAddOrMinusToServer", "hey man !!");
+
+							animSet.addListener(new AnimatorListenerAdapter() {
+								@Override
+								public void onAnimationEnd(Animator animation, boolean isReverse) {
+									//setAddOrMinusView(clickableProgressBar, bean, action);
+									btComment.setVisibility(View.VISIBLE);
+									//ObjectAnimator fadeOut3 = ObjectAnimator.ofFloat(btComment, "alpha", 0f, 1f);
+									//fadeOut3.setDuration(500);
+									//fadeOut3.start();
+								}
+							});
+
+							animSet.start();
+
+							ObjectAnimator fadeOut2 = ObjectAnimator.ofFloat(btMinus, "alpha", 1f, 0f);
+							fadeOut2.setDuration(500);
+							fadeOut2.start();*/
+
+							/*btComment.setVisibility(View.VISIBLE);
+							ObjectAnimator fadeOut3 = ObjectAnimator.ofFloat(btComment, "alpha", 0f, 1f);
+							fadeOut3.setDuration(500);
+							fadeOut3.start();*/
+
+							//ObjectAnimator fadeOut3 = ObjectAnimator.ofFloat(ivDivider, "alpha", 1f, 0f);
+							//fadeOut3.setDuration(500);
+							///fadeOut3.start();
 							Integer comment_num = (Integer) simpleResponse.getExtra().get("comment_num");    //评论数量
 							Integer sub_num = (Integer) simpleResponse.getExtra().get("sub_num");    //评论数量
 							Integer add_num = (Integer) simpleResponse.getExtra().get("add_num");    //评论数量
@@ -506,7 +619,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							bean.setSub_num(sub_num);
 							bean.setAdd_num(add_num);
 							bean.setFetchTime(fetchTime);
-							getNoteAndPostEvent(bean.getOriginalId(), curUser);
+							//getNoteAndPostEvent(bean.getOriginalId(), curUser);
 						}
 					}
 				});
@@ -536,7 +649,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE
 					+ 5 * bean.getAdd_num()
 					- bean.getSub_num()
-					- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
+					- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 660)));
 			String sTimeLeft;
 			if (minuteLeft < 60)
 				sTimeLeft = String.valueOf(minuteLeft) + "分钟";
@@ -546,6 +659,10 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 1440)) + "天";
 
 			clickableProgressBar.setTimeText(context.getString(R.string.time_left_text, sTimeLeft));
+			clickableProgressBar.btAdd.setTranslationY(0);
+			clickableProgressBar.btMinus.setTranslationY(0);
+			clickableProgressBar.btAdd.setAlpha(1);
+			clickableProgressBar.btMinus.setAlpha(1);
 
 			if (minuteLeft < 60){
 				int halfProgress = clickableProgressBar.getMaxProgress() / 2;
