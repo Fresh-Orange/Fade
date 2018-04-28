@@ -1,15 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/main_show"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:fitsSystemWindows="true">
+    android:id="@+id/main_show"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="37dp"
-        android:gravity="center_vertical"
-        android:background="#f8f8f8">
+        android:gravity="center_vertical">
         <LinearLayout
             android:id="@+id/conversation_back"
             android:layout_marginLeft="12dp"
