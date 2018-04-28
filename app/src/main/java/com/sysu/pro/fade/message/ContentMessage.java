@@ -345,16 +345,16 @@ public class ContentMessage {
 
     private void sendBadge() {
         //华为
-        badgeNumber = contributionCount + newFanCount + commentCount + chatNumber;
-        Bundle extra =new Bundle();
-        extra.putString("package", "com.sysu.pro.fade");
-        extra.putString("class", "com.sysu.pro.fade.my.activity.WelcomeActivity");
-        extra.putInt("badgenumber", badgeNumber);
-        context.getContentResolver().
-                call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"),
-                        "change_badge", null, extra);
-
-        ShortcutBadger.applyCount(context, badgeNumber); //for 1.1.4+
+//        badgeNumber = contributionCount + newFanCount + commentCount + chatNumber;
+//        Bundle extra =new Bundle();
+//        extra.putString("package", "com.sysu.pro.fade");
+//        extra.putString("class", "com.sysu.pro.fade.my.activity.WelcomeActivity");
+//        extra.putInt("badgenumber", badgeNumber);
+//        context.getContentResolver().
+//                call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"),
+//                        "change_badge", null, extra);
+//
+//        ShortcutBadger.applyCount(context, badgeNumber); //for 1.1.4+
 //        //小米
 //        NotificationManager mNotificationManager = (NotificationManager) context
 //                .getSystemService(Context.NOTIFICATION_SERVICE);

@@ -331,6 +331,8 @@ public class PublishActivity extends AppCompatActivity {
         noteService = retrofit.create(NoteService.class);
         imageArray = new ArrayList<>();//图片对象数组
         progressDialog = new ProgressDialog(PublishActivity.this);
+        progressDialog.setIndeterminate(false);
+        progressDialog.setIndeterminateDrawable(getResources().getDrawable(R.drawable.dialog_style_xml_color));
         show = CHOOSE;
         InitView();
         requestLocation();

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,6 +94,9 @@ public class DetailActivity extends MainBaseActivity{
 
     private InputMethodManager imm; //管理软键盘
 
+    private ProgressBar detailLoading;
+    private CoordinatorLayout allContent;
+
     /* ******** 帖子展示部分 by 赖贤城 *******/
     Note note;//首页传入的帖子
     private imageAdaptiveIndicativeItemLayout imageLayout;
@@ -111,6 +116,9 @@ public class DetailActivity extends MainBaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         TintBar(this);//状态栏白底黑字
+
+        detailLoading = findViewById(R.id.detail_loading);
+        allContent = findViewById(R.id.detail_coordinator_layout);
 
         commentNum = (TextView) findViewById(R.id.detail_comment_num);
         commentNumText = findViewById(R.id.detail_text1);
@@ -201,6 +209,9 @@ public class DetailActivity extends MainBaseActivity{
                             Log.d("bug", "进来了");
                             showDirectComment();
                         }
+
+                        detailLoading.setVisibility(View.GONE);
+                        allContent.setVisibility(View.VISIBLE);
                     }
                 });
     }
