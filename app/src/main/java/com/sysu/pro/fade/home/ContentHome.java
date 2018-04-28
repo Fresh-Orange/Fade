@@ -21,6 +21,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.event.NoteChangeEvent;
+import com.sysu.pro.fade.home.event.NoteConcernChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.home.listener.JudgeRemoveOnScrollListener;
 import com.sysu.pro.fade.service.NoteService;
@@ -527,6 +528,22 @@ public class ContentHome {
                 note.setNickname(user.getNickname());
             }
             adapter.notifyDataSetChanged();
+        }
+    }
+
+
+    /**
+     * item发生变化，更新界面
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConcernStateChanged(NoteConcernChangeEvent concernChangeEvent) {
+        Integer userId = concernChangeEvent.getUserId();
+        for (int i = 0; i < notes.size(); i++) {
+            Note tmpNote = notes.get(i);
+            if (tmpNote.isOriginalNote() && tmpNote.getUser_id().equals(userId)){
+                tmpNote.setConcernedFromRecommend(true);
+                adapter.notifyItemChanged(i);
+            }
         }
     }
 

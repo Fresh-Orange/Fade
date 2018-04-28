@@ -25,10 +25,14 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.activity.RelayUsersActivity;
+import com.sysu.pro.fade.home.event.NoteConcernChangeEvent;
 import com.sysu.pro.fade.service.NoteService;
+import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.TimeUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -53,6 +57,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	private TextView tvHeadAction;
 	private ImageView ivHeadAction;
 	private ImageView ivDots;
+	private ImageView ivConcern;
 	private TextView tvCount;
 	private TextView tvAtUser;
 	private TextView tvAddress;
@@ -70,6 +75,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		tvAtUser = (TextView) itemView.findViewById(R.id.tv_original_author);
 		tvAddress = (TextView) itemView.findViewById(R.id.tv_address);
 		ivHeadAction = (ImageView) itemView.findViewById(R.id.iv_head_action);
+		ivConcern = (ImageView) itemView.findViewById(R.id.iv_concern_in_fade);
 		ivDots = (ImageView) itemView.findViewById(R.id.iv_dots);
 		tvHeadAction = (TextView) itemView.findViewById(R.id.tv_head_action);
 		clickableProgressBar = (ClickableProgressBar) itemView.findViewById(R.id.clickable_progressbar);
@@ -97,7 +103,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				.into(userAvatar);
 
 		/* ********* 设置监听器 ***********/
-		setDotsMenu(bean, userUtil, ivDots);
+		setConcernAndListener(bean, userUtil, ivConcern);
+		setDotsMenuAndListener(bean, userUtil, ivDots);
 		setGoToDetailClickListener(context, itemView, bean);
 		setAddOrMinusListener(context, clickableProgressBar, userUtil, bean);
 		setCommentListener(context, clickableProgressBar, bean);
@@ -108,7 +115,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	/**
 	 * 设置fade的“三点”的显示与点击事件
 	 */
-	static public void setDotsMenu(final Note bean, final UserUtil userUtil, final ImageView ivDots) {
+	static public void setDotsMenuAndListener(final Note bean, final UserUtil userUtil, final ImageView ivDots) {
 		ivDots.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v){
@@ -142,6 +149,58 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				popup.show(); //showing popup menu
 			}
 		});
+	}
+
+	static public void setConcernAndListener(final Note bean, final UserUtil userUtil, final ImageView ivConcern) {
+		Log.d("setConcernAndListener", bean.getIsRecommend().toString());
+		if (bean.getIsRecommend() == 1){
+			ivConcern.setVisibility(View.VISIBLE);
+			if (bean.isConcernedFromRecommend()){
+				//Glide.with(ivConcern.getContext()).load(R.drawable.concerned_in_fade).into(ivConcern);
+				ivConcern.setImageResource(R.drawable.concerned_in_fade);
+			}
+			else{
+				ivConcern.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						User myself = userUtil.getUer();
+						Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, myself.getTokenModel());
+						UserService service = retrofit.create(UserService.class);
+						service.concern(myself.getUser_id().toString(), bean.getUser_id().toString())
+								.subscribeOn(Schedulers.newThread())
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<SimpleResponse>() {
+									@Override
+									public void onCompleted() {
+									}
+
+									@Override
+									public void onError(Throwable e) {
+										Log.d("关注bug", "onError: " + e.toString());
+										Toast.makeText(ivConcern.getContext(), "关注出错" + e.toString(), Toast.LENGTH_SHORT).show();
+									}
+
+									@Override
+									public void onNext(SimpleResponse simpleResponse) {
+										if (simpleResponse.getErr() == null) {
+											EventBus.getDefault().post(new NoteConcernChangeEvent(bean.getUser_id(), true));
+											ivConcern.setImageResource(R.drawable.concerned_in_fade);
+											//Glide.with(ivConcern.getContext()).load(R.drawable.concerned_in_fade).into(ivConcern);
+										}
+										else{
+											Toast.makeText(ivConcern.getContext(), "关注出错" + simpleResponse.getErr(), Toast.LENGTH_SHORT).show();
+										}
+									}
+								});
+
+					}
+				});
+			}
+
+		}
+		else{
+			ivConcern.setVisibility(View.GONE);
+		}
 	}
 
 	static private void deleteNote(final Note bean, User curUser, final Context context){
@@ -215,7 +274,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		else if (bean.getType() == 2){
 			Glide.with(context).load(R.drawable.minus).into(ivHeadAction);
 			//ivHeadAction.setImageResource(R.drawable.minus);
-			if (bean.getSubUsers().size() > 1)	//如果是合并的转发贴
+			if (bean.getRelayUserNum() > 1)	//如果是合并的转发贴
 				tvHeadAction.setText(context.getString(R.string.many_minus_time, bean.getRelayUserNum()));
 			else
 				tvHeadAction.setText(R.string.minus_time);
