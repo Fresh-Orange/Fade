@@ -19,9 +19,13 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
+import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -178,6 +182,19 @@ public class FansFragment extends Fragment {
                 getData();
             }
         });
+    }
+
+    private void scrollToTOP(){
+        recyclerView.smoothScrollToPosition(0);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DoubleFade msg) {
+        String message = msg.getMessage();
+        boolean isClicked = msg.isClick();
+        if (isClicked) {
+            scrollToTOP();
+        }
     }
 
 }

@@ -20,6 +20,7 @@ import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
+import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -371,4 +372,12 @@ public class MyLiveContent {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DoubleFade msg) {
+        String message = msg.getMessage();
+        boolean isClicked = msg.isClick();
+        if (isClicked) {
+            scrollToTOP();
+        }
+    }
 }

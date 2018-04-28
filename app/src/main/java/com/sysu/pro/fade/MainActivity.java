@@ -30,10 +30,13 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
+import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.message.GeTui.Service.DemoIntentService;
 import com.sysu.pro.fade.message.GeTui.Service.DemoPushService;
 import com.sysu.pro.fade.my.ContentMy;
+import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.Client;
@@ -42,6 +45,9 @@ import com.sysu.pro.fade.utils.UserUtil;
 import com.sysu.pro.fade.view.CustomViewPager;
 import com.sysu.pro.fade.view.SectionsPagerAdapter;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.java_websocket.drafts.Draft_6455;
 
 import java.io.File;
@@ -86,6 +92,9 @@ public class MainActivity extends MainBaseActivity {
     private final int RECORD_AUDIO = 105;
 
     private int oldTabItem;
+    private boolean isClickOnce = true;
+    private long mLastPressTime = 0;
+    private boolean isMyClickOnce = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +103,7 @@ public class MainActivity extends MainBaseActivity {
 
         createFiles();
 
+        EventBus.getDefault().register(this);
         /*用以解决输入评论时底部导航栏被顶起的问题*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getPermission();
@@ -171,6 +181,16 @@ public class MainActivity extends MainBaseActivity {
         // com.getui.demo.DemoIntentService 为第三方自定义的推送服务事件接收类
         PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), DemoIntentService.class);
 
+
+
+        findViewById(R.id.rl_toolbar_main).setOnTouchListener(new OnDoubleClickListener(
+                new OnDoubleClickListener.DoubleClickCallback() {
+                    @Override
+                    public void onDoubleClick() {
+                        EventBus.getDefault().post(new DoubleClick("click", true));
+                    }
+                }
+        ));
     }
 
 
@@ -329,6 +349,10 @@ public class MainActivity extends MainBaseActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 //与pager 关联
 //                mViewPager.setCurrentItem(tab.getOriginalNoteId(), true);
+                if (tab.getPosition() == Const.DISCOVER - 1)
+                    isClickOnce = false;
+                if (tab.getPosition() == Const.MY - 1)
+                    isMyClickOnce = false;
                 oldTabItem = mViewPager.getCurrentItem();
                 changeTabSelect(tab);
                 if (tab.getPosition() == Const.PUBLISH - 1){
@@ -353,10 +377,35 @@ public class MainActivity extends MainBaseActivity {
              */
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                Log.d("click", "here!Tab!");
                 if (tab.getPosition() == Const.PUBLISH - 1){
                     Intent intent = new Intent(MainActivity.this, PublishActivity.class);
                     startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                     overridePendingTransition(R.anim.values, R.anim.out_left);
+                }
+                if (tab.getPosition() == Const.HOME - 1) {
+                    long currentTime = System.currentTimeMillis();
+                    if (isClickOnce && currentTime - mLastPressTime < 1500) {
+                        EventBus.getDefault().post(new DoubleClick("click", true));
+                        Log.d("click", "here!Double!");
+                        isClickOnce = false;
+                    }
+                    else {
+                        isClickOnce = true;
+                        mLastPressTime = currentTime;
+                    }
+                }
+                if (tab.getPosition() == Const.MY - 1) {
+                    long currentTime = System.currentTimeMillis();
+                    if (isMyClickOnce && currentTime - mLastPressTime < 1500) {
+                        EventBus.getDefault().post(new DoubleFade("click", true));
+                        Log.d("click", "here!Double!");
+                        isMyClickOnce = false;
+                    }
+                    else {
+                        isMyClickOnce = true;
+                        mLastPressTime = currentTime;
+                    }
                 }
             }
         });
@@ -415,6 +464,7 @@ public class MainActivity extends MainBaseActivity {
 
         @Override
         public void onDestroy() {
+            EventBus.getDefault().unregister(this);
             super.onDestroy();
         }
 
@@ -426,6 +476,7 @@ public class MainActivity extends MainBaseActivity {
             fragment.setArguments(args);
             return fragment;
         }
+
 
         @Nullable
         @Override
@@ -750,4 +801,9 @@ public class MainActivity extends MainBaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DoubleClick msg) {
+        String message = msg.getMessage();
+        boolean isClicked = msg.isClick();
+    }
 }
