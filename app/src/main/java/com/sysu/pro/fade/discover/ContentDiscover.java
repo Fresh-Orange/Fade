@@ -11,9 +11,11 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -182,6 +184,73 @@ public class ContentDiscover {
            }
        });
        searchView_edittext1.addTextChangedListener(mTextWatchr);
+       searchView_edittext1.setOnKeyListener(new View.OnKeyListener() {
+           @Override
+           public boolean onKey(View v, int keyCode, KeyEvent event) {
+               //是否是回车键
+               if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                   flag = 0;
+                   EventBus.getDefault().post(new ClearListEvent());
+                   InputMethodManager inputMethodManager = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                   inputMethodManager.hideSoftInputFromWindow(searchView_edittext1.getWindowToken(), 0);
+                   query = searchView_edittext1.getText().toString();
+                   if (jundgeqiery(query) == false){
+                       //Toast.makeText(activity, "输入不合法！", Toast.LENGTH_LONG).show();
+                       Log.d(TAG, "kong");
+                       flag = 1;
+                       Toast.makeText(context, "输入不合法！", Toast.LENGTH_LONG).show();
+                   }else {
+                       flag = 2;
+                       progressBar.setVisibility(View.VISIBLE);
+                       new Thread(){
+                           @Override
+                           public void run() {
+                               Request.Builder builder = new Request.Builder();
+                               String url = Const.BASE_IP + "searchUser/" + query + "/0 ";
+                               builder.url(url);
+                               Request request = builder.build();
+                               try {
+                                   Response response = new OkHttpClient().newCall(request).execute();
+                                   String response_str = response.body().string();
+                                   Log.i("搜索结果", response_str);
+                                   UserQuery userQuery = JSON.parseObject(response_str, UserQuery.class);
+                                   if (userQuery != null) {
+                                       userQuery.setQueryKeyWord(query);
+                                       EventBus.getDefault().post(userQuery);
+                                   }
+                               } catch (IOException e) {
+                                   e.printStackTrace();
+                               }
+                               super.run();
+                           }
+                       }.start();
+                       retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+                       NoteService noteService = retrofit.create(NoteService.class);
+                       noteService.searchNote(query, "0", "1", user.getUser_id().toString())
+                               .subscribeOn(Schedulers.newThread())
+                               .observeOn(AndroidSchedulers.mainThread())
+                               .subscribe(new Subscriber<NoteQuery>() {
+                                   @Override
+                                   public void onCompleted() {
+                                   }
+
+                                   @Override
+                                   public void onError(Throwable e) {
+                                       Log.e("searchNote", e.getMessage());
+                                   }
+
+                                   @Override
+                                   public void onNext(NoteQuery noteQuery) {
+                                       noteQuery.setQueryKeyWord(query);
+                                       EventBus.getDefault().post(noteQuery);
+                                   }
+                               });
+                   }
+               }
+               return false;
+           }
+       });
+
        searchButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
