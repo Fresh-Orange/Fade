@@ -323,7 +323,9 @@ public class DetailActivity extends MainBaseActivity{
                 holder.setText(R.id.comment_detail_content, data.getComment_content());
                 //如果是第一项，不需要显示分割线
                 if (position == 0) {
-                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.INVISIBLE);
+                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.GONE);
+                } else {
+                    holder.setWidgetVisibility(R.id.item_comment_divide_line, View.VISIBLE);
                 }
                 //头像点击事件
                 holder.onWidgetClick(R.id.comment_detail_head, new View.OnClickListener() {
