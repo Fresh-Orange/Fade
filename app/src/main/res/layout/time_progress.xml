@@ -4,6 +4,7 @@
               android:layout_height="wrap_content"
              android:layout_marginTop="10dp"
              android:layout_marginBottom="10dp"
+             android:clipChildren="false"
               xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <com.sysu.pro.fade.home.view.TextProgressBar
@@ -25,7 +26,8 @@
         <LinearLayout
             android:layout_width="100dp"
             android:layout_height="18dp"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:clipChildren="false">
             <Button
                 android:id="@+id/bt_minus"
                 android:layout_width="0dp"
