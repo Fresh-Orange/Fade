@@ -6,6 +6,9 @@ public class PushMessage {
 	private Integer msgId;//1为续秒通知，2为评论通知，3为粉丝通知
 	
 
+	public PushMessage() {
+
+	}
 	public PushMessage(Object obj, Integer msgId) {
 		super();
 		this.obj = obj;

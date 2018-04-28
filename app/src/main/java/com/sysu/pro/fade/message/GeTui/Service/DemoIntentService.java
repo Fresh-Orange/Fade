@@ -4,6 +4,7 @@ package com.sysu.pro.fade.message.GeTui.Service;
  * Created by yellow on 2018/4/26.
  */
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,10 +16,14 @@ import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTNotificationMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.MainActivity;
+import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -41,8 +46,9 @@ public class DemoIntentService extends GTIntentService {
 
     private User myself;
 
+    private PushMessage pushMessage;
 
-
+    private Context mContext;
     public DemoIntentService() {
 
     }
@@ -56,23 +62,28 @@ public class DemoIntentService extends GTIntentService {
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
         Log.e("getui", "------------onReceiveMessageData------------");
-        String noteID = new String(msg.getPayload());
-//        Log.e("getui", "data: " + data);
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(Const.NOTE_ID, noteID);
-        intent.putExtra(Const.IS_COMMENT, false);
-//        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
-//        intent.putExtra(Const.COMMENT_ENTITY, temp);
-        intent.putExtra("getFull",true);
-        startActivity(intent);
+//        String noteID = new String(msg.getPayload());
+////        Log.e("getui", "data: " + data);
+//        Intent intent = new Intent(context, DetailActivity.class);
+//        intent.putExtra(Const.NOTE_ID, noteID);
+//        intent.putExtra(Const.IS_COMMENT, false);
+////        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
+////        intent.putExtra(Const.COMMENT_ENTITY, temp);
+//        intent.putExtra("getFull",true);
+//        startActivity(intent);
 
+        mContext = context;
         String str = new String(msg.getPayload());
-        Log.i("getui",str);
-        PushMessage pushMessage = JSON.parseObject(str, PushMessage.class);
-        if(pushMessage == null) return;
-        EventBus.getDefault().post(pushMessage);
-
-
+        Log.d("YellowGetui","str = : " + str);
+        pushMessage = JSON.parseObject(str, PushMessage.class);
+        Log.d("YellowGetui","这里进不去了吗");
+        if(pushMessage == null) {
+            Log.d("YellowGetui","PushMessage is null!");
+            return;
+        }
+        Log.d("YellowGetui","NotNull: ");
+        Log.d("YellowGetui","PushMessage: " + pushMessage);
+        new MyServerThread().start();
     }
 
     @Override
@@ -147,5 +158,62 @@ public class DemoIntentService extends GTIntentService {
         Log.e("getui", "pkgName: " + pkgName);
         Log.e("getui", "------------通知被点击------------");
 
+
+    }
+
+    class MyServerThread extends Thread {
+        @Override
+        public void run() {
+//            Intent launchIntent = mContext.getPackageManager().
+//                    getLaunchIntentForPackage("com.liangzili.notificationlaunch");
+//            launchIntent.setFlags(
+//                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+//            Bundle args = new Bundle();
+//            args.putString("name", "电饭锅");
+//            args.putString("price", "58元");
+//            args.putString("detail", "这是一个好锅, 这是app进程不存在，先启动应用再启动Activity的");
+//            launchIntent.putExtra(Constants.EXTRA_BUNDLE, args);
+//            context.startActivity(launchIntent);
+
+//            EventBus.getDefault().post(pushMessage);
+            //设定传递对象，动态广播只需传送message，在MainActivity返回onNewIntent
+            switch (pushMessage.getMsgId()) {
+                case 1:
+                    Log.e("YellowMain", "Case 1");
+                    Note contributionNote = (Note) pushMessage.getObj();
+                    Intent intent = new Intent(DemoIntentService.this, DetailActivity.class);
+                    intent.putExtra(Const.NOTE_ID,contributionNote.getTarget_id());
+                    intent.putExtra(Const.IS_COMMENT,false);
+                    intent.putExtra(Const.COMMENT_NUM, contributionNote.getComment_num());
+                    intent.putExtra(Const.COMMENT_ENTITY, contributionNote);
+                    intent.putExtra("getFull",true);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    break;
+                case 2:
+                    Log.e("YellowMain", "Case 2");
+                    Comment commentNote = (Comment) pushMessage.getObj();
+                    Intent intent3 = new Intent(DemoIntentService.this, DetailActivity.class);
+                    intent3.putExtra(Const.NOTE_ID,commentNote.getComment_id());
+                    intent3.putExtra(Const.IS_COMMENT,true);
+//                intent3.putExtra(Const.COMMENT_NUM, commentNote.g());
+                    intent3.putExtra(Const.COMMENT_ENTITY, commentNote);
+                    intent3.putExtra("getFull",true);
+                    intent3.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent3);
+                    break;
+                case 3:
+                    Log.e("YellowMain", "Case 3");
+                    User user = (User) pushMessage.getObj();
+                    if(user != null){
+                        Intent intent2 = new Intent(DemoIntentService.this, OtherActivity.class);
+                        intent2.putExtra(Const.USER_ID , user.getUser_id());
+                        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent2);
+                    }
+                    break;
+            }
+
+        }
     }
 }

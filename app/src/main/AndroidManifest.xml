@@ -125,7 +125,7 @@
             android:launchMode="singleTask"/>
         <activity android:name=".publish.imageselector.PreviewActivity"/>
         <activity android:name=".publish.crop.CropActivity"/>
-        <activity android:name=".home.activity.DetailActivity"/>
+        <activity android:name=".home.activity.DetailActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

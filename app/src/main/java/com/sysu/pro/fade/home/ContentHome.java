@@ -20,6 +20,7 @@ import com.sysu.pro.fade.beans.NoteQuery;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
+import com.sysu.pro.fade.home.event.DoubleClick;
 import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.event.NoteConcernChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
@@ -544,6 +545,70 @@ public class ContentHome {
                 tmpNote.setConcernedFromRecommend(true);
                 adapter.notifyItemChanged(i);
             }
+        }
+    }
+
+    private void refreshImmediate() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadMoreScrollListener.resetPreviousTotal();
+                        //顶部下拉刷新
+                        swipeRefresh.setRefreshing(true);
+                        Log.i("updateList",new Gson().toJson(updateList));
+                        noteService.getMoreNote(user.getUser_id().toString(), new Gson().toJson(updateList))
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<NoteQuery>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        swipeRefresh.setRefreshing(false);
+                                    }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e("顶部加载","失败");
+                                        e.printStackTrace();
+                                        swipeRefresh.setRefreshing(false);
+                                    }
+                                    @Override
+                                    public void onNext(NoteQuery noteQuery) {
+                                        Log.i("顶部加载","成功");
+                                        if(noteQuery.getUpdateList() != null && noteQuery.getUpdateList().size() != 0){
+                                            checkList = noteQuery.getUpdateList();
+                                            //更新现有的数据
+                                            Note origin = null;
+                                            Note check = null;
+                                            for(int i = 0; i < checkList.size(); i++){
+                                                origin = notes.get(i);
+                                                check = checkList.get(i);
+                                                origin.setAdd_num(check.getAdd_num());
+                                                origin.setSub_num(check.getSub_num());
+                                                origin.setComment_num(check.getComment_num());
+                                                origin.setIs_die(check.getIs_die());
+                                                origin.setFetchTime(check.getFetchTime());
+                                            }
+                                            judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
+                                        }
+                                        if(noteQuery.getList() != null && noteQuery.getList().size() > 0)
+                                            addToListHead(noteQuery.getList());
+                                    }
+                                });
+                    }
+                });
+            }
+        }).start();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DoubleClick msg) {
+        String message = msg.getMessage();
+        boolean isClicked = msg.isClick();
+        if (isClicked) {
+            scrollToTOP();
+            refreshImmediate();
         }
     }
 

@@ -21,6 +21,9 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
+import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.ConcernFragment;
 import com.sysu.pro.fade.my.fragment.FansFragment;
@@ -110,6 +113,15 @@ public class ContentMy {
                 }
             }
         });
+
+        backBarTitle.setOnTouchListener(new OnDoubleClickListener(
+                new OnDoubleClickListener.DoubleClickCallback() {
+                    @Override
+                    public void onDoubleClick() {
+                        EventBus.getDefault().post(new DoubleFade("click", true));
+                    }
+                }
+        ));
         //进入设置界面的按钮
         mySetting = rootview.findViewById(R.id.back_bar_menu);
         mySetting.setVisibility(View.VISIBLE);
@@ -125,6 +137,7 @@ public class ContentMy {
         viewPager = (ViewPager) rootview.findViewById(R.id.my_view_pager);
         //loadFragment();
         requestUser();
+
 
     }
 
@@ -152,7 +165,7 @@ public class ContentMy {
                 });
     }
 
-    public  void loadData(){
+    public void loadData(){
         //获取本地用户信息举例
         //重新加载本地user数据
 
@@ -242,7 +255,9 @@ public class ContentMy {
             }
         });
         tabLayout.getTabAt(0).select();
+
 	}
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public  void onGetUser(User user) {

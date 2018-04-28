@@ -34,6 +34,7 @@ import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
+import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SecondComment;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
@@ -45,6 +46,9 @@ import com.sysu.pro.fade.service.CommentService;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,6 +155,8 @@ public class DetailActivity extends MainBaseActivity{
         if(!getFull) initNoteView();
         //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
 
+        Log.e("YellowMain", "Detaillll!");
+
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);//是否是点击评论进来的？
@@ -158,6 +164,7 @@ public class DetailActivity extends MainBaseActivity{
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+
 
         final NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id),user.getUser_id().toString(),(getFull?"1":"0"))
@@ -681,4 +688,6 @@ public class DetailActivity extends MainBaseActivity{
         getNoteAndPostEvent(note_id, user);//详情页可能有修改帖子，因此通知首页更新
         super.finish();
     }
+
+
 }
