@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
@@ -50,6 +51,7 @@ public class ForwardFragment extends Fragment {
     private RecyclerView recyclerView;
     private CommonAdapter<Note> adapter;
     private List<Note> attitudes = new ArrayList<>();
+    private int showFlag = 0;
 
     public ForwardFragment() {
         // Required empty public constructor
@@ -101,11 +103,22 @@ public class ForwardFragment extends Fragment {
                     @Override
                     public void onNext(NoteQuery noteQuery) {
                         refreshLayout.finishLoadmore();
+                        int oldSize = attitudes.size();
                         int addSize = noteQuery.getList().size();
-                        attitudes.addAll(noteQuery.getList());
+                        for (int i = 0; i < addSize; i++) {
+                            Note note = noteQuery.getList().get(i);
+                            if (note.getUser_id() == noteUserId) {
+                                if (showFlag == 0) {
+                                    attitudes.add(note);
+                                    showFlag = 1;
+                                }
+                            } else {
+                                attitudes.add(note);
+                            }
+                        }
                         Log.d("GetData", ""+attitudes.size());
                         start = noteQuery.getStart().toString();
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyItemRangeInserted(oldSize, addSize);
                         Log.d("Check", "setupView: "+adapter.getItemCount());
                         if (addSize < 10) {
                             refreshLayout.setEnableLoadmore(false);
@@ -128,6 +141,8 @@ public class ForwardFragment extends Fragment {
             public void convert(ViewHolder holder, final Note data, int position) {
                 if (position == 0) {
                     holder.setWidgetVisibility(R.id.fragment_forward_item_divide_line, View.GONE);
+                } else {
+                    holder.setWidgetVisibility(R.id.fragment_forward_item_divide_line, View.VISIBLE);
                 }
                 holder.setCircleImage(R.id.fragment_forward_item_head, Const.BASE_IP+data.getHead_image_url());
                 holder.onWidgetClick(R.id.fragment_forward_item_head, new View.OnClickListener() {
@@ -150,6 +165,7 @@ public class ForwardFragment extends Fragment {
         refreshLayout = rootView.findViewById(R.id.fragment_forward_refresh_layout);
         refreshLayout.setEnableRefresh(false);
         refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(getContext()));
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
