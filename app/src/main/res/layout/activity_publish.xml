@@ -19,7 +19,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="1px"
             android:background="@color/light_gray"/>
 
         <include
@@ -30,7 +30,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1px"
         android:background="@color/light_gray"/>
 
     <RelativeLayout
@@ -98,17 +98,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/my_et_emotion"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="5dp"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:hint="点按此处输入内容"
+            android:background="@null"
             android:textColorHint="@color/black"
             android:theme="@style/MyEditText">
         </EditText>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/light_gray"/>
 
     <LinearLayout
         android:id="@+id/map"
@@ -116,7 +122,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp">
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp">
 
         <ImageView
             android:id="@+id/not_choose"

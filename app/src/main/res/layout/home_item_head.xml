@@ -41,6 +41,15 @@
         android:src="@drawable/add"
         android:gravity="center_vertical"
         android:layout_toRightOf="@+id/tv_head_action"/>
+    <ImageView
+        android:id="@+id/iv_concern_in_fade"
+        android:layout_width="50dp"
+        android:layout_height="14dp"
+        android:layout_marginLeft="8dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/concern_in_fade"
+        android:layout_toRightOf="@+id/tv_name"
+        android:visibility="gone"/>
 
     <!--三点的中间点与tabView中的“我的”按钮的左边对齐  左边=我的按钮宽度23dp+空白24dp -->
     <ImageView

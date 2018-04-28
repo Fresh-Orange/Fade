@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-dontwarn io.rong.push.**
+ -dontnote com.xiaomi.**
+-keep public class com.google.firebase.* {*;}
+ -dontnote io.rong.**
+-keep class io.rong.app.RongCloudReceiver {*;}

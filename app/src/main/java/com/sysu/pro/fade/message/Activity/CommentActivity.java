@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.message.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,9 +15,12 @@ import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
+import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.CommentMessage;
 import com.sysu.pro.fade.beans.CommentMessageQuery;
+import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.message.Adapter.CommentAdapter;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
 import com.sysu.pro.fade.service.MessageService;
@@ -95,6 +99,22 @@ public class CommentActivity extends MainBaseActivity {
                 finish();
             }
         });
+        //单项点击跳转监听
+//        adapter.setOnItemClickListener(new ContributeAdapter.onItemClickListener() {
+//            @Override
+//            public void onItemClick(View view, int position) {
+//                if(comments.get(position).getViewType() == null){
+//                    CommentMessage temp = comments.get(position);
+//                    Intent intent = new Intent(CommentActivity.this, DetailActivity.class);
+//                    intent.putExtra(Const.NOTE_ID,temp.getComment_id());
+//                    intent.putExtra(Const.IS_COMMENT,true);
+//                    intent.putExtra(Const.COMMENT_NUM, temp.get);
+//                    intent.putExtra(Const.COMMENT_ENTITY, temp);
+//                    intent.putExtra("getFull",true);
+//                    startActivity(intent);
+//                }
+//            }
+//        });
     }
 
     private void initLoadAddMore() {

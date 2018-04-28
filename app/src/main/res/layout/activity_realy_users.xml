@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.sysu.pro.fade.home.activity.RelayUsersActivity">
+    tools:context="com.sysu.pro.fade.home.activity.RelayUsersActivity"
+    android:fitsSystemWindows="true">
 
     <com.sysu.pro.fade.my.BackBar
         android:layout_width="match_parent"

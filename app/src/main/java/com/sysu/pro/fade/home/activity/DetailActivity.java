@@ -32,6 +32,7 @@ import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
+import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SecondComment;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
@@ -43,6 +44,9 @@ import com.sysu.pro.fade.service.CommentService;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +127,12 @@ public class DetailActivity extends MainBaseActivity{
         detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
 
+        //设置上拉加载
+        refreshLayout = findViewById(R.id.detail_comment_refresh);
+        refreshLayout.setEnableRefresh(false);  //不需要下拉刷新功能
+        refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+
         /* ******** 帖子展示部分 by 赖贤城 *******/
         note = (Note)getIntent().getSerializableExtra(Const.COMMENT_ENTITY);
         imageLayout = (imageAdaptiveIndicativeItemLayout)findViewById(R.id.image_layout);
@@ -137,6 +147,8 @@ public class DetailActivity extends MainBaseActivity{
         if(!getFull) initNoteView();
         //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
 
+        Log.e("YellowMain", "Detaillll!");
+
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);//是否是点击评论进来的？
@@ -144,6 +156,7 @@ public class DetailActivity extends MainBaseActivity{
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+
 
         final NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id),user.getUser_id().toString(),(getFull?"1":"0"))
@@ -279,11 +292,12 @@ public class DetailActivity extends MainBaseActivity{
         if (forwardList.size() > 0) {
             findViewById(R.id.detail_commentator).setVisibility(View.VISIBLE);
         }
-        if (forwardList.size() != 10) {
-            forwardMore.setVisibility(View.INVISIBLE);
+        if (forwardList.size() < 10) {
+            forwardMore.setVisibility(View.GONE);
         } else {
 //            Glide.with(this).load(R.drawable.forward_more).into(forwardMore);
             //跳转续秒详情
+            forwardMore.setVisibility(View.VISIBLE);
             forwardMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -383,11 +397,7 @@ public class DetailActivity extends MainBaseActivity{
 
         recyclerView.setAdapter(commentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //设置上拉加载
-        refreshLayout = findViewById(R.id.detail_comment_refresh);
-        refreshLayout.setEnableRefresh(false);  //不需要下拉刷新功能
-        refreshLayout.setEnableAutoLoadmore(false);
-        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        //上拉加载
         if (commentator.size() < 10) {
             refreshLayout.setEnableLoadmore(false);
         }
@@ -431,15 +441,20 @@ public class DetailActivity extends MainBaseActivity{
 
                     @Override
                     public void onNext(CommentQuery commentQuery) {
-                        commentStart = commentQuery.getStart(); //更新start
-                        commentator.addAll(commentQuery.getList());
-                        commentAdapter.notifyDataSetChanged();
-                        refreshLayout.finishLoadmore();
-                        if (commentQuery.getList().size() == 10) {
-                            loadMoreFlag = 1;
-                            refreshLayout.setEnableLoadmore(true);
-                        } else {
-                            refreshLayout.setEnableLoadmore(false);
+                        if(commentQuery.getList().size() > 0) {
+                            commentStart = commentQuery.getStart(); //更新start
+                            int oldSize = commentator.size();
+                            int addSize = commentQuery.getList().size();
+                            commentator.addAll(commentQuery.getList());
+                            //部分更新就行了
+                            commentAdapter.notifyItemRangeInserted(oldSize, addSize);
+                            refreshLayout.finishLoadmore();
+                            if (commentQuery.getList().size() == 10) {
+                                loadMoreFlag = 1;
+                                refreshLayout.setEnableLoadmore(true);
+                            } else {
+                                refreshLayout.setEnableLoadmore(false);
+                            }
                         }
                     }
                 });
@@ -517,11 +532,16 @@ public class DetailActivity extends MainBaseActivity{
                                 Map<String, Object> map = simpleResponse.getExtra();
                                 userComment.setComment_id((Integer) map.get("comment_id"));
                                 userComment.setComment_time((String) map.get("comment_time"));
-                                commentator.add(userComment);
-                                commentAdapter.notifyDataSetChanged();
+                                //如果评论没有的话，直接添加，如果评论等于10条的话，等上拉加载再加载出来吧
+                                int oldSize = commentator.size();
+                                if (oldSize == 0 || oldSize%10 != 0) {
+                                    commentator.add(userComment);
+                                    commentAdapter.notifyItemInserted(oldSize);
+                                } else {
+                                    refreshLayout.setEnableLoadmore(true);
+                                }
                                 writeComment.setText("");
-                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
-                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
+                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
                             }
                         });
 
@@ -574,7 +594,7 @@ public class DetailActivity extends MainBaseActivity{
                                 View view = createReplyItemView(secondComment, userId, holder);
                                 holder.addView(R.id.comment_detail_reply_wrapper, view);
                                 holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
-                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+//                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
                                 writeComment.setText("");
                                 Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
                                 commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
@@ -655,4 +675,6 @@ public class DetailActivity extends MainBaseActivity{
         getNoteAndPostEvent(note_id, user);//详情页可能有修改帖子，因此通知首页更新
         super.finish();
     }
+
+
 }
