@@ -40,6 +40,7 @@ import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils;
+import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.discover.transform.GlideRoundTransform;
 
 import java.io.BufferedInputStream;
@@ -1619,6 +1620,7 @@ public final class ImageUtils {
                 .load(url)
                 .asBitmap()
                 .skipMemoryCache(true)
+                .placeholder(R.drawable.bg_load_image)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .transform(new BitmapTransformation(context) {
                     @Override

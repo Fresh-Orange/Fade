@@ -1,6 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
@@ -46,6 +47,7 @@ public class ImageOnlyHolder extends HomeBaseViewHolder{
 	public static void setImagePager(Note bean, imageAdaptiveIndicativeItemLayout imageLayout) {
 		double ratio = getNoteRatio(bean);
 		imageLayout.setViewPagerMaxHeight(600);
+		//imageLayout.setBackgroundColor(Color.parseColor("#e6e6e6"));
 		//imageLayout.setHeightByRatio(((float) (1.0/ratio)));
 		imageLayout.setImgCoordinates(bean.getImgCoordinates());
 		imageLayout.setHeightByRatio((float)(1.0/ratio));
