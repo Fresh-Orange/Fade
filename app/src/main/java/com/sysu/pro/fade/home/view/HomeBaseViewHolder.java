@@ -485,6 +485,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	static public void sendAddOrMinusToServer(Note tempNote, final ClickableProgressBar clickableProgressBar,
 											  final User curUser, final int action, final Note bean) {
 		Log.d("sendAddOrMinusToServer", "bu wan le");
+		final int oldProgrress = clickableProgressBar.getProgress();
+		applyAddMinusAnimation(clickableProgressBar,curUser, action,bean);
 		Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
 		NoteService noteService = retrofit.create(NoteService.class);
 		noteService
@@ -498,119 +500,26 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					@Override
 					public void onError(Throwable e) {
 						Toast.makeText(clickableProgressBar.getContext(), "续秒减秒出错", Toast.LENGTH_SHORT).show();
+						rollback();
+
+					}
+
+					public void rollback() {
+						bean.setAction(0);
+						clickableProgressBar.btAdd.setVisibility(View.VISIBLE);
+						clickableProgressBar.btAdd.setAlpha(1);
+						clickableProgressBar.btAdd.setTranslationY(0);
+						clickableProgressBar.btMinus.setVisibility(View.VISIBLE);
+						clickableProgressBar.btMinus.setAlpha(1);
+						clickableProgressBar.btMinus.setTranslationY(0);
+						clickableProgressBar.btComment.setVisibility(View.GONE);
+						clickableProgressBar.setProgress(oldProgrress);
 					}
 
 					@Override
 					public void onNext(SimpleResponse simpleResponse) {
 						if (simpleResponse.getErr() == null){
-							//USELESS!! Integer newNoteId = (Integer) simpleResponse.getExtra().get("note_id");
-							//setAddOrMinusView(clickableProgressBar, bean, action);
-							final Button btAdd = clickableProgressBar.btAdd;
-							final Button btMinus = clickableProgressBar.btMinus;
-							final Button btComment = clickableProgressBar.btComment;
-							final ImageView ivDivider = clickableProgressBar.ivContainer;
-							final ClickableProgressBar pbTime = clickableProgressBar;
-							final float moveLength = Screen.Dp2Px(12, clickableProgressBar.getContext());
-							ValueAnimator anim = ValueAnimator.ofFloat(0f, 2f);
-							anim.setDuration(1000);
-							anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-								boolean isSetView = false;
-								int curProgress;
-								int maxProgress;
-								int addProgress;
-								int mimusProgress;
-								@Override
-								public void onAnimationUpdate(ValueAnimator animation) {
-									float currentValue = (float) animation.getAnimatedValue();
-									if (currentValue < 1f){
-										if (action == 1)
-											btAdd.setTranslationY(-currentValue*moveLength);
-										else
-											btMinus.setTranslationY(-currentValue*moveLength);
-										btAdd.setAlpha(1f-currentValue);
-										btMinus.setAlpha(1f-currentValue);
-										//ivDivider.setAlpha(1f-currentValue);
-									}
-									else if (!isSetView){
-										setAddOrMinusView(clickableProgressBar, bean, action);
-										btComment.setAlpha(0f);
-										curProgress = clickableProgressBar.getProgress();
-										maxProgress = clickableProgressBar.getMaxProgress();
-										addProgress = Math.min(curProgress+5, maxProgress);
-										int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-										mimusProgress = Math.max(curProgress-5, halfProgress);
-										isSetView = true;
-									}
-									else {
-										btComment.setAlpha(currentValue-1f);
-										if (action == 1)
-											pbTime.setProgress(((int)(curProgress+(currentValue-1f)*(addProgress -curProgress))));
-										else
-											pbTime.setProgress(((int)(curProgress-(currentValue-1f)*(curProgress-mimusProgress))));
-									}
-									Log.d("TAG", "cuurent value is " + currentValue);
-								}
-							});
-							anim.addListener(new Animator.AnimatorListener() {
-								@Override
-								public void onAnimationStart(Animator animation) {
 
-								}
-
-								@Override
-								public void onAnimationEnd(Animator animation) {
-									getNoteAndPostEvent(bean.getOriginalId(), curUser);
-									Log.d("TAG", "END");
-								}
-
-								@Override
-								public void onAnimationCancel(Animator animation) {
-
-								}
-
-								@Override
-								public void onAnimationRepeat(Animator animation) {
-
-								}
-							});
-							anim.start();
-
-							/*float curTranslationY = btAdd.getTranslationY();
-							ObjectAnimator moveOut = ObjectAnimator.ofFloat(btAdd, "translationY", curTranslationY, -moveLength);
-							moveOut.setInterpolator(new LinearInterpolator());
-							//moveOut.setDuration(5000);
-							//moveOut.start();
-							ObjectAnimator fadeOut = ObjectAnimator.ofFloat(btAdd, "alpha", 1f, 0f);
-							AnimatorSet animSet = new AnimatorSet();
-							animSet.play(moveOut).with(fadeOut);
-							animSet.setDuration(5000);
-							Log.d("sendAddOrMinusToServer", "hey man !!");
-
-							animSet.addListener(new AnimatorListenerAdapter() {
-								@Override
-								public void onAnimationEnd(Animator animation, boolean isReverse) {
-									//setAddOrMinusView(clickableProgressBar, bean, action);
-									btComment.setVisibility(View.VISIBLE);
-									//ObjectAnimator fadeOut3 = ObjectAnimator.ofFloat(btComment, "alpha", 0f, 1f);
-									//fadeOut3.setDuration(500);
-									//fadeOut3.start();
-								}
-							});
-
-							animSet.start();
-
-							ObjectAnimator fadeOut2 = ObjectAnimator.ofFloat(btMinus, "alpha", 1f, 0f);
-							fadeOut2.setDuration(500);
-							fadeOut2.start();*/
-
-							/*btComment.setVisibility(View.VISIBLE);
-							ObjectAnimator fadeOut3 = ObjectAnimator.ofFloat(btComment, "alpha", 0f, 1f);
-							fadeOut3.setDuration(500);
-							fadeOut3.start();*/
-
-							//ObjectAnimator fadeOut3 = ObjectAnimator.ofFloat(ivDivider, "alpha", 1f, 0f);
-							//fadeOut3.setDuration(500);
-							///fadeOut3.start();
 							Integer comment_num = (Integer) simpleResponse.getExtra().get("comment_num");    //评论数量
 							Integer sub_num = (Integer) simpleResponse.getExtra().get("sub_num");    //评论数量
 							Integer add_num = (Integer) simpleResponse.getExtra().get("add_num");    //评论数量
@@ -621,8 +530,87 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							bean.setFetchTime(fetchTime);
 							//getNoteAndPostEvent(bean.getOriginalId(), curUser);
 						}
+						else{
+							Toast.makeText(clickableProgressBar.getContext(), "续秒减秒出错", Toast.LENGTH_SHORT).show();
+							rollback();
+						}
 					}
+
 				});
+	}
+
+
+	private static void applyAddMinusAnimation(final ClickableProgressBar clickableProgressBar,
+											   final User curUser, final int action, final Note bean) {
+		final Button btAdd = clickableProgressBar.btAdd;
+		final Button btMinus = clickableProgressBar.btMinus;
+		final Button btComment = clickableProgressBar.btComment;
+		final ImageView ivDivider = clickableProgressBar.ivContainer;
+		final ClickableProgressBar pbTime = clickableProgressBar;
+		final float moveLength = Screen.Dp2Px(12, clickableProgressBar.getContext());
+		ValueAnimator anim = ValueAnimator.ofFloat(0f, 2f);
+		anim.setDuration(1000);
+		anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			boolean isSetView = false;
+			int curProgress;
+			int maxProgress;
+			int addProgress;
+			int mimusProgress;
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				float currentValue = (float) animation.getAnimatedValue();
+				if (currentValue < 1f){
+					if (action == 1)
+						btAdd.setTranslationY(-currentValue*moveLength);
+					else
+						btMinus.setTranslationY(-currentValue*moveLength);
+					btAdd.setAlpha(1f-currentValue);
+					btMinus.setAlpha(1f-currentValue);
+					//ivDivider.setAlpha(1f-currentValue);
+				}
+				else if (!isSetView){
+					setAddOrMinusView(clickableProgressBar, bean, action);
+					btComment.setAlpha(0f);
+					curProgress = clickableProgressBar.getProgress();
+					maxProgress = clickableProgressBar.getMaxProgress();
+					addProgress = Math.min(curProgress+50, maxProgress);
+					int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+					mimusProgress = Math.max(curProgress-50, halfProgress);
+					isSetView = true;
+				}
+				else {
+					btComment.setAlpha(currentValue-1f);
+					if (action == 1)
+						pbTime.setProgress(((int)(curProgress+(currentValue-1f)*(addProgress -curProgress))));
+					else
+						pbTime.setProgress(((int)(curProgress-(currentValue-1f)*(curProgress-mimusProgress))));
+				}
+				Log.d("TAG", "cuurent value is " + currentValue);
+			}
+		});
+		anim.addListener(new Animator.AnimatorListener() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				getNoteAndPostEvent(bean.getOriginalId(), curUser);
+				Log.d("TAG", "END");
+			}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+
+			}
+		});
+		anim.start();
 	}
 
 	@NonNull
@@ -645,11 +633,11 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		if (bean.getIs_die() == 1){//帖子活着
 			Date dateNow = new Date(bean.getFetchTime());
 			Date datePost = TimeUtil.getTimeDate(bean.getOriginalPost_time());
-			//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
+			//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0   1000*60将毫秒变成分钟
 			long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE
 					+ 5 * bean.getAdd_num()
 					- bean.getSub_num()
-					- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 660)));
+					- Math.floor(((double) (dateNow.getTime() - datePost.getTime())) / (1000 * 60)));
 			String sTimeLeft;
 			if (minuteLeft < 60)
 				sTimeLeft = String.valueOf(minuteLeft) + "分钟";
@@ -666,7 +654,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 			if (minuteLeft < 60){
 				int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-				clickableProgressBar.setProgress((int)Math.max((halfProgress+(5.0/6)*minuteLeft), halfProgress));
+				clickableProgressBar.setProgress((int)Math.max((halfProgress+(50.0/6)*minuteLeft), halfProgress));
 			}
 			else
 				clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());

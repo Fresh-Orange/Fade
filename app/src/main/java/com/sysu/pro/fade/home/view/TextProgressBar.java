@@ -49,7 +49,7 @@ public class TextProgressBar extends ProgressBar {
 	protected synchronized void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		this.mPaint.getTextBounds(this.str, 0, this.str.length(), rect);
-		int x = (int)(getWidth()*((getProgress()-2)*1.0/100) - rect.right);//减2是为了文字左移一点
+		int x = (int)(getWidth()*((getProgress()-20)*1.0/1000) - rect.right);//减2是为了文字左移一点
 		int y = getHeight() / 2 + rect.height()/2 - Screen.Dp2Px(1,getContext());/// + rect.centerY();
 		canvas.drawText(this.str, x, y, this.mPaint);
 	}
@@ -62,6 +62,7 @@ public class TextProgressBar extends ProgressBar {
 		this.mPaint.setFakeBoldText(true);
 		this.mPaint.setTextSize(DensityUtils.sp2px(getContext(), 12));
 		this.mPaint.setColor(color);
+		this.setMax(1000);
 	}
 
 	// 设置文字内容
