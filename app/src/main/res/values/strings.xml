@@ -57,6 +57,7 @@
     <!--for Discover-->
     <string name="interest_hint">你可能感兴趣的用户</string>
     <string name="count_hint">共%1$s条相关内容</string>
+    <string name="user_count_hint">共%1$s位相关用户</string>
 
     <string-array name="showGuidelinesArray">
         <item>Off</item>
