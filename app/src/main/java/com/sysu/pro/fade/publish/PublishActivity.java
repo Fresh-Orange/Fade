@@ -254,6 +254,9 @@ public class PublishActivity extends AppCompatActivity {
                                             note.setPost_time(post_time);
                                             //通知主界面（ContentHome）更新
                                             EventBus.getDefault().post(note);
+                                            Intent intent = new Intent();
+                                            intent.putExtra("NotEdit", false);
+                                            setResult(RESULT_OK, intent);
                                             finish();
                                         }else {
                                             Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
@@ -308,6 +311,9 @@ public class PublishActivity extends AppCompatActivity {
                                 note.setPost_time(post_time);
                                 //通知主界面（ContentHome）更新
                                 EventBus.getDefault().post(note);
+                                Intent intent = new Intent();
+                                intent.putExtra("NotEdit", false);
+                                setResult(RESULT_OK, intent);
                                 finish();
                             }else {
                                 Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
@@ -478,6 +484,9 @@ public class PublishActivity extends AppCompatActivity {
                 builder.setPositiveButton("确定",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent2 = new Intent();
+                        intent2.putExtra("NotEdit", true);
+                        setResult(RESULT_OK, intent2);
                         finish();
                     }
                 });

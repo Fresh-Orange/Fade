@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -83,7 +84,12 @@ public class DemoIntentService extends GTIntentService {
         }
         Log.d("YellowGetui","NotNull: ");
         Log.d("YellowGetui","PushMessage: " + pushMessage);
-        new MyServerThread().start();
+//        new MyServerThread().start();
+        Intent intent = new Intent(Const.STATICACTION);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("pushMessage", pushMessage);
+        intent.putExtra("data", bundle);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -164,6 +170,12 @@ public class DemoIntentService extends GTIntentService {
     class MyServerThread extends Thread {
         @Override
         public void run() {
+            Intent intent = new Intent(Const.STATICACTION);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("pushMessage", pushMessage);
+            intent.putExtra("data", bundle);
+            sendBroadcast(intent);
+            Log.e("YellowMain", "Send!!");
 //            Intent launchIntent = mContext.getPackageManager().
 //                    getLaunchIntentForPackage("com.liangzili.notificationlaunch");
 //            launchIntent.setFlags(
@@ -177,42 +189,7 @@ public class DemoIntentService extends GTIntentService {
 
 //            EventBus.getDefault().post(pushMessage);
             //设定传递对象，动态广播只需传送message，在MainActivity返回onNewIntent
-            switch (pushMessage.getMsgId()) {
-                case 1:
-                    Log.e("YellowMain", "Case 1");
-                    Note contributionNote = (Note) pushMessage.getObj();
-                    Intent intent = new Intent(DemoIntentService.this, DetailActivity.class);
-                    intent.putExtra(Const.NOTE_ID,contributionNote.getTarget_id());
-                    intent.putExtra(Const.IS_COMMENT,false);
-                    intent.putExtra(Const.COMMENT_NUM, contributionNote.getComment_num());
-                    intent.putExtra(Const.COMMENT_ENTITY, contributionNote);
-                    intent.putExtra("getFull",true);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    break;
-                case 2:
-                    Log.e("YellowMain", "Case 2");
-                    Comment commentNote = (Comment) pushMessage.getObj();
-                    Intent intent3 = new Intent(DemoIntentService.this, DetailActivity.class);
-                    intent3.putExtra(Const.NOTE_ID,commentNote.getComment_id());
-                    intent3.putExtra(Const.IS_COMMENT,true);
-//                intent3.putExtra(Const.COMMENT_NUM, commentNote.g());
-                    intent3.putExtra(Const.COMMENT_ENTITY, commentNote);
-                    intent3.putExtra("getFull",true);
-                    intent3.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent3);
-                    break;
-                case 3:
-                    Log.e("YellowMain", "Case 3");
-                    User user = (User) pushMessage.getObj();
-                    if(user != null){
-                        Intent intent2 = new Intent(DemoIntentService.this, OtherActivity.class);
-                        intent2.putExtra(Const.USER_ID , user.getUser_id());
-                        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent2);
-                    }
-                    break;
-            }
+
 
         }
     }

@@ -37,6 +37,7 @@ import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.event.EditMessage;
 import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.message.Activity.FansActivity;
@@ -88,6 +89,7 @@ public class MainActivity extends MainBaseActivity {
 
     private View redPoint;
 
+    private ImageView img_title;
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -424,7 +426,7 @@ public class MainActivity extends MainBaseActivity {
     //设置选择tab图标
     private void changeTabSelect(TabLayout.Tab tab) {
         View view = tab.getCustomView();
-        ImageView img_title = (ImageView) view.findViewById(R.id.icon);
+        img_title = (ImageView) view.findViewById(R.id.icon);
         //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
@@ -444,7 +446,7 @@ public class MainActivity extends MainBaseActivity {
     //设置还原tab图标
     private void changeTabNormal(TabLayout.Tab tab) {
         View view = tab.getCustomView();
-        ImageView img_title = (ImageView) view.findViewById(R.id.icon);
+        img_title = (ImageView) view.findViewById(R.id.icon);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
             img_title.setImageResource(R.mipmap.home_normal);
@@ -614,9 +616,21 @@ public class MainActivity extends MainBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Const.PUBLISH_REQUEST_CODE){
-            //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
-            mTabLayoutMenu.getTabAt(oldTabItem).select();
+        if (requestCode == Const.PUBLISH_REQUEST_CODE && resultCode == RESULT_OK){
+            boolean notEdit = data.getBooleanExtra("NotEdit", true);
+            Log.d("NotEdit", "NotEdit: " + notEdit);
+            if (notEdit) {
+                //没编辑
+                //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
+                mTabLayoutMenu.getTabAt(oldTabItem).select();
+            }
+            else {
+                //编辑了
+                mViewPager.setCurrentItem(Const.HOME - 1, false);
+                img_title.setImageResource(R.mipmap.home_normal);
+                EventBus.getDefault().post(new EditMessage("Edit", true));
+            }
+
         }
         //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
         //为fragment赋值
