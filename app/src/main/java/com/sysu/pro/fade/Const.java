@@ -119,4 +119,5 @@ public class Const {
     public static final String GOOD_NUM_LIST = "good_num_list";
 
     public static final int PUBLISH_REQUEST_CODE = 1; //发送帖子的请求代号,返回码为1的话则发送成功，返回0的话发送失败
+    public static String STATICACTION = "com.sysu.pro.fade.message.receiver.StaticReceiver";
 }

@@ -21,6 +21,7 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.adapter.NotesAdapter;
 import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.event.EditMessage;
 import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.event.NoteConcernChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
@@ -607,9 +608,18 @@ public class ContentHome {
         String message = msg.getMessage();
         boolean isClicked = msg.isClick();
         if (isClicked) {
-            scrollToTOP();
             refreshImmediate();
+            scrollToTOP();
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(EditMessage msg) {
+        boolean isEdit = msg.isClick();
+        if (isEdit) {
+
+            refreshImmediate();
+            scrollToTOP();
+        }
+    }
 }

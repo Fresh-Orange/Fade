@@ -1,6 +1,8 @@
 package com.sysu.pro.fade.beans;
 
-public class PushMessage {
+import java.io.Serializable;
+
+public class PushMessage implements Serializable{
 	//个推 推送所用的bean
 	private Object obj;
 	private Integer msgId;//1为续秒通知，2为评论通知，3为粉丝通知

@@ -100,21 +100,21 @@ public class CommentActivity extends MainBaseActivity {
             }
         });
         //单项点击跳转监听
-//        adapter.setOnItemClickListener(new ContributeAdapter.onItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//                if(comments.get(position).getViewType() == null){
-//                    CommentMessage temp = comments.get(position);
-//                    Intent intent = new Intent(CommentActivity.this, DetailActivity.class);
-//                    intent.putExtra(Const.NOTE_ID,temp.getComment_id());
-//                    intent.putExtra(Const.IS_COMMENT,true);
-//                    intent.putExtra(Const.COMMENT_NUM, temp.get);
+        adapter.setOnItemClickListener(new CommentAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if(comments.get(position).getViewType() == null){
+                    CommentMessage temp = comments.get(position);
+                    Intent intent = new Intent(CommentActivity.this, DetailActivity.class);
+                    intent.putExtra(Const.NOTE_ID,temp.getComment_id());
+                    intent.putExtra(Const.IS_COMMENT,true);
+//                    intent.putExtra(Const.COMMENT_NUM, temp.);
 //                    intent.putExtra(Const.COMMENT_ENTITY, temp);
-//                    intent.putExtra("getFull",true);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
+                    intent.putExtra("getFull",true);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private void initLoadAddMore() {
