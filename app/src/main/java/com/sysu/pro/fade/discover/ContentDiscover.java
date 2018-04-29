@@ -79,10 +79,6 @@ public class ContentDiscover {
 
     private List<User>userList; //用户数据
 
-
-
-
-
     //搜索控件
     //private SearchHistoryTable mHistoryDatabase;
     //private SearchView mSearchView;
