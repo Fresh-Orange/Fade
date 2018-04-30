@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,7 +29,7 @@ import com.sysu.pro.fade.tool.UserTool;
 
 public class ValidationActivity extends LoginBaseActivity{
     Code mCode;
-    private ImageView nextbtn;
+    private Button nextbtn;
     private ImageView backbtn;
     private LinearLayout red_wrong_valid;
     private TextView send_telephone;
@@ -42,7 +43,7 @@ public class ValidationActivity extends LoginBaseActivity{
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                //if(ans.equals("{}")){
 
                 //验证成功，跳转到输入密码界面
                 Intent intent = new Intent(ValidationActivity.this,SetNewPasswordActivity.class);
@@ -50,10 +51,10 @@ public class ValidationActivity extends LoginBaseActivity{
                 startActivity(intent);
 
                 finish();
-                }else{
-                    red_wrong_valid.setVisibility(View.VISIBLE);
-                    handler2.sendEmptyMessageDelayed(1,1000);
-                }
+                //}else{
+                //    red_wrong_valid.setVisibility(View.VISIBLE);
+                //    handler2.sendEmptyMessageDelayed(1,1000);
+                //}
             }
         }
     };
@@ -91,7 +92,7 @@ public class ValidationActivity extends LoginBaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validation);
         mCode = (Code) findViewById(R.id.code);
-        nextbtn = (ImageView) findViewById(R.id.next);
+        nextbtn = (Button) findViewById(R.id.next);
         backbtn = (ImageView) findViewById(R.id.back_btn);
         red_wrong_valid = (LinearLayout) findViewById(R.id.red_wrong_valid);
         send_telephone = (TextView) findViewById(R.id.send_telephone);

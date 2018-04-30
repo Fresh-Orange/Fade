@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,7 +39,7 @@ public class RegisterActivity extends LoginBaseActivity {
     private EditText my_telephone;
     private EditText my_valid;
     private TextView get_valid;
-    private ImageView registerbtn;
+    private Button registerbtn;
     private TextView loginbtn;
     private String mobilePhoneNumber;
     private String validation;
@@ -52,7 +53,7 @@ public class RegisterActivity extends LoginBaseActivity {
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                //if(ans.equals("{}")){
 
                     //验证成功，跳转到输入密码界面
                     Intent intent = new Intent(RegisterActivity.this,SetPasswordActivity.class);
@@ -60,9 +61,9 @@ public class RegisterActivity extends LoginBaseActivity {
                     startActivity(intent);
 
                     //finish();
-                }else{
-                    red_wrong_valid.setVisibility(View.VISIBLE);
-                }
+                //}else{
+                //    red_wrong_valid.setVisibility(View.VISIBLE);
+                //}
             }
         }
     };
@@ -93,10 +94,10 @@ public class RegisterActivity extends LoginBaseActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1) {
-                registerbtn.setImageResource(R.drawable.register_blue);
+                registerbtn.setBackgroundResource(R.drawable.button_shape_blue);
                 red_wrong_valid.setVisibility(View.INVISIBLE);
             }else {
-                registerbtn.setImageResource(R.drawable.register_gray);
+                registerbtn.setBackgroundResource(R.drawable.button_shape_nomal);
                 red_wrong_valid.setVisibility(View.INVISIBLE);
             }
         }
@@ -140,7 +141,7 @@ public class RegisterActivity extends LoginBaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_main);
-        registerbtn = (ImageView) findViewById(R.id.btnRegister);
+        registerbtn = (Button) findViewById(R.id.btnRegister);
         loginbtn = (TextView) findViewById(R.id.tologin);
         get_valid = (TextView) findViewById(R.id.get_valid);
         my_telephone = (EditText) findViewById(R.id.my_telephone);
@@ -156,7 +157,9 @@ public class RegisterActivity extends LoginBaseActivity {
             public void onClick(View view) {
                 mobilePhoneNumber = my_telephone.getText().toString();
                 validation = my_valid.getText().toString();
-                UserTool.toCheck(handler,mobilePhoneNumber,validation);
+                if (!mobilePhoneNumber.equals("")){
+                    UserTool.toCheck(handler,mobilePhoneNumber,validation);
+                }
                 //startActivity(new Intent(RegisterActivity.this, SetPasswordActivity.class));
             }
         });
