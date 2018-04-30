@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -482,26 +483,7 @@ public class PublishActivity extends AppCompatActivity {
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(PublishActivity.this);
-                builder.setTitle("退出此次编辑?");
-                builder.setPositiveButton("确定",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent2 = new Intent();
-                        intent2.putExtra("NotEdit", true);
-                        setResult(RESULT_OK, intent2);
-                        finish();
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
-                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.GRAY);
+                showAlertDialog();
             }
         });
 
@@ -582,6 +564,29 @@ public class PublishActivity extends AppCompatActivity {
 
     }
 
+    private void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(PublishActivity.this);
+        builder.setTitle("退出此次编辑?");
+        builder.setPositiveButton("确定",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent2 = new Intent();
+                intent2.putExtra("NotEdit", true);
+                setResult(RESULT_OK, intent2);
+                finish();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.GRAY);
+    }
+
     private void updatePosition() {
         for (int i = curShowPosition;i < images.size(); i++) {
             imageX[i] = imageX[i+1];
@@ -590,10 +595,19 @@ public class PublishActivity extends AppCompatActivity {
     }
 
 
+
 //    public static float dpToPx(Context context, float valueInDp) {
 //        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 //        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
 //    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK )
+            showAlertDialog();
+        return false;
+    }
 
     private void InitView() {
 //        SharedPreferences sharedPreferences = getSharedPreferences("MY_PREFERENCE",
