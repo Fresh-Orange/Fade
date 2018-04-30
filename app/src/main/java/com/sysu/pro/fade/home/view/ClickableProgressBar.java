@@ -114,7 +114,7 @@ public class ClickableProgressBar extends FrameLayout {
 		btComment.setVisibility(VISIBLE);
 
 		ivAction.setVisibility(GONE);
-		timeProgressBar.setProgress(60);
+		timeProgressBar.setProgress(600);
 		timeProgressBar.setProgressDrawable(null);
 		ivContainer.setImageDrawable(null);
 	}
