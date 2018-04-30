@@ -16,14 +16,19 @@ import android.widget.TextView;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
+import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.event.DoubleClick;
 import com.sysu.pro.fade.message.Activity.CommentActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.message.Activity.FansActivity;
 import com.sysu.pro.fade.message.Adapter.ChatAdapter;
 import com.sysu.pro.fade.message.Adapter.ConversationListAdapterEx;
 import com.sysu.pro.fade.message.Class.NotificationUser;
+import com.sysu.pro.fade.message.Event.CommentEvent;
+import com.sysu.pro.fade.message.Event.ContributeEvent;
+import com.sysu.pro.fade.message.Event.FansEvent;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
@@ -327,6 +332,37 @@ public class ContentMessage {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ContributeEvent msg) {
+        String message = msg.getMessage();
+        boolean isBack = msg.isBack();
+        if (isBack) {
+            contributionCount = 0;
+            processCountTv.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(FansEvent msg) {
+        String message = msg.getMessage();
+        boolean isBack = msg.isBack();
+        if (isBack) {
+            newFanCount = 0;
+            newFanCountTv.setVisibility(View.GONE);
+        }
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(CommentEvent msg) {
+        String message = msg.getMessage();
+        boolean isBack = msg.isBack();
+        if (isBack) {
+            commentCount = 0;
+            commentCountTv.setVisibility(View.GONE);
+        }
+
+    }
     private void sendBadge() {
         //华为
 //        badgeNumber = contributionCount + newFanCount + commentCount + chatNumber;

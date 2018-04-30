@@ -21,6 +21,7 @@ import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.message.Activity.CommentActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.message.Activity.FansActivity;
 
@@ -65,9 +66,9 @@ public class StaticReceiver extends BroadcastReceiver {
                 case 2:
                     //新评论
                     Log.e("YellowMain", "Case 2");
-                    intent = new Intent(context, DetailActivity.class);
+//                    intent = new Intent(context, Com.class);
                     Note commentNote = ((JSONObject)pushMessage.getObj()).toJavaObject(Note.class);
-                    intent = new Intent(context, DetailActivity.class);
+                    intent = new Intent(context, CommentActivity.class);
                     intent.putExtra(Const.NOTE_ID,commentNote.getNote_id());
                     intent.putExtra(Const.IS_COMMENT,false);
                     intent.putExtra(Const.COMMENT_NUM, commentNote.getComment_num());

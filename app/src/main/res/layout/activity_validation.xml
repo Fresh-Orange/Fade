@@ -81,7 +81,7 @@
                 android:id="@+id/send_telephone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="验证码已发送至手机号 +86 12345678910"
+                android:text="已发送至手机号 +86 12345678910"
                 android:gravity="center"
                 android:textSize="15sp"
                 android:textColor="#c2c2c2"/>

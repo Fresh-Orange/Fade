@@ -29,8 +29,7 @@
             android:textColorHint="#b3b3b3"
             android:textColor="#333333"
             android:background="@null"
-            android:textSize="14sp"
-            android:theme="@style/MyEditText"/>
+            android:textSize="14sp" />
     </RelativeLayout>
 
     <ImageView

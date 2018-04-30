@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -21,9 +22,13 @@ import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.message.Adapter.CommentAdapter;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
+import com.sysu.pro.fade.message.Event.CommentEvent;
+import com.sysu.pro.fade.message.Event.ContributeEvent;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +99,7 @@ public class CommentActivity extends MainBaseActivity {
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(new CommentEvent("back", true));
                 finish();
             }
         });
@@ -202,6 +208,13 @@ public class CommentActivity extends MainBaseActivity {
                         });
             }
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK )
+            EventBus.getDefault().post(new CommentEvent("back", true));
+        return super.onKeyDown(keyCode, event);
     }
 
     public void footViewListen(final View footView){
