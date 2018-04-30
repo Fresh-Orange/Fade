@@ -23,8 +23,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.squareup.haha.perflib.Main;
+import com.igexin.sdk.PushManager;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
+import com.sysu.pro.fade.beans.AddMessage;
 import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.PushMessage;
@@ -39,14 +40,13 @@ import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.event.DoubleClick;
 import com.sysu.pro.fade.home.event.EditMessage;
 import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
-import com.sysu.pro.fade.message.Activity.ContributionActivity;
-import com.sysu.pro.fade.message.Activity.FansActivity;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.message.GeTui.Service.DemoIntentService;
 import com.sysu.pro.fade.message.GeTui.Service.DemoPushService;
 import com.sysu.pro.fade.my.ContentMy;
 import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.publish.PublishActivity;
+import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.Client;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -75,7 +75,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
-import com.igexin.sdk.PushManager;
 public class MainActivity extends MainBaseActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -204,10 +203,31 @@ public class MainActivity extends MainBaseActivity {
                 }
         ));
 
+        //获得用户通知数量，直接设置小红点
+        initMeesageRedPoint();
     }
 
-
-
+    private void initMeesageRedPoint() {
+        //获得用户通知数量，直接设置小红点
+        MessageService messageService = retrofit.create(MessageService.class);
+        messageService.getAddMessage(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AddMessage>() {
+                    @Override
+                    public void onCompleted() {}
+                    @Override
+                    public void onError(Throwable e) {}
+                    @Override
+                    public void onNext(AddMessage addMessage) {
+                        int contributionCount = addMessage.getAddContributeNum();
+                        int newFanCount = addMessage.getAddFansNum();
+                        int commentCount = addMessage.getAddCommentNum();
+                        if(contributionCount + newFanCount + commentCount > 0) redPoint.setVisibility(View.VISIBLE);
+                        else  redPoint.setVisibility(View.GONE);
+                    }
+                });
+    }
 
     private void createFiles() {
         //创建文件夹
