@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -953,6 +954,7 @@ public class MainActivity extends MainBaseActivity  {
                 break;
         }
     }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(DoubleClick msg) {
