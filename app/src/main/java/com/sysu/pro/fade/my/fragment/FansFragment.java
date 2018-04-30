@@ -3,6 +3,7 @@ package com.sysu.pro.fade.my.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,6 +51,8 @@ public class FansFragment extends Fragment {
     private CommonAdapter<User> adapter;
     private List<User> fans = new ArrayList<>();
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     public FansFragment() {
         // Required empty public constructor
     }
@@ -71,11 +74,12 @@ public class FansFragment extends Fragment {
         start = "0";
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, myself.getTokenModel());
         setupView();
-        getData();
+        getData(true);
         return rootView;
     }
 
-    private void getData() {
+    private void getData(Boolean isRefresh) {
+        if (isRefresh) start = "0";
         UserService service = retrofit.create(UserService.class);
         service.getFans(userId.toString(),myself.getUser_id().toString(), start)
                 .subscribeOn(Schedulers.newThread())
@@ -94,6 +98,7 @@ public class FansFragment extends Fragment {
                     @Override
                     public void onNext(UserQuery userQuery) {
                         refreshLayout.finishLoadmore();
+                        swipeRefreshLayout.setRefreshing(false);
                         fans.clear();
                         fans.addAll(userQuery.getList());
                         Log.d("Check", "fans: "+userQuery.getList().size());
@@ -121,6 +126,8 @@ public class FansFragment extends Fragment {
             public void convert(final ViewHolder holder, final User data, int position) {
                 if (position == 0) {
                     holder.setWidgetVisibility(R.id.fans_divide_line, View.GONE);
+                } else {
+                    holder.setWidgetVisibility(R.id.fans_divide_line, View.VISIBLE);
                 }
                 holder.setCircleImage(R.id.fans_head, Const.BASE_IP+data.getHead_image_url());
                 holder.onWidgetClick(R.id.fans_root_view, new View.OnClickListener() {
@@ -193,9 +200,14 @@ public class FansFragment extends Fragment {
                 if (data.getUser_id() != myself.getUser_id()) {
                     if (data.getIsConcern() == 1) {
                         holder.setWidgetVisibility(R.id.fans_concern_ok, View.VISIBLE);
+                        holder.setWidgetVisibility(R.id.fans_concern, View.GONE);
                     } else {
                         holder.setWidgetVisibility(R.id.fans_concern, View.VISIBLE);
+                        holder.setWidgetVisibility(R.id.fans_concern_ok, View.GONE);
                     }
+                } else {
+                    holder.setWidgetVisibility(R.id.fans_concern_ok, View.GONE);
+                    holder.setWidgetVisibility(R.id.fans_concern, View.GONE);
                 }
             }
         };
@@ -208,9 +220,22 @@ public class FansFragment extends Fragment {
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
-                getData();
+                getData(false);
             }
         });
+
+        swipeRefreshLayout = rootView.findViewById(R.id.fans_and_concern_refresh_layout);
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setColorSchemeResources(R.color.light_blue);
+        //下拉刷新，重新获取关注列表
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        swipeRefreshLayout.setRefreshing(true);
+                        getData(true);
+                    }
+                });
     }
 
     private void scrollToTOP(){

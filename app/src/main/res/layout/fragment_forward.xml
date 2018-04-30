@@ -4,16 +4,21 @@
     android:layout_height="match_parent"
     tools:context="com.sysu.pro.fade.home.fragment.ForwardFragment">
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/fragment_forward_refresh_layout"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/fans_and_concern_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/fragment_forward_recycler_view"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/fragment_forward_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
 
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/fragment_forward_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>

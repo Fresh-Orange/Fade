@@ -3,6 +3,7 @@ package com.sysu.pro.fade.my.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,6 +51,8 @@ public class ConcernFragment extends Fragment {
     private CommonAdapter<User> adapter;
     private List<User> concern = new ArrayList<>();
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     public ConcernFragment() {
 
     }
@@ -71,11 +74,12 @@ public class ConcernFragment extends Fragment {
         start = "0";
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, myself.getTokenModel());
         setupView();
-        getData();
+        getData(true);
         return rootView;
     }
 
-    private void getData() {
+    private void getData(Boolean isRefresh) {
+        if (isRefresh) start = "0";
         UserService service = retrofit.create(UserService.class);
         service.getConcerns(userId.toString(), myself.getUser_id().toString(),start)
                 .subscribeOn(Schedulers.newThread())
@@ -94,6 +98,7 @@ public class ConcernFragment extends Fragment {
                     @Override
                     public void onNext(UserQuery userQuery) {
                         refreshLayout.finishLoadmore();
+                        swipeRefreshLayout.setRefreshing(false);
                         concern.clear();
                         concern.addAll(userQuery.getList());
                         Log.d("Check", "fans: "+userQuery.getList().size());
@@ -152,9 +157,22 @@ public class ConcernFragment extends Fragment {
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
-                getData();
+                getData(false);
             }
         });
+
+        swipeRefreshLayout = rootView.findViewById(R.id.fans_and_concern_refresh_layout);
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setColorSchemeResources(R.color.light_blue);
+        //下拉刷新，重新获取关注列表
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        swipeRefreshLayout.setRefreshing(true);
+                        getData(true);
+                    }
+                });
     }
 
     private void scrollToTOP(){
