@@ -1,11 +1,8 @@
 package com.sysu.pro.fade.message;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,13 +13,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.AddMessage;
-import com.sysu.pro.fade.beans.CommentMessage;
-import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.message.Activity.CommentActivity;
@@ -39,15 +32,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.imkit.RongContext;
 import io.rong.imkit.fragment.ConversationListFragment;
 import io.rong.imlib.model.Conversation;
-import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -319,8 +309,6 @@ public class ContentMessage {
                 sendBadge();
                 processCountTv.setVisibility(View.VISIBLE);
                 processCountTv.setText(String.valueOf(contributionCount));
-                //续减秒产生的转发帖信息
-                Note note = ((JSONObject) response.getExtra().get("note")).toJavaObject(Note.class);
                 break;
             case "01":
                 //粉丝队列数量加一
@@ -328,8 +316,6 @@ public class ContentMessage {
                 sendBadge();
                 newFanCountTv.setVisibility(View.VISIBLE);
                 newFanCountTv.setText(String.valueOf(newFanCount));
-                //粉丝信息
-                User user = ((JSONObject) response.getExtra().get("user")).toJavaObject(User.class);
                 break;
             case "02":
                 //评论数量加一
@@ -337,8 +323,6 @@ public class ContentMessage {
                 sendBadge();
                 commentCountTv.setVisibility(View.VISIBLE);
                 commentCountTv.setText(String.valueOf(commentCount));
-                //评论信息
-                CommentMessage message = ((JSONObject) response.getExtra().get("message")).toJavaObject(CommentMessage.class);
                 break;
         }
     }

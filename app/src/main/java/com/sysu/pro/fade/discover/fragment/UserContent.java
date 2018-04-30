@@ -159,7 +159,7 @@ public class UserContent {
         //可插入中间文字的recyclerView的初始化
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_user);
         itemList = new ArrayList<>();
-        itemList.add(new HintTypeItem("感兴趣的用户"));
+        itemList.add(new HintTypeItem("你可能感兴趣的用户"));
         mtAdapter = new MultiTypeRVAdapter(context, itemList);
 
         // ***************  注册item类型  ***************
@@ -183,7 +183,12 @@ public class UserContent {
                 layoutParams1.height = 80;
                 tv_nickname.setLayoutParams(layoutParams1);
                 tv_nickname.setText(Html.fromHtml(user.getNickname()));
-                tv_fade_name.setText(Html.fromHtml(user.getFade_name()));
+                if (user.getSummary() != null){
+                    tv_fade_name.setText(Html.fromHtml(user.getSummary()));
+                }else {
+                    tv_fade_name.setText("未编辑个性签名");
+                }
+                //tv_fade_name.setText(Html.fromHtml(user.getSummary()));
                 Glide.with(context).load(Const.BASE_IP + user.getHead_image_url()).error(R.drawable.register_head_ic).into(iv_header);
             }
         }, R.layout.item_user);
@@ -229,7 +234,7 @@ public class UserContent {
         start = userQuery.getStart();
         if (itemList.isEmpty()){
             sum = userQuery.getSum();
-            itemList.add(new CountTypeItem(context.getString(R.string.count_hint, userQuery.getSum().toString())));
+            itemList.add(new CountTypeItem(context.getString(R.string.user_count_hint, userQuery.getSum().toString())));
         }
         List<User>addUsers = userQuery.getList();
         if(addUsers.size() != 0){
@@ -240,7 +245,7 @@ public class UserContent {
             //搜索完毕，变换成感兴趣用户模式，-1是
             start = 0;
             searchMode = SearchMode.INTERESTED;
-            itemList.add(new HintTypeItem("感兴趣的用户"));
+            itemList.add(new HintTypeItem("你可能感兴趣的用户"));
             if (itemList.size() < 8)
                 getRecommendUsers();
         }

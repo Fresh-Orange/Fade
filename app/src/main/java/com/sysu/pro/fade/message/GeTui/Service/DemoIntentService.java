@@ -7,6 +7,7 @@ package com.sysu.pro.fade.message.GeTui.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -18,12 +19,8 @@ import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.home.activity.DetailActivity;
-import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
-
-import org.greenrobot.eventbus.EventBus;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -41,8 +38,9 @@ public class DemoIntentService extends GTIntentService {
 
     private User myself;
 
+    private PushMessage pushMessage;
 
-
+    private Context mContext;
     public DemoIntentService() {
 
     }
@@ -56,23 +54,24 @@ public class DemoIntentService extends GTIntentService {
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
         Log.e("getui", "------------onReceiveMessageData------------");
-        String noteID = new String(msg.getPayload());
-//        Log.e("getui", "data: " + data);
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(Const.NOTE_ID, noteID);
-        intent.putExtra(Const.IS_COMMENT, false);
-//        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
-//        intent.putExtra(Const.COMMENT_ENTITY, temp);
-        intent.putExtra("getFull",true);
-        startActivity(intent);
 
+        mContext = context;
         String str = new String(msg.getPayload());
-        Log.i("getui",str);
-        PushMessage pushMessage = JSON.parseObject(str, PushMessage.class);
-        if(pushMessage == null) return;
-        EventBus.getDefault().post(pushMessage);
-
-
+        Log.d("YellowGetui","str = : " + str);
+        pushMessage = JSON.parseObject(str, PushMessage.class);
+        Log.d("YellowGetui","这里进不去了吗");
+        if(pushMessage == null) {
+            Log.d("YellowGetui","PushMessage is null!");
+            return;
+        }
+        Log.d("YellowGetui","NotNull: ");
+        Log.d("YellowGetui","PushMessage: " + pushMessage);
+//        new MyServerThread().start();
+        Intent intent = new Intent(Const.STATICACTION);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("pushMessage", pushMessage);
+        intent.putExtra("data", bundle);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -147,5 +146,33 @@ public class DemoIntentService extends GTIntentService {
         Log.e("getui", "pkgName: " + pkgName);
         Log.e("getui", "------------通知被点击------------");
 
+
+    }
+
+    class MyServerThread extends Thread {
+        @Override
+        public void run() {
+            Intent intent = new Intent(Const.STATICACTION);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("pushMessage", pushMessage);
+            intent.putExtra("data", bundle);
+            sendBroadcast(intent);
+            Log.e("YellowMain", "Send!!");
+//            Intent launchIntent = mContext.getPackageManager().
+//                    getLaunchIntentForPackage("com.liangzili.notificationlaunch");
+//            launchIntent.setFlags(
+//                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+//            Bundle args = new Bundle();
+//            args.putString("name", "电饭锅");
+//            args.putString("price", "58元");
+//            args.putString("detail", "这是一个好锅, 这是app进程不存在，先启动应用再启动Activity的");
+//            launchIntent.putExtra(Constants.EXTRA_BUNDLE, args);
+//            context.startActivity(launchIntent);
+
+//            EventBus.getDefault().post(pushMessage);
+            //设定传递对象，动态广播只需传送message，在MainActivity返回onNewIntent
+
+
+        }
     }
 }

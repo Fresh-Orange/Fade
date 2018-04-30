@@ -1,5 +1,6 @@
 package com.sysu.pro.fade.message.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import com.sysu.pro.fade.baseactivity.MainBaseActivity;
 import com.sysu.pro.fade.beans.CommentMessage;
 import com.sysu.pro.fade.beans.CommentMessageQuery;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.message.Adapter.CommentAdapter;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
 import com.sysu.pro.fade.service.MessageService;
@@ -93,6 +95,22 @@ public class CommentActivity extends MainBaseActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        //单项点击跳转监听
+        adapter.setOnItemClickListener(new CommentAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if(comments.get(position).getViewType() == null){
+                    CommentMessage temp = comments.get(position);
+                    Intent intent = new Intent(CommentActivity.this, DetailActivity.class);
+                    intent.putExtra(Const.NOTE_ID,temp.getNote_id());
+                    intent.putExtra(Const.IS_COMMENT,false);
+                   // intent.putExtra(Const.COMMENT_NUM, 0);
+                    //intent.putExtra(Const.COMMENT_ENTITY, null);
+                    intent.putExtra("getFull",true);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -212,7 +230,7 @@ public class CommentActivity extends MainBaseActivity {
                             public void onNext(CommentMessageQuery query) {
                                 start = query.getStart();
                                 List<CommentMessage>list = query.getList();
-                                Log.i("收到粉丝" , "" + list.size());
+                                Log.i("收到评论" , "" + list.size());
                                 if(list.size() != 0){
                                     comments.addAll(list);
                                     adapter.notifyDataSetChanged();

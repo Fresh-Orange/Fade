@@ -1,6 +1,7 @@
 package com.sysu.pro.fade;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -14,27 +15,42 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
+import com.sysu.pro.fade.beans.AddMessage;
+import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.TokenModel;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
+import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.home.activity.OtherActivity;
+import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.event.EditMessage;
+import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.message.GeTui.Service.DemoIntentService;
 import com.sysu.pro.fade.message.GeTui.Service.DemoPushService;
 import com.sysu.pro.fade.my.ContentMy;
+import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.publish.PublishActivity;
+import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.Client;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -63,8 +79,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
-import com.igexin.sdk.PushManager;
-public class MainActivity extends MainBaseActivity {
+public class MainActivity extends MainBaseActivity  {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
@@ -77,6 +92,7 @@ public class MainActivity extends MainBaseActivity {
 
     private View redPoint;
 
+    private ImageView img_title;
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -91,12 +107,25 @@ public class MainActivity extends MainBaseActivity {
 
     private int oldTabItem;
 
+    private boolean isClickOnce = true;
+    private long mLastPressTime = 0;
+    private boolean isMyClickOnce = true;
+
+    //屏幕高度
+    private int screenHeight = 0;
+    //软件盘弹起后所占高度阀值
+    private int keyHeight = 0;
+
+    private View activityRootView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         createFiles();
+
+
+
 
         /*用以解决输入评论时底部导航栏被顶起的问题*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -177,9 +206,77 @@ public class MainActivity extends MainBaseActivity {
 
         //主界面需要更新底部导航栏
         EventBus.getDefault().register(this);
+
+        findViewById(R.id.rl_toolbar_main).setOnTouchListener(new OnDoubleClickListener(
+                new OnDoubleClickListener.DoubleClickCallback() {
+                    @Override
+                    public void onDoubleClick() {
+                        EventBus.getDefault().post(new DoubleClick("click", true));
+                    }
+                }
+        ));
+        activityRootView = findViewById(R.id.relative_root);
+        initSoftInputListener();
+        initMeesageRedPoint();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //添加layout大小发生改变监听器
+//        activityRootView.addOnLayoutChangeListener(this);
     }
 
 
+    //    @Override
+//    public void onLayoutChange(View v, int left, int top, int right,
+//                               int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//
+//        //old是改变前的左上右下坐标点值，没有old的是改变后的左上右下坐标点值
+//
+//        Log.d("YellowFocus", "------------------------------");
+//        Log.d("YellowFocus", "oldBottom: " + oldBottom);
+//        Log.d("YellowFocus", "bottom: " + bottom);
+//        //现在认为只要控件将Activity向上推的高度超过了1/3屏幕高，就认为软键盘弹起
+//        if (oldBottom != 0 && bottom != 0 && (oldBottom - bottom > keyHeight)) {
+//            Toast.makeText(MainActivity.this, "监听到软键盘弹起...", Toast.LENGTH_SHORT).show();
+//            mTabLayoutMenu.setVisibility(View.GONE);
+//        }
+//        else if (oldBottom != 0 && bottom != 0
+//                && (bottom - oldBottom > keyHeight)){
+//            Toast.makeText(MainActivity.this, "监听到软件盘关闭...", Toast.LENGTH_SHORT).show();
+//            mTabLayoutMenu.setVisibility(View.VISIBLE);
+//        }
+//    }
+    public float dpToPx(Context context, float valueInDp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
+    }
+
+    private void initSoftInputListener() {
+        //获取屏幕高度
+        screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+        //阀值设置为屏幕高度的1/3
+        keyHeight = screenHeight/3;
+
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+                if (heightDiff > dpToPx(MainActivity.this, 200)) {
+                    mTabLayoutMenu.setVisibility(View.GONE);
+                }
+                else {
+                    mTabLayoutMenu.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mTabLayoutMenu.setVisibility(View.VISIBLE);
+                        }
+                    }, 100);
+                }
+            }
+        });
+    }
 
 
     private void createFiles() {
@@ -342,6 +439,10 @@ public class MainActivity extends MainBaseActivity {
                     startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                     overridePendingTransition(R.anim.values, R.anim.out_left);
                 }
+                if (tab.getPosition() == Const.DISCOVER - 1)
+                    isClickOnce = false;
+                if (tab.getPosition() == Const.MY - 1)
+                    isMyClickOnce = false;
             }
 
             /**
@@ -364,6 +465,30 @@ public class MainActivity extends MainBaseActivity {
                     startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                     overridePendingTransition(R.anim.values, R.anim.out_left);
                 }
+                if (tab.getPosition() == Const.HOME - 1) {
+                    long currentTime = System.currentTimeMillis();
+                    if (isClickOnce && currentTime - mLastPressTime < 1500) {
+                        EventBus.getDefault().post(new DoubleClick("click", true));
+                        Log.d("click", "here!Double!");
+                        isClickOnce = false;
+                    }
+                    else {
+                        isClickOnce = true;
+                        mLastPressTime = currentTime;
+                    }
+                }
+                if (tab.getPosition() == Const.MY - 1) {
+                    long currentTime = System.currentTimeMillis();
+                    if (isMyClickOnce && currentTime - mLastPressTime < 1500) {
+                        EventBus.getDefault().post(new DoubleFade("click", true));
+                        Log.d("click", "here!Double!");
+                        isMyClickOnce = false;
+                    }
+                    else {
+                        isMyClickOnce = true;
+                        mLastPressTime = currentTime;
+                    }
+                }
             }
         });
     }
@@ -371,7 +496,7 @@ public class MainActivity extends MainBaseActivity {
     //设置选择tab图标
     private void changeTabSelect(TabLayout.Tab tab) {
         View view = tab.getCustomView();
-        ImageView img_title = (ImageView) view.findViewById(R.id.icon);
+        img_title = (ImageView) view.findViewById(R.id.icon);
         //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
@@ -391,7 +516,7 @@ public class MainActivity extends MainBaseActivity {
     //设置还原tab图标
     private void changeTabNormal(TabLayout.Tab tab) {
         View view = tab.getCustomView();
-        ImageView img_title = (ImageView) view.findViewById(R.id.icon);
+        img_title = (ImageView) view.findViewById(R.id.icon);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
             img_title.setImageResource(R.mipmap.home_normal);
@@ -561,9 +686,21 @@ public class MainActivity extends MainBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Const.PUBLISH_REQUEST_CODE){
-            //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
-            mTabLayoutMenu.getTabAt(oldTabItem).select();
+        if (requestCode == Const.PUBLISH_REQUEST_CODE && resultCode == RESULT_OK){
+            boolean notEdit = data.getBooleanExtra("NotEdit", true);
+            Log.d("NotEdit", "NotEdit: " + notEdit);
+            if (notEdit) {
+                //没编辑
+                //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
+                mTabLayoutMenu.getTabAt(oldTabItem).select();
+            }
+            else {
+                //编辑了
+                mViewPager.setCurrentItem(Const.HOME - 1, false);
+                img_title.setImageResource(R.mipmap.home_normal);
+                EventBus.getDefault().post(new EditMessage("Edit", true));
+            }
+
         }
         //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
         //为fragment赋值
@@ -779,4 +916,80 @@ public class MainActivity extends MainBaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(PushMessage event) {
+        Log.e("YellowMain", "MAinnnnn! " + event.getMsgId());
+        switch (event.getMsgId()) {
+            case 1:
+                Log.e("YellowMain", "Case 1");
+                Note contributionNote = (Note) event.getObj();
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra(Const.NOTE_ID,contributionNote.getTarget_id());
+                intent.putExtra(Const.IS_COMMENT,false);
+                intent.putExtra(Const.COMMENT_NUM, contributionNote.getComment_num());
+                intent.putExtra(Const.COMMENT_ENTITY, contributionNote);
+                intent.putExtra("getFull",true);
+                startActivity(intent);
+                break;
+            case 2:
+                Log.e("YellowMain", "Case 2");
+                Comment commentNote = (Comment) event.getObj();
+                Intent intent3 = new Intent(MainActivity.this, DetailActivity.class);
+                intent3.putExtra(Const.NOTE_ID,commentNote.getComment_id());
+                intent3.putExtra(Const.IS_COMMENT,true);
+//                intent3.putExtra(Const.COMMENT_NUM, commentNote.g());
+                intent3.putExtra(Const.COMMENT_ENTITY, commentNote);
+                intent3.putExtra("getFull",true);
+                startActivity(intent3);
+                break;
+            case 3:
+                Log.e("YellowMain", "Case 3");
+                User user = (User) event.getObj();
+                if(user != null){
+                    Intent intent2 = new Intent(MainActivity.this, OtherActivity.class);
+                    intent2.putExtra(Const.USER_ID , user.getUser_id());
+                    startActivity(intent2);
+                }
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DoubleClick msg) {
+        String message = msg.getMessage();
+        boolean isClicked = msg.isClick();
+    }
+
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onEvent(EditDiscover msg) {
+//        String message = msg.getMessage();
+//        boolean hasFocus = msg.isHasFocus();
+//        Log.d("YellowDiscover", "hasFocusMain: " + hasFocus);
+//        if (hasFocus)
+//            mTabLayoutMenu.setVisibility(View.GONE);
+//        else
+//            mTabLayoutMenu.setVisibility(View.VISIBLE);
+//    }
+
+    private void initMeesageRedPoint() {
+        //获得用户通知数量，直接设置小红点
+        MessageService messageService = retrofit.create(MessageService.class);
+        messageService.getAddMessage(user.getUser_id().toString())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AddMessage>() {
+                    @Override
+                    public void onCompleted() {}
+                    @Override
+                    public void onError(Throwable e) {}
+                    @Override
+                    public void onNext(AddMessage addMessage) {
+                        int contributionCount = addMessage.getAddContributeNum();
+                        int newFanCount = addMessage.getAddFansNum();
+                        int commentCount = addMessage.getAddCommentNum();
+                        if(contributionCount + newFanCount + commentCount > 0) redPoint.setVisibility(View.VISIBLE);
+                        else  redPoint.setVisibility(View.GONE);
+                    }
+                });
+    }
 }

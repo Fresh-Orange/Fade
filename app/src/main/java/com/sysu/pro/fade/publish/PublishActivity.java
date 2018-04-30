@@ -254,6 +254,9 @@ public class PublishActivity extends AppCompatActivity {
                                             note.setPost_time(post_time);
                                             //通知主界面（ContentHome）更新
                                             EventBus.getDefault().post(note);
+                                            Intent intent = new Intent();
+                                            intent.putExtra("NotEdit", false);
+                                            setResult(RESULT_OK, intent);
                                             finish();
                                         }else {
                                             Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
@@ -308,6 +311,9 @@ public class PublishActivity extends AppCompatActivity {
                                 note.setPost_time(post_time);
                                 //通知主界面（ContentHome）更新
                                 EventBus.getDefault().post(note);
+                                Intent intent = new Intent();
+                                intent.putExtra("NotEdit", false);
+                                setResult(RESULT_OK, intent);
                                 finish();
                             }else {
                                 Toast.makeText(PublishActivity.this,"发送失败",Toast.LENGTH_SHORT).show();
@@ -418,54 +424,57 @@ public class PublishActivity extends AppCompatActivity {
         icon_sub_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(PublishActivity.this);
-                    dialog.setTitle("提示");
-                    dialog.setMessage("确定要删除这张照片吗?");
-                    dialog.setCancelable(false);
-                    dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(PublishActivity.this);
+                builder.setTitle("提示");
+                builder.setMessage("确定要删除这张照片吗?");
+                builder.setCancelable(false);
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (images.size() == 2) {
-                                clearRatio();
-                                Log.d("Yellow", "in!");
+                        if (images.size() == 2) {
+                            clearRatio();
+                            Log.d("Yellow", "in!");
+                        }
+                        if (images.size() == 1) {
+                            images.clear();
+                            newCount = maxCount;
+                            choose_view.setVisibility(View.VISIBLE);
+                            setHiddenPager(true);
+                            show = CHOOSE;
+                            clearRatio();
+                        }
+                        else {
+                            int currentItem = pager.getPosition();
+                            removeImg(currentItem);
+                            changeRatio(currentItem);
+                            for (int i = 0; i < imageX.length; i++) {
+                                Log.d("Yellow", "i: " + i);
+                                Log.d("Yellow", "imageX: " + imageX[i]);
                             }
-                            if (images.size() == 1) {
-                                images.clear();
-                                newCount = maxCount;
-                                choose_view.setVisibility(View.VISIBLE);
-                                setHiddenPager(true);
-                                show = CHOOSE;
-                                clearRatio();
+                            for (int i = 0; i < imageX.length; i++) {
+                                Log.d("Yellow", "i: " + i);
+                                Log.d("Yellow", "imageY:: " + imageY[i]);
                             }
-                            else {
-                                int currentItem = pager.getPosition();
-                                removeImg(currentItem);
-                                changeRatio(currentItem);
-                                for (int i = 0; i < imageX.length; i++) {
-                                    Log.d("Yellow", "i: " + i);
-                                    Log.d("Yellow", "imageX: " + imageX[i]);
-                                }
-                                for (int i = 0; i < imageX.length; i++) {
-                                    Log.d("Yellow", "i: " + i);
-                                    Log.d("Yellow", "imageY:: " + imageY[i]);
-                                }
-                                newCount = maxCount - images.size();
-                                pager.setPaths(images,currentItem);
+                            newCount = maxCount - images.size();
+                            pager.setPaths(images,currentItem);
 //                                updatePosition();
 //                                pager.removeViewAt(currentItem);
-                                pager.notifyChanged();
-                                ShowViewPager();
-                            }
+                            pager.notifyChanged();
+                            ShowViewPager();
+                        }
 
 
-                        }
-                    });
-                    dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    dialog.show();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.GRAY);
             }
         });
 
@@ -478,6 +487,9 @@ public class PublishActivity extends AppCompatActivity {
                 builder.setPositiveButton("确定",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent2 = new Intent();
+                        intent2.putExtra("NotEdit", true);
+                        setResult(RESULT_OK, intent2);
                         finish();
                     }
                 });
@@ -562,7 +574,7 @@ public class PublishActivity extends AppCompatActivity {
 //                            }
 //                        }, 200);
 //                }
-
+//
 //            }
 //        });
 //
@@ -578,10 +590,10 @@ public class PublishActivity extends AppCompatActivity {
     }
 
 
-    public static float dpToPx(Context context, float valueInDp) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
-    }
+//    public static float dpToPx(Context context, float valueInDp) {
+//        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+//        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
+//    }
 
     private void InitView() {
 //        SharedPreferences sharedPreferences = getSharedPreferences("MY_PREFERENCE",

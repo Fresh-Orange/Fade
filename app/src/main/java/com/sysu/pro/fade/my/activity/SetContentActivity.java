@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -49,7 +50,7 @@ public class SetContentActivity extends LoginBaseActivity {
     protected static final int CHOOSE_PICTURE = 0;
     private static final int CROP_SMALL_PICTURE = 2;
     private static final int PERMISSION_REQUEST_CODE = 0X00000060;
-    private ImageView nextbtn;
+    private Button nextbtn;
     private ImageView myhead;
     private EditText edRegisterNickname;
     private RadioButton male;
@@ -68,7 +69,7 @@ public class SetContentActivity extends LoginBaseActivity {
         setContentView(R.layout.activity_set_content);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
         backbtn = (ImageView) findViewById(R.id.back_btn);
-        nextbtn = (ImageView) findViewById(R.id.next);
+        nextbtn = (Button) findViewById(R.id.next);
         myhead = (ImageView) findViewById(R.id.ivRegisterUserHead);
         edRegisterNickname = (EditText) findViewById(R.id.edRegisterNickname);
         male = (RadioButton) findViewById(R.id.male);

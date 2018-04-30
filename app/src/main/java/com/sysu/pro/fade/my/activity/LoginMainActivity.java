@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ import rx.schedulers.Schedulers;
 public class LoginMainActivity extends LoginBaseActivity {
     private TextView forget_password_btn;
     private ImageView backbtn;
-    private ImageView loginbtn;
+    private Button loginbtn;
     private EditText input_account;
     private EditText input_password;
     private SharedPreferences sharedPreferences;
@@ -57,7 +58,7 @@ public class LoginMainActivity extends LoginBaseActivity {
 
         forget_password_btn = (TextView) findViewById(R.id.forget_password);
         backbtn = (ImageView) findViewById(R.id.back_btn);
-        loginbtn = (ImageView) findViewById(R.id.login);
+        loginbtn = (Button) findViewById(R.id.login);
         input_account = (EditText) findViewById(R.id.my_telephone);
         input_password = (EditText) findViewById(R.id.my_password);
         sharedPreferences = getSharedPreferences(Const.USER_SHARE,MODE_PRIVATE);
@@ -91,6 +92,7 @@ public class LoginMainActivity extends LoginBaseActivity {
                     judgeAccount(account);
                     if(accountType.equals("telephone")){
                         telephone = account;
+                        Log.d("fuck：", telephone);
                         userService.loginUserByTel(telephone,password)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -149,7 +151,7 @@ public class LoginMainActivity extends LoginBaseActivity {
     }
 
     private void judgeAccount(String account){
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+        Pattern p = Pattern.compile("^((14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
         Matcher m = p.matcher(account);
         if(m.matches()){
             accountType = Const.TELEPHONE;

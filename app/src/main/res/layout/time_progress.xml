@@ -4,6 +4,7 @@
               android:layout_height="wrap_content"
              android:layout_marginTop="10dp"
              android:layout_marginBottom="10dp"
+             android:clipChildren="false"
               xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <com.sysu.pro.fade.home.view.TextProgressBar
@@ -11,8 +12,8 @@
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="25dp"
-            android:max="100"
-            android:progress="50"
+            android:max="1000"
+            android:progress="500"
             android:progressDrawable="@drawable/layer_list_progress_drawable" />
         <ImageView
             android:id="@+id/iv_add_minus_container"
@@ -25,7 +26,8 @@
         <LinearLayout
             android:layout_width="100dp"
             android:layout_height="18dp"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:clipChildren="false">
             <Button
                 android:id="@+id/bt_minus"
                 android:layout_width="0dp"

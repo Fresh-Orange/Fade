@@ -110,6 +110,8 @@ public class Personal extends AppCompatActivity {
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,null);
         userService = retrofit.create(UserService.class);
 
+        TestData();
+
         out1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,8 +134,42 @@ public class Personal extends AppCompatActivity {
                 switch (view.getId()) {
                     case R.id.out2:
                         if (flag == 0){
-                            Toast.makeText(Personal.this, "请先选择学校", Toast.LENGTH_SHORT).show();
+                            if (settingSchool.getText().toString().equals("未编辑学校")){
+                                Log.d("fuck:", "0");
+                                Toast.makeText(Personal.this, "请先选择学校", Toast.LENGTH_SHORT).show();
+                            }else{
+                                Log.d("fuck:", "1"+school_map.get(settingSchool.getText().toString()));
+                                userService.getSchoolDepartment(school_map.get(settingSchool.getText().toString())+"")
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Subscriber<DepartmentQuery>() {
+                                            @Override
+                                            public void onCompleted() {
+
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                Log.e("department","获取院系失败");
+                                                e.printStackTrace();
+                                            }
+
+                                            @Override
+                                            public void onNext(DepartmentQuery initlist) {
+                                                majorData = initlist.getList();
+                                                flag = 1;
+                                                // 点击控件后显示popup窗口
+                                                initSelectPopup1();
+                                                // 使用isShowing()检查popup窗口是否在显示状态
+                                                if (typeSelectPopup1 != null && !typeSelectPopup1.isShowing()) {
+                                                    typeSelectPopup1.showAsDropDown(settingDepartment, 0, 0);
+                                                }
+                                            }
+                                        });
+                            }
+
                         }else {
+                            Log.d("fuck:", "2");
                             // 点击控件后显示popup窗口
                             initSelectPopup1();
                             // 使用isShowing()检查popup窗口是否在显示状态
@@ -307,7 +343,6 @@ public class Personal extends AppCompatActivity {
 
     private void initSelectPopup() {
         mTypeLv = new ListView(this);
-        TestData();
         // 设置适配器
         testDataAdapter = new ArrayAdapter<String>(this, R.layout.popup_text_item, testData);
         mTypeLv.setAdapter(testDataAdapter);
@@ -367,9 +402,9 @@ public class Personal extends AppCompatActivity {
         mTypeLv1 = new ListView(this);
         final List<String> stringList = new ArrayList<String>();
         //if (flag ==1){
-            for (int i = 0; i < majorData.size(); i++){
-                stringList.add(majorData.get(i).getDepartment_name());
-            }
+        for (int i = 0; i < majorData.size(); i++){
+            stringList.add(majorData.get(i).getDepartment_name());
+        }
         /*}else{
             userService.getSchoolDepartment("12002")
                     .subscribeOn(Schedulers.newThread())

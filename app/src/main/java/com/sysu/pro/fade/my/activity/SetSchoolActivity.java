@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -51,7 +52,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class SetSchoolActivity extends LoginBaseActivity {
-    private ImageView finishbtn;
+    private Button finishbtn;
     private User user;
     private Bundle mbundle;
     private TextView school;
@@ -81,7 +82,7 @@ public class SetSchoolActivity extends LoginBaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_school);
-        finishbtn = (ImageView) findViewById(R.id.finish);
+        finishbtn = (Button) findViewById(R.id.finish);
         school = (TextView) findViewById(R.id.school);
         major = (TextView) findViewById(R.id.major);
         out1 = (ImageView) findViewById(R.id.out1);

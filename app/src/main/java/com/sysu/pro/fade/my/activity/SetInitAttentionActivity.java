@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +42,7 @@ import rx.schedulers.Schedulers;
 
 public class SetInitAttentionActivity extends LoginBaseActivity {
     private ImageView backbtn;
-    private ImageView into_fade;
+    private Button into_fade;
     private ImageView another;
     private ImageView user1;
     private ImageView choosed1;
@@ -153,7 +154,7 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init_attention);
         backbtn = (ImageView) findViewById(R.id.back_btn);
-        into_fade = (ImageView) findViewById(R.id.into_fade);
+        into_fade = (Button) findViewById(R.id.into_fade);
         another = (ImageView) findViewById(R.id.another_one);
         user1 = (ImageView) findViewById(R.id.user1);
         user2 = (ImageView) findViewById(R.id.user2);

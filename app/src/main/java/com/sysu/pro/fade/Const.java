@@ -7,7 +7,7 @@ public class Const {
     /*
     信息流相关常量
      */
-    public static final int HOME_NODE_DEFAULT_LIFE = 60;    //单位：分钟
+    public static final int HOME_NODE_DEFAULT_LIFE = 45;    //单位：分钟
     public static final int DISCOVER_NODE_DEFAULT_LIFE = 15;    //单位：分钟
     public static final String IP  = "https://sysufade.cn/fade"; //阿里云云服务器地址
 
@@ -119,4 +119,5 @@ public class Const {
     public static final String GOOD_NUM_LIST = "good_num_list";
 
     public static final int PUBLISH_REQUEST_CODE = 1; //发送帖子的请求代号,返回码为1的话则发送成功，返回0的话发送失败
+    public static String STATICACTION = "com.sysu.pro.fade.message.receiver.StaticReceiver";
 }

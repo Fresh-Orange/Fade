@@ -1,5 +1,7 @@
 package com.sysu.pro.fade.home.view;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import com.sysu.pro.fade.home.event.NoteConcernChangeEvent;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+import com.sysu.pro.fade.utils.Screen;
 import com.sysu.pro.fade.utils.TimeUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
@@ -388,6 +392,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		clickableProgressBar.setAddClickListener(new ClickableProgressBar.onAddClickListener() {
 			@Override
 			public void onClick() {
+				Log.d("sendAddOrMinusToServer", "bie zhe yang");
 				Note tempNote = getNewNote(context, userUtil, bean);
 				tempNote.setType(1); // 1表示 续秒
 				sendAddOrMinusToServer(tempNote, clickableProgressBar, curUser, 1, bean);
@@ -396,6 +401,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		clickableProgressBar.setMinusClickListener(new ClickableProgressBar.onMinusClickListener() {
 			@Override
 			public void onClick() {
+				Log.d("sendAddOrMinusToServer", "bie zhe yang");
 				Note note = getNewNote(context, userUtil, bean);
 				note.setType(2); // 2表示 减秒
 				sendAddOrMinusToServer(note, clickableProgressBar, curUser, 2, bean);
@@ -407,16 +413,16 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		if (action == 1){
 			clickableProgressBar.showCommentButton(1);
 			bean.setAction(1);
-			int curProgress = clickableProgressBar.getProgress();
+			/*int curProgress = clickableProgressBar.getProgress();
 			int maxProgress = clickableProgressBar.getMaxProgress();
-			clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));
+			clickableProgressBar.setProgress(Math.min(curProgress+5, maxProgress));*/
 		}
 		else if (action == 2){
 			clickableProgressBar.showCommentButton(0);
 			bean.setAction(2);
-			int curProgress = clickableProgressBar.getProgress();
+			/*int curProgress = clickableProgressBar.getProgress();
 			int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-			clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));
+			clickableProgressBar.setProgress(Math.max(curProgress-5, halfProgress));*/
 		}
 
 	}
@@ -478,6 +484,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	 */
 	static public void sendAddOrMinusToServer(Note tempNote, final ClickableProgressBar clickableProgressBar,
 											  final User curUser, final int action, final Note bean) {
+		Log.d("sendAddOrMinusToServer", "bu wan le");
+		final int oldProgrress = clickableProgressBar.getProgress();
+		applyAddMinusAnimation(clickableProgressBar,curUser, action,bean);
 		Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
 		NoteService noteService = retrofit.create(NoteService.class);
 		noteService
@@ -491,13 +500,26 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					@Override
 					public void onError(Throwable e) {
 						Toast.makeText(clickableProgressBar.getContext(), "续秒减秒出错", Toast.LENGTH_SHORT).show();
+						rollback();
+
+					}
+
+					public void rollback() {
+						bean.setAction(0);
+						clickableProgressBar.btAdd.setVisibility(View.VISIBLE);
+						clickableProgressBar.btAdd.setAlpha(1);
+						clickableProgressBar.btAdd.setTranslationY(0);
+						clickableProgressBar.btMinus.setVisibility(View.VISIBLE);
+						clickableProgressBar.btMinus.setAlpha(1);
+						clickableProgressBar.btMinus.setTranslationY(0);
+						clickableProgressBar.btComment.setVisibility(View.GONE);
+						clickableProgressBar.setProgress(oldProgrress);
 					}
 
 					@Override
 					public void onNext(SimpleResponse simpleResponse) {
 						if (simpleResponse.getErr() == null){
-							//USELESS!! Integer newNoteId = (Integer) simpleResponse.getExtra().get("note_id");
-							setAddOrMinusView(clickableProgressBar, bean, action);
+
 							Integer comment_num = (Integer) simpleResponse.getExtra().get("comment_num");    //评论数量
 							Integer sub_num = (Integer) simpleResponse.getExtra().get("sub_num");    //评论数量
 							Integer add_num = (Integer) simpleResponse.getExtra().get("add_num");    //评论数量
@@ -506,10 +528,89 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 							bean.setSub_num(sub_num);
 							bean.setAdd_num(add_num);
 							bean.setFetchTime(fetchTime);
-							getNoteAndPostEvent(bean.getOriginalId(), curUser);
+							//getNoteAndPostEvent(bean.getOriginalId(), curUser);
+						}
+						else{
+							Toast.makeText(clickableProgressBar.getContext(), "续秒减秒出错", Toast.LENGTH_SHORT).show();
+							rollback();
 						}
 					}
+
 				});
+	}
+
+
+	private static void applyAddMinusAnimation(final ClickableProgressBar clickableProgressBar,
+											   final User curUser, final int action, final Note bean) {
+		final Button btAdd = clickableProgressBar.btAdd;
+		final Button btMinus = clickableProgressBar.btMinus;
+		final Button btComment = clickableProgressBar.btComment;
+		final ImageView ivDivider = clickableProgressBar.ivContainer;
+		final ClickableProgressBar pbTime = clickableProgressBar;
+		final float moveLength = Screen.Dp2Px(12, clickableProgressBar.getContext());
+		ValueAnimator anim = ValueAnimator.ofFloat(0f, 2f);
+		anim.setDuration(1000);
+		anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			boolean isSetView = false;
+			int curProgress;
+			int maxProgress;
+			int addProgress;
+			int mimusProgress;
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				float currentValue = (float) animation.getAnimatedValue();
+				if (currentValue < 1f){
+					if (action == 1)
+						btAdd.setTranslationY(-currentValue*moveLength);
+					else
+						btMinus.setTranslationY(-currentValue*moveLength);
+					btAdd.setAlpha(1f-currentValue);
+					btMinus.setAlpha(1f-currentValue);
+					//ivDivider.setAlpha(1f-currentValue);
+				}
+				else if (!isSetView){
+					setAddOrMinusView(clickableProgressBar, bean, action);
+					btComment.setAlpha(0f);
+					curProgress = clickableProgressBar.getProgress();
+					maxProgress = clickableProgressBar.getMaxProgress();
+					addProgress = Math.min(curProgress+50, maxProgress);
+					int halfProgress = clickableProgressBar.getMaxProgress() / 2;
+					mimusProgress = Math.max(curProgress-50, halfProgress);
+					isSetView = true;
+				}
+				else {
+					btComment.setAlpha(currentValue-1f);
+					if (action == 1)
+						pbTime.setProgress(((int)(curProgress+(currentValue-1f)*(addProgress -curProgress))));
+					else
+						pbTime.setProgress(((int)(curProgress-(currentValue-1f)*(curProgress-mimusProgress))));
+				}
+				Log.d("TAG", "cuurent value is " + currentValue);
+			}
+		});
+		anim.addListener(new Animator.AnimatorListener() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				getNoteAndPostEvent(bean.getOriginalId(), curUser);
+				Log.d("TAG", "END");
+			}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+
+			}
+		});
+		anim.start();
 	}
 
 	@NonNull
@@ -532,7 +633,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		if (bean.getIs_die() == 1){//帖子活着
 			Date dateNow = new Date(bean.getFetchTime());
 			Date datePost = TimeUtil.getTimeDate(bean.getOriginalPost_time());
-			//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0
+			//floor是为了防止最后半秒的计算结果就为0,也就是保证了时间真正耗尽之后计算结果才为0   1000*60将毫秒变成分钟
 			long minuteLeft = (long) (Const.HOME_NODE_DEFAULT_LIFE
 					+ 5 * bean.getAdd_num()
 					- bean.getSub_num()
@@ -546,10 +647,14 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				sTimeLeft = String.valueOf(Math.round(((double) minuteLeft) / 1440)) + "天";
 
 			clickableProgressBar.setTimeText(context.getString(R.string.time_left_text, sTimeLeft));
+			clickableProgressBar.btAdd.setTranslationY(0);
+			clickableProgressBar.btMinus.setTranslationY(0);
+			clickableProgressBar.btAdd.setAlpha(1);
+			clickableProgressBar.btMinus.setAlpha(1);
 
 			if (minuteLeft < 60){
 				int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-				clickableProgressBar.setProgress((int)Math.max((halfProgress+(5.0/6)*minuteLeft), halfProgress));
+				clickableProgressBar.setProgress((int)Math.max((halfProgress+(50.0/6)*minuteLeft), halfProgress));
 			}
 			else
 				clickableProgressBar.setProgress(clickableProgressBar.getMaxProgress());

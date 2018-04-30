@@ -136,11 +136,14 @@
                 android:layout_marginLeft="33dp"
                 android:layout_marginRight="33dp"
                 android:gravity="center">
-                <ImageView
+                <Button
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/login"
-                    android:src="@drawable/login_blue"/>
+                    android:layout_height="40dp"
+                    android:text="登录"
+                    android:textSize="20sp"
+                    android:textColor="#ffffff"
+                    android:background="@drawable/button_shape_blue"
+                    android:id="@+id/login"/>
             </LinearLayout>
         </LinearLayout>
 

@@ -30,7 +30,7 @@ public class TextEditTextView extends android.support.v7.widget.AppCompatEditTex
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == 1) {
             super.onKeyPreIme(keyCode, event);
-            Toast.makeText(publishActivity, "隐藏", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(publishActivity, "隐藏", Toast.LENGTH_SHORT).show();
             return false;
         }
         return super.onKeyPreIme(keyCode, event);

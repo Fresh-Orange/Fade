@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -151,13 +150,16 @@ public class DetailActivity extends MainBaseActivity{
         if(!getFull) initNoteView();
         //USELESS!! ConstraintLayout rootView = (ConstraintLayout)findViewById(R.id.detail_root_view);
 
+        Log.e("YellowMain", "Detaillll!");
+
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);//是否是点击评论进来的？
-        commentType = note.getAction();
+        commentType = note == null ? 0 : note.getAction();
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
+
 
         final NoteService noteService = retrofit.create(NoteService.class);
         noteService.getNotePage(Integer.toString(note_id),user.getUser_id().toString(),(getFull?"1":"0"))
@@ -186,8 +188,11 @@ public class DetailActivity extends MainBaseActivity{
                         }
                         Note downloadNote = detailPage.getNote();
                         if(getFull){
-                            if(note.getOrigin() != null) note = downloadNote.getOrigin();
-                            else note = downloadNote;
+                            if(note != null && note.getOrigin() != null) note = downloadNote.getOrigin();
+                            else {
+                                note = downloadNote;
+                                commentType = note.getAction();
+                            }
                             initNoteView();
                         }
                         commentNum.setText(Integer.toString(downloadNote.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的
@@ -681,4 +686,6 @@ public class DetailActivity extends MainBaseActivity{
         getNoteAndPostEvent(note_id, user);//详情页可能有修改帖子，因此通知首页更新
         super.finish();
     }
+
+
 }
