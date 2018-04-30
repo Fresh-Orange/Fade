@@ -4,7 +4,6 @@ package com.sysu.pro.fade.message.GeTui.Service;
  * Created by yellow on 2018/4/26.
  */
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,19 +16,11 @@ import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTNotificationMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
 import com.sysu.pro.fade.Const;
-import com.sysu.pro.fade.MainActivity;
-import com.sysu.pro.fade.beans.Comment;
-import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
-import com.sysu.pro.fade.home.activity.DetailActivity;
-import com.sysu.pro.fade.home.activity.OtherActivity;
-import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
-
-import org.greenrobot.eventbus.EventBus;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -63,15 +54,6 @@ public class DemoIntentService extends GTIntentService {
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
         Log.e("getui", "------------onReceiveMessageData------------");
-//        String noteID = new String(msg.getPayload());
-////        Log.e("getui", "data: " + data);
-//        Intent intent = new Intent(context, DetailActivity.class);
-//        intent.putExtra(Const.NOTE_ID, noteID);
-//        intent.putExtra(Const.IS_COMMENT, false);
-////        intent.putExtra(Const.COMMENT_NUM, temp.getComment_num());
-////        intent.putExtra(Const.COMMENT_ENTITY, temp);
-//        intent.putExtra("getFull",true);
-//        startActivity(intent);
 
         mContext = context;
         String str = new String(msg.getPayload());

@@ -162,7 +162,6 @@ public class ContributionActivity extends MainBaseActivity {
     }
     private void initLoadOldMore() {
         //设置底部加载刷新，更新以前的旧通知
-        refreshLayout = (RefreshLayout) findViewById(R.id.refreshLayout);
         refreshLayout.setEnableRefresh(false);    //取消下拉刷新功能
         refreshLayout.setEnableAutoLoadmore(true);
         refreshLayout.setRefreshFooter(new ClassicsFooter(this));
@@ -209,7 +208,7 @@ public class ContributionActivity extends MainBaseActivity {
             @Override
             public void onClick(View view) {
                    notes.remove(notes.size() - 1);
-                   adapter.notifyDataSetChanged();
+                   adapter.notifyItemRemoved(notes.size() - 1);
                    refreshLayout.setEnableLoadmore(true);
                    refreshLayout.setEnableAutoLoadmore(true);
                    isEnd = false;

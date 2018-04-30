@@ -96,11 +96,16 @@ public class CommentAdapter extends RecyclerView.Adapter< CommentAdapter.MyHolde
                             MyTextView.TEXT_ALIGN_CENTER_VERTICAL);
                     myTextView1.setTextColor(Color.DKGRAY);
                     myTextView1.setBackgroundColor(Color.LTGRAY);
+                    user_text.removeAllViews();
                     user_text.addView(myTextView1, LinearLayout.
                             LayoutParams.MATCH_PARENT, DisplayUtil.dip2px(30, displayParams.scale));
                 }
             }
             else {
+                user_text.setVisibility(View.GONE);
+                user_image.setVisibility(View.VISIBLE);
+                Log.i("评论图片",Const.BASE_IP +
+                        commentMessage.getExampleImage() );
                 Glide.with(mContext).load(Const.BASE_IP +
                         commentMessage.getExampleImage()).into(user_image);
             }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -34,7 +33,6 @@ import com.sysu.pro.fade.beans.CommentQuery;
 import com.sysu.pro.fade.beans.DetailPage;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.NoteQuery;
-import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SecondComment;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
@@ -46,9 +44,6 @@ import com.sysu.pro.fade.service.CommentService;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,7 +155,7 @@ public class DetailActivity extends MainBaseActivity{
         //初始化note_id
         note_id = getIntent().getIntExtra(Const.NOTE_ID,0);
         is_Comment = getIntent().getBooleanExtra(Const.IS_COMMENT, false);//是否是点击评论进来的？
-        commentType = note.getAction();
+        commentType = note == null ? 0 : note.getAction();
         UserUtil util = new UserUtil(this);
         user = util.getUer();
         retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, user.getTokenModel());
@@ -193,8 +188,11 @@ public class DetailActivity extends MainBaseActivity{
                         }
                         Note downloadNote = detailPage.getNote();
                         if(getFull){
-                            if(note.getOrigin() != null) note = downloadNote.getOrigin();
-                            else note = downloadNote;
+                            if(note != null && note.getOrigin() != null) note = downloadNote.getOrigin();
+                            else {
+                                note = downloadNote;
+                                commentType = note.getAction();
+                            }
                             initNoteView();
                         }
                         commentNum.setText(Integer.toString(downloadNote.getComment_num()));//改成了从DetailPage里面拿数据，这才是实时的

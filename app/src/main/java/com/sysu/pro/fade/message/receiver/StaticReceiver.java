@@ -9,26 +9,20 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
-import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
-import com.sysu.pro.fade.home.activity.OtherActivity;
-import com.sysu.pro.fade.message.Activity.CommentActivity;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
 import com.sysu.pro.fade.message.Activity.FansActivity;
-import com.sysu.pro.fade.message.GeTui.Service.DemoIntentService;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
@@ -71,15 +65,14 @@ public class StaticReceiver extends BroadcastReceiver {
                 case 2:
                     //新评论
                     Log.e("YellowMain", "Case 2");
-                    intent = new Intent(context, CommentActivity.class);
-//                    Note commentNote = (Note) pushMessage.getObj();
-//                    Note commentNote = ((JSONObject)pushMessage.getObj()).toJavaObject(Note.class);
-//                    intent = new Intent(context, DetailActivity.class);
-//                    intent.putExtra(Const.NOTE_ID,commentNote.getOrigin().getNote_id());
-//                    intent.putExtra(Const.IS_COMMENT,true);
-//                    intent.putExtra(Const.COMMENT_NUM, commentNote.getComment_num());
-//                    intent.putExtra(Const.COMMENT_ENTITY, commentNote);
-//                    intent.putExtra("getFull",true);
+                    intent = new Intent(context, DetailActivity.class);
+                    Note commentNote = ((JSONObject)pushMessage.getObj()).toJavaObject(Note.class);
+                    intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra(Const.NOTE_ID,commentNote.getNote_id());
+                    intent.putExtra(Const.IS_COMMENT,false);
+                    intent.putExtra(Const.COMMENT_NUM, commentNote.getComment_num());
+                    intent.putExtra(Const.COMMENT_ENTITY, commentNote);
+                    intent.putExtra("getFull",false);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     title = "Fade";
                     text = "你有一条新评论";

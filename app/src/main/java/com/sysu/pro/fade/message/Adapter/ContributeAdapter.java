@@ -97,11 +97,13 @@ public class ContributeAdapter extends RecyclerView.Adapter<ContributeAdapter.My
                 DisplayParams displayParams = DisplayParams.getInstance(mContext);
                 if (!note.getNote_content().isEmpty()) {
                     MyTextView myTextView1 = new MyTextView(mContext);
+                    Log.i("进度贡献", position + " " + result);
                     myTextView1.setText(result);
                     myTextView1.setTextSize(18);
                     myTextView1.setTextAlign(MyTextView.TEXT_ALIGN_CENTER_HORIZONTAL | MyTextView.TEXT_ALIGN_CENTER_VERTICAL);
                     myTextView1.setTextColor(Color.DKGRAY);
                     myTextView1.setBackgroundColor(Color.LTGRAY);
+                    user_text.removeAllViews();
                     user_text.addView(myTextView1, LinearLayout.
                             LayoutParams.MATCH_PARENT, DisplayUtil.dip2px(30, displayParams.scale));
                 }

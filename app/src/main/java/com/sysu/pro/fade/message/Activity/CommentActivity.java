@@ -15,10 +15,8 @@ import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
-import com.sysu.pro.fade.beans.Comment;
 import com.sysu.pro.fade.beans.CommentMessage;
 import com.sysu.pro.fade.beans.CommentMessageQuery;
-import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.message.Adapter.CommentAdapter;
@@ -106,10 +104,10 @@ public class CommentActivity extends MainBaseActivity {
                 if(comments.get(position).getViewType() == null){
                     CommentMessage temp = comments.get(position);
                     Intent intent = new Intent(CommentActivity.this, DetailActivity.class);
-                    intent.putExtra(Const.NOTE_ID,temp.getComment_id());
-                    intent.putExtra(Const.IS_COMMENT,true);
-//                    intent.putExtra(Const.COMMENT_NUM, temp.);
-//                    intent.putExtra(Const.COMMENT_ENTITY, temp);
+                    intent.putExtra(Const.NOTE_ID,temp.getNote_id());
+                    intent.putExtra(Const.IS_COMMENT,false);
+                   // intent.putExtra(Const.COMMENT_NUM, 0);
+                    //intent.putExtra(Const.COMMENT_ENTITY, null);
                     intent.putExtra("getFull",true);
                     startActivity(intent);
                 }
@@ -232,7 +230,7 @@ public class CommentActivity extends MainBaseActivity {
                             public void onNext(CommentMessageQuery query) {
                                 start = query.getStart();
                                 List<CommentMessage>list = query.getList();
-                                Log.i("收到粉丝" , "" + list.size());
+                                Log.i("收到评论" , "" + list.size());
                                 if(list.size() != 0){
                                     comments.addAll(list);
                                     adapter.notifyDataSetChanged();
