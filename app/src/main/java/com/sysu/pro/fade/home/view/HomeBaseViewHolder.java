@@ -398,6 +398,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				Note tempNote = getNewNote(context, userUtil, bean);
 				tempNote.setType(1); // 1表示 续秒
 				sendAddOrMinusToServer(tempNote, clickableProgressBar, curUser, 1, bean);
+				//add by vj 详情页里面需要知道type改变了
+				EventBus.getDefault().post(1);
 			}
 		});
 		clickableProgressBar.setMinusClickListener(new ClickableProgressBar.onMinusClickListener() {
@@ -407,6 +409,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				Note note = getNewNote(context, userUtil, bean);
 				note.setType(2); // 2表示 减秒
 				sendAddOrMinusToServer(note, clickableProgressBar, curUser, 2, bean);
+				//add by vj 详情页里面需要知道type改变了
+				EventBus.getDefault().post(2);
 			}
 		});
 	}

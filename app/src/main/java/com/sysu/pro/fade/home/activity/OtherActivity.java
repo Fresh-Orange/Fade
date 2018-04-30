@@ -65,6 +65,9 @@ public class OtherActivity extends MainBaseActivity {
     private TextView tvContact;     //私信按钮
     private TabLayout tabLayout;
     private ViewPager viewPager;
+
+    private ImageView sexBoy;
+    private ImageView sexGirl;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,10 @@ public class OtherActivity extends MainBaseActivity {
         tabLayout = findViewById(R.id.other_tab_layout);
         viewPager = findViewById(R.id.other_view_pager);
         Picasso.with(OtherActivity.this).load(R.id.other_concern_ok).into(tvConcernOk);
+
+        //性别
+        sexBoy = findViewById(R.id.user_boy);
+        sexGirl = findViewById(R.id.user_girl);
         
         Integer user_id = getIntent().getIntExtra(Const.USER_ID, -1);
         Log.d("OtherActivity", user_id.toString());
@@ -136,6 +143,12 @@ public class OtherActivity extends MainBaseActivity {
         String fade_name = other.getFade_name();
         String school_name = other.getSchool_name();
         String department_name = other.getDepartment_name();
+        //设置性别
+        if (other.getSex().equals("男")) {
+            sexBoy.setVisibility(View.VISIBLE);
+        } else {
+            sexGirl.setVisibility(View.VISIBLE);
+        }
         //获取用户的关注、粉丝等的数量
         String fade_num = (other.getFade_num()>999?(other.getFade_num()/1000+"K"):other.getFade_num().toString());
         String fans_num = (other.getFans_num()>999?(other.getFans_num()/1000+"K"):other.getFans_num().toString());

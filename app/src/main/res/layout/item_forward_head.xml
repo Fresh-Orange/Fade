@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -11,7 +12,7 @@
         android:layout_height="@dimen/avatar"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/avatar"
+        tools:src="@drawable/avatar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +22,7 @@
         android:id="@+id/detail_forward_good"
         android:layout_width="10dp"
         android:layout_height="10dp"
-        android:src="@drawable/isgood"
+        tools:src="@drawable/isgood"
         app:layout_constraintBottom_toBottomOf="@+id/detail_forward_head"
         app:layout_constraintEnd_toEndOf="@+id/detail_forward_head" />
 
