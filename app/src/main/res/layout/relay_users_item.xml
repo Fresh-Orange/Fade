@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="16dp"
@@ -10,14 +11,14 @@
         android:id="@+id/civ_avatar"
         android:layout_width="@dimen/big_avatar"
         android:layout_height="@dimen/big_avatar"
-        android:src="@drawable/avatar"/>
+        tools:src="@drawable/avatar"/>
     <TextView
         android:id="@+id/tv_name"
         android:gravity="center_vertical"
         android:layout_toRightOf="@id/civ_avatar"
         android:layout_marginLeft="8dp"
         android:textSize="@dimen/name_size"
-        android:text="刘德华刘德华"
+        tools:text="刘德华刘德华"
         android:ellipsize="end"
         android:maxEms="5"
         android:singleLine="true"
@@ -47,7 +48,7 @@
         android:gravity="center_vertical"
         android:layout_alignParentRight="true"
         android:textSize="@dimen/name_size"
-        android:text="12-31-23:59"
+        tools:text="12-31-23:59"
         android:textColor="#888888"
         android:layout_width="wrap_content"
         android:layout_height="match_parent" />

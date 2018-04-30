@@ -45,6 +45,10 @@ import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +119,8 @@ public class DetailActivity extends MainBaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         TintBar(this);//状态栏白底黑字
+
+        EventBus.getDefault().register(this);
 
         detailLoading = findViewById(R.id.detail_loading);
         allContent = findViewById(R.id.detail_coordinator_layout);
@@ -268,7 +274,21 @@ public class DetailActivity extends MainBaseActivity{
         }
     }
 
-
+    //如果在详情页里面对帖子进行了加减秒，更新type和续秒列表
+    @Subscribe (threadMode = ThreadMode.MAIN)
+    public void typeChangedEvent(Integer newType) {
+        commentType = newType;
+        int forwardSize = forwardList.size();
+        if (forwardSize < 10) {
+            //建一个临时用的续秒头像
+            Note tmpNote = new Note();
+            tmpNote.setUser_id(user.getUser_id());
+            tmpNote.setType(newType);
+            tmpNote.setHead_image_url(user.getHead_image_url());
+            forwardList.add(tmpNote);
+            forwardAdapter.notifyItemInserted(forwardSize);
+        }
+    }
 
     //初始化续秒头像列表
     private void initForwardList() {
@@ -510,52 +530,56 @@ public class DetailActivity extends MainBaseActivity{
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //收起软键盘
-                if(imm != null) {
-                    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-                }
-                writeCommentWrapper.setVisibility(View.GONE);
-                final Comment userComment = new Comment();
-                userComment.setUser_id(user.getUser_id());
-                userComment.setNickname(user.getNickname());
-                userComment.setComment_content(writeComment.getText().toString());
-                userComment.setHead_image_url(user.getHead_image_url());
-                userComment.setNote_id(note_id);
-                userComment.setType(commentType);
-                CommentService send = retrofit.create(CommentService.class);
-                //提交到服务器，并返回评论的id等内容
-                send.addComment(JSON.toJSONString(userComment))
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<SimpleResponse>() {
-                            @Override
-                            public void onCompleted() {
+                String content = writeComment.getText().toString();
+                if (content.isEmpty() || content.trim().isEmpty()) {
+                    Toast.makeText(DetailActivity.this, "输入不能为空或全为空格", Toast.LENGTH_SHORT).show();
+                } else {
+                    //收起软键盘
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                    }
+                    writeCommentWrapper.setVisibility(View.GONE);
+                    final Comment userComment = new Comment();
+                    userComment.setUser_id(user.getUser_id());
+                    userComment.setNickname(user.getNickname());
+                    userComment.setComment_content(writeComment.getText().toString());
+                    userComment.setHead_image_url(user.getHead_image_url());
+                    userComment.setNote_id(note_id);
+                    userComment.setType(commentType);
+                    CommentService send = retrofit.create(CommentService.class);
+                    //提交到服务器，并返回评论的id等内容
+                    send.addComment(JSON.toJSONString(userComment))
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<SimpleResponse>() {
+                                @Override
+                                public void onCompleted() {
 
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.d("firstBugErr", "onError: "+e.toString());
-                            }
-
-                            @Override
-                            public void onNext(SimpleResponse simpleResponse) {
-                                Map<String, Object> map = simpleResponse.getExtra();
-                                userComment.setComment_id((Integer) map.get("comment_id"));
-                                userComment.setComment_time((String) map.get("comment_time"));
-                                //如果评论没有的话，直接添加，如果评论等于10条的话，等上拉加载再加载出来吧
-                                int oldSize = commentator.size();
-                                if (oldSize == 0 || oldSize%10 != 0) {
-                                    commentator.add(userComment);
-                                    commentAdapter.notifyItemInserted(oldSize);
-                                } else {
-                                    refreshLayout.setEnableLoadmore(true);
                                 }
-                                writeComment.setText("");
-                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
-                            }
-                        });
 
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d("firstBugErr", "onError: " + e.toString());
+                                }
+
+                                @Override
+                                public void onNext(SimpleResponse simpleResponse) {
+                                    Map<String, Object> map = simpleResponse.getExtra();
+                                    userComment.setComment_id((Integer) map.get("comment_id"));
+                                    userComment.setComment_time((String) map.get("comment_time"));
+                                    //如果评论没有的话，直接添加，如果评论等于10条的话，等上拉加载再加载出来吧
+                                    int oldSize = commentator.size();
+                                    if (oldSize == 0 || oldSize % 10 != 0) {
+                                        commentator.add(userComment);
+                                        commentAdapter.notifyItemInserted(oldSize);
+                                    } else {
+                                        refreshLayout.setEnableLoadmore(true);
+                                    }
+                                    writeComment.setText("");
+                                    commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
+                                }
+                            });
+                }
             }
         });
     }
@@ -567,50 +591,55 @@ public class DetailActivity extends MainBaseActivity{
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //收起软键盘
-                if(imm != null) {
-                    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-                }
-                writeCommentWrapper.setVisibility(View.GONE);
-                final SecondComment secondComment = new SecondComment();
-                secondComment.setComment_content(writeComment.getText().toString());
-                secondComment.setNickname(user.getNickname());
-                secondComment.setNote_id(note_id);
-                secondComment.setUser_id(user.getUser_id());
-                secondComment.setComment_id(toComment.getComment_id());
+                String content = writeComment.getText().toString();
+                if (content.isEmpty() || content.trim().isEmpty()) {
+                    Toast.makeText(DetailActivity.this, "输入不能为空或全为空格", Toast.LENGTH_SHORT).show();
+                } else {
+                    //收起软键盘
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                    }
+                    writeCommentWrapper.setVisibility(View.GONE);
+                    final SecondComment secondComment = new SecondComment();
+                    secondComment.setComment_content(content);
+                    secondComment.setNickname(user.getNickname());
+                    secondComment.setNote_id(note_id);
+                    secondComment.setUser_id(user.getUser_id());
+                    secondComment.setComment_id(toComment.getComment_id());
 //                secondComment.setTo_nickname(toComment.getNickname());
 //                secondComment.setTo_user_id(toComment.getUser_id());
-                secondComment.setFirst_id(toComment.getUser_id());
-                CommentService send = retrofit.create(CommentService.class);
-                //提交到服务器，并返回评论的id等内容
-                send.addSecondComment(JSON.toJSONString(secondComment))
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<SimpleResponse>() {
-                            @Override
-                            public void onCompleted() {
+                    secondComment.setFirst_id(toComment.getUser_id());
+                    CommentService send = retrofit.create(CommentService.class);
+                    //提交到服务器，并返回评论的id等内容
+                    send.addSecondComment(JSON.toJSONString(secondComment))
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<SimpleResponse>() {
+                                @Override
+                                public void onCompleted() {
 
-                            }
+                                }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.d("secondBugErr", "onError: "+e.toString());
-                            }
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d("secondBugErr", "onError: " + e.toString());
+                                }
 
-                            @Override
-                            public void onNext(SimpleResponse simpleResponse) {
-                                Map<String, Object> map = simpleResponse.getExtra();
-                                secondComment.setSecond_id((Integer) map.get("second_id"));
-                                secondComment.setComment_time((String) map.get("comment_time"));
-                                View view = createReplyItemView(secondComment, userId, holder);
-                                holder.addView(R.id.comment_detail_reply_wrapper, view);
-                                holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                                @Override
+                                public void onNext(SimpleResponse simpleResponse) {
+                                    Map<String, Object> map = simpleResponse.getExtra();
+                                    secondComment.setSecond_id((Integer) map.get("second_id"));
+                                    secondComment.setComment_time((String) map.get("comment_time"));
+                                    View view = createReplyItemView(secondComment, userId, holder);
+                                    holder.addView(R.id.comment_detail_reply_wrapper, view);
+                                    holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
 //                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
-                                writeComment.setText("");
-                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
-                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
-                            }
-                        });
+                                    writeComment.setText("");
+                                    Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
+                                    commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
+                                }
+                            });
+                }
             }
         });
     }
@@ -687,5 +716,9 @@ public class DetailActivity extends MainBaseActivity{
         super.finish();
     }
 
-
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
 }
