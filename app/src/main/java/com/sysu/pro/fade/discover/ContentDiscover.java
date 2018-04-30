@@ -39,6 +39,7 @@ import com.sysu.pro.fade.discover.adapter.DiscoverFragmentAdapter;
 import com.sysu.pro.fade.discover.event.ClearListEvent;
 import com.sysu.pro.fade.discover.fragment.FadeFragment;
 import com.sysu.pro.fade.discover.fragment.UserFragment;
+import com.sysu.pro.fade.home.event.EditDiscover;
 import com.sysu.pro.fade.my.activity.ValidationActivity;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
@@ -78,6 +79,7 @@ public class ContentDiscover {
     private List<View> mViewList = new ArrayList<>();//页卡视图集合
 
     private List<User>userList; //用户数据
+
 
     //搜索控件
     //private SearchHistoryTable mHistoryDatabase;
@@ -121,6 +123,7 @@ public class ContentDiscover {
         progressBar.setVisibility(View.INVISIBLE);
         /*用以解决输入评论时底部导航栏被顶起的问题*/
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         initViewPager();
         initSearchView();
         user = new UserUtil(activity).getUer();
@@ -132,7 +135,8 @@ public class ContentDiscover {
 
 
 
-   private void initViewPager(){
+
+    private void initViewPager(){
        //viewpager的初始化
        mViewPager = (ViewPager) activity.findViewById(R.id.vp_view);
        mTabLayout = (TabLayout) activity.findViewById(R.id.tabs);
@@ -247,6 +251,13 @@ public class ContentDiscover {
            }
        });
 
+       searchView_edittext1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+           @Override
+           public void onFocusChange(View view, boolean hasFocus) {
+               Log.d("YellowDiscover", "hasFocusMain: " + hasFocus);
+               EventBus.getDefault().post(new EditDiscover("hasFocus", hasFocus));
+           }
+       });
        searchButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
