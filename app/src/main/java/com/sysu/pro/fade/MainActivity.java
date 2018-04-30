@@ -23,17 +23,29 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.haha.perflib.Main;
 import com.sysu.pro.fade.baseactivity.MainBaseActivity;
+import com.sysu.pro.fade.beans.Comment;
+import com.sysu.pro.fade.beans.Note;
+import com.sysu.pro.fade.beans.PushMessage;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.TokenModel;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.discover.ContentDiscover;
 import com.sysu.pro.fade.fragment.LazyFragment;
 import com.sysu.pro.fade.home.ContentHome;
+import com.sysu.pro.fade.home.activity.DetailActivity;
+import com.sysu.pro.fade.home.activity.OtherActivity;
+import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.event.EditMessage;
+import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
+import com.sysu.pro.fade.message.Activity.ContributionActivity;
+import com.sysu.pro.fade.message.Activity.FansActivity;
 import com.sysu.pro.fade.message.ContentMessage;
 import com.sysu.pro.fade.message.GeTui.Service.DemoIntentService;
 import com.sysu.pro.fade.message.GeTui.Service.DemoPushService;
 import com.sysu.pro.fade.my.ContentMy;
+import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.publish.PublishActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.Client;
@@ -77,6 +89,7 @@ public class MainActivity extends MainBaseActivity {
 
     private View redPoint;
 
+    private ImageView img_title;
     /*
     上次back的时间，用于双击退出判断
     当双击 back 键在此间隔内是直接触发 onBackPressed
@@ -90,6 +103,10 @@ public class MainActivity extends MainBaseActivity {
     private final int RECORD_AUDIO = 105;
 
     private int oldTabItem;
+
+    private boolean isClickOnce = true;
+    private long mLastPressTime = 0;
+    private boolean isMyClickOnce = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,6 +194,16 @@ public class MainActivity extends MainBaseActivity {
 
         //主界面需要更新底部导航栏
         EventBus.getDefault().register(this);
+
+        findViewById(R.id.rl_toolbar_main).setOnTouchListener(new OnDoubleClickListener(
+                new OnDoubleClickListener.DoubleClickCallback() {
+                    @Override
+                    public void onDoubleClick() {
+                        EventBus.getDefault().post(new DoubleClick("click", true));
+                    }
+                }
+        ));
+
     }
 
 
@@ -342,6 +369,10 @@ public class MainActivity extends MainBaseActivity {
                     startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                     overridePendingTransition(R.anim.values, R.anim.out_left);
                 }
+                if (tab.getPosition() == Const.DISCOVER - 1)
+                    isClickOnce = false;
+                if (tab.getPosition() == Const.MY - 1)
+                    isMyClickOnce = false;
             }
 
             /**
@@ -364,6 +395,30 @@ public class MainActivity extends MainBaseActivity {
                     startActivityForResult(intent,Const.PUBLISH_REQUEST_CODE);
                     overridePendingTransition(R.anim.values, R.anim.out_left);
                 }
+                if (tab.getPosition() == Const.HOME - 1) {
+                    long currentTime = System.currentTimeMillis();
+                    if (isClickOnce && currentTime - mLastPressTime < 1500) {
+                        EventBus.getDefault().post(new DoubleClick("click", true));
+                        Log.d("click", "here!Double!");
+                        isClickOnce = false;
+                    }
+                    else {
+                        isClickOnce = true;
+                        mLastPressTime = currentTime;
+                    }
+                }
+                if (tab.getPosition() == Const.MY - 1) {
+                    long currentTime = System.currentTimeMillis();
+                    if (isMyClickOnce && currentTime - mLastPressTime < 1500) {
+                        EventBus.getDefault().post(new DoubleFade("click", true));
+                        Log.d("click", "here!Double!");
+                        isMyClickOnce = false;
+                    }
+                    else {
+                        isMyClickOnce = true;
+                        mLastPressTime = currentTime;
+                    }
+                }
             }
         });
     }
@@ -371,7 +426,7 @@ public class MainActivity extends MainBaseActivity {
     //设置选择tab图标
     private void changeTabSelect(TabLayout.Tab tab) {
         View view = tab.getCustomView();
-        ImageView img_title = (ImageView) view.findViewById(R.id.icon);
+        img_title = (ImageView) view.findViewById(R.id.icon);
         //TextView txt_title = (TextView) view.findViewById(R.id.title);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
@@ -391,7 +446,7 @@ public class MainActivity extends MainBaseActivity {
     //设置还原tab图标
     private void changeTabNormal(TabLayout.Tab tab) {
         View view = tab.getCustomView();
-        ImageView img_title = (ImageView) view.findViewById(R.id.icon);
+        img_title = (ImageView) view.findViewById(R.id.icon);
         if (tab.getPosition() == Const.HOME-1) {
             mViewPager.setCurrentItem(Const.HOME-1,false);
             img_title.setImageResource(R.mipmap.home_normal);
@@ -561,9 +616,21 @@ public class MainActivity extends MainBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Const.PUBLISH_REQUEST_CODE){
-            //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
-            mTabLayoutMenu.getTabAt(oldTabItem).select();
+        if (requestCode == Const.PUBLISH_REQUEST_CODE && resultCode == RESULT_OK){
+            boolean notEdit = data.getBooleanExtra("NotEdit", true);
+            Log.d("NotEdit", "NotEdit: " + notEdit);
+            if (notEdit) {
+                //没编辑
+                //从发布页回来，恢复选中图标，例如原来是在首页，点击发布之后应该恢复到首页
+                mTabLayoutMenu.getTabAt(oldTabItem).select();
+            }
+            else {
+                //编辑了
+                mViewPager.setCurrentItem(Const.HOME - 1, false);
+                img_title.setImageResource(R.mipmap.home_normal);
+                EventBus.getDefault().post(new EditMessage("Edit", true));
+            }
+
         }
         //Toast.makeText(MainActivity.this,"接收到回应"+requestCode,Toast.LENGTH_SHORT).show();
         //为fragment赋值
@@ -777,6 +844,50 @@ public class MainActivity extends MainBaseActivity {
 //                }
 //                break;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(PushMessage event) {
+        Log.e("YellowMain", "MAinnnnn! " + event.getMsgId());
+        switch (event.getMsgId()) {
+            case 1:
+                Log.e("YellowMain", "Case 1");
+                Note contributionNote = (Note) event.getObj();
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra(Const.NOTE_ID,contributionNote.getTarget_id());
+                intent.putExtra(Const.IS_COMMENT,false);
+                intent.putExtra(Const.COMMENT_NUM, contributionNote.getComment_num());
+                intent.putExtra(Const.COMMENT_ENTITY, contributionNote);
+                intent.putExtra("getFull",true);
+                startActivity(intent);
+                break;
+            case 2:
+                Log.e("YellowMain", "Case 2");
+                Comment commentNote = (Comment) event.getObj();
+                Intent intent3 = new Intent(MainActivity.this, DetailActivity.class);
+                intent3.putExtra(Const.NOTE_ID,commentNote.getComment_id());
+                intent3.putExtra(Const.IS_COMMENT,true);
+//                intent3.putExtra(Const.COMMENT_NUM, commentNote.g());
+                intent3.putExtra(Const.COMMENT_ENTITY, commentNote);
+                intent3.putExtra("getFull",true);
+                startActivity(intent3);
+                break;
+            case 3:
+                Log.e("YellowMain", "Case 3");
+                User user = (User) event.getObj();
+                if(user != null){
+                    Intent intent2 = new Intent(MainActivity.this, OtherActivity.class);
+                    intent2.putExtra(Const.USER_ID , user.getUser_id());
+                    startActivity(intent2);
+                }
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(DoubleClick msg) {
+        String message = msg.getMessage();
+        boolean isClicked = msg.isClick();
     }
 
 }

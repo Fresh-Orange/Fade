@@ -44,7 +44,7 @@
     <ImageView
         android:id="@+id/iv_concern_in_fade"
         android:layout_width="50dp"
-        android:layout_height="14dp"
+        android:layout_height="20dp"
         android:layout_marginLeft="8dp"
         android:layout_centerVertical="true"
         android:src="@drawable/concern_in_fade"
