@@ -1,6 +1,7 @@
 package com.sysu.pro.fade;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -14,10 +15,13 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -37,6 +41,7 @@ import com.sysu.pro.fade.home.ContentHome;
 import com.sysu.pro.fade.home.activity.DetailActivity;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.event.EditDiscover;
 import com.sysu.pro.fade.home.event.EditMessage;
 import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
 import com.sysu.pro.fade.message.Activity.ContributionActivity;
@@ -76,7 +81,7 @@ import rx.schedulers.Schedulers;
 
 import static com.sysu.pro.fade.R.id.container;
 import com.igexin.sdk.PushManager;
-public class MainActivity extends MainBaseActivity {
+public class MainActivity extends MainBaseActivity  {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
@@ -108,12 +113,21 @@ public class MainActivity extends MainBaseActivity {
     private long mLastPressTime = 0;
     private boolean isMyClickOnce = true;
 
+    //屏幕高度
+    private int screenHeight = 0;
+    //软件盘弹起后所占高度阀值
+    private int keyHeight = 0;
+
+    private View activityRootView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         createFiles();
+
+
+
 
         /*用以解决输入评论时底部导航栏被顶起的问题*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -203,10 +217,67 @@ public class MainActivity extends MainBaseActivity {
                     }
                 }
         ));
+        activityRootView = findViewById(R.id.relative_root);
+        initSoftInputListener();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //添加layout大小发生改变监听器
+//        activityRootView.addOnLayoutChangeListener(this);
     }
 
 
+//    @Override
+//    public void onLayoutChange(View v, int left, int top, int right,
+//                               int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//
+//        //old是改变前的左上右下坐标点值，没有old的是改变后的左上右下坐标点值
+//
+//        Log.d("YellowFocus", "------------------------------");
+//        Log.d("YellowFocus", "oldBottom: " + oldBottom);
+//        Log.d("YellowFocus", "bottom: " + bottom);
+//        //现在认为只要控件将Activity向上推的高度超过了1/3屏幕高，就认为软键盘弹起
+//        if (oldBottom != 0 && bottom != 0 && (oldBottom - bottom > keyHeight)) {
+//            Toast.makeText(MainActivity.this, "监听到软键盘弹起...", Toast.LENGTH_SHORT).show();
+//            mTabLayoutMenu.setVisibility(View.GONE);
+//        }
+//        else if (oldBottom != 0 && bottom != 0
+//                && (bottom - oldBottom > keyHeight)){
+//            Toast.makeText(MainActivity.this, "监听到软件盘关闭...", Toast.LENGTH_SHORT).show();
+//            mTabLayoutMenu.setVisibility(View.VISIBLE);
+//        }
+//    }
+    public float dpToPx(Context context, float valueInDp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
+    }
+
+    private void initSoftInputListener() {
+        //获取屏幕高度
+        screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+        //阀值设置为屏幕高度的1/3
+        keyHeight = screenHeight/3;
+
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+                if (heightDiff > dpToPx(MainActivity.this, 200)) {
+                    mTabLayoutMenu.setVisibility(View.GONE);
+                }
+                else {
+                    mTabLayoutMenu.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mTabLayoutMenu.setVisibility(View.VISIBLE);
+                        }
+                    }, 100);
+                }
+            }
+        });
+    }
 
 
     private void createFiles() {
@@ -890,4 +961,14 @@ public class MainActivity extends MainBaseActivity {
         boolean isClicked = msg.isClick();
     }
 
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onEvent(EditDiscover msg) {
+//        String message = msg.getMessage();
+//        boolean hasFocus = msg.isHasFocus();
+//        Log.d("YellowDiscover", "hasFocusMain: " + hasFocus);
+//        if (hasFocus)
+//            mTabLayoutMenu.setVisibility(View.GONE);
+//        else
+//            mTabLayoutMenu.setVisibility(View.VISIBLE);
+//    }
 }
