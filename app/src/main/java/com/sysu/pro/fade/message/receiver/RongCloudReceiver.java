@@ -8,7 +8,7 @@ import io.rong.push.notification.PushNotificationMessage;
 public class RongCloudReceiver extends PushMessageReceiver {
 
 	@Override
-	public boolean onNotificationMessageArrived(Context context, PushNotificationMessage pushNotificationMessage) {
+	public boolean onNotificationMessageArrived(Context context, PushNotificationMessage pushNotificationessage) {
 		return false;
 	}
 
