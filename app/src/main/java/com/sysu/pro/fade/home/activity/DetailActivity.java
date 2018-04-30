@@ -511,7 +511,7 @@ public class DetailActivity extends MainBaseActivity{
         view.findViewById(R.id.reply_content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (reply.getUser_id() != userId) {
+                if (reply.getUser_id() != user.getUser_id()) {
                     showSecondReply(reply, holder, userId);
                 } else {
                     Toast.makeText(DetailActivity.this, "暂时不能删除", Toast.LENGTH_SHORT).show();
