@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,12 +29,13 @@ import com.sysu.pro.fade.tool.UserTool;
 
 public class ValidationActivity extends LoginBaseActivity{
     Code mCode;
-    private ImageView nextbtn;
+    private Button nextbtn;
     private ImageView backbtn;
     private LinearLayout red_wrong_valid;
     private TextView send_telephone;
     private TextView send_again;
     private String mobilePhoneNumber;
+    private Integer count = 59;
 
     private Handler handler = new Handler(){
         @Override
@@ -82,6 +84,22 @@ public class ValidationActivity extends LoginBaseActivity{
             }
         }
     };
+
+    private Handler handler3 = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1){
+                if (count == 1){
+                    send_again.setText("重发");
+                }else {
+                    count--;
+                    send_again.setText(count+"s");
+                    handler3.sendEmptyMessageDelayed(1,1000);
+                }
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -91,12 +109,13 @@ public class ValidationActivity extends LoginBaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validation);
         mCode = (Code) findViewById(R.id.code);
-        nextbtn = (ImageView) findViewById(R.id.next);
+        nextbtn = (Button) findViewById(R.id.next);
         backbtn = (ImageView) findViewById(R.id.back_btn);
         red_wrong_valid = (LinearLayout) findViewById(R.id.red_wrong_valid);
         send_telephone = (TextView) findViewById(R.id.send_telephone);
         send_again = (TextView) findViewById(R.id.send_again);
         mobilePhoneNumber = getIntent().getStringExtra("telephone");
+        handler3.sendEmptyMessageDelayed(1,1000);
 
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +145,12 @@ public class ValidationActivity extends LoginBaseActivity{
         send_again.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserTool.sendIdentifyCode(handler1,mobilePhoneNumber);
+                if (count == 1){
+                    UserTool.sendIdentifyCode(handler1,mobilePhoneNumber);
+                    count = 59;
+                    send_again.setText(count+"s");
+                    handler3.sendEmptyMessageDelayed(1,1000);
+                }
             }
         });
     }

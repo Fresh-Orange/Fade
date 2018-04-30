@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class TelephoneActivity extends LoginBaseActivity {
-    private ImageView nextbtn;
+    private Button nextbtn;
     private EditText telephone;
     private ImageView backbtn;
     private Handler handler = new Handler(){
@@ -58,7 +59,7 @@ public class TelephoneActivity extends LoginBaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_telephone);
-        nextbtn = (ImageView) findViewById(R.id.next);
+        nextbtn = (Button) findViewById(R.id.next);
         backbtn = (ImageView) findViewById(R.id.back_btn);
         telephone = (EditText) findViewById(R.id.my_telephone);
 

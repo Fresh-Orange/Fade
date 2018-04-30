@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,7 +19,7 @@ import com.sysu.pro.fade.utils.UserUtil;
  */
 
 public class SetFadeIDActivity extends LoginBaseActivity {
-    private ImageView nextbtn;
+    private Button nextbtn;
     private TextView fade_id;
     private User user;
     @Override
@@ -29,7 +30,7 @@ public class SetFadeIDActivity extends LoginBaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fade_id);
-        nextbtn = (ImageView) findViewById(R.id.next);
+        nextbtn = (Button) findViewById(R.id.next);
         fade_id = (TextView) findViewById(R.id.fade_id);
 
         user = new UserUtil(this).getUer();

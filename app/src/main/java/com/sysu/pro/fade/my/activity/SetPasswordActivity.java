@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
  */
 
 public class SetPasswordActivity extends LoginBaseActivity{
-    private ImageView nextbtn;
+    private Button nextbtn;
     private EditText first_password;
     private EditText second_password;
     private int fp_flag;
@@ -90,22 +91,22 @@ public class SetPasswordActivity extends LoginBaseActivity{
                 }else{
                     red_text.setText("密码太短");
                     red_wrong_password.setVisibility(View.VISIBLE);
-                    nextbtn.setImageResource(R.drawable.next_gray);
+                    nextbtn.setBackgroundResource(R.drawable.button_shape_nomal);
                 }
             }else  if (temp.length() > 16){
                 red_text.setText("密码太长");
                 red_wrong_password.setVisibility(View.VISIBLE);
-                nextbtn.setImageResource(R.drawable.next_gray);
+                nextbtn.setBackgroundResource(R.drawable.button_shape_nomal);
             }else if(fp_flag == 1){
                 red_text.setText("密码需包含英文与数字");
                 red_wrong_password.setVisibility(View.VISIBLE);
-                nextbtn.setImageResource(R.drawable.next_gray);
+                nextbtn.setBackgroundResource(R.drawable.button_shape_nomal);
             }else if (fp_flag == 2){
                 red_wrong_password.setVisibility(View.INVISIBLE);
             }else{
                 red_text.setText("密码包含非法字符");
                 red_wrong_password.setVisibility(View.VISIBLE);
-                nextbtn.setImageResource(R.drawable.next_gray);
+                nextbtn.setBackgroundResource(R.drawable.button_shape_nomal);
             }
         }
     };
@@ -125,9 +126,9 @@ public class SetPasswordActivity extends LoginBaseActivity{
         public void afterTextChanged(Editable editable) {
             if (temp.length() > 0 && fp_flag == 2){
                 red_wrong_password.setVisibility(View.INVISIBLE);
-                nextbtn.setImageResource(R.drawable.next_blue);
+                nextbtn.setBackgroundResource(R.drawable.button_shape_blue);
             }else{
-                nextbtn.setImageResource(R.drawable.next_gray);
+                nextbtn.setBackgroundResource(R.drawable.button_shape_nomal);
             }
         }
     };
@@ -140,7 +141,7 @@ public class SetPasswordActivity extends LoginBaseActivity{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_password);
-        nextbtn = (ImageView) findViewById(R.id.next);
+        nextbtn = (Button) findViewById(R.id.next);
         first_password = (EditText) findViewById(R.id.my_telephone);
         second_password = (EditText) findViewById(R.id.my_valid);
         mobilePhoneNumber = getIntent().getStringExtra("telephone");

@@ -393,11 +393,14 @@
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp"
             android:gravity="center">
-            <ImageView
+            <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/into_fade"
-                android:src="@drawable/into_fade_blue"/>
+                android:layout_height="40dp"
+                android:text="进入FADE"
+                android:textSize="20sp"
+                android:textColor="#ffffff"
+                android:background="@drawable/button_shape_blue"
+                android:id="@+id/into_fade"/>
         </LinearLayout>
     </LinearLayout>
 

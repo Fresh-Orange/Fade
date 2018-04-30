@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,7 +44,7 @@ import rx.schedulers.Schedulers;
 public class SetNewPasswordActivity extends LoginBaseActivity {
     private EditText first_password;
     private EditText second_password;
-    private ImageView into_fade_btn;
+    private Button into_fade_btn;
     private SharedPreferences sharedPreferences;
     private LinearLayout red_wrong_password;
     private TextView red_text;
@@ -80,22 +81,22 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
                 }else{
                     red_text.setText("密码太短");
                     red_wrong_password.setVisibility(View.VISIBLE);
-                    into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+                    into_fade_btn.setBackgroundResource(R.drawable.button_shape_nomal);
                 }
             }else  if (temp.length() > 16){
                 red_text.setText("密码太长");
                 red_wrong_password.setVisibility(View.VISIBLE);
-                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+                into_fade_btn.setBackgroundResource(R.drawable.button_shape_nomal);
             }else if(fp_flag == 1){
                 red_text.setText("密码需包含英文与数字");
                 red_wrong_password.setVisibility(View.VISIBLE);
-                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+                into_fade_btn.setBackgroundResource(R.drawable.button_shape_nomal);
             }else if (fp_flag == 2){
                 red_wrong_password.setVisibility(View.INVISIBLE);
             }else{
                 red_text.setText("密码包含非法字符");
                 red_wrong_password.setVisibility(View.VISIBLE);
-                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+                into_fade_btn.setBackgroundResource(R.drawable.button_shape_nomal);
             }
         }
     };
@@ -115,9 +116,9 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
         public void afterTextChanged(Editable editable) {
             if (temp.length() > 0 && fp_flag == 2){
                 red_wrong_password.setVisibility(View.INVISIBLE);
-                into_fade_btn.setImageResource(R.drawable.into_fade_blue);
+                into_fade_btn.setBackgroundResource(R.drawable.button_shape_blue);
             }else{
-                into_fade_btn.setImageResource(R.drawable.into_fade_gray);
+                into_fade_btn.setBackgroundResource(R.drawable.button_shape_nomal);
             }
         }
     };
@@ -132,7 +133,7 @@ public class SetNewPasswordActivity extends LoginBaseActivity {
         setContentView(R.layout.activity_new_password);
         first_password = (EditText) findViewById(R.id.my_telephone);
         second_password = (EditText) findViewById(R.id.my_valid);
-        into_fade_btn = (ImageView) findViewById(R.id.into_fade);
+        into_fade_btn = (Button) findViewById(R.id.into_fade);
         red_wrong_password = (LinearLayout) findViewById(R.id.red_wrong_password);
         red_text = (TextView) findViewById(R.id.red_text);
         first_password.addTextChangedListener(mTextWatchr);

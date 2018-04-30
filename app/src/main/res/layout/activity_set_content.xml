@@ -58,18 +58,16 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_marginTop="-40dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:src="@drawable/choose_myhead"
             android:id="@+id/ivRegisterUserHead"
-            android:scaleX="2"
-            android:scaleY="2"
             android:layout_gravity="center"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:layout_marginLeft="89dp"
             android:layout_marginRight="89dp"
             android:layout_gravity="center"
@@ -87,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp">
             <LinearLayout
@@ -131,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="25dp"
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp">
             <LinearLayout
@@ -172,6 +170,7 @@
                         android:text="男"
                         android:textSize="20dp"/>
                     <RadioButton
+                        android:buttonTint="@color/light_blue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/male"/>
@@ -194,6 +193,7 @@
                         android:text="女"
                         android:textSize="20dp"/>
                     <RadioButton
+                        android:buttonTint="#FE2EC8"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/female"/>
@@ -208,11 +208,14 @@
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp"
             android:gravity="center">
-            <ImageView
+            <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/next"
-                android:src="@drawable/finish_register_blue"/>
+                android:layout_height="40dp"
+                android:text="下一步"
+                android:textSize="20sp"
+                android:textColor="#ffffff"
+                android:background="@drawable/button_shape_blue"
+                android:id="@+id/next"/>
         </LinearLayout>
     </LinearLayout>
 
