@@ -140,7 +140,6 @@ public class Code extends LinearLayout implements TextWatcher, View.OnKeyListene
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         if (i == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-
             //Toast.makeText(mContext, mEditTextList.get(currentPosition).getText(), Toast.LENGTH_SHORT).show();
             /*if (currentPosition != 0) {
                 //currentPosition--;

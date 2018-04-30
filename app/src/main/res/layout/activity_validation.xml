@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:textColor="#29abe2"
-                android:text="重发"/>
+                android:text="59s"/>
         </LinearLayout>
 
         <LinearLayout

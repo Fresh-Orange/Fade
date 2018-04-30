@@ -96,11 +96,11 @@ public class TelephoneActivity extends LoginBaseActivity {
                                 if(simpleResponse.getSuccess().equals("0")){
                                     Toast.makeText(TelephoneActivity.this,"该手机号没有注册",Toast.LENGTH_SHORT).show();
                                 }else{
-                                    //UserTool.sendIdentifyCode(handler,telephone.getText().toString());
-                                    Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
+                                    UserTool.sendIdentifyCode(handler,telephone.getText().toString());
+                                    /*Intent intent = new Intent(TelephoneActivity.this,ValidationActivity.class);
                                     intent.putExtra(Const.TELEPHONE,telephone.getText().toString());
                                     startActivity(intent);
-                                    finish();
+                                    finish();*/
                                 }
                             }
                         });

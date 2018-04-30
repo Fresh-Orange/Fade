@@ -35,6 +35,7 @@ public class ValidationActivity extends LoginBaseActivity{
     private TextView send_telephone;
     private TextView send_again;
     private String mobilePhoneNumber;
+    private Integer count = 59;
 
     private Handler handler = new Handler(){
         @Override
@@ -43,7 +44,7 @@ public class ValidationActivity extends LoginBaseActivity{
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                //if(ans.equals("{}")){
+                if(ans.equals("{}")){
 
                 //验证成功，跳转到输入密码界面
                 Intent intent = new Intent(ValidationActivity.this,SetNewPasswordActivity.class);
@@ -51,10 +52,10 @@ public class ValidationActivity extends LoginBaseActivity{
                 startActivity(intent);
 
                 finish();
-                //}else{
-                //    red_wrong_valid.setVisibility(View.VISIBLE);
-                //    handler2.sendEmptyMessageDelayed(1,1000);
-                //}
+                }else{
+                    red_wrong_valid.setVisibility(View.VISIBLE);
+                    handler2.sendEmptyMessageDelayed(1,1000);
+                }
             }
         }
     };
@@ -83,6 +84,22 @@ public class ValidationActivity extends LoginBaseActivity{
             }
         }
     };
+
+    private Handler handler3 = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1){
+                if (count == 1){
+                    send_again.setText("重发");
+                }else {
+                    count--;
+                    send_again.setText(count+"s");
+                    handler3.sendEmptyMessageDelayed(1,1000);
+                }
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -98,6 +115,7 @@ public class ValidationActivity extends LoginBaseActivity{
         send_telephone = (TextView) findViewById(R.id.send_telephone);
         send_again = (TextView) findViewById(R.id.send_again);
         mobilePhoneNumber = getIntent().getStringExtra("telephone");
+        handler3.sendEmptyMessageDelayed(1,1000);
 
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +145,12 @@ public class ValidationActivity extends LoginBaseActivity{
         send_again.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserTool.sendIdentifyCode(handler1,mobilePhoneNumber);
+                if (count == 1){
+                    UserTool.sendIdentifyCode(handler1,mobilePhoneNumber);
+                    count = 59;
+                    send_again.setText(count+"s");
+                    handler3.sendEmptyMessageDelayed(1,1000);
+                }
             }
         });
     }
