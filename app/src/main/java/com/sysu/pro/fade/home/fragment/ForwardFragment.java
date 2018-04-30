@@ -4,6 +4,7 @@ package com.sysu.pro.fade.home.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -52,6 +53,8 @@ public class ForwardFragment extends Fragment {
     private CommonAdapter<Note> adapter;
     private List<Note> attitudes = new ArrayList<>();
     private int showFlag = 0;
+
+    private SwipeRefreshLayout uselessLayout;
 
     public ForwardFragment() {
         // Required empty public constructor
@@ -130,6 +133,8 @@ public class ForwardFragment extends Fragment {
     }
 
     private void setupView() {
+        uselessLayout = rootView.findViewById(R.id.fans_and_concern_refresh_layout);
+        uselessLayout.setEnabled(false);    //关掉下拉刷新
         recyclerView = rootView.findViewById(R.id.fragment_forward_recycler_view);
         adapter = new CommonAdapter<Note>(attitudes) {
             @Override
