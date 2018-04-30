@@ -259,7 +259,7 @@ public class DetailActivity extends MainBaseActivity{
             }
         });
         setAddOrMinusListener(this, clickableProgressBar, new UserUtil(this), note);
-        setOnUserClickListener(this, tvName, userAvatar, null, note);
+        setOnUserClickListener(this, tvName, userAvatar, null, note, true);
     }
 
 
