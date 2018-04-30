@@ -75,7 +75,7 @@ public class FansActivity extends MainBaseActivity {
                         start = userQuery.getStart();
                         point = userQuery.getPoint();
                         List<User>list = userQuery.getList();
-                        Log.i("收到贡献" , "" + list.size());
+                        Log.i("收到粉丝" , "" + list.size());
                         if(list.size() != 0){
                             users.addAll(list);
                             adapter.notifyDataSetChanged();
