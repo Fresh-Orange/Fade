@@ -21,7 +21,6 @@ import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.message.Adapter.ContributeAdapter;
 import com.sysu.pro.fade.message.Adapter.FansAdapter;
-import com.sysu.pro.fade.message.Event.ContributeEvent;
 import com.sysu.pro.fade.message.Event.FansEvent;
 import com.sysu.pro.fade.service.MessageService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -249,9 +248,12 @@ public class FansActivity extends MainBaseActivity {
                                     if(list.size() < 20) isEnd = true;
                                 }else {
                                     isEnd = true;
+                                }
+                                if(isEnd){
+                                    refreshLayout.finishLoadmore();
+                                    refreshLayout.setEnableLoadmore(false);
                                     footViewEnd();
                                 }
-                                refreshLayout.finishLoadmore();
                             }
                         });
             }
