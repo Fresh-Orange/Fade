@@ -130,7 +130,7 @@ public class MyLiveContent {
                         start = personPage.getQuery().getStart();
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
-                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                         isLoading = false;
                         //add by vj
                         if (notes.size() != 0) {
@@ -192,7 +192,7 @@ public class MyLiveContent {
                     @Override
                     public void run() {
                         if(isEnd){
-                            Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(context,"往下没有啦",Toast.LENGTH_SHORT).show();
                             setLoadingMore(false);
                             swipeRefresh.setRefreshing(false);
                         }else {
@@ -292,7 +292,7 @@ public class MyLiveContent {
                                         start = noteQuery.getStart();
                                         setLoadingMore(false);
                                         swipeRefresh.setRefreshing(false);
-                                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }

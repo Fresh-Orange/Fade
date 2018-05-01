@@ -241,6 +241,7 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="8dp"
                 android:background="@null"
+                android:textCursorDrawable="@null"
                 tools:hint="点击输入评论"
                 android:maxLines="5"
                 android:maxLength="140"
