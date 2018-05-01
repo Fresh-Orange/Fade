@@ -1,25 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
+
+    <!--<View-->
+        <!--android:layout_width="3dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:background="#e6e6e6"-->
+        <!--android:layout_marginStart="15dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<android.support.constraint.Guideline-->
+        <!--android:id="@+id/reply_guildLine1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--app:layout_constraintGuide_begin="24dp" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/reply_name"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--tools:text="Name"-->
+        <!--android:textColor="#000000"-->
+        <!--android:textSize="14sp"-->
+        <!--android:textStyle="bold"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/reply_guildLine1"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/reply_reply"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:alpha="0.5"-->
+        <!--android:text=" 回复 "-->
+        <!--android:textColor="#000000"-->
+        <!--android:textSize="14sp"-->
+        <!--android:textStyle="bold"-->
+        <!--app:layout_constraintBaseline_toBaselineOf="@+id/reply_name"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/reply_name" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/reply_comment_name"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--tools:text="Name"-->
+        <!--android:textColor="#000000"-->
+        <!--android:textSize="14sp"-->
+        <!--android:textStyle="bold"-->
+        <!--app:layout_constraintBaseline_toBaselineOf="@+id/reply_reply"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/reply_reply" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/reply_dot"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:alpha="0.5"-->
+        <!--android:text=" · "-->
+        <!--android:textColor="#000000"-->
+        <!--android:textSize="12sp"-->
+        <!--app:layout_constraintBaseline_toBaselineOf="@+id/reply_comment_name"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/reply_comment_name" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/reply_date"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:alpha="0.5"-->
+        <!--tools:text="date"-->
+        <!--android:textColor="#000000"-->
+        <!--android:textSize="12sp"-->
+        <!--app:layout_constraintBaseline_toBaselineOf="@+id/reply_comment_name"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/reply_dot" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/reply_content"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="#000000"-->
+        <!--android:textSize="14sp"-->
+        <!--android:background="@drawable/btn_back_selector"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="@+id/reply_guildLine1"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/reply_name"-->
+        <!--tools:text="aaaaaaaa" />-->
+
+<!--</android.support.constraint.ConstraintLayout>-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <View
-        android:layout_width="3dp"
-        android:layout_height="0dp"
-        android:background="#e6e6e6"
-        android:layout_marginStart="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/reply_guildLine1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="24dp" />
+    android:layout_height="wrap_content"
+    android:background="@drawable/comment_reply_background">
 
     <TextView
         android:id="@+id/reply_name"
@@ -29,8 +107,7 @@
         android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/reply_guildLine1"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginLeft="16dp"/>
 
     <TextView
         android:id="@+id/reply_reply"
@@ -41,8 +118,7 @@
         android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBaseline_toBaselineOf="@+id/reply_name"
-        app:layout_constraintStart_toEndOf="@+id/reply_name" />
+        android:layout_toRightOf="@id/reply_name"/>
 
     <TextView
         android:id="@+id/reply_comment_name"
@@ -52,8 +128,7 @@
         android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBaseline_toBaselineOf="@+id/reply_reply"
-        app:layout_constraintStart_toEndOf="@+id/reply_reply" />
+        android:layout_toRightOf="@id/reply_reply"/>
 
     <TextView
         android:id="@+id/reply_dot"
@@ -63,8 +138,8 @@
         android:text=" · "
         android:textColor="#000000"
         android:textSize="12sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/reply_comment_name"
-        app:layout_constraintStart_toEndOf="@+id/reply_comment_name" />
+        android:layout_toRightOf="@id/reply_comment_name"
+        android:layout_alignBaseline="@id/reply_name"/>
 
     <TextView
         android:id="@+id/reply_date"
@@ -74,20 +149,19 @@
         tools:text="date"
         android:textColor="#000000"
         android:textSize="12sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/reply_comment_name"
-        app:layout_constraintStart_toEndOf="@+id/reply_dot" />
+        android:layout_toRightOf="@id/reply_dot"
+        android:layout_alignBaseline="@id/reply_name"/>
 
     <TextView
         android:id="@+id/reply_content"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#000000"
         android:textSize="14sp"
+        android:lineSpacingMultiplier="1.1"
         android:background="@drawable/btn_back_selector"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/reply_guildLine1"
-        app:layout_constraintTop_toBottomOf="@+id/reply_name"
-        tools:text="aaaaaaaa" />
+        android:layout_below="@id/reply_name"
+        android:layout_marginLeft="16dp"
+        tools:text="aaaaaaaaaaaaaaaaaaaaa" />
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
