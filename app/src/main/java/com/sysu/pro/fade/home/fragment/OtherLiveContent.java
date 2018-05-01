@@ -134,7 +134,7 @@ public class OtherLiveContent {
                         start = personPage.getQuery().getStart();
                         setLoadingMore(false);
                         swipeRefresh.setRefreshing(false);
-                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                         isLoading = false;
                         //add by vj
                         if (notes.size() != 0) {
@@ -296,7 +296,7 @@ public class OtherLiveContent {
                                         start = noteQuery.getStart();
                                         setLoadingMore(false);
                                         swipeRefresh.setRefreshing(false);
-                                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(context,"加载成功",Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }

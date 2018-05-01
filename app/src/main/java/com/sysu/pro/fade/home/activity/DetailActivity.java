@@ -137,7 +137,7 @@ public class DetailActivity extends MainBaseActivity{
         detailSetting = findViewById(R.id.back_bar_menu);
         detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
-        setupUI(findViewById(R.id.detail_root_view));   //关闭键盘处理
+        setupUI(findViewById(R.id.detail_coordinator_layout));   //关闭键盘处理
 
         //设置上拉加载
         refreshLayout = findViewById(R.id.detail_comment_refresh);
