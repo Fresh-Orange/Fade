@@ -10,7 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -135,6 +137,7 @@ public class DetailActivity extends MainBaseActivity{
         detailSetting = findViewById(R.id.back_bar_menu);
         detailSetting.setVisibility(View.VISIBLE);
         imm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); //软键盘管理器
+        setupUI(findViewById(R.id.detail_root_view));   //关闭键盘处理
 
         //设置上拉加载
         refreshLayout = findViewById(R.id.detail_comment_refresh);
@@ -376,7 +379,7 @@ public class DetailActivity extends MainBaseActivity{
                 holder.onWidgetClick(R.id.comment_detail_content, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        recyclerView.smoothScrollBy(0, getRecyclerViewScrollDistance(position));
+//                        recyclerView.smoothScrollBy(0, getRecyclerViewScrollDistance(position));
                         showSecondComment(commentator.get(position), holder, data.getUser_id());
                     }
                 });
@@ -404,18 +407,9 @@ public class DetailActivity extends MainBaseActivity{
                             View view = createReplyItemView(reply, data.getUser_id(), holder);
                             holder.addView(R.id.comment_detail_reply_wrapper, view);
                         }
+                        //设置是否隐藏内容
                         int maxHeight = commentNumText.getHeight() * 4;
-                        // TODO: 2018/3/6 目前不能准确获取真实高度…… 
-                        realHeight = holder.getRealHeight(R.id.comment_detail_reply_wrapper);
-                        //超高之后隐藏超出部分，显示“查看更多”
-                        if (realHeight - maxHeight >= commentNumText.getHeight()) {
-                            holder.limitReplyHeight(R.id.comment_detail_reply_wrapper, maxHeight);
-                            holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
-                            holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
-                        } else {
-                            holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
-                            holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
-                        }
+                        holder.setHeightMask(holder, R.id.comment_detail_reply_wrapper, maxHeight);
                     }
                 } else {
                     holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.GONE);
@@ -427,6 +421,7 @@ public class DetailActivity extends MainBaseActivity{
         loadMoreFlag = 1;
 
         recyclerView.setAdapter(commentAdapter);
+        recyclerView.setItemViewCacheSize(20);  // TODO: 2018/5/2 暂时解决回滚的时候view状态错乱的问题
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         //上拉加载
         if (commentator.size() < 10) {
@@ -720,5 +715,33 @@ public class DetailActivity extends MainBaseActivity{
     protected void onDestroy() {
         EventBus.getDefault().unregister(this);
         super.onDestroy();
+    }
+
+    //给所有非输入框控件设置触摸监听，以收起软键盘收起输入框
+    private void setupUI(View view) {
+        //Set up touch listener for non-text box views to hide keyboard.
+        if(!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(imm != null) {
+                        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),
+                                0);
+                    }
+                    if (writeCommentWrapper.getVisibility() == View.VISIBLE) {
+                        writeComment.setText("");
+                        writeCommentWrapper.setVisibility(View.GONE);
+                    }
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
     }
 }

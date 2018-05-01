@@ -33,15 +33,14 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/comment_detail_head"
-            android:layout_width="@dimen/avatar"
-            android:layout_height="@dimen/avatar"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintStart_toEndOf="@+id/comment_detail_good"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/comment_detail_name"
@@ -122,7 +121,7 @@
         android:id="@+id/comment_detail_reply_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="63dp"
+        android:layout_marginLeft="74dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:clipChildren="false"
