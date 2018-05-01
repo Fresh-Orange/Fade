@@ -697,7 +697,7 @@ public class MainActivity extends MainBaseActivity  {
             else {
                 //编辑了
                 mViewPager.setCurrentItem(Const.HOME - 1, false);
-                img_title.setImageResource(R.mipmap.home_normal);
+                mTabLayoutMenu.getTabAt(0).select();
                 EventBus.getDefault().post(new EditMessage("Edit", true));
             }
 

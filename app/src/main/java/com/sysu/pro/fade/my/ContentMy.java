@@ -69,6 +69,9 @@ public class ContentMy {
     private String[] allNums;       //所有菜单项的数字
     private TextView tvFadeName;//fade_id
 
+    private ImageView sexBoy;
+    private ImageView sexGirl;
+
     private Retrofit retrofit;
     private UserService userService;
 
@@ -87,6 +90,10 @@ public class ContentMy {
         schoolName = rootview.findViewById(R.id.school_name);
         schoolDot = rootview.findViewById(R.id.school_dot);
         departmentName = rootview.findViewById(R.id.department_name);
+
+        //性别
+        sexBoy = rootview.findViewById(R.id.user_boy);
+        sexGirl = rootview.findViewById(R.id.user_girl);
 
         user = new UserUtil(activity).getUer();
         loadData();
@@ -166,8 +173,7 @@ public class ContentMy {
     }
 
     public void loadData(){
-        //获取本地用户信息举例
-        //重新加载本地user数据
+        //加载本地user数据
 
         String login_type = sharedPreferences.getString(Const.LOGIN_TYPE,"");
         String image_url = user.getHead_image_url();
@@ -176,6 +182,12 @@ public class ContentMy {
         String fade_name = user.getFade_name();
         String school_name = user.getSchool_name();
         String department_name = user.getDepartment_name();
+        //设置性别
+        if (user.getSex().equals("男")) {
+            sexBoy.setVisibility(View.VISIBLE);
+        } else {
+            sexGirl.setVisibility(View.VISIBLE);
+        }
         //获取用户的关注、粉丝等的数量
         String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());
         String fans_num = (user.getFans_num()>999?(user.getFans_num()/1000+"K"):user.getFans_num().toString());
