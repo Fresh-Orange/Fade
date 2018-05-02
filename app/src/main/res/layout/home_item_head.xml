@@ -18,7 +18,7 @@
         android:layout_toRightOf="@id/civ_avatar"
         android:layout_marginLeft="8dp"
         android:textSize="@dimen/name_size"
-        tools:text="刘德华刘德华刘德华刘德华刘德华刘德华"
+        tools:text="加载中…"
         android:ellipsize="end"
         android:maxWidth="110dp"
         android:singleLine="true"

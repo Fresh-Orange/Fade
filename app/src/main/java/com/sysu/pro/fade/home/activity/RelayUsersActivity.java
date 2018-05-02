@@ -187,7 +187,7 @@ public class RelayUsersActivity extends MainBaseActivity {
 				setActionIfNecessary(bean, tvAction, null, ivAction, RelayUsersActivity.this);
 
 				/* ********* 设置监听器 ***********/
-				setOnUserClickListener(RelayUsersActivity.this, tvName, userAvatar, null, bean);
+				setOnUserClickListener(RelayUsersActivity.this, tvName, userAvatar, null, bean, false);
 
 			}
 		}, R.layout.relay_users_item);

@@ -43,6 +43,7 @@ import java.util.List;
 import io.rong.imkit.RongContext;
 import io.rong.imkit.fragment.ConversationListFragment;
 import io.rong.imlib.model.Conversation;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit2.Retrofit;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -374,7 +375,8 @@ public class ContentMessage {
 //                call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"),
 //                        "change_badge", null, extra);
 //
-//        ShortcutBadger.applyCount(context, badgeNumber); //for 1.1.4+
+        ShortcutBadger.applyCount(context, badgeNumber); //for 1.1.4+
+
 //        //小米
 //        NotificationManager mNotificationManager = (NotificationManager) context
 //                .getSystemService(Context.NOTIFICATION_SERVICE);

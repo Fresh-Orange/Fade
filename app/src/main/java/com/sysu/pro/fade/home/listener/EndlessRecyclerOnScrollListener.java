@@ -106,8 +106,8 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 		}*/
 
 
-		Log.d("loadMoreVar", "visible = " + String.valueOf(visibleItemCount) + "  total = " + String.valueOf(totalItemCount)
-				+ "pre = " + String.valueOf(previousTotal) + " first = " + String.valueOf(firstVisibleItem));
+		//Log.d("loadMoreVar", "visible = " + String.valueOf(visibleItemCount) + "  total = " + String.valueOf(totalItemCount)
+				//+ "pre = " + String.valueOf(previousTotal) + " first = " + String.valueOf(firstVisibleItem));
 	}
 
 

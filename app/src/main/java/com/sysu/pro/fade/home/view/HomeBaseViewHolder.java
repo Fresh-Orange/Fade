@@ -112,7 +112,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		setGoToDetailClickListener(context, itemView, bean);
 		setAddOrMinusListener(context, clickableProgressBar, userUtil, bean);
 		setCommentListener(context, clickableProgressBar, bean);
-		setOnUserClickListener(context, tvName, userAvatar, tvAtUser, bean);
+		setOnUserClickListener(context, tvName, userAvatar, tvAtUser, bean, false);
 
 	}
 
@@ -312,7 +312,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 											  TextView tvName,
 											  ImageView userAvatar,
 											  @Nullable TextView tvAtUser,
-											  final Note bean) {
+											  final Note bean,
+											  final boolean isDetail) {
 		tvName.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -331,7 +332,8 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		userAvatar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (bean.getRelayUserNum() > 1){
+				//解决详情页跳转问题
+				if (bean.getRelayUserNum() > 1 && !isDetail){
 					Intent i = new Intent(context, RelayUsersActivity.class);
 					i.putExtra(Const.NOTE_ENTITY, bean);
 					context.startActivity(i);
@@ -577,9 +579,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					btComment.setAlpha(0f);
 					curProgress = clickableProgressBar.getProgress();
 					maxProgress = clickableProgressBar.getMaxProgress();
-					addProgress = Math.min(curProgress+50, maxProgress);
+					addProgress = Math.min(((int)(curProgress+50f/6*5)), maxProgress);
 					int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-					mimusProgress = Math.max(curProgress-50, halfProgress);
+					mimusProgress = Math.max(((int)(curProgress-10f/6*5)), halfProgress);
 					isSetView = true;
 				}
 				else {
