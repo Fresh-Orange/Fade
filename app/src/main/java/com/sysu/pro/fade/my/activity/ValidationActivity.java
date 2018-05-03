@@ -140,7 +140,7 @@ public class ValidationActivity extends LoginBaseActivity{
             }
         });
 
-        send_telephone.setText("验证码已发送至手机号 +86 " + mobilePhoneNumber);
+        send_telephone.setText("已发送至手机号 +86 " + mobilePhoneNumber);
 
         send_again.setOnClickListener(new View.OnClickListener() {
             @Override
