@@ -1,10 +1,15 @@
 package com.sysu.pro.fade.my.activity;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,6 +30,9 @@ import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.tool.UserTool;
 import com.sysu.pro.fade.utils.RetrofitUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Retrofit;
 import rx.Subscriber;
@@ -158,6 +166,7 @@ public class RegisterActivity extends LoginBaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_main);
+        getPermission();
         registerbtn = (Button) findViewById(R.id.btnRegister);
         loginbtn = (TextView) findViewById(R.id.tologin);
         get_valid = (TextView) findViewById(R.id.get_valid);
@@ -223,5 +232,133 @@ public class RegisterActivity extends LoginBaseActivity {
 
             }
         });
+    }
+    public void getPermission() {
+        List<String> permissionList = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(RegisterActivity.this, Manifest.permission
+                .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(RegisterActivity.this, Manifest.permission
+                .CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.CAMERA);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+//                    CAMERA);
+        }
+        if (ContextCompat.checkSelfPermission(RegisterActivity.this, Manifest.permission
+                .READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE},
+//                    READ_PHONE_STATE);
+        }
+        if (ContextCompat.checkSelfPermission(RegisterActivity.this, Manifest.permission
+                .WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                    PERMISSION_WRITE_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(RegisterActivity.this, Manifest.permission
+                .RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.RECORD_AUDIO);
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
+//                    RECORD_AUDIO);
+        }
+        if (!permissionList.isEmpty()) {
+            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(RegisterActivity.this, permissions, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this, "您拒绝了其中一种权限，无法正常完整运行某些功能，请在后台权限管理打开此功能",
+                                    Toast.LENGTH_LONG).show();
+//                            finish();
+                            return;
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(this, "发生未知错误",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+//            case ACCESS_FINE_LOCATION:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了定位权限，无法进行帖子定位，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+//            case PERMISSION_WRITE_EXTERNAL_STORAGE:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了读写内存权限，无法访问内部相册，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+//            case READ_PHONE_STATE:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了手机状态权限，无法读取手机状态，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+//            case RECORD_AUDIO:
+//                if (grantResults.length > 0) {
+//                    for (int result : grantResults) {
+//                        if (result != PackageManager.PERMISSION_GRANTED) {
+//                            Toast.makeText(this, "您拒绝了访问麦克风权限，无法进行语音输入，请在后台权限管理打开此功能",
+//                                    Toast.LENGTH_SHORT).show();
+////                            finish();
+//                            return;
+//                        }
+//                    }
+//                }
+//                else {
+//                    Toast.makeText(this, "发生未知错误",
+//                            Toast.LENGTH_SHORT).show();
+//                    finish();
+//                }
+//                break;
+        }
     }
 }
