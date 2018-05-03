@@ -49,6 +49,7 @@
             android:layout_weight="8"
             android:background="@null"
             android:lines="1"
+            android:maxLength="16"
             android:inputType="text"
             android:cursorVisible="false"
             android:theme="@style/MyEditText"/>
