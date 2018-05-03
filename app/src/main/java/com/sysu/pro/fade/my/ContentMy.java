@@ -22,6 +22,7 @@ import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.Note;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.home.event.DoubleClick;
+import com.sysu.pro.fade.home.event.RefreshNum;
 import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
 import com.sysu.pro.fade.my.Event.DoubleFade;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
@@ -272,7 +273,8 @@ public class ContentMy {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public  void onGetUser(User user) {
+    public void onGetUser(User user) {
+
         //更新个人信息
         Glide.with(context).load(Const.BASE_IP + user.getHead_image_url()).into(ivShowHead);
         tvShowNickname.setText(user.getNickname());
@@ -286,6 +288,7 @@ public class ContentMy {
         String concern_num = (user.getConcern_num()>999?(user.getConcern_num()/1000+"K"):user.getConcern_num().toString());
         String live_num = (user.getDynamicNum()>999?(user.getDynamicNum()/1000+"K"):user.getDynamicNum().toString());
         allNums = new String[]{live_num, fade_num, fans_num, concern_num};
+        Log.d("YellowMy", "num: " + live_num);
         loadFragment();
     }
 
@@ -294,4 +297,11 @@ public class ContentMy {
         requestUser();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(RefreshNum msg) {
+        Log.d("YellowMy", "Refresh!");
+        String message = msg.getMessage();
+        User user = msg.getUser();
+        onGetUser(user);
+    }
 }
