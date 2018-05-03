@@ -121,10 +121,28 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<CommonAdapte
             View view = getView(id);
             view.setVisibility(visible);
         }
-        public int getRealHeight(int id) {
-            View view = getView(id);
-            view.measure(0,0);
-            return view.getMeasuredHeight();
+        public void setHeightMask(final ViewHolder holder, int id, final int maxHeight) {
+            final View view = getView(id);
+////            view.measure(0,0);
+//            int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec((1 << 30)-1, View.MeasureSpec.AT_MOST);
+//            int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec((1 << 30)-1, View.MeasureSpec.AT_MOST);
+//            view.measure(widthMeasureSpec, heightMeasureSpec);
+//            return view.getMeasuredHeight();
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    int realHeight = view.getMeasuredHeight();  //获取真实的高度
+                    //超高之后隐藏超出部分，显示“查看更多”
+                    if (realHeight > maxHeight) {
+                        holder.limitReplyHeight(R.id.comment_detail_reply_wrapper, maxHeight);
+                        holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                        holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+                    } else {
+                        holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+                        holder.setWidgetVisibility(R.id.comment_detail_more, View.GONE);
+                    }
+                }
+            });
         }
         public void limitReplyHeight(int id, int height) {
             View view = getView(id);
