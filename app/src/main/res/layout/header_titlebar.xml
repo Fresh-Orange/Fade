@@ -43,8 +43,8 @@
             android:layout_height="wrap_content"
             android:gravity="right"
             android:minWidth="50dp"
-
-            android:text="发布"
+            android:textColor="@color/black"
+            android:text="分享"
             android:textSize="14sp" />
     </FrameLayout>
 
