@@ -30,6 +30,7 @@ import com.sysu.pro.fade.beans.Department;
 import com.sysu.pro.fade.beans.DepartmentQuery;
 import com.sysu.pro.fade.beans.SimpleResponse;
 import com.sysu.pro.fade.beans.User;
+import com.sysu.pro.fade.my.activity.SetContentActivity;
 import com.sysu.pro.fade.my.activity.SetSchoolActivity;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.PhotoUtils;
@@ -247,59 +248,64 @@ public class Personal extends AppCompatActivity {
         saveChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                user.setNickname(settingName.getText().toString());
-                user.setSummary(settingSummary.getText().toString());
-                user.setSex(settingSex.getText().toString());
-                user.setArea(settingArea.getText().toString());
-                user.setSchool_name(settingSchool.getText().toString());
-                user.setDepartment_name(settingDepartment.getText().toString());
-                MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
-                        .addFormDataPart("user", JSON.toJSONString(user));
-                if(PhotoUtils.imagePath != null){
-                    File file = new File(PhotoUtils.imagePath);
-                    builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
-                }
-                RequestBody body = builder.build();
-                userService.updateUserById(body)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<SimpleResponse>() {
-                            @Override
-                            public void onCompleted() {
+                if (settingName.getText().toString().length() < 2){
+                    Toast.makeText(Personal.this,"昵称长度必须不小于2",Toast.LENGTH_SHORT).show();
+                }else{
+                    user.setNickname(settingName.getText().toString());
+                    user.setSummary(settingSummary.getText().toString());
+                    user.setSex(settingSex.getText().toString());
+                    user.setArea(settingArea.getText().toString());
+                    user.setSchool_name(settingSchool.getText().toString());
+                    user.setDepartment_name(settingDepartment.getText().toString());
+                    MultipartBody.Builder builder= new MultipartBody.Builder().setType(MultipartBody.FORM)
+                            .addFormDataPart("user", JSON.toJSONString(user));
+                    if(PhotoUtils.imagePath != null){
+                        File file = new File(PhotoUtils.imagePath);
+                        builder.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+                    }
+                    RequestBody body = builder.build();
+                    userService.updateUserById(body)
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<SimpleResponse>() {
+                                @Override
+                                public void onCompleted() {
 
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e("保存个人信息","出错了");
-                            }
-
-                            @Override
-                            public void onNext(SimpleResponse simpleResponse) {
-                                if(simpleResponse.getErr() == null){
-                                    SharedPreferences.Editor editor = getSharedPreferences
-                                            (USER_SHARE, Context.MODE_PRIVATE).edit();
-                                    Toast.makeText(Personal.this, "保存修改成功", Toast.LENGTH_SHORT).show();
-                                    user.setNickname(settingName.getText().toString());
-                                    Map<String,Object>extra = simpleResponse.getExtra();
-                                    user.setHead_image_url((String) extra.get(Const.HEAD_IMAGE_URL));
-                                    user.setSummary(settingSummary.getText().toString());
-                                    user.setSex(settingSex.getText().toString());
-                                    user.setArea(settingArea.getText().toString());
-                                    user.setSchool_id(school_id);
-                                    user.setSchool_name(settingSchool.getText().toString());
-                                    user.setDepartment_id(department_id);
-                                    user.setDepartment_name(settingDepartment.getText().toString());
-                                    editor.putString("user",JSON.toJSONString(user));
-                                    editor.apply();
-                                    //通知主界面
-                                    EventBus.getDefault().post(user);
-                                    finish();
-                                }else {
-                                    Toast.makeText(Personal.this, "保存修改失败", Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.e("保存个人信息","出错了");
+                                }
+
+                                @Override
+                                public void onNext(SimpleResponse simpleResponse) {
+                                    if(simpleResponse.getErr() == null){
+                                        SharedPreferences.Editor editor = getSharedPreferences
+                                                (USER_SHARE, Context.MODE_PRIVATE).edit();
+                                        Toast.makeText(Personal.this, "保存修改成功", Toast.LENGTH_SHORT).show();
+                                        user.setNickname(settingName.getText().toString());
+                                        Map<String,Object>extra = simpleResponse.getExtra();
+                                        user.setHead_image_url((String) extra.get(Const.HEAD_IMAGE_URL));
+                                        user.setSummary(settingSummary.getText().toString());
+                                        user.setSex(settingSex.getText().toString());
+                                        user.setArea(settingArea.getText().toString());
+                                        user.setSchool_id(school_id);
+                                        user.setSchool_name(settingSchool.getText().toString());
+                                        user.setDepartment_id(department_id);
+                                        user.setDepartment_name(settingDepartment.getText().toString());
+                                        editor.putString("user",JSON.toJSONString(user));
+                                        editor.apply();
+                                        //通知主界面
+                                        EventBus.getDefault().post(user);
+                                        finish();
+                                    }else {
+                                        Toast.makeText(Personal.this, "保存修改失败", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                }
 
 
             }

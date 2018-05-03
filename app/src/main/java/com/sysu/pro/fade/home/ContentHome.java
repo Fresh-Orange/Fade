@@ -279,10 +279,14 @@ public class ContentHome {
                                                  origin.setSub_num(check.getSub_num());
                                                  origin.setComment_num(check.getComment_num());
                                                  origin.setIs_die(check.getIs_die());
+                                                 if (!origin.isOriginalNote()){
+                                                     origin.getOrigin().setIs_die(check.getIs_die());
+                                                 }
                                                  origin.setFetchTime(check.getFetchTime());
                                              }
                                             judgeRemoveScrollListener.judgeAndRemoveItem(recyclerView);
                                         }
+                                        adapter.notifyDataSetChanged();//notify上面的更新
                                         if(noteQuery.getList() != null && noteQuery.getList().size() > 0)
                                             addToListHead(noteQuery.getList());
                                     }

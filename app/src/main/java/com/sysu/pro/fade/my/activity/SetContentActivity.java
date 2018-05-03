@@ -95,8 +95,8 @@ public class SetContentActivity extends LoginBaseActivity {
                 String nickname = edRegisterNickname.getText().toString();
                 if (PhotoUtils.imagePath == null){
                     Toast.makeText(SetContentActivity.this,"必须选择头像",Toast.LENGTH_SHORT).show();
-                }else if(nickname.equals("")){
-                    Toast.makeText(SetContentActivity.this,"必须输入昵称",Toast.LENGTH_SHORT).show();
+                }else if(nickname.length() < 2){
+                    Toast.makeText(SetContentActivity.this,"昵称长度必须不小于2",Toast.LENGTH_SHORT).show();
                 }else if (!male.isChecked() && !female.isChecked()){
                     Toast.makeText(SetContentActivity.this,"必须选择性别",Toast.LENGTH_SHORT).show();
                 }else{

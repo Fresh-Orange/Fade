@@ -148,6 +148,7 @@ public class UserContent {
 
 					@Override
 					public void onNext(UserQuery noteQuery) {
+                        searchMode = SearchMode.INTERESTED;
 						noteQuery.setQueryKeyWord(queryKeyWord);
 						EventBus.getDefault().post(noteQuery);
 					}
@@ -241,7 +242,7 @@ public class UserContent {
             itemList.addAll(addUsers);
             mtAdapter.notifyDataSetChanged();
         }
-        if (itemList.size()-1 == sum){
+        if (itemList.size()-1 == sum && searchMode == SearchMode.NORMAL){
             //搜索完毕，变换成感兴趣用户模式，-1是
             start = 0;
             searchMode = SearchMode.INTERESTED;

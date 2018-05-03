@@ -579,9 +579,9 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					btComment.setAlpha(0f);
 					curProgress = clickableProgressBar.getProgress();
 					maxProgress = clickableProgressBar.getMaxProgress();
-					addProgress = Math.min(curProgress+50, maxProgress);
+					addProgress = Math.min(((int)(curProgress+50f/6*5)), maxProgress);
 					int halfProgress = clickableProgressBar.getMaxProgress() / 2;
-					mimusProgress = Math.max(curProgress-50, halfProgress);
+					mimusProgress = Math.max(((int)(curProgress-10f/6*5)), halfProgress);
 					isSetView = true;
 				}
 				else {
