@@ -45,6 +45,7 @@ public class RegisterActivity extends LoginBaseActivity {
     private String validation;
     private LinearLayout red_wrong_valid;
     private int flag = 0;
+    private Integer count = 1;
 
     private Handler handler = new Handler(){
         @Override
@@ -53,7 +54,7 @@ public class RegisterActivity extends LoginBaseActivity {
             if(msg.what == 1){
                 String ans = (String) msg.obj;
                 //Toast.makeText(CheckTelActivity.this,ans,Toast.LENGTH_SHORT).show();
-                if(ans.equals("{}")){
+                //if(ans.equals("{}")){
 
                     //验证成功，跳转到输入密码界面
                     Intent intent = new Intent(RegisterActivity.this,SetPasswordActivity.class);
@@ -61,9 +62,9 @@ public class RegisterActivity extends LoginBaseActivity {
                     startActivity(intent);
 
                     //finish();
-                }else{
-                    red_wrong_valid.setVisibility(View.VISIBLE);
-                }
+                //}else{
+                //    red_wrong_valid.setVisibility(View.VISIBLE);
+                //}
             }
         }
     };
@@ -78,11 +79,11 @@ public class RegisterActivity extends LoginBaseActivity {
                 //暂时取消验证限制，到时候将if语句恢复
                 if(ans_str.equals("{}")){
                     Toast.makeText(RegisterActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
-                    get_valid.setText("重发验证码");
+                    //get_valid.setText("重发验证码");
                     flag = 1;
                 }else{
                     Toast.makeText(RegisterActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
-                    get_valid.setText("重发验证码");
+                    //get_valid.setText("重发验证码");
                     flag = 2;
                 }
             }
@@ -99,6 +100,22 @@ public class RegisterActivity extends LoginBaseActivity {
             }else {
                 registerbtn.setBackgroundResource(R.drawable.button_shape_nomal);
                 red_wrong_valid.setVisibility(View.INVISIBLE);
+            }
+        }
+    };
+
+    private Handler handler3 = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1){
+                if (count == 1){
+                    get_valid.setText("重发验证码");
+                }else {
+                    count--;
+                    get_valid.setText(count+"s");
+                    handler3.sendEmptyMessageDelayed(1,1000);
+                }
             }
         }
     };
@@ -174,30 +191,36 @@ public class RegisterActivity extends LoginBaseActivity {
         get_valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mobilePhoneNumber = my_telephone.getText().toString();
-                userService.registerQueryTel(mobilePhoneNumber)
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<SimpleResponse>() {
-                            @Override
-                            public void onCompleted() {
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e("register","查询手机号失败");
-                                e.printStackTrace();
-                            }
-
-                            @Override
-                            public void onNext(SimpleResponse simpleResponse) {
-                                if(simpleResponse.getSuccess().equals("0")){
-                                    UserTool.sendIdentifyCode(handler1,mobilePhoneNumber);
-                                }else{
-                                    Toast.makeText(RegisterActivity.this,"该手机号已经注册",Toast.LENGTH_SHORT).show();
+                if (count == 1){
+                    mobilePhoneNumber = my_telephone.getText().toString();
+                    userService.registerQueryTel(mobilePhoneNumber)
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<SimpleResponse>() {
+                                @Override
+                                public void onCompleted() {
                                 }
-                            }
-                        });
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.e("register","查询手机号失败");
+                                    e.printStackTrace();
+                                }
+
+                                @Override
+                                public void onNext(SimpleResponse simpleResponse) {
+                                    if(simpleResponse.getSuccess().equals("0")){
+                                        UserTool.sendIdentifyCode(handler1,mobilePhoneNumber);
+                                        count = 59;
+                                        get_valid.setText(count+"s");
+                                        handler3.sendEmptyMessageDelayed(1,1000);
+                                    }else{
+                                        Toast.makeText(RegisterActivity.this,"该手机号已经注册",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+
             }
         });
     }
