@@ -20,21 +20,22 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/white">
+
             <ImageView
                 android:id="@+id/back_btn"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/login_back"
-                android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="17dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginLeft="17dp"/>
+                android:src="@drawable/login_back" />
         </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="68dp"
             android:orientation="horizontal"
             android:layout_gravity="center"
             android:gravity="center">
@@ -58,8 +59,9 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="95dp"
-            android:layout_height="95dp"
+            android:layout_marginTop="60dp"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
             android:src="@drawable/choose_myhead"
             android:id="@+id/ivRegisterUserHead"
             android:layout_gravity="center"/>
@@ -77,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:text="头像"
                 android:gravity="center"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:textColor="#222222"/>
         </LinearLayout>
 
@@ -98,8 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="姓名"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="16sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -116,7 +117,7 @@
                     android:background="@null"
                     android:maxLength="16"
                     android:id="@+id/edRegisterNickname"
-                    android:textSize="18dp"
+                    android:textSize="16sp"
                     android:singleLine="true"
                     android:textColor="#222222"/>
                 <LinearLayout
@@ -144,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="性别"
-                    android:textSize="20sp"/>
+                    android:textSize="16sp"/>
             </LinearLayout>
 
             <RadioGroup
@@ -155,57 +156,63 @@
                 android:orientation="horizontal"
                 android:id="@+id/radioSex">
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="210dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:orientation="horizontal">
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/male"/>
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="3dp"
-                        android:text="男"
-                        android:textSize="18sp"/>
-                    <RadioButton
-                        android:buttonTint="#0091ff"
-                        android:layout_width="wrap_content"
+                        android:gravity="center_vertical|left"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="21dp"
+                            android:layout_height="21dp"
+                            android:src="@drawable/male"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="3dp"
+                            android:text="男"
+                            android:textSize="14sp"/>
+                        <RadioButton
+                            android:buttonTint="#0091ff"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleY="0.7"
+                            android:scaleX="0.7"
+                            android:gravity="center"
+                            android:id="@+id/male"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:scaleY="0.85"
-                        android:scaleX="0.85"
-                        android:gravity="center"
-                        android:id="@+id/male"/>
+                        android:gravity="center_vertical|right"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="21dp"
+                            android:layout_height="21dp"
+                            android:src="@drawable/female"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="3dp"
+                            android:text="女"
+                            android:textSize="14sp"/>
+                        <RadioButton
+                            android:buttonTint="#ff4d94"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleY="0.7"
+                            android:scaleX="0.7"
+                            android:gravity="center"
+                            android:id="@+id/female"/>
+                    </LinearLayout>
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/female"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="3dp"
-                        android:text="女"
-                        android:textSize="18sp"/>
-                    <RadioButton
-                        android:buttonTint="#ff4d94"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleY="0.85"
-                        android:scaleX="0.85"
-                        android:gravity="center"
-                        android:id="@+id/female"/>
-                </LinearLayout>
+
             </RadioGroup>
         </LinearLayout>
 
@@ -215,12 +222,13 @@
             android:layout_weight="1"
             android:layout_marginLeft="33dp"
             android:layout_marginRight="33dp"
-            android:gravity="center">
+            android:gravity="top">
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:layout_marginTop="90dp"
                 android:text="下一步"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textColor="#ffffff"
                 android:background="@drawable/button_shape_blue"
                 android:id="@+id/next"/>

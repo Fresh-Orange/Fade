@@ -81,66 +81,62 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
             if (msg.what == 1) {
                 List<User> list = userQuery.getList();
                 Log.d("guozheng", "list: " + list.size());
-                if (list.size() < 9){
-                    Toast.makeText(SetInitAttentionActivity.this, "没有更多的用户了哟！", Toast.LENGTH_SHORT).show();
-                }else{
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(0).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user1);
-                    text1.setText(list.get(0).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(1).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user2);
-                    text2.setText(list.get(1).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(2).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user3);
-                    text3.setText(list.get(2).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(3).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user4);
-                    text4.setText(list.get(3).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(4).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user5);
-                    text5.setText(list.get(4).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(5).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user6);
-                    text6.setText(list.get(5).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(6).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user7);
-                    text7.setText(list.get(6).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(7).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user8);
-                    text8.setText(list.get(7).getNickname());
-                    Glide.with(SetInitAttentionActivity.this)
-                            .load(Const.BASE_IP + list.get(8).getHead_image_url())
-                            .fitCenter()
-                            .dontAnimate()
-                            .into(user9);
-                    text9.setText(list.get(8).getNickname());
-                }
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(0).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user1);
+                text1.setText(list.get(0).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(1).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user2);
+                text2.setText(list.get(1).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(2).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user3);
+                text3.setText(list.get(2).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(3).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user4);
+                text4.setText(list.get(3).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(4).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user5);
+                text5.setText(list.get(4).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(5).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user6);
+                text6.setText(list.get(5).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(6).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user7);
+                text7.setText(list.get(6).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(7).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user8);
+                text8.setText(list.get(7).getNickname());
+                Glide.with(SetInitAttentionActivity.this)
+                        .load(Const.BASE_IP + list.get(8).getHead_image_url())
+                        .fitCenter()
+                        .dontAnimate()
+                        .into(user9);
+                text9.setText(list.get(8).getNickname());
             }else {
-
+                Toast.makeText(SetInitAttentionActivity.this, "没有更多的用户了哟！", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -289,9 +285,186 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
                             }
                             @Override
                             public void onNext(UserQuery userlist) {
-                                userQuery = userlist;
                                 Message msg = new Message();
                                 msg.what = 1;
+                                if (userlist.getList().size() == 9){
+                                    if (choosed1.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(0).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed2.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(1).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed3.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(2).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed4.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(3).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed5.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(4).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed6.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(5).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed7.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(6).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed8.getVisibility() == View.VISIBLE){
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(7).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注","失败");
+                                                        e.printStackTrace();
+                                                    }
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    if (choosed9.getVisibility() == View.VISIBLE) {
+                                        userService.concern(user.getUser_id() + "", userQuery.getList().get(8).getUser_id() + "")
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<SimpleResponse>() {
+                                                    @Override
+                                                    public void onCompleted() {
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.e("关注", "失败");
+                                                        e.printStackTrace();
+                                                    }
+
+                                                    @Override
+                                                    public void onNext(SimpleResponse response) {
+                                                    }
+                                                });
+                                    }
+                                    userQuery = userlist;
+                                    choosed1.setVisibility(View.INVISIBLE);
+                                    choosed2.setVisibility(View.INVISIBLE);
+                                    choosed3.setVisibility(View.INVISIBLE);
+                                    choosed4.setVisibility(View.INVISIBLE);
+                                    choosed5.setVisibility(View.INVISIBLE);
+                                    choosed6.setVisibility(View.INVISIBLE);
+                                    choosed7.setVisibility(View.INVISIBLE);
+                                    choosed8.setVisibility(View.INVISIBLE);
+                                    choosed9.setVisibility(View.INVISIBLE);
+                                }else {
+                                    msg.what = 0;
+                                }
                                 handler.sendMessage(msg);
                             }
                         });
