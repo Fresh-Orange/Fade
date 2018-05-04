@@ -224,7 +224,7 @@ public class FadeContent {
                 setGoToDetailClickListener(context, itemView, bean);
                 setAddOrMinusListener((Activity) context, clickableProgressBar, userUtil, bean);
                 setCommentListener((Activity) context, clickableProgressBar, bean);
-                setOnUserClickListener((Activity) context, tvName, userAvatar, null, bean, false);
+                setOnUserClickListener((Activity) context, tvName, userAvatar, null, null, bean, false);
 
             }
         }, R.layout.simplified_fade_item);

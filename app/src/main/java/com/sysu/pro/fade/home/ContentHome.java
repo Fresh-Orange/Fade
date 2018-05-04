@@ -482,7 +482,7 @@ public class ContentHome {
                 });
     }*/
 
-    static public void getNoteAndPostEvent(final Integer noteId, User curUser){
+    static public void getNoteAndPostEvent(final Note oldNote, final Integer noteId, User curUser){
         Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
         NoteService noteService = retrofit.create(NoteService.class);
         noteService.getFullNote(noteId.toString(), curUser.getUser_id().toString())
@@ -499,6 +499,8 @@ public class ContentHome {
 
                     @Override
                     public void onNext(Note newNote) {
+                        newNote.setConcernedFromRecommend(oldNote.isConcernedFromRecommend());
+                        newNote.setIsRecommend(oldNote.getIsRecommend());
                         EventBus.getDefault().post(new NoteChangeEvent(noteId, newNote));
                     }
                 });

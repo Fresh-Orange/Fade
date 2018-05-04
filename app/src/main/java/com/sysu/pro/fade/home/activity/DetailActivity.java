@@ -262,7 +262,7 @@ public class DetailActivity extends MainBaseActivity{
             }
         });
         setAddOrMinusListener(this, clickableProgressBar, new UserUtil(this), note);
-        setOnUserClickListener(this, tvName, userAvatar, null, note, true);
+        setOnUserClickListener(this, tvName, userAvatar, null,null, note, true);
     }
 
 
@@ -707,7 +707,7 @@ public class DetailActivity extends MainBaseActivity{
 
     @Override
     public void finish() {
-        getNoteAndPostEvent(note_id, user);//详情页可能有修改帖子，因此通知首页更新
+        getNoteAndPostEvent(note, note_id, user);//详情页可能有修改帖子，因此通知首页更新
         super.finish();
     }
 

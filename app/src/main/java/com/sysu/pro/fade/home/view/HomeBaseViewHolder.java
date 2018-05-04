@@ -112,7 +112,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 		setGoToDetailClickListener(context, itemView, bean);
 		setAddOrMinusListener(context, clickableProgressBar, userUtil, bean);
 		setCommentListener(context, clickableProgressBar, bean);
-		setOnUserClickListener(context, tvName, userAvatar, tvAtUser, bean, false);
+		setOnUserClickListener(context, tvName, userAvatar, tvAtUser, tvHeadAction, bean, false);
 
 	}
 
@@ -312,6 +312,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 											  TextView tvName,
 											  ImageView userAvatar,
 											  @Nullable TextView tvAtUser,
+											  @Nullable TextView tvHeadAction,
 											  final Note bean,
 											  final boolean isDetail) {
 		tvName.setOnClickListener(new View.OnClickListener() {
@@ -333,7 +334,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 			@Override
 			public void onClick(View v) {
 				//解决详情页跳转问题
-				if (bean.getRelayUserNum() > 1 && !isDetail){
+				/*if (bean.getRelayUserNum() > 1 && !isDetail){
 					Intent i = new Intent(context, RelayUsersActivity.class);
 					i.putExtra(Const.NOTE_ENTITY, bean);
 					context.startActivity(i);
@@ -342,7 +343,10 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 					Intent i = new Intent(context, OtherActivity.class);
 					i.putExtra(Const.USER_ID, bean.getUser_id());
 					context.startActivity(i);
-				}
+				}*/
+				Intent i = new Intent(context, OtherActivity.class);
+				i.putExtra(Const.USER_ID, bean.getUser_id());
+				context.startActivity(i);
 			}
 		});
 		// @原作者点击事件
@@ -352,6 +356,16 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 				public void onClick(View v) {
 					Intent i = new Intent(context, OtherActivity.class);
 					i.putExtra(Const.USER_ID, bean.getOrigin().getUser_id());
+					context.startActivity(i);
+				}
+			});
+		}
+		if (tvHeadAction != null && (bean.getRelayUserNum() > 1)){//如果是合并的转发贴
+			tvHeadAction.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(context, RelayUsersActivity.class);
+					i.putExtra(Const.NOTE_ENTITY, bean);
 					context.startActivity(i);
 				}
 			});
@@ -491,7 +505,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 	static public void sendAddOrMinusToServer(Note tempNote, final ClickableProgressBar clickableProgressBar,
 											  final User curUser, final int action, final Note bean) {
 		Log.d("sendAddOrMinusToServer", "bu wan le");
-		final int oldProgrress = clickableProgressBar.getProgress();
+		final int oldProgress = clickableProgressBar.getProgress();
 		applyAddMinusAnimation(clickableProgressBar,curUser, action,bean);
 		Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
 		NoteService noteService = retrofit.create(NoteService.class);
@@ -519,7 +533,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 						clickableProgressBar.btMinus.setAlpha(1);
 						clickableProgressBar.btMinus.setTranslationY(0);
 						clickableProgressBar.btComment.setVisibility(View.GONE);
-						clickableProgressBar.setProgress(oldProgrress);
+						clickableProgressBar.setProgress(oldProgress);
 					}
 
 					@Override
@@ -602,7 +616,7 @@ abstract public class HomeBaseViewHolder extends RecyclerView.ViewHolder {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				getNoteAndPostEvent(bean.getOriginalId(), curUser);
+				getNoteAndPostEvent(bean, bean.getOriginalId(), curUser);
 				Log.d("TAG", "END");
 			}
 
