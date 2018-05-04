@@ -266,6 +266,7 @@ public class ContentHome {
                                     @Override
                                     public void onNext(NoteQuery noteQuery) {
                                         Log.i("顶部加载","成功");
+                                        Log.i("顶部架子啊", JSON.toJSONString(noteQuery));
                                         if(noteQuery.getUpdateList() != null && noteQuery.getUpdateList().size() != 0){
                                              checkList = noteQuery.getUpdateList();
                                              //更新现有的数据
