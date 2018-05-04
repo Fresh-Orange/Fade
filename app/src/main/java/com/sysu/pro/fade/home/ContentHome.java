@@ -527,7 +527,8 @@ public class ContentHome {
      * 修改用户信息，更新主界面
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public  void onGetUser(User user){
+    public void onGetUser(User user){
+//        EventBus.getDefault().post(new RefreshNum("Refresh", user));
         Integer user_id = user.getUser_id();
         for(Note note : notes){
             if(note.getUser_id().equals(user_id)){

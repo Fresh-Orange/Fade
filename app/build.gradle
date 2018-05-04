@@ -98,4 +98,6 @@ dependencies {
 
     compile "me.leolin:ShortcutBadger:1.1.13@aar"
     compile project(':IMKit')
+
+    compile 'com.github.Andy-13:ZbPermission:1.0.0'
 }

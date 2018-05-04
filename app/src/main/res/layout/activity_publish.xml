@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_publish"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white">
+<LinearLayout
+    android:id="@+id/activity_publish"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -94,14 +100,22 @@
         <!--android:focusable="true"-->
         <!--android:focusableInTouchMode="true"-->
         <!--android:descendantFocusability="beforeDescendants">-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="16dp"
+        android:gravity="right"
+        android:orientation="vertical"
+        >
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/my_et_emotion"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="5dp"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:hint="点按此处输入内容"
@@ -109,6 +123,20 @@
             android:textColorHint="@color/black"
             android:theme="@style/MyEditText">
         </EditText>
+
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/holo_red_dark"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:text="-1"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
@@ -123,7 +151,8 @@
         android:gravity="center_vertical"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="100dp">
 
         <ImageView
             android:id="@+id/not_choose"
@@ -237,7 +266,7 @@
 
 </LinearLayout>
 
-
+</ScrollView>
 <!--<com.donkingliang.imageselectdemo.adapter.MyGridView-->
 <!--android:id="@+id/gridView1"-->
 <!--android:layout_width="match_parent"-->
