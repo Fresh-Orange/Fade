@@ -109,6 +109,7 @@ public class FansAdapter extends RecyclerView.Adapter<FansAdapter.MyHolder>
                                 @Override
                                 public void onNext(SimpleResponse simpleResponse) {
                                     if (simpleResponse.getErr() == null) {
+                                        user.setIsConcern(1);
                                         follow_status_yes.setVisibility(View.VISIBLE);
                                         follow_status_no.setVisibility(View.GONE);
 //                                        notifyDataSetChanged();
@@ -138,6 +139,7 @@ public class FansAdapter extends RecyclerView.Adapter<FansAdapter.MyHolder>
                                 @Override
                                 public void onNext(SimpleResponse simpleResponse) {
                                     if (simpleResponse.getErr() == null) {
+                                        user.setIsConcern(0);
                                         follow_status_yes.setVisibility(View.GONE);
                                         follow_status_no.setVisibility(View.VISIBLE);
 //                                        notifyDataSetChanged();
