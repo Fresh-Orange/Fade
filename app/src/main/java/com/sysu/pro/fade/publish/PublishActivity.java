@@ -899,11 +899,12 @@ public class PublishActivity extends AppCompatActivity {
                             ".FileProvider", vFile);
         else uri = Uri.fromFile(vFile);
         openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // 7.0
-            //添加这一句表示对目标应用临时授权该Uri所代表的文件
-            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
+        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            // 7.0
+//            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+//
+//        }
         startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
     }
 

@@ -340,7 +340,7 @@ public class Personal extends AppCompatActivity {
                     break;
                 case CROP_SMALL_PICTURE:
                     if (data != null) {
-                        PhotoUtils.setImageToView(data, settingHead); // 让刚才选择裁剪得到的图片显示在界面上
+                        PhotoUtils.setImageToView(data, settingHead, this); // 让刚才选择裁剪得到的图片显示在界面上
                     }
                     break;
             }

@@ -233,7 +233,7 @@ public class SetContentActivity extends LoginBaseActivity {
                     break;
                 case CROP_SMALL_PICTURE:
                     if (data != null) {
-                        PhotoUtils.setImageToView(data, myhead); // 让刚才选择裁剪得到的图片显示在界面上
+                        PhotoUtils.setImageToView(data, myhead, this); // 让刚才选择裁剪得到的图片显示在界面上
                     }
                     break;
             }
