@@ -186,8 +186,14 @@ public class ContentMy {
         //设置性别
         if (user.getSex().equals("男")) {
             sexBoy.setVisibility(View.VISIBLE);
+            if (sexGirl.getVisibility() != View.GONE) {
+                sexGirl.setVisibility(View.GONE);
+            }
         } else {
             sexGirl.setVisibility(View.VISIBLE);
+            if (sexBoy.getVisibility() != View.GONE) {
+                sexBoy.setVisibility(View.GONE);
+            }
         }
         //获取用户的关注、粉丝等的数量
         String fade_num = (user.getFade_num()>999?(user.getFade_num()/1000+"K"):user.getFade_num().toString());

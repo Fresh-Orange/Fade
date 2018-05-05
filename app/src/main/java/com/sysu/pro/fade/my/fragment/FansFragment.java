@@ -92,6 +92,7 @@ public class FansFragment extends Fragment {
 
                     @Override
                     public void onError(Throwable e) {
+                        swipeRefreshLayout.setRefreshing(false);
                         Log.d("GetFansErr", "onError: " + e.toString());
                     }
 
