@@ -18,6 +18,8 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -162,6 +164,7 @@ public class PublishActivity extends AppCompatActivity {
     //声明AMapLocationClientOption对象
     public AMapLocationClient mLocationClient = null;
 
+    private TextView tv_count;
     private void dealWithImagesToSend(final List<String>images){
 
         //发送帖子的最后操作在这里
@@ -394,6 +397,10 @@ public class PublishActivity extends AppCompatActivity {
                     Toast.makeText(PublishActivity.this,"输入不能为空",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                else if (edit_temp.getText().toString().length() > 255) {
+                    Toast.makeText(PublishActivity.this,"输入不能超过255个字",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //发送帖子
                 progressDialog.show();
                 //设置Note对象的一些属性
@@ -561,7 +568,31 @@ public class PublishActivity extends AppCompatActivity {
 //        });
 //
         edit_temp = (EditText) findViewById(R.id.my_et_emotion);
+        tv_count = findViewById(R.id.tv_count);
+        edit_temp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String content = edit_temp.getText().toString();
+                if (content.length() > 255) {
+                    tv_count.setVisibility(View.VISIBLE);
+                    int text = 255 - content.length();
+                    tv_count.setText(String.valueOf(text));
+                }
+                else {
+                    tv_count.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void showAlertDialog() {
@@ -868,11 +899,12 @@ public class PublishActivity extends AppCompatActivity {
                             ".FileProvider", vFile);
         else uri = Uri.fromFile(vFile);
         openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // 7.0
-            //添加这一句表示对目标应用临时授权该Uri所代表的文件
-            openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
+        openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            // 7.0
+//            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+//
+//        }
         startActivityForResult(openCameraIntent, Constants.TAKE_PICTURE);
     }
 

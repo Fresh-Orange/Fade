@@ -266,6 +266,7 @@ public class ContentHome {
                                     @Override
                                     public void onNext(NoteQuery noteQuery) {
                                         Log.i("顶部加载","成功");
+                                        Log.i("顶部架子啊", JSON.toJSONString(noteQuery));
                                         if(noteQuery.getUpdateList() != null && noteQuery.getUpdateList().size() != 0){
                                              checkList = noteQuery.getUpdateList();
                                              //更新现有的数据
@@ -481,7 +482,7 @@ public class ContentHome {
                 });
     }*/
 
-    static public void getNoteAndPostEvent(final Integer noteId, User curUser){
+    static public void getNoteAndPostEvent(final Note oldNote, final Integer noteId, User curUser){
         Retrofit retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP, curUser.getTokenModel());
         NoteService noteService = retrofit.create(NoteService.class);
         noteService.getFullNote(noteId.toString(), curUser.getUser_id().toString())
@@ -498,6 +499,8 @@ public class ContentHome {
 
                     @Override
                     public void onNext(Note newNote) {
+                        newNote.setConcernedFromRecommend(oldNote.isConcernedFromRecommend());
+                        newNote.setIsRecommend(oldNote.getIsRecommend());
                         EventBus.getDefault().post(new NoteChangeEvent(noteId, newNote));
                     }
                 });
@@ -526,7 +529,8 @@ public class ContentHome {
      * 修改用户信息，更新主界面
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public  void onGetUser(User user){
+    public void onGetUser(User user){
+//        EventBus.getDefault().post(new RefreshNum("Refresh", user));
         Integer user_id = user.getUser_id();
         for(Note note : notes){
             if(note.getUser_id().equals(user_id)){

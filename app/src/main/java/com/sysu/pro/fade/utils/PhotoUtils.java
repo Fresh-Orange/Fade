@@ -7,17 +7,23 @@ import java.io.IOException;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,7 +48,8 @@ public class PhotoUtils {
 	private static final int CROP_SMALL_PICTURE = 2;
 	public static Uri tempUri;	//照片的Uri
 	public static String imagePath;	//选择的图片的路径
-
+	public static Uri uriTempFile;
+	public static File cropFile;
 	/**
 	 * 显示修改头像的对话框
 	 */
@@ -90,9 +97,9 @@ public class PhotoUtils {
 							".FileProvider", vFile);
 		else tempUri = Uri.fromFile(vFile);
 		openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
-		}
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+		openCameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+//		}
 		activity.startActivityForResult(openCameraIntent, TAKE_PICTURE);
 	}
 
@@ -107,17 +114,17 @@ public class PhotoUtils {
 		}
 		tempUri = uri;
 		Intent intent = new Intent("com.android.camera.action.CROP");
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-		{
-			//赋予权限
-			intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			//举个栗子
-			intent.setDataAndType(uri,"image/*");
-		}
-		else
-		{
-			intent.setDataAndType(uri,"image/*");
-		}
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+//		{
+		//赋予权限
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		//举个栗子
+		intent.setDataAndType(uri,"image/*");
+//		}
+//		else
+//		{
+//			intent.setDataAndType(uri,"image/*");
+//		}
 		// 设置裁剪
 		intent.putExtra("crop", "true");
 		// aspectX aspectY 是宽高的比例
@@ -126,7 +133,10 @@ public class PhotoUtils {
 		// outputX outputY 是裁剪图片宽高
 		intent.putExtra("outputX", 150);
 		intent.putExtra("outputY", 150);
-		intent.putExtra("return-data", true);
+		uriTempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "temp_image.jpg");
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, uriTempFile);
+		intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+//		intent.putExtra("return-data", true);
 		activity.startActivityForResult(intent, CROP_SMALL_PICTURE);
 	}
 
@@ -134,20 +144,39 @@ public class PhotoUtils {
 	 * 保存裁剪之后的图片数据
 	 *
 	 */
-	public static void setImageToView(Intent data, ImageView imageView) {
-		Bundle extras = data.getExtras();
-		if (extras != null) {
-			Bitmap photo = extras.getParcelable("data");
-			photo = PhotoUtils.toRoundBitmap(photo); // 这个时候的图片已经被处理成圆形的了
-			imageView.setImageBitmap(photo);
-//			imagePath=PhotoUtils.savePhoto(photo, Environment
-//					.getExternalStorageDirectory().getAbsolutePath(), String
-//					.valueOf(System.currentTimeMillis()));
+	public static void setImageToView(Intent data, ImageView imageView, Context context) {
+	//		Bundle extras = data.getExtras();
+			Bitmap head = null;
+	//		if (extras != null) {
+			Bitmap photo;
+			try {
+				head = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uriTempFile));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+	//		Bitmap bitmap_bg=Bitmap.createBitmap(head.getWidth(),head.getHeight(), Bitmap.Config.ARGB_8888);
+	//		Canvas canvas=new Canvas(bitmap_bg);
+	//		Paint paint = new Paint();
+	//		paint.setAntiAlias(true);
+	//		paint.setColor(Color.GREEN);
+	//		//这里使用了绘图的模式的功能，PorterDuff.Mode.SRC_IN表示两个图层显示重合部分上面图层的内容
+	//		canvas.drawOval(new RectF(0,0,head.getWidth(),head.getHeight()),paint);
+	//		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+	//		canvas.drawBitmap(head,0,0,paint);
+			photo = PhotoUtils.toRoundBitmap(head); // 这个时候的图片已经被处理成圆形的了
+			Drawable drawable =new BitmapDrawable(photo);
+			//personImage是需要赋值的id
+			imageView.setImageDrawable(drawable);
+
+	//			photo = PhotoUtils.toRoundBitmap(photo); // 这个时候的图片已经被处理成圆形的了
+	//			imageView.setImageBitmap(photo);
+	//			imagePath=PhotoUtils.savePhoto(photo, Environment
+	//					.getExternalStorageDirectory().getAbsolutePath(), String
+	//					.valueOf(System.currentTimeMillis()));
 			imagePath=PhotoUtils.savePhoto(photo, Environment.getExternalStorageDirectory()
 					+ "/Fade", String
 					.valueOf(System.currentTimeMillis()));
 		}
-	}
 
 //	public static void uploadPic(Bitmap bitmap) {
 //		// 上传至服务器
