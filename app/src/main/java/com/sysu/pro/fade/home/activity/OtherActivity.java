@@ -146,8 +146,14 @@ public class OtherActivity extends MainBaseActivity {
         //设置性别
         if (other.getSex().equals("男")) {
             sexBoy.setVisibility(View.VISIBLE);
+            if (sexGirl.getVisibility() != View.GONE) {
+                sexGirl.setVisibility(View.GONE);
+            }
         } else {
             sexGirl.setVisibility(View.VISIBLE);
+            if (sexBoy.getVisibility() != View.GONE) {
+                sexBoy.setVisibility(View.GONE);
+            }
         }
         //获取用户的关注、粉丝等的数量
         String fade_num = (other.getFade_num()>999?(other.getFade_num()/1000+"K"):other.getFade_num().toString());
@@ -175,7 +181,7 @@ public class OtherActivity extends MainBaseActivity {
         tvUnConcern.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (myself.getUser_id() == other.getUser_id()) {
+                if (myself.getUser_id().intValue() == other.getUser_id().intValue()) {
                     Toast.makeText(OtherActivity.this, "不能关注自己", Toast.LENGTH_SHORT).show();
                 } else {
                     UserService service = retrofit.create(UserService.class);
