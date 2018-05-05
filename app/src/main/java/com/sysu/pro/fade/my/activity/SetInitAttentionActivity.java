@@ -201,61 +201,66 @@ public class SetInitAttentionActivity extends LoginBaseActivity {
                     public void onNext(UserQuery userlist) {
                         userQuery = userlist;
                         //Toast.makeText(SetInitAttentionActivity.this, userQuery.getStart(), Toast.LENGTH_SHORT).show();
-                        List<User> list = userQuery.getList();
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(0).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user1);
-                        text1.setText(list.get(0).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(1).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user2);
-                        text2.setText(list.get(1).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(2).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user3);
-                        text3.setText(list.get(2).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(3).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user4);
-                        text4.setText(list.get(3).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(4).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user5);
-                        text5.setText(list.get(4).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(5).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user6);
-                        text6.setText(list.get(5).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(6).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user7);
-                        text7.setText(list.get(6).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(7).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user8);
-                        text8.setText(list.get(7).getNickname());
-                        Glide.with(SetInitAttentionActivity.this)
-                                .load(Const.BASE_IP + list.get(8).getHead_image_url())
-                                .fitCenter()
-                                .dontAnimate()
-                                .into(user9);
-                        text9.setText(list.get(8).getNickname());
+                        if (userlist.getList().size() == 9){
+                            List<User> list = userQuery.getList();
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(0).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user1);
+                            text1.setText(list.get(0).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(1).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user2);
+                            text2.setText(list.get(1).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(2).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user3);
+                            text3.setText(list.get(2).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(3).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user4);
+                            text4.setText(list.get(3).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(4).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user5);
+                            text5.setText(list.get(4).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(5).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user6);
+                            text6.setText(list.get(5).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(6).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user7);
+                            text7.setText(list.get(6).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(7).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user8);
+                            text8.setText(list.get(7).getNickname());
+                            Glide.with(SetInitAttentionActivity.this)
+                                    .load(Const.BASE_IP + list.get(8).getHead_image_url())
+                                    .fitCenter()
+                                    .dontAnimate()
+                                    .into(user9);
+                            text9.setText(list.get(8).getNickname());
+                        }else{
+                            Toast.makeText(SetInitAttentionActivity.this, "没有更多的用户了哟！", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 });
 
