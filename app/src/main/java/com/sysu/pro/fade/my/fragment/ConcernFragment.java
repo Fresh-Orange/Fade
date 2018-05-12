@@ -12,18 +12,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.sysu.pro.fade.Const;
+import com.sysu.pro.fade.MainActivity;
 import com.sysu.pro.fade.R;
 import com.sysu.pro.fade.beans.User;
 import com.sysu.pro.fade.beans.UserQuery;
 import com.sysu.pro.fade.home.activity.OtherActivity;
 import com.sysu.pro.fade.home.adapter.CommonAdapter;
 import com.sysu.pro.fade.my.Event.DoubleFade;
+import com.sysu.pro.fade.my.Event.NewNumber;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
 import com.sysu.pro.fade.utils.UserUtil;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -78,7 +82,7 @@ public class ConcernFragment extends Fragment {
         return rootView;
     }
 
-    private void getData(Boolean isRefresh) {
+    private void getData(final Boolean isRefresh) {
         if (isRefresh) start = "0";
         UserService service = retrofit.create(UserService.class);
         service.getConcerns(userId.toString(), myself.getUser_id().toString(),start)
@@ -100,15 +104,26 @@ public class ConcernFragment extends Fragment {
                     public void onNext(UserQuery userQuery) {
                         refreshLayout.finishLoadmore();
                         swipeRefreshLayout.setRefreshing(false);
-                        concern.clear();
+                        if (isRefresh) concern.clear();
+                        int addSize = userQuery.getList().size();
                         concern.addAll(userQuery.getList());
                         Log.d("Check", "fans: "+userQuery.getList().size());
                         start = userQuery.getStart().toString();
                         adapter.notifyDataSetChanged();
-                        if (concern.size() % 20 != 0) {
+                        if (addSize < 20) {
                             refreshLayout.setEnableLoadmore(false);
                         } else {
                             refreshLayout.setEnableLoadmore(true);
+                        }
+
+                        //add by vj 2018.5.10
+                        //下面通知主页进行数量更新,这是获取到小于20的情况
+                        if (getActivity().getClass() == MainActivity.class) {
+                            if (addSize % 20 != 0 || addSize == 0) {
+                                EventBus.getDefault().post(new NewNumber(-1, -1, -1, concern.size()));
+                            } else {
+                                EventBus.getDefault().post(new NewNumber(-1, -1, -1, -1));
+                            }
                         }
                     }
                 });
@@ -155,6 +170,7 @@ public class ConcernFragment extends Fragment {
         refreshLayout = rootView.findViewById(R.id.fragment_forward_refresh_layout);
         refreshLayout.setEnableRefresh(false);
         refreshLayout.setEnableAutoLoadmore(false);
+        refreshLayout.setRefreshFooter(new ClassicsFooter(getContext()));
         refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {

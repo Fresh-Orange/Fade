@@ -84,7 +84,7 @@ public class DetailActivity extends MainBaseActivity{
     private RelativeLayout detailSetting;    //三个点按钮
     private TextView commentNum;
     private TextView commentNumText;
-    private int realHeight;
+    private int oldState = -1;                   //用于记录上次点击的评论
     private ConstraintLayout writeCommentWrapper;
     private EditText writeComment;
     private Button sendComment;
@@ -380,6 +380,10 @@ public class DetailActivity extends MainBaseActivity{
                     @Override
                     public void onClick(View v) {
 //                        recyclerView.smoothScrollBy(0, getRecyclerViewScrollDistance(position));
+                        if (oldState != data.getComment_id()) {
+                            oldState = data.getComment_id();
+                            writeComment.setText("");
+                        }
                         showSecondComment(commentator.get(position), holder, data.getUser_id());
                     }
                 });
@@ -402,7 +406,6 @@ public class DetailActivity extends MainBaseActivity{
                         //先清空线型布局中的所有View
                         holder.removeAllViews(R.id.comment_detail_reply_wrapper);
                         //放回复内容
-                        realHeight = 0;
                         for(SecondComment reply : data.getComments()) {
                             View view = createReplyItemView(reply, data.getUser_id(), holder);
                             holder.addView(R.id.comment_detail_reply_wrapper, view);
@@ -506,7 +509,11 @@ public class DetailActivity extends MainBaseActivity{
         view.findViewById(R.id.reply_content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (reply.getUser_id() != user.getUser_id()) {
+                if (reply.getUser_id().intValue() != user.getUser_id().intValue()) {
+                    if (oldState != reply.getSecond_id()) {
+                        oldState = reply.getSecond_id();
+                        writeComment.setText("");
+                    }
                     showSecondReply(reply, holder, userId);
                 } else {
                     Toast.makeText(DetailActivity.this, "暂时不能删除", Toast.LENGTH_SHORT).show();
@@ -647,49 +654,54 @@ public class DetailActivity extends MainBaseActivity{
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //收起软键盘
-                if(imm != null) {
-                    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                String content = writeComment.getText().toString();
+                if (content.isEmpty() || content.trim().isEmpty()) {
+                    Toast.makeText(DetailActivity.this, "输入不能为空或全为空格", Toast.LENGTH_SHORT).show();
+                } else {
+                    //收起软键盘
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+                    }
+                    writeCommentWrapper.setVisibility(View.GONE);
+                    final SecondComment secondComment = new SecondComment();
+                    secondComment.setComment_content(writeComment.getText().toString());
+                    secondComment.setNickname(user.getNickname());
+                    secondComment.setNote_id(note_id);
+                    secondComment.setUser_id(user.getUser_id());
+                    secondComment.setComment_id(toComment.getComment_id());
+                    secondComment.setTo_nickname(toComment.getNickname());
+                    secondComment.setTo_user_id(toComment.getUser_id());
+                    CommentService send = retrofit.create(CommentService.class);
+                    //提交到服务器，并返回评论的id等内容
+                    send.addSecondComment(JSON.toJSONString(secondComment))
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<SimpleResponse>() {
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d("secondReplyBugErr", "onError: " + e.toString());
+                                }
+
+                                @Override
+                                public void onNext(SimpleResponse simpleResponse) {
+                                    Map<String, Object> map = simpleResponse.getExtra();
+                                    secondComment.setSecond_id((Integer) map.get("second_id"));
+                                    secondComment.setComment_time((String) map.get("comment_time"));
+                                    View view = createReplyItemView(secondComment, userId, holder);
+                                    holder.addView(R.id.comment_detail_reply_wrapper, view);
+                                    holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
+//                                    holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
+                                    writeComment.setText("");
+                                    Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
+                                    commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString()) + 1));
+                                }
+                            });
                 }
-                writeCommentWrapper.setVisibility(View.GONE);
-                final SecondComment secondComment = new SecondComment();
-                secondComment.setComment_content(writeComment.getText().toString());
-                secondComment.setNickname(user.getNickname());
-                secondComment.setNote_id(note_id);
-                secondComment.setUser_id(user.getUser_id());
-                secondComment.setComment_id(toComment.getComment_id());
-                secondComment.setTo_nickname(toComment.getNickname());
-                secondComment.setTo_user_id(toComment.getUser_id());
-                CommentService send = retrofit.create(CommentService.class);
-                //提交到服务器，并返回评论的id等内容
-                send.addSecondComment(JSON.toJSONString(secondComment))
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<SimpleResponse>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.d("secondReplyBugErr", "onError: "+e.toString());
-                            }
-
-                            @Override
-                            public void onNext(SimpleResponse simpleResponse) {
-                                Map<String, Object> map = simpleResponse.getExtra();
-                                secondComment.setSecond_id((Integer) map.get("second_id"));
-                                secondComment.setComment_time((String) map.get("comment_time"));
-                                View view = createReplyItemView(secondComment, userId, holder);
-                                holder.addView(R.id.comment_detail_reply_wrapper, view);
-                                holder.setWidgetVisibility(R.id.comment_detail_reply_wrapper, View.VISIBLE);
-                                holder.setWidgetVisibility(R.id.comment_detail_more, View.VISIBLE);
-                                writeComment.setText("");
-                                Log.d("NumberChange", Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
-                                commentNum.setText(Integer.toString(Integer.parseInt(commentNum.getText().toString())+1));
-                            }
-                        });
             }
         });
     }
@@ -698,7 +710,7 @@ public class DetailActivity extends MainBaseActivity{
     @Override
     public void onBackPressed() {
         if (writeCommentWrapper.getVisibility() == View.VISIBLE) {
-            writeComment.setText("");
+//            writeComment.setText("");
             writeCommentWrapper.setVisibility(View.GONE);
         } else {
             super.onBackPressed();
@@ -728,7 +740,7 @@ public class DetailActivity extends MainBaseActivity{
                                 0);
                     }
                     if (writeCommentWrapper.getVisibility() == View.VISIBLE) {
-                        writeComment.setText("");
+//                        writeComment.setText("");
                         writeCommentWrapper.setVisibility(View.GONE);
                     }
                     return false;
