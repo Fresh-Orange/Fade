@@ -36,7 +36,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:elevation="0dp"
-                android:background="@android:color/transparent">
+                android:background="@android:color/transparent"
+                app:layout_behavior="com.sysu.pro.fade.home.others.behavior.FlingBehavior">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -200,7 +201,7 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/detail_comment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
             </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
         </android.support.design.widget.CoordinatorLayout>

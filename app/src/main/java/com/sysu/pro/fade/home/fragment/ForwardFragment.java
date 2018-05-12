@@ -108,9 +108,10 @@ public class ForwardFragment extends Fragment {
                         refreshLayout.finishLoadmore();
                         int oldSize = attitudes.size();
                         int addSize = noteQuery.getList().size();
+                        //由于服务器可重复返回续秒的user，需要做一下判断
                         for (int i = 0; i < addSize; i++) {
                             Note note = noteQuery.getList().get(i);
-                            if (note.getUser_id() == noteUserId) {
+                            if (note.getUser_id().intValue() == noteUserId) {
                                 if (showFlag == 0) {
                                     attitudes.add(note);
                                     showFlag = 1;

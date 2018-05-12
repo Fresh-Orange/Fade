@@ -25,6 +25,7 @@ import com.sysu.pro.fade.home.event.DoubleClick;
 import com.sysu.pro.fade.home.event.RefreshNum;
 import com.sysu.pro.fade.home.listener.OnDoubleClickListener;
 import com.sysu.pro.fade.my.Event.DoubleFade;
+import com.sysu.pro.fade.my.Event.NewNumber;
 import com.sysu.pro.fade.my.adapter.MyFragmentAdapter;
 import com.sysu.pro.fade.my.fragment.ConcernFragment;
 import com.sysu.pro.fade.my.fragment.FansFragment;
@@ -309,5 +310,52 @@ public class ContentMy {
         String message = msg.getMessage();
         User user = msg.getUser();
         onGetUser(user);
+    }
+
+    /**
+     * 数量的显示及时同步更新
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNumberChange(NewNumber number) {
+        int reqestFlag = 0;
+        //如果小于0则说明不要更新
+        if (number.getLiveNum() >= 0) allNums[0] = number.getLiveNum().toString();
+        else reqestFlag ++;
+        if (number.getFadeNum() >= 0) allNums[1] = number.getFadeNum().toString();
+        else reqestFlag ++;
+        if (number.getFansNum() >= 0) allNums[2] = number.getFansNum().toString();
+        else reqestFlag ++;
+        if (number.getConcernNum() >= 0) allNums[3] = number.getConcernNum().toString();
+        else reqestFlag ++;
+        if (reqestFlag == 4) {
+            //等于4这里规定需要从服务器获取数量
+            retrofit = RetrofitUtil.createRetrofit(Const.BASE_IP,user.getTokenModel());
+            userService = retrofit.create(UserService.class);
+            userService.getUserById(user.getUser_id().toString())
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<User>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                        }
+
+                        @Override
+                        public void onNext(User newUser) {
+                            user = newUser;
+                            onNumberChange(new NewNumber(user.getDynamicNum(), user.getFade_num(), user.getFans_num(), user.getConcern_num()));
+                        }
+                    });
+
+        } else {
+            for (int i = 0; i < 4; i++) {
+                TabLayout.Tab tab = tabLayout.getTabAt(i);
+                TextView text = tab.getCustomView().findViewById(R.id.my_tab_layout_text2);
+                text.setText(allNums[i]);
+            }
+        }
     }
 }

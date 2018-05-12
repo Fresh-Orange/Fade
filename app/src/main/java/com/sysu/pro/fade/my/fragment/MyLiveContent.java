@@ -23,6 +23,7 @@ import com.sysu.pro.fade.home.animator.FadeItemAnimator;
 import com.sysu.pro.fade.home.event.NoteChangeEvent;
 import com.sysu.pro.fade.home.listener.EndlessRecyclerOnScrollListener;
 import com.sysu.pro.fade.my.Event.DoubleFade;
+import com.sysu.pro.fade.my.Event.NewNumber;
 import com.sysu.pro.fade.service.NoteService;
 import com.sysu.pro.fade.service.UserService;
 import com.sysu.pro.fade.utils.RetrofitUtil;
@@ -350,6 +351,14 @@ public class MyLiveContent {
         }
         notes.addAll(list);
         adapter.notifyDataSetChanged();
+
+        //add by vj 2018.5.10
+        //下面通知主页进行数量更新
+        if (notes.size()%10 != 0 || notes.size() == 0) {
+            EventBus.getDefault().post(new NewNumber(notes.size(), -1, -1, -1));
+        } else {
+            EventBus.getDefault().post(new NewNumber(-1, -1, -1, -1));
+        }
     }
 
 
